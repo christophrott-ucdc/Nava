@@ -1225,3 +1225,250 @@ Verificări tehnice finale:
 ### 21.8 Limită de integrare rămasă
 
 Vocile V3, manifestul și timpii de lip-sync sunt finalizate și pregătite pentru player, dar nu au fost amestecate în `assets/show/show.json`, care execută încă vechea versiune de scenariu. `voice-script-v3.json` rămâne intenționat separat până când cue-urile vizuale, interactive și vocale ale întregului scenariu V3 sunt migrate împreună; astfel aplicația nu redă simultan două versiuni incompatibile ale poveștii.
+
+---
+
+## 22. ADDENDUM APPEND-ONLY — fișă completă de preluare pentru următorul agent (Codex, 2026-09-04)
+
+> Această secțiune a fost adăugată la final la cererea expresă a utilizatorului, pentru ca un agent ulterior, inclusiv Fable 5.1, să poată continua fără reconstrucția contextului. Nicio secțiune anterioară din `HANDOFF.md` nu a fost rescrisă sau ștearsă. Cheia API nu este reprodusă aici, chiar dacă utilizatorul a permis folosirea ei, deoarece nu este necesară preluării și este un secret temporar.
+
+### 22.1 Starea Git exactă la predare
+
+- repository: `C:\Users\Chris\Documents\GitHub\Nava`;
+- branch: `board/nava-player`;
+- commit de scenariu V3 și configurație cu cinci posturi: `f742047 docs: adapt screenplay to five continuous stations`;
+- commit cu toate vocile, generatorul, validările și §21: `b09e747 feat: generate expressive V3 character voices`;
+- înainte de acest addendum, working tree-ul era curat;
+- acest §22 trebuie comis separat după verificare.
+
+### 22.2 Ordinea autorității — important pentru a nu reveni accidental la o versiune veche
+
+La continuare, adevărul curent trebuie citit în ordinea următoare:
+
+1. cerințele utilizatorului consemnate în §20: cinci posturi, cinci tablete, zece copii în cinci perechi, experiență continuă, Căpitan numai GLB pe ecranul central;
+2. `docs/SCENARIU-REGIZORAL-10-MIN.md`, versiunea 3, inclusiv corecția replicii de la 1:09;
+3. `assets/show/voice-script-v3.json` pentru cele 35 de cue-uri vocale Căpitan/Avatar;
+4. `assets/voice/ro/manifest.json` pentru fișierele generate și alinierea pe cuvinte;
+5. `assets/show/show.json` este încă implementarea executabilă **veche** și nu trebuie folosit ca sursă creativă pentru rescrierea V3.
+
+Secțiunile mai vechi din `HANDOFF.md` au fost păstrate ca istoric, conform ordinului append-only. Dacă se contrazic cu §20–§22, prevalează addendumurile mai noi.
+
+### 22.3 Ce a fost făcut în etapa de scenariu
+
+Au fost folosiți trei consultanți separați: `scenarist`, `regizor_film` și `expert_copii`. Scenariul a fost reconstruit ca `Protocolul Acasă`, pe exact 10:00, apoi adaptat după clarificările utilizatorului:
+
+- cinci posturi fizice și cinci tablete, fiecare post folosit de o pereche;
+- două urme egale per post, fără lider impus și fără consens obligatoriu;
+- cele cinci lentile funcționale NAVIGAȚIE, PROPULSIE, COMUNICAȚII, BIOSEMNALE și MEMORIE;
+- o singură experiență fără mutarea copiilor, schimbarea dispozitivelor, căști sau VR;
+- continuitate vizuală și sonoră peste limita tehnică `play`/`epilogue` de la 8:45;
+- Căpitanul există numai ca GLB pe ecranul central, niciodată ca robot/actor în sală;
+- Avatarul Navei este numai voce și HUD, fără al doilea corp umanoid;
+- 48 de replici în scenariul complet, dintre care 17 ale Căpitanului;
+- anexa `TEXTUL INTEGRAL AL CĂPITANULUI` este foaia de interpretare și trebuie să rămână identică cu replicile din corpul scenariului;
+- după corecția vocală de la 1:09, scenariul are 467 de cuvinte vorbite.
+
+### 22.4 Ce a fost făcut în etapa de voce
+
+Utilizatorul a furnizat două ID-uri ElevenLabs:
+
+- `Z1I8XGyUmANP9h72LN2z` — Căpitanul, vocea „Paul Bogorin”;
+- `Q8ZbQAANLFvLw8uPBR8d` — Avatarul Navei, vocea „AGEIS-7”.
+
+Metadatele vocilor au fost verificate prin API: ambele sunt voci profesionale verificate pentru limba română. Modelul expresiv principal este `eleven_v3`. S-a confirmat practic faptul că:
+
+- v3 acceptă taguri audio în text și întoarce alignment de caractere;
+- tagurile apar în alignment-ul brut, deci adaptorul trebuie să le elimine explicit din lista cuvintelor de lip-sync;
+- v3 nu acceptă `use_pvc_as_ivc`; încercarea cu această opțiune a întors HTTP 400, iar opțiunea a fost eliminată;
+- pauzele și ritmul pentru v3 se dirijează prin taguri, punctuație și structurarea textului, nu prin SSML break;
+- `v3-ai-0035` a fost mai sigur temporal cu `eleven_multilingual_v2`, fără taguri, cu speed 1.2 și setări proprii.
+
+Cheia API a fost pusă doar în `ELEVENLABS_API_KEY` pentru procesele care au făcut generare și retranscriere. Nu există `.env` creat pentru ea și nu a fost introdusă în istoricul Git.
+
+### 22.5 Inventarul complet al cue-urilor generate
+
+Coloanele sunt: ID, timpul public, faza/timpul intern, speaker, durata finală/fereastra maximă, model, factor `atempo`. Valoarea `—` înseamnă că nu a fost necesară postprocesarea; valoarea `1` pentru cue-ul regenerat de la 1:09 înseamnă niciun retiming efectiv.
+
+| Cue | Public | Intern | Speaker | Durată / max | Model | atempo |
+|---|---:|---|---|---:|---|---:|
+| `v3-cap-0004` | 4 s | preshow@4 | CAPITANUL | 10,24 / 10,8 s | eleven_v3 | — |
+| `v3-ai-0015` | 15 s | preshow@15 | AVATAR_AI | 8,32 / 8,8 s | eleven_v3 | — |
+| `v3-cap-0024` | 24 s | preshow@24 | CAPITANUL | 8,72 / 10 s | eleven_v3 | — |
+| `v3-ai-0035` | 35 s | preshow@35 | AVATAR_AI | 7,65 / 7,8 s | eleven_multilingual_v2 | 1,4812× |
+| `v3-cap-0043` | 43 s | preshow@43 | CAPITANUL | 4,00 / 6 s | eleven_v3 | — |
+| `v3-cap-0109` | 69 s | play@9 | CAPITANUL | 7,36 / 10,8 s | eleven_v3 | 1 |
+| `v3-ai-0125` | 85 s | play@25 | AVATAR_AI | 7,60 / 10 s | eleven_v3 | — |
+| `v3-ai-0136` | 96 s | play@36 | AVATAR_AI | 5,60 / 23 s | eleven_v3 | — |
+| `v3-ai-0206` | 126 s | play@66 | AVATAR_AI | 8,00 / 17 s | eleven_v3 | — |
+| `v3-cap-0310` | 190 s | play@130 | CAPITANUL | 5,36 / 13 s | eleven_v3 | — |
+| `v3-ai-0352` | 232 s | play@172 | AVATAR_AI | 8,16 / 22 s | eleven_v3 | — |
+| `v3-cap-0501` | 301 s | play@241 | CAPITANUL | 4,80 / 4,9 s | eleven_v3 | — |
+| `v3-ai-0512` | 312 s | play@252 | AVATAR_AI | 6,00 / 21 s | eleven_v3 | — |
+| `v3-ai-0534` | 334 s | play@274 | AVATAR_AI | 9,44 / 21 s | eleven_v3 | — |
+| `v3-cap-0604` | 364 s | play@304 | CAPITANUL | 1,65 / 1,8 s | eleven_v3 | 1,1636× |
+| `v3-cap-0642` | 402 s | play@342 | CAPITANUL | 1,76 / 2 s | eleven_v3 | — |
+| `v3-ai-0651` | 411 s | play@351 | AVATAR_AI | 1,85 / 2 s | eleven_v3 | 1,6000× |
+| `v3-cap-0654` | 414 s | play@354 | CAPITANUL | 1,84 / 2 s | eleven_v3 | — |
+| `v3-ai-0718` | 438 s | play@378 | AVATAR_AI | 8,65 / 8,8 s | eleven_v3 | 1,1468× |
+| `v3-cap-0727` | 447 s | play@387 | CAPITANUL | 1,36 / 1,7 s | eleven_v3 | — |
+| `v3-ai-0729` | 449 s | play@389 | AVATAR_AI | 7,04 / 8 s | eleven_v3 | — |
+| `v3-cap-0738` | 458 s | play@398 | CAPITANUL | 2,72 / 3 s | eleven_v3 | — |
+| `v3-ai-0742` | 462 s | play@402 | AVATAR_AI | 2,16 / 7,8 s | eleven_v3 | — |
+| `v3-cap-0750` | 470 s | play@410 | CAPITANUL | 2,00 / 3 s | eleven_v3 | — |
+| `v3-ai-0754` | 474 s | play@414 | AVATAR_AI | 7,60 / 7,8 s | eleven_v3 | — |
+| `v3-cap-0802` | 482 s | play@422 | CAPITANUL | 5,92 / 6 s | eleven_v3 | — |
+| `v3-ai-0809` | 489 s | play@429 | AVATAR_AI | 10,16 / 10,8 s | eleven_v3 | — |
+| `v3-cap-0829` | 509 s | play@449 | CAPITANUL | 7,20 / 8 s | eleven_v3 | — |
+| `v3-ai-0838` | 518 s | play@458 | AVATAR_AI | 4,80 / 4,8 s | eleven_v3 | — |
+| `v3-cap-0843` | 523 s | play@463 | CAPITANUL | 0,80 / 1,8 s | eleven_v3 | — |
+| `v3-ai-0850` | 530 s | epilogue@5 | AVATAR_AI | 11,44 / 17 s | eleven_v3 | — |
+| `v3-ai-0908` | 548 s | epilogue@23 | AVATAR_AI | 8,16 / 11 s | eleven_v3 | — |
+| `v3-cap-0920` | 560 s | epilogue@35 | CAPITANUL | 4,56 / 9 s | eleven_v3 | — |
+| `v3-ai-0930` | 570 s | epilogue@45 | AVATAR_AI | 8,24 / 12 s | eleven_v3 | — |
+| `v3-cap-0943` | 583 s | epilogue@58 | CAPITANUL | 9,68 / 10 s | eleven_v3 | — |
+
+Toate cele 35 de fișiere individuale se află în `assets/voice/ro/`, cu numele `<cue>.mp3`. Manifestul conține text, speaker, durată, `words`, `wtimes`, `wdurations`, provider, direcție, model, voice ID, taguri, setări, factor de postprocesare, generation key și data generării.
+
+### 22.6 Fișiere create sau schimbate în commitul vocal
+
+Surse și documentație:
+
+- `assets/show/voice-script-v3.json` — nou; sursa celor 35 de replici;
+- `docs/SCENARIU-REGIZORAL-10-MIN.md` — replica 1:09 corectată în corp și anexă;
+- `docs/DECIZII.md` — ADR-09 actualizat: Căpitan GLB, Avatarul Navei numai voce/HUD;
+- `README.md` — comenzile V3 și avertismentul privind separarea de `show.json`;
+- `HANDOFF.md` — §21 și prezentul §22, numai prin adăugare la final;
+- `package.json` — comenzile `validate:voices`, `voice:reels`, `qa:voices`; validatorul vocal inclus în `check`.
+
+Cod:
+
+- `src/server/tts-providers.ts` — controale ElevenLabs per cue, taguri v3, seed, output format, voice settings și curățarea tagurilor din alignment;
+- `scripts/tts-generate.mjs` — `--source`, generation key dependent de setări, metadate extinse, retiming `ffmpeg atempo` și scalarea alignment-ului;
+- `scripts/validate-voice-script.mjs` — validare screenplay ↔ source ↔ manifest/audio;
+- `scripts/build-voice-reels.mjs` — două montaje de audiție cu 0,75 s pauză;
+- `scripts/qa-voice-transcription.mjs` — Scribe v2, română, calcul WER și detecția tagurilor rostite;
+- `src/shared/types.ts` — inversarea corectă a proprietății lip-sync: Căpitan `true`, Avatarul Navei `false`;
+- `src/renderer/player.ts` — butonul/comanda `testAvatar` testează în realitate Căpitanul GLB cu replica `Căpitanul EXODUS-7 online. Vă aud, echipaj.`.
+
+Audio:
+
+- `assets/voice/ro/manifest.json` — 35 intrări V3;
+- `assets/voice/ro/v3-cap-*.mp3` — 17 fișiere;
+- `assets/voice/ro/v3-ai-*.mp3` — 18 fișiere;
+- `assets/voice/ro/preview-capitan-v3.mp3` — 92,93 s;
+- `assets/voice/ro/preview-avatar-v3.mp3` — 145,09 s.
+
+### 22.7 Comenzi de lucru pentru agentul următor
+
+Verificarea completă fără apeluri plătite:
+
+```powershell
+npm run check
+```
+
+Verificarea doar a contractului vocal:
+
+```powershell
+npm run validate:voices
+```
+
+Regenerarea montajelor locale, fără API:
+
+```powershell
+npm run voice:reels
+```
+
+Regenerarea tuturor vocilor, numai cu `ELEVENLABS_API_KEY` prezent în mediul procesului:
+
+```powershell
+npm run tts -- --source assets/show/voice-script-v3.json --provider elevenlabs --force
+```
+
+Regenerarea unui singur cue:
+
+```powershell
+npm run tts -- --source assets/show/voice-script-v3.json --provider elevenlabs --cue v3-cap-0109 --force
+```
+
+QA-ul de retranscriere, care face apeluri API și necesită cheia în mediu:
+
+```powershell
+npm run qa:voices
+```
+
+Pornirea aplicației în dezvoltare:
+
+```powershell
+npm run dev -- --windowed
+```
+
+Consola operatorului este la `http://localhost:4321/control/`; aplicația tabletelor este la `http://<IP-PC>:4321/tablet/`.
+
+### 22.8 Rezultatele de QA care trebuie păstrate ca baseline
+
+Ultima rulare completă `npm run check` a trecut:
+
+- `tsc --noEmit`;
+- validatorul `show.json`: 8 scene, 53 cue-uri, dintre care 24 voice în versiunea executabilă veche;
+- validatorul V3: 35/35 cue-uri, 17 Căpitan și 18 Avatar;
+- build-urile main, preload, renderer, control și tablet;
+- `smoke:core`;
+- `smoke:platform`;
+- `smoke:media`.
+
+Ultimul QA Scribe v2:
+
+- Căpitanul: 136 cuvinte detectate din 138 așteptate, WER 2,9%;
+- Avatarul Navei: 217 cuvinte detectate din 216 așteptate, WER 6,5%;
+- pragul automat este 18%;
+- niciun tag actoricesc nu a fost rostit.
+
+Verificările suplimentare au confirmat:
+
+- MP3 mono la 44,1 kHz și 192 kbps;
+- zero depășiri ale ferestrelor de cue măsurate cu `ffprobe`;
+- `git diff --check` fără erori;
+- nicio urmă a markerului cheii API în fișierele proiectului;
+- verdicte finale `VERDE` de la scenarist, regizor și expertul pentru copii.
+
+### 22.9 Limitarea executabilă exactă — nu trebuie ratată
+
+`assets/show/show.json` conține încă 24 de cue-uri vocale vechi, cu ID-uri precum `pre-01`, `launch-01`, `light-01`, `nature-01`, `tech-01`, `rev-01` și `epi-01`. Manifestul actual conține numai cele 35 de ID-uri `v3-*`. Prin urmare:
+
+- rularea executabilului actual **nu redă automat noile fișiere V3**;
+- pentru vechile ID-uri, sistemul va ajunge la fallback-ul live/cache/vocea Windows, în funcție de configurare;
+- nu trebuie copiate doar vocile V3 peste vechiul `show.json`, fiindcă replicile ar intra într-o structură vizuală și interactivă incompatibilă;
+- migrarea corectă este atomică: întregul scenariu V3, cue-urile vizuale, interacțiunile tabletelor, fazele și cele 35 de voci trebuie trecute împreună în sursa executabilă.
+
+Această limitare este intenționată și a fost aleasă pentru a nu produce o demonstrație aparent funcțională, dar dramaturgic falsă.
+
+### 22.10 Următorul pachet de lucru recomandat
+
+Următorul agent trebuie să implementeze integral scenariul V3, nu să-l rescrie creativ. Ordinea sigură este:
+
+1. citește complet `docs/SCENARIU-REGIZORAL-10-MIN.md`, §20–§22 și validatorul existent;
+2. definește/migrează structura completă de scene și cue-uri V3 în sursa executabilă;
+3. păstrează exact ID-urile vocale `v3-*`, astfel încât manifestul existent să fie folosit fără regenerare;
+4. implementează cele cinci lentile și cele cinci tablete pentru perechi, cu două zone egale, timeout și fallback observator;
+5. configurează topologia `left-outer`, `left-inner`, `center`, `right-inner`, `right-outer`, cu `showAvatar: true` numai pe `center`;
+6. păstrează continuitatea la 8:45, chiar dacă motorul schimbă intern faza în `epilogue`;
+7. validează că numai `CAPITANUL` mișcă GLB-ul și că `AVATAR_AI` produce sunet/HUD fără a deschide un corp;
+8. testează redarea de la început, seek înainte/înapoi, reconnect tabletă, timeout fără input și trecerea play→epilogue;
+9. rulează `npm run check`, apoi o audiție reală pe sistemul de sunet și un test pe toate cele cinci ecrane/tablete;
+10. actualizează din nou `HANDOFF.md` numai prin adăugare la final și comite schimbarea.
+
+### 22.11 Invariante și capcane pentru Fable 5.1 sau alt succesor
+
+- Nu rescrie și nu curăța retroactiv `HANDOFF.md`; adaugă numai o secțiune nouă la final.
+- Nu introduce cheia API în `.env`, source, documentație, manifest, output de test sau commit.
+- Nu regenera vocile deja aprobate doar pentru că există acces API; păstrează asset-urile și seed-urile dacă textul nu se schimbă.
+- Dacă o replică se schimbă, actualizează simultan scenariul, anexa Căpitanului dacă este cazul, `voice-script-v3.json`, audio, manifest și montajul relevant.
+- Nu transforma Avatarul Navei într-un al doilea personaj GLB.
+- Nu muta Căpitanul în sală și nu introduce robot fizic, actor sau voce off separată de fereastra lui GLB.
+- Nu transforma cele cinci posturi în zece tablete sau zece stații.
+- Nu cere consens în pereche și nu condiționa continuarea de participarea tuturor tabletelor.
+- Nu face pauză vizibilă, loading sau reset la 8:45.
+- Nu considera `show.json` vechi drept scenariu aprobat; este doar starea executabilă de migrat.
+- Nu șterge fallback-urile TTS existente până când manifestul V3 este integrat și testat în scenariul executabil.
+- `ffmpeg` trebuie să fie disponibil în PATH pentru retiming și montaje.
+- `npm run qa:voices` consumă API; `npm run check` nu consumă API.
