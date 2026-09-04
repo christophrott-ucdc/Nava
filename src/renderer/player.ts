@@ -77,6 +77,8 @@ export class Player {
   readonly timeline: Timeline;
   private readonly video: HTMLVideoElement;
   private state: PlaybackState = "idle";
+  /** PlaybackState `ended` is shared by play and epilogue, so retain the active phase explicitly. */
+  private phaseMode: Phase | null = null;
   private readonly clock = new PhaseClock();
   private lang: Lang;
   private sfxVolume: number;
@@ -162,32 +164,13 @@ export class Player {
   }
 
   phase(): Phase | null {
-    switch (this.state) {
-      case "preshow":
-        return "preshow";
-      case "playing":
-      case "paused":
-      case "ended":
-        return "play";
-      case "epilogue":
-        return "epilogue";
-      default:
-        return null;
-    }
+    return this.phaseMode;
   }
 
   phaseTime(): number {
-    switch (this.state) {
-      case "preshow":
-      case "epilogue":
-        return this.clock.now();
-      case "playing":
-      case "paused":
-      case "ended":
-        return this.playLeadIn ? this.clock.now() : (this.pendingSeek ?? this.video.currentTime);
-      default:
-        return 0;
-    }
+    if (this.phaseMode === "preshow" || this.phaseMode === "epilogue") return this.clock.now();
+    if (this.phaseMode === "play") return this.playLeadIn ? this.clock.now() : (this.pendingSeek ?? this.video.currentTime);
+    return 0;
   }
 
   rate(): number {
@@ -433,6 +416,7 @@ export class Player {
 
   private enterIdle(): void {
     this.clearAutoEpilogue();
+    this.phaseMode = null;
     this.playLeadIn = false;
     this.timeline.reset();
     this.deps.countdown.cancel();
@@ -452,6 +436,7 @@ export class Player {
 
   private enterPreshow(at: number, running: boolean): void {
     this.clearAutoEpilogue();
+    this.phaseMode = "preshow";
     this.playLeadIn = false;
     this.video.pause();
     this.video.playbackRate = 1;
@@ -467,6 +452,7 @@ export class Player {
 
   private enterPlay(at: number, play: boolean): void {
     this.clearAutoEpilogue();
+    this.phaseMode = "play";
     const t = this.clampPhasePlayTime(at);
     this.playLeadIn = t < 0;
     if (this.playLeadIn) this.setLeadIn(t, play);
@@ -488,6 +474,7 @@ export class Player {
 
   private enterEpilogue(at: number, running: boolean): void {
     this.clearAutoEpilogue();
+    this.phaseMode = "epilogue";
     this.playLeadIn = false;
     this.video.pause();
     this.video.playbackRate = 1;
@@ -746,17 +733,46 @@ export class Player {
         return this.correctVideo(expected, thr, 0, false);
       }
       case "ended": {
-        if (this.phase() !== "play") {
-          this.enterPlay(this.duration(), false);
-          return 0;
+        if (this.endedPhase(expected) === "epilogue") {
+          if (this.phaseMode !== "epilogue") {
+            this.enterEpilogue(expected, false);
+            this.setState("ended");
+            return 0;
+          }
+          this.clock.pause();
+          const d = expected - this.clock.now();
+          if (Math.abs(d) > thr) {
+            this.clock.set(expected);
+            this.timeline.seek(expected);
+          }
+          this.setState("ended");
+          return d;
         }
-        if (this.state === "ended") return 0;
+        if (this.phaseMode !== "play") this.enterPlay(expected, false);
+        this.clearAutoEpilogue();
+        this.video.pause();
+        this.video.playbackRate = 1;
         // Our video is still short of the end: only jump if clearly behind.
         const d = expected - this.video.currentTime;
-        if (Math.abs(d) > Math.max(thr, 1.0)) this.seekVideo(this.clampPlayTime(expected));
+        if (Math.abs(d) > Math.max(thr, 1.0)) {
+          const target = this.clampPlayTime(expected);
+          this.seekVideo(target);
+          this.timeline.seek(target);
+        }
+        this.setState("ended");
         return d;
       }
     }
+  }
+
+  /** Infer the phase only for a freshly connected follower; an established local phase wins. */
+  private endedPhase(expected: number): "play" | "epilogue" {
+    if (this.phaseMode === "epilogue") return "epilogue";
+    if (this.phaseMode === "play") return "play";
+    const epilogueEnd = this.getShow().scenes
+      .filter((scene) => scene.phase === "epilogue")
+      .reduce((end, scene) => Math.max(end, scene.end), 0);
+    return epilogueEnd > 0 && Math.abs(expected - epilogueEnd) < Math.abs(expected - this.duration()) ? "epilogue" : "play";
   }
 
   /** Drift correction in the play phase. Big jumps use timeline seek semantics (skip cues). */

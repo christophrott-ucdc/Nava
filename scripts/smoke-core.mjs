@@ -149,9 +149,19 @@ try {
   nextFrame?.(now);
   assert.equal(playCalls, 1, "video must start when launch lead-in reaches zero");
   assert.ok(player.phaseTime() >= 0);
+
+  player.apply({ action: "epilogue" });
+  assert.equal(player.phase(), "epilogue");
+  assert.equal(themeName, "white");
+  const callsBeforeEnded = playCalls;
+  player.follow("ended", 120, 0, { seekThresholdSec: 0.35, rateNudge: 0.02 });
+  assert.equal(player.getPlaybackState(), "ended");
+  assert.equal(player.phase(), "epilogue", "an ended epilogue follower must remain in the epilogue phase");
+  assert.equal(themeName, "white", "an ended epilogue follower must retain the epilogue theme");
+  assert.equal(playCalls, callsBeforeEnded, "an ended epilogue follower must not restart the video");
   player.dispose();
 
-  console.log("[core] OK server state machine and renderer launch lead-in");
+  console.log("[core] OK server state, renderer launch lead-in, and ended-epilogue reconciliation");
 } finally {
   fs.rmSync(temp, { recursive: true, force: true });
 }
