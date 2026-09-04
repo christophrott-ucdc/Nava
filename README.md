@@ -1,6 +1,6 @@
 # NavaPlayer — „A Patra Lume”
 
-NavaPlayer este playerul și serverul local al experienței imersive „A Patra Lume” de la UCDC HUB AI. Un singur executabil Windows redă filmul 4K sincronizat pe mai multe ecrane, suprapune avatarul 3D și subtitrările, rulează scenariul pe cue-uri și servește consola operatorului și aplicația celor zece tablete.
+NavaPlayer este playerul și serverul local al experienței imersive „A Patra Lume” de la UCDC HUB AI. Un singur executabil Windows redă filmul 4K sincronizat pe cinci ecrane, suprapune Căpitanul 3D și subtitrările, rulează scenariul pe cue-uri și servește consola operatorului și cele cinci tablete folosite de zece copii în perechi.
 
 Documentul de intrare pentru dezvoltare și operare este [HANDOFF.md](HANDOFF.md). Arhitectura ratificată este în [docs/BRIEF.md](docs/BRIEF.md).
 
@@ -23,7 +23,7 @@ npm run dev -- --windowed
 - tablete: `http://<ip-ul-PC-ului>:4321/tablet/`;
 - stare: `http://localhost:4321/api/health`.
 
-În starea inițială, click oriunde pe ecran sau `Space`/`Enter` pornește experiența; butonul **PRE-SHOW** sau tasta `P` pornește primirea publicului. Celelalte comenzi pe ecranul master sunt `S` start, `Space` pauză/reluare în timpul filmului, săgeți pentru ±5 secunde, `E` epilog, `R` restart și `I` identificarea ecranelor. `Esc` de două ori închide doar în modul windowed/dezvoltare.
+În starea inițială, click oriunde pe ecran, butonul **PORNEȘTE EXPERIENȚA** sau `Space`/`Enter` pornește fluxul complet, de la primirea publicului. După 50 de secunde, lansarea continuă automat. **SARI LA LANSARE** sau `S` omit primirea și pornesc direct numărătoarea T−10. `P` pornește explicit primirea publicului. În timpul filmului, `Space` pune pauză/reia; săgețile fac salt ±5 secunde, `E` intră în epilog, `R` revine în idle și `I` identifică ecranele. `Esc` de două ori închide doar în modul windowed/dezvoltare.
 
 ## Verificare și distribuție
 
@@ -34,17 +34,18 @@ npm run dist           # executabil portabil + installer în dist-app/
 
 Filmul de 2,5 GB nu intră în Git și nu este inclus în installer. Copiați `media/cinema_4k_h264.mp4` lângă executabil, păstrând structura `media/`. Avatarul și scenariul sunt incluse în pachet.
 
-Vocile pre-generate sunt opționale. Fără chei sau manifest, playerul folosește vocea română disponibilă în Windows. Pentru generare, copiați variabilele necesare din `.env.example` într-un fișier local `.env`, apoi rulați `npm run tts`. Nu comiteți `.env`.
+Pista vocală V3 este pre-generată și face parte din spectacolul executabil. Pentru toate cue-urile de producție, `fallback: "silent"` interzice vocea Windows/browser: dacă un MP3 lipsește, playerul păstrează subtitrarea, notează eroarea și folosește tăcere temporizată. Fallback-ul TTS rămâne disponibil numai pentru cue-uri ad-hoc/de test care îl cer explicit. Pentru regenerare, copiați variabilele necesare din `.env.example` într-un fișier local `.env`, apoi rulați `npm run tts`. Nu comiteți `.env`.
 
-Setul expresiv pentru scenariul V3 este definit separat în `assets/show/voice-script-v3.json`: 17 replici ale Căpitanului și 18 ale Avatarului Navei. Fișierele generate și timpii de lip-sync sunt în `assets/voice/ro/manifest.json`. Comenzi utile:
+Setul expresiv este definit în `assets/show/voice-script-v3.json` și sincronizat integral în `assets/show/show.json`: 17 replici ale Căpitanului, 18 ale Avatarului Navei și 16 asset-uri ale civilizațiilor/ecourilor. Manifestul conține 51 de clipuri; într-o reprezentație se redau 49, deoarece la 6:35 serverul alege exact una dintre cele trei variante TEHNOLOGIC în funcție de cele zece perspective. Fișierele și timpii de lip-sync sunt în `assets/voice/ro/manifest.json`. Comenzi utile:
 
 ```powershell
 npm run validate:voices
+npm run sync:voices
 npm run voice:reels
 npm run tts -- --source assets/show/voice-script-v3.json --provider elevenlabs
 ```
 
-Ultima comandă cere `ELEVENLABS_API_KEY` numai în mediul local. Cele două montaje de audiție sunt `assets/voice/ro/preview-capitan-v3.mp3` și `assets/voice/ro/preview-avatar-v3.mp3`. Sursa V3 rămâne separată de `show.json` până la migrarea integrală a cue-urilor vizuale și interactive, pentru a nu amesteca două versiuni de scenariu în aceeași experiență executabilă.
+Ultima comandă cere `ELEVENLABS_API_KEY` numai în mediul local. Montajele de audiție sunt `assets/voice/ro/preview-capitan-v3.mp3`, `assets/voice/ro/preview-avatar-v3.mp3` și `assets/voice/ro/preview-civilizatii-v3.mp3`. După orice modificare de text sau timing vocal, rulați `npm run sync:voices` și apoi `npm run check`.
 
 ## Configurare
 

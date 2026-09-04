@@ -28,9 +28,9 @@ Acceptat. Serverul decide comenzile și starea; ecranul central raportează timp
 
 Acceptat. `start` intră la `phaseTime = -launchLeadInSec`, cu filmul înghețat pe primul cadru. La zero începe redarea, păstrând numărătoarea în timeline-ul aceleiași faze.
 
-## ADR-08 — Voci în trei niveluri
+## ADR-08 — Pista V3 este locală și strictă
 
-Acceptat. Ordinea este manifest local, TTS live cu cache și `speechSynthesis`. ElevenLabs este preferat pentru alinierea cuvintelor; Gemini oferă fallback WAV. Nicio cheie nu intră în Git sau renderer.
+Actualizat. Cele 51 de asset-uri V3 sunt pre-generate și preîncărcate din manifest înainte de lansare. Cue-urile spectacolului au `fallback: silent`: un asset lipsă produce subtitrare, tăcere temporizată și eroare în jurnal, niciodată TTS Windows/browser. TTS live rămâne numai pentru teste explicite. Nicio cheie nu intră în Git sau renderer.
 
 ## ADR-09 — Avatar și entități separate
 
@@ -46,4 +46,12 @@ Acceptat. Installerul include codul, avatarul, show-ul și vocile existente, dar
 
 ## ADR-12 — Limitele integrării fizice
 
-Acceptat. NavaPlayer nu comandă roboții Unitree, DMX, fum, podeaua sau conținutul VR. Evenimentele `cueFired` și tema publicată oferă puncte de extensie viitoare.
+Actualizat. Experiența V3 nu presupune robot Unitree, capsulă VR sau mutarea publicului. NavaPlayer nu comandă DMX, fum ori podeaua; evenimentele `cueFired` și tema publicată oferă puncte de extensie viitoare.
+
+## ADR-13 — Cinci posturi, două perspective per tabletă
+
+Acceptat. Cele cinci tablete sunt legate anonim de posturile 1–5. Fiecare interacțiune are zone A/B independente și opțiunea „Doar observ”, fără nume, scor, clasament sau consens obligatoriu. La întrebarea TEHNOLOGIC, serverul selectează determinist una dintre cele trei replici pre-generate: perspective diferite, alegeri identice sau observație.
+
+## ADR-14 — Durată publică deterministă
+
+Acceptat. Fluxul este 50 s pre-show + 10 s lead-in + 465 s film + 75 s epilog = 600 s. Rendererul face tranziția locală la praguri și nu așteaptă un round-trip WebSocket; serverul primește ecoul stării fără să reseteze ceasul.

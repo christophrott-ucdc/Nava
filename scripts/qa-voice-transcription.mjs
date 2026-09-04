@@ -47,11 +47,12 @@ async function transcribe(file) {
   return response.json();
 }
 
-for (const [speaker, file] of [
-  ["CAPITANUL", "preview-capitan-v3.mp3"],
-  ["AVATAR_AI", "preview-avatar-v3.mp3"],
+for (const [speaker, file, selectCue] of [
+  ["CAPITANUL", "preview-capitan-v3.mp3", (cue) => cue.speaker === "CAPITANUL"],
+  ["AVATAR_AI", "preview-avatar-v3.mp3", (cue) => cue.speaker === "AVATAR_AI"],
+  ["CIVILIZATII", "preview-civilizatii-v3.mp3", (cue) => cue.speaker !== "CAPITANUL" && cue.speaker !== "AVATAR_AI"],
 ]) {
-  const expectedText = source.cues.filter((cue) => cue.speaker === speaker).map((cue) => cue.text.ro).join(" ");
+  const expectedText = source.cues.filter(selectCue).map((cue) => cue.text.ro).join(" ");
   const transcript = await transcribe(path.join(voiceDir, file));
   const expectedWords = words(expectedText);
   const actualWords = words(String(transcript.text ?? ""));

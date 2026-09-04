@@ -1,11 +1,17 @@
-import type { SceneTheme, ShowFile, ShowState, TabletCue } from "@shared/types";
+import {
+  TABLET_OBSERVE_VALUE,
+  TABLET_POSTS,
+  type SceneTheme,
+  type ShowState,
+  type TabletOption,
+  type TabletPost,
+  type TabletZone,
+} from "@shared/types";
 import type { ServerMessage, TabletEventMsg, TabletViewMsg } from "@shared/protocol";
 
 const STORAGE = {
-  id: "nava.tablet.id",
-  name: "nava.tablet.name",
-  role: "nava.tablet.role",
-  submissions: "nava.tablet.submissions",
+  id: "nava.tablet.id.v3",
+  post: "nava.tablet.post.v3",
 } as const;
 
 const byId = <T extends HTMLElement>(id: string): T => {
@@ -17,15 +23,13 @@ const byId = <T extends HTMLElement>(id: string): T => {
 const dom = {
   connection: byId<HTMLDivElement>("connection"),
   connectionLabel: byId<HTMLElement>("connection-label"),
-  joinCard: byId<HTMLElement>("join-card"),
-  joinForm: byId<HTMLFormElement>("join-form"),
-  name: byId<HTMLInputElement>("name"),
+  postCard: byId<HTMLElement>("post-card"),
+  postGrid: byId<HTMLDivElement>("post-grid"),
   experience: byId<HTMLElement>("experience"),
   phaseLabel: byId<HTMLParagraphElement>("phase-label"),
   sceneLabel: byId<HTMLHeadingElement>("scene-label"),
-  identity: byId<HTMLButtonElement>("identity"),
-  identityName: byId<HTMLSpanElement>("identity-name"),
-  identityRole: byId<HTMLElement>("identity-role"),
+  postName: byId<HTMLSpanElement>("post-name"),
+  postLens: byId<HTMLElement>("post-lens"),
   signal: byId<HTMLDivElement>("signal"),
   subtitle: byId<HTMLElement>("subtitle"),
   subtitleSpeaker: byId<HTMLElement>("subtitle-speaker"),
@@ -35,22 +39,18 @@ const dom = {
 };
 
 type TabletEvent = TabletEventMsg["event"];
+type ChoiceMap = Record<string, Partial<Record<TabletZone, string>>>;
 
 let socket: WebSocket | null = null;
 let reconnectTimer: number | null = null;
 let reconnectAttempt = 0;
-let show: ShowFile | null = null;
 let state: ShowState | null = null;
 let view: TabletViewMsg | null = null;
-let joined = false;
-let name = storageGet(STORAGE.name) ?? "";
-let role = storageGet(STORAGE.role) ?? "";
-let submissions = storageJson<Record<string, string>>(STORAGE.submissions, {});
-let editingCueId: string | null = null;
-let currentCueId: string | null = null;
-const drafts: Record<string, string> = {};
-const pendingEvents: TabletEvent[] = [];
+let selectedPost: TabletPost | null = configuredPost();
+let postRequestSent = false;
 let noticeTimer: number | null = null;
+const pendingEvents: TabletEvent[] = [];
+const optimisticChoices: ChoiceMap = {};
 
 const tabletId = (() => {
   const existing = storageGet(STORAGE.id);
@@ -67,16 +67,21 @@ function storageGet(key: string): string | null {
 }
 
 function storageSet(key: string, value: string): void {
-  try { localStorage.setItem(key, value); } catch { /* Private browsing may deny storage. */ }
+  try { localStorage.setItem(key, value); } catch { /* private mode may deny storage */ }
 }
 
-function storageJson<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) as T : fallback;
-  } catch {
-    return fallback;
+function parsePost(value: string | null): TabletPost | null {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 5 ? parsed as TabletPost : null;
+}
+
+function configuredPost(): TabletPost | null {
+  const fromUrl = parsePost(new URLSearchParams(location.search).get("post"));
+  if (fromUrl) {
+    storageSet(STORAGE.post, String(fromUrl));
+    return fromUrl;
   }
+  return parsePost(storageGet(STORAGE.post));
 }
 
 function wsUrl(): string {
@@ -102,9 +107,13 @@ function connect(): void {
   socket = ws;
   ws.addEventListener("open", () => {
     reconnectAttempt = 0;
+    postRequestSent = false;
     setConnection("online", "Conectat");
-    ws.send(JSON.stringify({ type: "hello", client: "tablet", id: tabletId, ...(name ? { name } : {}) }));
-    if (name) ws.send(JSON.stringify(tabletMessage({ kind: "join", name })));
+    ws.send(JSON.stringify({ type: "hello", client: "tablet", id: tabletId }));
+    if (selectedPost !== null) {
+      ws.send(JSON.stringify(tabletMessage({ kind: "set-post", post: selectedPost })));
+      postRequestSent = true;
+    }
     while (pendingEvents.length) {
       const event = pendingEvents.shift();
       if (event) ws.send(JSON.stringify(tabletMessage(event)));
@@ -128,7 +137,7 @@ function connect(): void {
 }
 
 function tabletMessage(event: TabletEvent): TabletEventMsg {
-  return { type: "tablet", tabletId, ...(name ? { name } : {}), event };
+  return { type: "tablet", tabletId, event };
 }
 
 function sendEvent(event: TabletEvent): void {
@@ -138,40 +147,48 @@ function sendEvent(event: TabletEvent): void {
   }
   if (event.kind !== "ping") {
     pendingEvents.push(event);
-    if (pendingEvents.length > 20) pendingEvents.shift();
-    showNotice("Semnalul este întrerupt. Răspunsul va pleca la reconectare.");
+    if (pendingEvents.length > 24) pendingEvents.shift();
+    showNotice("Semnal întrerupt. Alegerea va pleca la reconectare.");
   }
 }
 
 function onMessage(message: ServerMessage): void {
   switch (message.type) {
     case "welcome":
-      show = message.show;
       state = message.state;
-      if (message.state.state === "idle") {
-        role = "";
-        storageSet(STORAGE.role, "");
-      }
-      currentCueId = view ? resolveCueId(view) : null;
-      joined = Boolean(name);
-      renderShell();
       renderMission();
       break;
     case "state":
       if (message.state.state === "idle" && state?.state !== "idle") {
-        role = "";
-        storageSet(STORAGE.role, "");
+        for (const cueId of Object.keys(optimisticChoices)) delete optimisticChoices[cueId];
       }
       state = message.state;
-      currentCueId = view ? resolveCueId(view) : null;
       renderMission();
       break;
     case "tabletView":
       view = message;
-      currentCueId = resolveCueId(message);
+      if (message.post !== null) {
+        selectedPost = message.post;
+        storageSet(STORAGE.post, String(message.post));
+        postRequestSent = false;
+      } else if (selectedPost !== null && !postRequestSent) {
+        sendEvent({ kind: "set-post", post: selectedPost });
+        postRequestSent = true;
+      }
+      renderShell();
       renderMission();
       break;
     case "error":
+      if (/postul \d este deja conectat|post invalid/i.test(message.reason)) {
+        selectedPost = null;
+        storageSet(STORAGE.post, "");
+        postRequestSent = false;
+        renderShell();
+      }
+      if (/opțiune necunoscută|a răspuns deja|interacțiunea în pereche/i.test(message.reason) && view?.cueId) {
+        delete optimisticChoices[view.cueId];
+        renderMission();
+      }
       showNotice(message.reason);
       break;
     case "clock":
@@ -182,27 +199,45 @@ function onMessage(message: ServerMessage): void {
   }
 }
 
-function resolveCueId(message: TabletViewMsg): string | null {
-  if (!show || !message.interaction) return null;
-  const signature = JSON.stringify(message.interaction);
-  const candidates = show.cues.filter((cue): cue is TabletCue => cue.kind === "tablet" && JSON.stringify(cue.interaction) === signature);
-  if (!candidates.length) return null;
-  const phase = state?.state === "preshow" ? "preshow" : state?.state === "epilogue" || state?.state === "ended" ? "epilogue" : "play";
-  const t = state?.phaseTime ?? Number.POSITIVE_INFINITY;
-  const crossed = candidates.filter((cue) => cue.phase === phase && cue.at <= t + 2).sort((a, b) => b.at - a.at);
-  return crossed[0]?.id ?? candidates.find((cue) => cue.phase === phase)?.id ?? candidates[0].id;
+function availablePostLabels(): string[] {
+  if (view?.interaction?.type === "post-assign") return view.interaction.posts;
+  return ([1, 2, 3, 4, 5] as TabletPost[]).map((post) => TABLET_POSTS[post].lens);
+}
+
+function renderPostPicker(): void {
+  dom.postGrid.replaceChildren();
+  const labels = availablePostLabels();
+  for (let index = 0; index < 5; index += 1) {
+    const post = (index + 1) as TabletPost;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "post-button";
+    const number = document.createElement("strong");
+    number.textContent = String(post);
+    const copy = document.createElement("span");
+    copy.textContent = labels[index] || TABLET_POSTS[post].lens;
+    button.append(number, copy);
+    button.addEventListener("click", () => {
+      selectedPost = post;
+      storageSet(STORAGE.post, String(post));
+      postRequestSent = true;
+      sendEvent({ kind: "set-post", post });
+      renderShell();
+      renderMission();
+    });
+    dom.postGrid.append(button);
+  }
 }
 
 function renderShell(): void {
-  dom.joinCard.classList.toggle("hidden", joined);
-  dom.experience.classList.toggle("hidden", !joined);
-  dom.name.value = name;
-  dom.identityName.textContent = name || "—";
-  dom.identityRole.textContent = role || "Explorator";
+  const ready = selectedPost !== null;
+  dom.postCard.classList.toggle("hidden", ready);
+  dom.experience.classList.toggle("hidden", !ready);
+  if (!ready) renderPostPicker();
 }
 
 function renderMission(): void {
-  if (!joined) return;
+  if (selectedPost === null) return;
   const theme: SceneTheme = view?.theme ?? state?.theme ?? "prologue";
   document.body.dataset.theme = theme;
   const phase = state?.state ?? "idle";
@@ -216,8 +251,8 @@ function renderMission(): void {
   };
   dom.phaseLabel.textContent = phaseLabels[phase];
   dom.sceneLabel.textContent = view?.sceneLabel || "În așteptare";
-  dom.identityName.textContent = name;
-  dom.identityRole.textContent = role || "Explorator";
+  dom.postName.textContent = `POSTUL ${selectedPost}`;
+  dom.postLens.textContent = view?.lens || TABLET_POSTS[selectedPost].lens;
 
   if (view?.subtitle) {
     dom.subtitle.classList.remove("hidden");
@@ -229,7 +264,7 @@ function renderMission(): void {
     dom.subtitleSpeaker.textContent = "";
     dom.subtitleText.textContent = "";
   }
-  renderInteraction(view?.interaction ?? null, view?.aggregate);
+  renderInteraction();
 }
 
 function createHead(iconText: string, titleText: string, description?: string): HTMLDivElement {
@@ -249,180 +284,164 @@ function createHead(iconText: string, titleText: string, description?: string): 
   return head;
 }
 
-function renderInteraction(interaction: TabletCue["interaction"] | null, aggregate?: Record<string, number>): void {
+function renderInteraction(): void {
   dom.interaction.replaceChildren();
+  const interaction = view?.interaction ?? null;
   dom.signal.classList.toggle("hidden", interaction?.type === "thanks");
-  if (!interaction || interaction.type === "waiting") {
-    renderWaiting();
+  if (!interaction || interaction.type === "waiting" || interaction.type === "post-assign") {
+    renderWaiting(interaction?.type === "post-assign");
     return;
   }
-  switch (interaction.type) {
-    case "role-pick":
-      renderRolePick(interaction.roles, aggregate);
-      break;
-    case "question":
-      renderComposer("?", interaction.prompt, interaction.maxLen ?? 200, "answer", aggregate);
-      break;
-    case "message":
-      renderComposer("↗", interaction.prompt, interaction.maxLen ?? 200, "message", aggregate);
-      break;
-    case "vote":
-      renderVote(interaction.prompt, interaction.options, aggregate);
-      break;
-    case "thanks":
-      renderThanks();
-      break;
+  if (interaction.type === "paired-choice") {
+    renderPairedChoice(interaction);
+    return;
   }
+  if (interaction.type === "thanks") {
+    renderThanks();
+    return;
+  }
+  // Cue-urile V2 nu mai cer copiilor text, vot unic sau alegerea unui rol comun.
+  renderLegacyHold();
 }
 
-function renderWaiting(): void {
+function renderWaiting(showRule = false): void {
   const wrap = document.createElement("div");
   wrap.className = "waiting";
-  wrap.append(createHead("·", "Rămâi aproape", role ? `Postul tău: ${role}` : "Căpitanul va trimite în curând următoarea instrucțiune."));
+  wrap.append(createHead(
+    "◇",
+    showRule ? "Două perspective, același post" : "Priviți semnalul",
+    showRule
+      ? "Fiecare folosește propria jumătate. Puteți răspunde la fel sau diferit."
+      : "Tableta păstrează ambele urme până la următoarea instrucțiune.",
+  ));
   const bars = document.createElement("div");
   bars.className = "waiting-bars";
-  for (let i = 0; i < 5; i += 1) bars.append(document.createElement("i"));
-  const copy = document.createElement("p");
-  copy.className = "waiting-copy";
-  copy.textContent = "Recepționăm semnalul navei…";
-  wrap.append(bars, copy);
+  for (let index = 0; index < 5; index += 1) bars.append(document.createElement("i"));
+  wrap.append(bars);
   dom.interaction.append(wrap);
 }
 
-function renderRolePick(roles: string[], aggregate?: Record<string, number>): void {
-  dom.interaction.append(createHead("I", "Alege-ți rolul", "Fiecare explorator are un loc important în echipaj."));
+function renderLegacyHold(): void {
+  dom.interaction.append(createHead(
+    "·",
+    "Priviți semnalul",
+    "Această instrucțiune veche nu cere un răspuns. Misiunea continuă.",
+  ));
+}
+
+function optionData(option: TabletOption): { value: string; label: string; symbol?: string; color?: string } {
+  if (typeof option === "string") {
+    const visual = [
+      { match: "AURIU", color: "#ffd166", symbol: "●" },
+      { match: "ALBASTRU", color: "#64c8ff", symbol: "≋" },
+      { match: "VERDE", color: "#72df9a", symbol: "❧" },
+      { match: "VIOLET", color: "#bd92ff", symbol: "★" },
+      { match: "ATINGE", color: "var(--accent)", symbol: "◉" },
+    ].find((candidate) => option.toLocaleUpperCase("ro").includes(candidate.match));
+    return { value: option, label: option, ...visual };
+  }
+  return option;
+}
+
+function confirmedChoice(cueId: string, zone: TabletZone): string | undefined {
+  return view?.cueId === cueId
+    ? view.zoneChoices[zone]?.value ?? optimisticChoices[cueId]?.[zone]
+    : optimisticChoices[cueId]?.[zone];
+}
+
+function renderPairedChoice(interaction: Extract<NonNullable<TabletViewMsg["interaction"]>, { type: "paired-choice" }>): void {
+  const cueId = view?.cueId;
+  dom.interaction.append(createHead(
+    interaction.mode === "color" ? "◈" : interaction.mode === "pulse" ? "◉" : "◇",
+    interaction.prompt,
+    "Fiecare alege în jumătatea sa. Răspunsurile pot fi la fel sau diferite.",
+  ));
+  const zones = document.createElement("div");
+  zones.className = "pair-zones";
+  for (const zone of ["A", "B"] as TabletZone[]) {
+    zones.append(renderZone(zone, cueId, interaction));
+  }
+  dom.interaction.append(zones);
+}
+
+function renderZone(
+  zone: TabletZone,
+  cueId: string | null | undefined,
+  interaction: Extract<NonNullable<TabletViewMsg["interaction"]>, { type: "paired-choice" }>,
+): HTMLElement {
+  const panel = document.createElement("section");
+  panel.className = `zone zone-${zone.toLowerCase()}`;
+  panel.setAttribute("aria-labelledby", `zone-${zone}-title`);
+  const head = document.createElement("div");
+  head.className = "zone-head";
+  const seal = document.createElement("span");
+  seal.className = "half-seal";
+  seal.textContent = zone;
+  const title = document.createElement("h3");
+  title.id = `zone-${zone}-title`;
+  title.textContent = `PERSPECTIVA ${zone}`;
+  head.append(seal, title);
+  panel.append(head);
+
+  const selected = cueId ? confirmedChoice(cueId, zone) : undefined;
+  if (selected) {
+    const result = document.createElement("div");
+    result.className = "zone-result";
+    const label = selected === TABLET_OBSERVE_VALUE
+      ? "DOAR OBSERV"
+      : interaction.options.map(optionData).find((option) => option.value === selected)?.label ?? selected;
+    result.innerHTML = `<strong>✓</strong><span>${escapeHtml(label)}</span><small>A intrat în semnal.</small>`;
+    panel.append(result);
+    return panel;
+  }
+
   const grid = document.createElement("div");
-  grid.className = "role-grid";
-  for (const option of roles) {
+  grid.className = `choice-grid mode-${interaction.mode}`;
+  for (const rawOption of interaction.options) {
+    const option = optionData(rawOption);
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `role-button${role === option ? " selected" : ""}`;
-    button.setAttribute("aria-pressed", String(role === option));
-    button.append(document.createTextNode(option));
-    const count = document.createElement("span");
-    count.textContent = String(aggregate?.[option] ?? 0);
-    count.title = "membri în acest rol";
-    button.append(count);
-    button.addEventListener("click", () => {
-      role = option;
-      storageSet(STORAGE.role, role);
-      sendEvent({ kind: "role", role });
-      renderShell();
-      renderRoleSelectionOnly();
-    });
-    grid.append(button);
-  }
-  dom.interaction.append(grid);
-}
-
-function renderRoleSelectionOnly(): void {
-  dom.interaction.querySelectorAll<HTMLButtonElement>(".role-button").forEach((button) => {
-    const selected = button.firstChild?.textContent === role;
-    button.classList.toggle("selected", selected);
-    button.setAttribute("aria-pressed", String(selected));
-  });
-}
-
-function renderComposer(icon: string, prompt: string, maxLen: number, kind: "answer" | "message", aggregate?: Record<string, number>): void {
-  const cueId = currentCueId;
-  const saved = cueId ? submissions[cueId] : undefined;
-  if (saved && editingCueId !== cueId) {
-    const sent = document.createElement("div");
-    sent.className = "sent";
-    const mark = document.createElement("div");
-    mark.className = "sent-mark";
-    mark.textContent = "✓";
-    const title = document.createElement("h2");
-    title.textContent = kind === "message" ? "Mesaj transmis Pământului" : "Răspuns transmis Căpitanului";
-    const quote = document.createElement("blockquote");
-    quote.textContent = saved;
-    const edit = document.createElement("button");
-    edit.type = "button";
-    edit.className = "text-button";
-    edit.textContent = "Modifică răspunsul";
-    edit.addEventListener("click", () => {
-      editingCueId = cueId;
-      renderInteraction(view?.interaction ?? null, view?.aggregate);
-    });
-    sent.append(mark, title, quote, edit);
-    if (typeof aggregate?.answered === "number") {
-      const count = document.createElement("p");
-      count.className = "aggregate";
-      count.textContent = `${aggregate.answered} ${aggregate.answered === 1 ? "răspuns primit" : "răspunsuri primite"} de navă`;
-      sent.append(count);
+    button.className = "choice-button";
+    if (option.color) button.style.setProperty("--choice-color", option.color);
+    if (option.symbol) {
+      const symbol = document.createElement("span");
+      symbol.className = "choice-symbol";
+      symbol.textContent = option.symbol;
+      button.append(symbol);
     }
-    dom.interaction.append(sent);
-    return;
-  }
-
-  dom.interaction.append(createHead(icon, prompt, kind === "message" ? "Mesajul tău va ajunge în consola Căpitanului." : "Nu există răspuns greșit. Scrie ce simți."));
-  const form = document.createElement("form");
-  form.className = "composer";
-  const textarea = document.createElement("textarea");
-  textarea.maxLength = maxLen;
-  textarea.placeholder = kind === "message" ? "Mesajul meu pentru Pământ…" : "Eu cred că…";
-  textarea.setAttribute("aria-label", kind === "message" ? "Mesaj pentru Pământ" : "Răspuns");
-  const draftKey = cueId ?? `${kind}:pending`;
-  textarea.value = drafts[draftKey] ?? saved ?? "";
-  const meta = document.createElement("div");
-  meta.className = "composer-meta";
-  const hint = document.createElement("span");
-  hint.textContent = socket?.readyState === WebSocket.OPEN ? "Conexiune securizată cu nava" : "Va fi trimis după reconectare";
-  const counter = document.createElement("span");
-  counter.textContent = `${textarea.value.length}/${maxLen}`;
-  meta.append(hint, counter);
-  const submit = document.createElement("button");
-  submit.type = "submit";
-  submit.className = "action-button";
-  submit.textContent = kind === "message" ? "TRANSMITE MESAJUL" : "TRIMITE RĂSPUNSUL";
-  submit.disabled = !textarea.value.trim() || !cueId;
-  textarea.addEventListener("input", () => {
-    drafts[draftKey] = textarea.value;
-    counter.textContent = `${textarea.value.length}/${maxLen}`;
-    submit.disabled = !textarea.value.trim() || !cueId;
-  });
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const text = textarea.value.replace(/\s+/g, " ").trim().slice(0, maxLen);
-    if (!text || !cueId) return;
-    submissions[cueId] = text;
-    drafts[draftKey] = text;
-    storageSet(STORAGE.submissions, JSON.stringify(submissions));
-    editingCueId = null;
-    sendEvent(kind === "message" ? { kind: "message", cueId, text } : { kind: "answer", cueId, text });
-    renderInteraction(view?.interaction ?? null, view?.aggregate);
-  });
-  form.append(textarea, meta, submit);
-  dom.interaction.append(form);
-  window.setTimeout(() => textarea.focus(), 0);
-}
-
-function renderVote(prompt: string, options: string[], aggregate?: Record<string, number>): void {
-  const cueId = currentCueId;
-  const selected = cueId ? submissions[cueId] : undefined;
-  dom.interaction.append(createHead("V", prompt, "Alege varianta care ți se potrivește."));
-  const grid = document.createElement("div");
-  grid.className = "role-grid";
-  for (const option of options) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = `vote-button${selected === option ? " selected" : ""}`;
+    const label = document.createElement("span");
+    label.textContent = option.label;
+    button.append(label);
     button.disabled = !cueId;
-    button.setAttribute("aria-pressed", String(selected === option));
-    button.append(document.createTextNode(option));
-    const count = document.createElement("span");
-    count.textContent = String(aggregate?.[option] ?? 0);
-    button.append(count);
-    button.addEventListener("click", () => {
-      if (!cueId) return;
-      submissions[cueId] = option;
-      storageSet(STORAGE.submissions, JSON.stringify(submissions));
-      sendEvent({ kind: "vote", cueId, option });
-      renderInteraction(view?.interaction ?? null, view?.aggregate);
-    });
+    button.addEventListener("click", () => choose(cueId, zone, option.value));
     grid.append(button);
   }
-  dom.interaction.append(grid);
+  if (interaction.allowObserve) {
+    const observe = document.createElement("button");
+    observe.type = "button";
+    observe.className = "choice-button observe-button";
+    observe.textContent = "DOAR OBSERV";
+    observe.disabled = !cueId;
+    observe.addEventListener("click", () => choose(cueId, zone, TABLET_OBSERVE_VALUE));
+    grid.append(observe);
+  }
+  panel.append(grid);
+  return panel;
+}
+
+function choose(cueId: string | null | undefined, zone: TabletZone, value: string): void {
+  if (!cueId || confirmedChoice(cueId, zone)) return;
+  optimisticChoices[cueId] ??= {};
+  optimisticChoices[cueId][zone] = value;
+  sendEvent({ kind: "choice", cueId, zone, value });
+  if ("vibrate" in navigator) navigator.vibrate(35);
+  renderInteraction();
+}
+
+function escapeHtml(value: string): string {
+  const node = document.createElement("span");
+  node.textContent = value;
+  return node.innerHTML;
 }
 
 function renderThanks(): void {
@@ -432,34 +451,12 @@ function renderThanks(): void {
   earth.className = "earth";
   earth.setAttribute("aria-hidden", "true");
   const title = document.createElement("h2");
-  title.textContent = `Misiune îndeplinită, ${name}.`;
+  title.textContent = "Misiune încheiată, echipaj.";
   const copy = document.createElement("p");
-  copy.textContent = "Ai plecat să descoperi alte lumi. Te-ai întors privind-o pe a ta pentru prima dată.";
+  copy.textContent = "Cele două perspective ale postului vostru au rămas în semnal.";
   wrap.append(earth, title, copy);
   dom.interaction.append(wrap);
 }
-
-dom.joinForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const clean = dom.name.value.replace(/[\x00-\x1f\x7f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 16);
-  if (!clean) {
-    dom.name.focus();
-    return;
-  }
-  name = clean;
-  joined = true;
-  storageSet(STORAGE.name, name);
-  sendEvent({ kind: "join", name });
-  renderShell();
-  renderMission();
-});
-
-dom.identity.addEventListener("click", () => {
-  joined = false;
-  renderShell();
-  dom.name.focus();
-  dom.name.select();
-});
 
 window.setInterval(() => {
   if (socket?.readyState === WebSocket.OPEN) sendEvent({ kind: "ping" });
@@ -469,7 +466,6 @@ document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible" && (!socket || socket.readyState === WebSocket.CLOSED)) connect();
 });
 
-joined = Boolean(name);
 renderShell();
 renderMission();
 connect();

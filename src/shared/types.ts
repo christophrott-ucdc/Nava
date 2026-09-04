@@ -47,7 +47,8 @@ export const SPEAKERS: Record<Speaker, SpeakerProfile> = {
  *  - preshow : sala, video oprit pe primul cadru; cue-urile se declanseaza pe un timer
  *              pornit de operator (butonul "PRE-SHOW") sau manual, unul cate unul.
  *  - play    : video ruleaza; `at` = secunde in timeline-ul video (video.currentTime).
- *  - epilogue: dupa terminarea video-ului (replicile capsulei VR); ecran alb cald + voce.
+ *  - epilogue: dupa taietura determinista a filmului; continuitate pe aceleasi ecrane/posturi,
+ *              cu ultimul cadru, HUD si vocile finale.
  */
 export type Phase = "preshow" | "play" | "epilogue";
 
@@ -82,6 +83,8 @@ export interface VoiceCue extends CueBase {
   direction?: string;
   /** Daca lipseste, subtitrarea se afiseaza cat dureaza audio-ul. */
   subtitleHoldMs?: number;
+  /** `silent` interzice vocea Windows/browser când asset-ul de producție lipsește. */
+  fallback?: "browser" | "silent";
 }
 
 export interface CountdownCue extends CueBase {
@@ -107,6 +110,42 @@ export interface EntityCue extends CueBase {
   action: "show" | "hide";
 }
 
+/** Cele cinci posturi fizice. O tabletă aparține unui singur post, nu unui copil. */
+export type TabletPost = 1 | 2 | 3 | 4 | 5;
+
+/** Cele două jumătăți egale ale unei tablete, câte una pentru fiecare copil din pereche. */
+export type TabletZone = "A" | "B";
+
+/** Valoare stabilă pentru participarea prin observație, independentă de textul afișat. */
+export const TABLET_OBSERVE_VALUE = "observe" as const;
+
+export const TABLET_POSTS: Record<TabletPost, { label: string; lens: string }> = {
+  1: { label: "POSTUL 1", lens: "NAVIGAȚIE" },
+  2: { label: "POSTUL 2", lens: "PROPULSIE" },
+  3: { label: "POSTUL 3", lens: "COMUNICAȚII" },
+  4: { label: "POSTUL 4", lens: "BIOSEMNALE" },
+  5: { label: "POSTUL 5", lens: "MEMORIE" },
+};
+
+/**
+ * Opțiunile V3 pot fi compacte (doar textul) sau pot include un simbol/o culoare.
+ * `value` este valoarea stabilă trimisă serverului; `label` este textul pentru copii.
+ */
+export type TabletOption =
+  | string
+  | { value: string; label: string; symbol?: string; color?: string };
+
+export type TabletV3Interaction =
+  | { type: "post-assign"; posts: string[] }
+  | {
+      type: "paired-choice";
+      prompt: string;
+      options: TabletOption[];
+      allowObserve: true;
+      mode: "color" | "pulse" | "perspective";
+      timeoutSec?: number;
+    };
+
 export interface TabletCue extends CueBase {
   kind: "tablet";
   interaction:
@@ -115,7 +154,8 @@ export interface TabletCue extends CueBase {
     | { type: "question"; prompt: string; maxLen?: number }
     | { type: "vote"; prompt: string; options: string[] }
     | { type: "message"; prompt: string; maxLen?: number }
-    | { type: "thanks" };
+    | { type: "thanks" }
+    | TabletV3Interaction;
 }
 
 export interface ThemeCue extends CueBase {

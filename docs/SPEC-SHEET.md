@@ -13,7 +13,7 @@ NavaPlayer orchestrează experiența „A Patra Lume” pe unul sau mai multe PC
 | FR-03 | Lead-in de lansare la T−10, film înghețat pe cadrul zero | countdown-ul se termină înainte să se miște Pământul |
 | FR-04 | Cue-uri pentru voce, countdown, SFX, entități, tablete, teme și markere | `show.json` trece validarea |
 | FR-05 | Avatar GLB cu transporter și lip-sync pentru `AVATAR_AI` | comanda `testAvatar` nu blochează playerul |
-| FR-06 | Fallback audio: manifest → TTS live → `speechSynthesis` | lipsa cheilor nu oprește show-ul |
+| FR-06 | Cele 51 de asset-uri V3 (49 redate per rulare) rulează din manifestul local cu `fallback: silent`; TTS live/browser rămâne numai pentru teste explicite | lipsa unui MP3 produce subtitrare + tăcere, niciodată voce Windows în show |
 | FR-07 | Consolă web cu stare, comenzi, scene, cue-uri, tablete și QR | operabilă pe desktop și telefon |
 | FR-08 | Tabletă web cu nume, rol, întrebare/vot/mesaj și reconectare | răspunsul ajunge în consolă și run-log |
 | FR-09 | Sincronizare follower: seek pentru drift mare, rate nudge pentru drift mic | comenzile se reflectă în sub 0,3 s pe LAN |
@@ -56,10 +56,10 @@ WebSocket: `/ws`. Primul mesaj este `hello`; contractele complete sunt în `src/
 
 1. `npm run check` se termină fără erori.
 2. `npm run dev -- --windowed` deschide playerul; `/api/health` răspunde și ambele pagini web se încarcă.
-3. Pre-show-ul rulează cue-urile la 0/8/28/48 s.
+3. Pre-show-ul rulează cue-urile vocale la 4/15/24/35/43 s și pornește automat lead-in-ul la 50 s.
 4. Startul începe la T−10; filmul pornește la zero.
 5. Pause, play, seek, scene jump, fire cue, stop voice, volume, language, identify, epilogue și restart funcționează.
 6. O tabletă se reconectează cu același id și trimite rol/răspuns/mesaj.
 7. Un follower primește show-ul, comenzile și ceasul masterului.
 8. `npm run dist` produce executabilul portabil și installerul.
-9. Pe PC-ul de show se face o repetiție completă cu ecranele, LAN-ul, sunetul și tabletele reale.
+9. Pe PC-ul de show se face o repetiție completă cu cele cinci ecrane, LAN-ul, sunetul și cele cinci tablete reale.

@@ -33,7 +33,7 @@ export interface TimelineDeps {
   getSfxGain: () => number;
   /** Current phaseTime (drives the countdown so it pauses with the show). */
   now: () => number;
-  /** Called before AVATAR_AI speaks: the player beams the avatar in on the first line. */
+  /** Called before CAPITANUL speaks: the player reveals the GLB on the first lip-synced line. */
   ensureAvatarVisible: () => void;
   onCueFired?: (cue: Cue, mode: FireMode) => void;
 }
@@ -45,6 +45,8 @@ export interface SpeakRequest {
   subtitle: boolean;
   /** Hold after audio end (ms). Default 800. */
   holdMs?: number;
+  /** Production cues can refuse browser TTS and fall back to timed silence. */
+  fallback?: VoiceCue["fallback"];
 }
 
 const SUBTITLE_HOLD_MS = 800;
@@ -199,6 +201,7 @@ export class Timeline {
             text: this.textOf(cue),
             subtitle: true,
             holdMs: cue.subtitleHoldMs ?? SUBTITLE_HOLD_MS,
+            fallback: cue.fallback,
           });
           break;
         case "countdown":
@@ -281,6 +284,18 @@ export class Timeline {
       if (clip) {
         handle = voice.play(clip, req.speaker);
         if (lipsync) avatar.lipsync(clip, performance.now());
+      } else if (req.fallback === "silent") {
+        const ms = estimateSpeechMs(req.text);
+        log("error", `asset vocal de producție lipsă pentru ${req.id}; fallback browser blocat`);
+        let stopFn = () => {};
+        const done = new Promise<void>((resolve) => {
+          const timer = setTimeout(resolve, ms);
+          stopFn = () => {
+            clearTimeout(timer);
+            resolve();
+          };
+        });
+        handle = { done, durationMs: ms, stop: stopFn };
       } else {
         handle = voice.speakFallback(req.text, req.speaker, lang);
         if (lipsync) avatar.lipsyncSynthetic(handle.durationMs);

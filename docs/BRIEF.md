@@ -3,6 +3,8 @@
 > Sursa unică de adevăr pentru toți agenții care lucrează în paralel la acest repo.
 > Citește integral înainte de a scrie cod. Contractele din `src/shared/*.ts` sunt obligatorii.
 > Limba documentației: română. Limba codului și a comentariilor: engleză (scurt și clar).
+>
+> **Actualizare V3 (2026-09-04):** pentru scenariu, timing și operare, secțiunile istorice de mai jos sunt înlocuite de `docs/SCENARIU-REGIZORAL-10-MIN.md`, `assets/show/show.json`, `docs/OPERARE.md` și ultima secțiune din `HANDOFF.md`. Configurația actuală are cinci tablete pentru cinci perechi, Căpitan digital exclusiv în fereastra GLB `center`, fără personaj fizic/Unitree și fără capsulă VR. Masterul video este tăiat determinist la 465 s, apoi urmează epilogul continuu până la durata publică totală de 10:00. Toate cele 51 de asset-uri V3 sunt pre-generate (49 redate într-o rulare, fiindcă una dintre trei ramuri adaptive este aleasă); cue-urile de producție nu folosesc TTS Windows/browser.
 
 ---
 
@@ -10,11 +12,11 @@
 
 Un **singur executabil Windows** (Electron + Node) care redă un film 4K de călătorie prin spațiu (randat în SpaceEngine) sincronizat pe **5 televizoare 4K**, cu un **avatar 3D (GLB) vorbitor cu lip-sync** suprapus în colțul din stânga-jos, care rostește replicile scenariului „A Patra Lume" la momentele exacte din film. Același executabil este și **server Node** pentru **consola operatorului** și pentru **tabletele interactive** ale celor 10 copii.
 
-Publicul: copii (10 per sesiune), într-o sală de 17×7 m amenajată ca navă spațială, la UCDC HUB AI (Universitatea Creștină „Dimitrie Cantemir", București). Durata experienței: ~10 min (film + intro în sală + epilog VR).
+Publicul: copii (10 per sesiune), în cinci perechi la cinci posturi și cinci tablete, într-o sală de 17×7 m amenajată ca navă spațială, la UCDC HUB AI (Universitatea Creștină „Dimitrie Cantemir", București). Durata experienței este exact 10 minute, într-un flux continuu în aceeași sală.
 
 ## 1. Context și proveniență
 
-- **Scenariul** (canonic): `docs/reference/scenariu-docx.txt` (extras din `A_Patra_Lume_Scenariu.docx`). 7 scene: Intrarea în navă → Decolarea → Planeta Luminii → Planeta Naturii → Planeta Tehnologiei → Revelația (Pământul) → Capsula VR / Re-entry. Personaje vorbitoare: **CĂPITANUL** (robot umanoid Unitree, fizic în sală), **AVATAR AI** (avatarul navei — acesta este GLB-ul nostru), **AVATAR LUMINĂ**, **AVATAR NATURĂ**, **AVATAR TEHNOLOGIC** (avatarele celor trei civilizații, „se conturează pe ecranul central").
+- **Scenariul actual**: `docs/SCENARIU-REGIZORAL-10-MIN.md`; `docs/reference/scenariu-docx.txt` rămâne numai sursă istorică. Cele 7 scene sunt Semnalul → Decolarea → Lumea Luminii → Lumea Naturii → Lumea Tehnologiei → A patra lume → Protocolul Acasă. **CĂPITANUL** este singurul humanoid GLB și apare exclusiv pe ecranul `center`; nu există robot/personaj fizic în sală. **AVATARUL NAVEI** este voce + HUD, iar LUMINA, NATURA și TEHNOLOGIC sunt forme non-umanoide.
 - **Filmul**: `C:\Users\Chris\Documents\GitHub\Video\Cinema.mp4` — 7,09 GB, HEVC **Rext 4:4:4** (nedecodabil hardware, nu se redă în Chromium), **3840×2052** (raport 1,87:1, nu 16:9), **60 fps**, 76 Mbps, **741,77 s (12:21)**, **fără pistă audio**, keyframe la fiecare 1 s. Se transcodează cu NVENC în `media/cinema_4k_h264.mp4` (H.264 High 4:2:0, ~45 Mbps) — rulează în fundal; există `media/transcode_4k.log`.
 - **Scriptul de cameră SpaceEngine**: `docs/reference/spaceengine-script.txt`. Ruta: Pământ → Siwarha (Lumea I, Lumina) → Kepler-186 d (Lumea II, Natura) → Mann (Lumea III, Tehnologia; sistemul Gargantua) → Gargantua → Wormhole → Saturn → Pământ. Suma `Wait`-urilor dă ~625 s, DAR video-ul real are 741,77 s și **structura reală diferă** (vezi §6). Wait-urile succesive marchează locurile unde erau replicile („NO_TEXT" = varianta fără text pe ecran).
 - **Proiectul-sursă „Exodus"** (`C:\Users\Chris\Documents\GitHub\Exodus`, rezumat complet în `docs/reference/EXODUS_SUMMARY.md`): portalul de comandă al navei EXODUS 01 cu ofițerul AI ARIA-7. De acolo luăm **avatarul GLB** (`avatars/avatar.glb` = „BiologV2.glb", generat cu Avaturn; copiat aici ca `assets/avatar/avatar-ai.glb`; are toate cele 15 viseme Oculus + blendshape-uri ARKit + rig Mixamo, deci merge cu TalkingHead) și **cod de referință de portat**:
@@ -26,7 +28,7 @@ Publicul: copii (10 per sesiune), într-o sală de 17×7 m amenajată ca navă s
   - `src/lib/ariaStage.ts` — protocol BroadcastChannel (model pentru protocolul nostru WS).
   - `src/lib/showDirector.ts` — versiunea veche a scenariului (aceleași replici, cu diacritice), utilă pentru verificarea textelor.
 - **Utilizatorul nu are** un GLB numit „Christoph"; s-a căutat pe tot discul. Folosim `avatar-ai.glb` și lăsăm calea configurabilă (`config.avatar.glb`).
-- **Nu există chei API în repo** (Exodus nu are `.env`). Vocile se pre-generează cu `npm run tts` după ce utilizatorul completează `.env` (vezi `.env.example`). Fără chei: fallback pe vocea browserului (Windows ro-RO) + lip-sync sintetic. **Nu citi și nu copia niciodată secrete.**
+- **Nu există chei API în repo** (Exodus nu are `.env`). Cele 51 de asset-uri V3 sunt deja pre-generate în `assets/voice/ro`; regenerarea se face cu `npm run tts` după configurarea locală a `.env`. Cue-urile V3 au `fallback: "silent"`: lipsa unui asset nu activează vocea browserului. **Nu citi și nu copia niciodată secrete.**
 
 ## 2. Mașina de dezvoltare / de show (ce știm)
 
@@ -45,7 +47,7 @@ NavaPlayer.exe (Electron 44)
 ├─ renderer (Chromium, src/renderer)  PLAYER: <video> 4K + overlay-uri
 │    ├─ timeline: citește show.json, declanșează cue-uri după video.currentTime (faza play) / timer (preshow, epilogue)
 │    ├─ avatar (src/renderer/avatar):  TalkingHead + avatar-ai.glb, colț stânga-jos, lip-sync pe audio pre-generat
-│    ├─ voice  (src/renderer/voice):   redare audio pre-generat (assets/voice/<lang>/manifest.json) -> /api/tts -> speechSynthesis
+│    ├─ voice  (src/renderer/voice):   manifest local pentru V3; lipsa unui asset de producție → subtitrare + tăcere
 │    ├─ subtitrări, numărătoare inversă, entități procedurale (LUMINĂ / NATURĂ / TEHNOLOGIC), teme de culoare
 │    └─ sync: ecranul „center" al masterului = sursa de ceas; ceilalți corectează drift (seek > 0,25 s, altfel playbackRate ±3 %)
 └─ preload (src/preload)          expune window.nava (contextBridge) — vezi NavaBridge în protocol.ts
@@ -62,9 +64,9 @@ NavaPlayer.exe (Electron 44)
 
 ## 4. Fluxul show-ului (state machine, vezi `PlaybackState` în types.ts)
 
-`idle` → (cmd `preshow`) → **`preshow`**: video afișat pe cadrul 0 (pauză), cue-urile fazei `preshow` se declanșează pe timer (Căpitanul: „Bine ați venit…" la 8 s; Avatar AI apare cu efect transporter și spune „Eu sunt ghidul vostru…" la 28 s; Căpitanul: „Așezați-vă…" la 48 s). Tabletele primesc alegerea rolului.
+`idle` → click oriunde / `Space` / `Enter` / cmd `preshow` → **`preshow`**: video afișat pe cadrul 0, cue-uri vocale V3 la 4/15/24/35/43 s și rolurile celor cinci posturi pe tablete. La 50 s pornește automat lansarea.
 → (cmd `start`) → **`playing`**: video de la 0; cue-urile `play` se declanșează după `video.currentTime`. Operatorul poate `pause`/`play`/`seek`/`skipToScene`/`fireCue`.
-→ la `ended` al video-ului sau (cmd `epilogue`) → **`epilogue`**: ecran alb cald (fade), replicile capsulei VR (opțional; copiii sunt în VR în acel moment; se poate sări).
+→ la tăietura configurată de 465 s sau (cmd `epilogue`) → **`epilogue`**: ultimul cadru persistă și trece continuu în alb cald; publicul rămâne la aceleași posturi.
 → (cmd `restart`) → `idle`.
 
 Regulă de declanșare (renderer): la fiecare frame, toate cue-urile fazei curente cu `at <= phaseTime` și nedeclanșate se declanșează în ordine. La **seek înapoi**, cue-urile cu `at > phaseTime` redevin nedeclanșate. La **seek înainte**, cue-urile sărite se marchează declanșate FĂRĂ a rula, cu excepția `theme` (se aplică ultima temă) și `entity` (se aplică starea finală show/hide). O singură voce simultan: o voce nouă o oprește pe cea anterioară.
@@ -75,7 +77,7 @@ Regulă de declanșare (renderer): la fiecare frame, toate cue-urile fazei curen
 |---|---|---|
 | **A · Electron main + build + packaging** | `src/main/**`, `src/preload/**`, `scripts/build.mjs`, `scripts/media-transcode.mjs`, `scripts/media-contact-sheet.mjs`, `electron-builder.yml`, `build/` (icon) | executabilul pornește, deschide ferestrele kiosk per ecran, încarcă config, expune `window.nava`, pornește serverul (importă `startServer` din `src/server/index.ts`), `npm run build` / `npm run dist` funcționează |
 | **B · Renderer player** | `src/renderer/**` EXCEPT `src/renderer/avatar/**` și `src/renderer/voice/**` | `index.html`, `styles.css`, `index.ts` (boot), `timeline.ts` (cue engine), `sync.ts` (client WS + corecție drift), `ui/subtitles.ts`, `ui/countdown.ts`, `ui/entities.ts` (Lumină/Natură/Tehnologic procedurale, animate cu `voice.getAmplitude()`), `ui/theme.ts`, `ui/osd.ts` (identify screen, mesaje de eroare, „video lipsă") |
-| **C · Avatar + voce** | `src/renderer/avatar/**`, `src/renderer/voice/**`, `src/server/tts-providers.ts`, `scripts/tts-generate.mjs`, `assets/voice/**` (manifest gol inițial) | `createAvatarController` (TalkingHead + GLB + transporter + lip-sync din `words/wtimes/wdurations` sau viseme; modul **lipsync-ro** propriu: română → viseme Oculus), `createVoiceEngine` (manifest → /api/tts → speechSynthesis; efecte per vorbitor; SFX sintetizate), generatorul de voci cu **timestamps ElevenLabs** (word alignment) și fallback Gemini |
+| **C · Avatar + voce** | `src/renderer/avatar/**`, `src/renderer/voice/**`, `src/server/tts-providers.ts`, `scripts/tts-generate.mjs`, `assets/voice/**` | `createAvatarController` (TalkingHead + GLB + transporter + lip-sync din `words/wtimes/wdurations` sau viseme; modul **lipsync-ro** propriu: română → viseme Oculus), `createVoiceEngine` (manifest local; fallback controlat per cue), generatorul de voci cu **timestamps ElevenLabs** și cele trei montaje de audiție V3 |
 | **D · Server + web (control + tablete)** | `src/server/**` EXCEPT `tts-providers.ts`, `src/web/control/**`, `src/web/tablet/**` | `startServer()` (Hono + ws), state machine + ceas, retransmitere comenzi, tablete (join/rol/răspuns/vot/mesaj), `/api/tts` cu cache pe disc (folosește `synthesize()` din `tts-providers.ts`), QR, run-log JSONL în `runs/`, consola operatorului, aplicația tabletelor |
 | **F · Documentație / handoff** | `HANDOFF.md` (rădăcină), `README.md`, `docs/**` EXCEPT `docs/BRIEF.md` și `docs/reference/**` | `HANDOFF.md` = documentul pe care îl citește orice AI care preia proiectul (ce, de ce, cum, scenariu, decizii, stare, pași următori); `docs/SPEC-SHEET.md`, `docs/SCENARIU.md`, `docs/CUE-SHEET.md`, `docs/OPERARE.md`, `docs/DECIZII.md` |
 | **Orchestrator (Claude principal)** | `src/shared/**`, `assets/show/show.json`, `package.json`, `config.example.json`, `.env.example`, `.gitignore`, `docs/BRIEF.md`, `media/**`, integrare finală, commit | alinierea cue-urilor pe video (din planșele de cadre), integrare, build, test, commit pe branch `board/nava-player` |
@@ -94,7 +96,7 @@ Aceasta înlocuiește cronologia din scriptul SpaceEngine. Orchestratorul rafine
 | 4:10–4:35 | dungi de stele (warp) | tranziție |
 | 4:40–5:50 | **planetă întunecată cu inele în fața unei stele foarte strălucitoare și a discului de acreție cald (Mann + Gargantua)** | `tech` — Planeta Tehnologiei: Avatar AI + Avatar TEHNOLOGIC ×2 (întrebarea pivot), tăcere, Căpitan „pregătește întoarcerea", AI „Coordonate spre casă" |
 | 5:50–6:35 | apropiere + traversare wormhole (dungi) | `void` |
-| 6:40–12:21 | **Pământul**, semilună albastră, orbită lentă până la final (≈5 min 40 s) | `revelation` (replicile 6:45–8:00) apoi **hold** pe Pământ — timp pentru trecerea copiilor în capsula VR; operatorul declanșează epilogul când vrea |
+| 6:40–7:45 | **Pământul**, semilună albastră | `revelation`; playerul oprește masterul la 465 s și trece automat în epilogul continuu |
 
 Saturn nu apare distinct la eșantionarea de 10 s (posibil între 6:30 și 6:40 sau absent).
 
@@ -105,7 +107,7 @@ Saturn nu apare distinct la eșantionarea de 10 s (posibil între 6:30 și 6:40 
 - Avatar: colț stânga-jos, lățime `config.avatar.widthPercent` % din ecran (implicit 22 %), margine 40 px, canvas transparent peste video, beam-in la prima replică AVATAR_AI, permanent vizibil apoi, „ascultă" (privire uşor laterală) când vorbesc alții.
 - Entități: centru-ecran, ≤ 40 % din înălțime, apar cu fade, animate de amplitudinea vocii; dispar la `entity hide`.
 - Tema (`SceneTheme`) colorează marginile subtitrărilor, vignette-ul subtil și tabletele.
-- Tastatură pe ecranul master: `Space` play/pause, `S` start, `P` preshow, `R` restart, `E` epilog, `←/→` seek ±5 s, `I` identify screens, `F` fullscreen toggle, `Esc` ×2 în 1 s = ieșire (doar `dev.windowed`).
+- Tastatură pe ecranul master: din idle, `Space`/`Enter` pornesc pre-show-ul complet și `S` sare direct la lansare; în timpul filmului, `Space` play/pause; `P` preshow, `R` restart, `E` epilog, `←/→` seek ±5 s, `I` identify screens, `F` fullscreen toggle, `Esc` ×2 în 1 s = ieșire (doar `dev.windowed`).
 
 ## 8. Definiția „gata" pentru fiecare agent
 
@@ -179,12 +181,12 @@ npm run dist                     # dist-app/NavaPlayer-portable.exe + installer
 | 246–280 | dungi de stele (warp) |
 | 282–352 | **Mann** în fața discului de acreție Gargantua (Planeta Tehnologiei); viraj 353–358 |
 | 360–402 | wormhole / dungi de stele |
-| 403–741,8 | **Pământul** (semilună albastră), orbită lentă până la final; ultima replică la ~463 s → HOLD ~4,5 min |
+| 403–465 | **Pământul** (semilună albastră); revelația se încheie la tăietura deterministă, apoi epilog continuu |
 
 Nu există un beat Saturn în render. Scriptul SpaceEngine (625 s) este doar referință de rută.
 
 **Două câmpuri noi în `ShowFile` (src/shared/types.ts)** — `show.json` v0.2.0 le folosește:
-- `launchLeadInSec: 10` — la comanda `start`, faza `play` începe la `phaseTime = -10` cu video-ul OPRIT pe cadrul 0 (Pământul mare); phaseTime crește pe timer; cue-urile cu `at` negativ (numărătoarea 10→0 la −10, replica „Inițiez secvența de lansare…" la −9,5) se declanșează; la `phaseTime = 0` video-ul pornește (`liftoff-rumble` la 0) și de atunci `phaseTime = video.currentTime`. `pause` în lead-in oprește timerul; `seek` la t<0 reintră în lead-in (video pe 0). Scena `launch` are `start: -10`. Slider-ul din consolă acoperă [−10, 741,78], afișând negativul ca `T-0:07`.
-- `epilogueOnVideoEnd: true` — la `ended` al video-ului se intră automat în `epilogue` (ecran alb cald + replicile capsulei VR la 5/50/95 s); operatorul poate declanșa epilogul mai devreme, în HOLD.
+- `launchLeadInSec: 10` — la comanda `start`, faza `play` începe la `phaseTime = -10` cu video-ul OPRIT pe cadrul 0 (Pământul mare); phaseTime crește pe timer, iar numărătoarea 10→0 se declanșează la −10; la `phaseTime = 0` video-ul pornește (`liftoff-rumble` la 0) și de atunci `phaseTime = video.currentTime`. `pause` în lead-in oprește timerul; `seek` la t<0 reintră în lead-in. Scena `launch` are `start: -10`. Slider-ul din consolă acoperă [−10, 465], afișând negativul ca `T-0:07`.
+- `epilogueOnVideoEnd: true` — când playerul atinge `videoDurationSec: 465`, intră automat în epilogul continuu de 75 s. Operatorul poate declanșa epilogul mai devreme pentru repetiții.
 
 **Notă de integrare**: agenții B și D au pornit înainte de aceste două câmpuri; orchestratorul aplică semantica lead-in-ului în `player.ts`/`state.ts` la integrare dacă lipsește.

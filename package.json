@@ -21,8 +21,10 @@
     "smoke:media": "node scripts/smoke-media.mjs",
     "check": "npm run typecheck && npm run validate:show && npm run validate:voices && npm run build && npm run smoke:core && npm run smoke:platform && npm run smoke:media",
     "tts": "node scripts/tts-generate.mjs",
+    "sync:voices": "node scripts/sync-v3-voices-to-show.mjs",
     "voice:reels": "node scripts/build-voice-reels.mjs",
     "qa:voices": "node scripts/qa-voice-transcription.mjs",
+    "docs:cues": "node scripts/build-cue-sheet.mjs",
     "media:transcode": "node scripts/media-transcode.mjs",
     "media:sheet": "node scripts/media-contact-sheet.mjs"
   },

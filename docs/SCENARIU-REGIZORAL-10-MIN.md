@@ -298,7 +298,7 @@ O buclă muzicală perfectă se repetă identic.
 
 ### 5:34 · AVATARUL NAVEI
 
-> Mann. Civilizația de aici a redus boala, distanța și hazardul. Poate calcula aproape orice.
+> Mann. Civilizația de aici a redus boala, distanța și riscul. Poate calcula aproape orice.
 
 ### 5:56 · TEHNOLOGICA
 

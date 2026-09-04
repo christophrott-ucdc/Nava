@@ -4,47 +4,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
     <meta name="theme-color" content="#071525" />
-    <title>EXODUS-7 · Echipaj</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <title>Post EXODUS-7</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-theme="prologue">
     <div class="stars" aria-hidden="true"></div>
     <header class="topbar">
-      <div class="brand"><span class="brand-glyph" aria-hidden="true">◇</span><span>EXODUS-7</span></div>
-      <div class="connection" id="connection" data-status="connecting" role="status"><span></span><b id="connection-label">Conectare</b></div>
+      <div class="brand"><span class="brand-glyph">◇</span><span>EXODUS-7 · POST ECHIPAJ</span></div>
+      <div class="connection" id="connection" data-status="connecting"><span></span><b id="connection-label">Conectare</b></div>
     </header>
 
     <main>
-      <section class="join-card" id="join-card" aria-labelledby="join-title">
-        <div class="ship-seal" aria-hidden="true"><i></i><span>IV</span></div>
-        <p class="eyebrow">BUN VENIT LA BORD</p>
-        <h1 id="join-title">Cum te numești,<br />exploratorule?</h1>
-        <p>Numele tău va apărea doar în consola Căpitanului.</p>
-        <form id="join-form">
-          <label for="name">Prenume</label>
-          <input id="name" name="name" type="text" maxlength="16" autocomplete="given-name" placeholder="Scrie prenumele tău" required />
-          <button type="submit">INTRĂ ÎN ECHIPAJ <span aria-hidden="true">→</span></button>
-        </form>
+      <section class="post-card" id="post-card" aria-labelledby="post-title">
+        <div class="ship-seal" aria-hidden="true"><i></i><span>7</span></div>
+        <p class="eyebrow">CONFIGURARE ANONIMĂ</p>
+        <h1 id="post-title">Alegeți postul acestei tablete</h1>
+        <p>Tableta rămâne la acest post pentru amândoi. Nu cerem nume și nu există șef sau ajutor.</p>
+        <div class="post-grid" id="post-grid" aria-label="Posturi disponibile"></div>
       </section>
 
       <section class="experience hidden" id="experience" aria-live="polite">
         <div class="mission-head">
           <div><p class="eyebrow" id="phase-label">MISIUNE ÎN AȘTEPTARE</p><h1 id="scene-label">În așteptare</h1></div>
-          <button class="identity" id="identity" type="button" title="Schimbă numele"><span id="identity-name">—</span><small id="identity-role">Explorator</small></button>
+          <div class="post-identity" aria-label="Identitatea anonimă a postului">
+            <span id="post-name">POSTUL —</span><small id="post-lens">LENTILĂ ÎN AȘTEPTARE</small>
+          </div>
         </div>
 
         <div class="signal" id="signal" aria-hidden="true"><span></span><i></i><b></b></div>
 
         <aside class="subtitle hidden" id="subtitle">
-          <strong id="subtitle-speaker"></strong>
-          <p id="subtitle-text"></p>
+          <strong id="subtitle-speaker"></strong><p id="subtitle-text"></p>
         </aside>
 
-        <section class="interaction" id="interaction" aria-label="Mesajul misiunii"></section>
+        <section class="interaction" id="interaction"></section>
       </section>
     </main>
 
-    <div class="notice" id="notice" role="alert"></div>
-    <script src="./app.js" defer></script>
+    <div class="notice" id="notice" role="status" aria-live="assertive"></div>
+    <script type="module" src="index.js"></script>
   </body>
 </html>

@@ -98,9 +98,58 @@ async function main() {
           { id: "reentry", label: "Re-entry", phase: "epilogue", start: 0, end: 0.2, theme: "white" },
         ],
         cues: [
-          { id: "roles", phase: "preshow", at: 0, kind: "tablet", interaction: { type: "role-pick", roles: ["Navigator"] } },
+          {
+            id: "posts",
+            phase: "preshow",
+            at: 0,
+            kind: "tablet",
+            interaction: { type: "post-assign", posts: ["Navigator", "Propulsie", "Comunicații", "Biosemnale", "Memorie"] },
+          },
           { id: "launch-theme", phase: "play", at: -2, kind: "theme", theme: "launch" },
-          { id: "question", phase: "play", at: -1.5, kind: "tablet", interaction: { type: "question", prompt: "Ce rămâne viu?", maxLen: 80 } },
+          {
+            id: "tech-tablet-perspectives",
+            phase: "play",
+            at: -1.5,
+            kind: "tablet",
+            interaction: {
+              type: "paired-choice",
+              mode: "perspective",
+              prompt: "Ce păstrează o lume vie?",
+              options: ["Curiozitatea", "Grija"],
+              allowObserve: true,
+            },
+          },
+          {
+            id: "v3-tech-0635-diverse",
+            phase: "play",
+            at: -0.5,
+            kind: "voice",
+            speaker: "TEHNOLOGIC",
+            text: { ro: "Diverse." },
+            manual: true,
+            fallback: "silent",
+          },
+          {
+            id: "v3-tech-0635-same",
+            phase: "play",
+            at: -0.5,
+            kind: "voice",
+            speaker: "TEHNOLOGIC",
+            text: { ro: "La fel." },
+            manual: true,
+            fallback: "silent",
+          },
+          {
+            id: "v3-tech-0635-observe",
+            phase: "play",
+            at: -0.5,
+            kind: "voice",
+            speaker: "TEHNOLOGIC",
+            text: { ro: "Observă." },
+            manual: true,
+            fallback: "silent",
+          },
+          { id: "tech-adaptive-select", phase: "play", at: -0.5, kind: "marker", label: "adaptive" },
           { id: "epi-theme", phase: "epilogue", at: 0, kind: "theme", theme: "white" },
         ],
       }),
@@ -142,22 +191,23 @@ async function main() {
 
     const control = socketClient(wsUrl, { type: "hello", client: "control", id: "control-smoke" });
     const screen = socketClient(wsUrl, { type: "hello", client: "screen", id: "center", isClockSource: true });
-    const tablet = socketClient(wsUrl, { type: "hello", client: "tablet", id: "tablet-smoke", name: "Ada" });
+    const tablet = socketClient(wsUrl, { type: "hello", client: "tablet", id: "tablet-smoke" });
     assert.equal((await control.next((m) => m.type === "welcome", "control welcome")).state.state, "idle");
     await screen.next((m) => m.type === "welcome", "screen welcome");
     await tablet.next((m) => m.type === "welcome", "tablet welcome");
 
     control.send({ type: "cmd", cmd: { action: "preshow" } });
     await screen.next((m) => m.type === "applyCmd" && m.cmd.action === "preshow", "preshow apply");
-    await tablet.next((m) => m.type === "tabletView" && m.interaction?.type === "role-pick", "role view");
-    tablet.send({ type: "tablet", tabletId: "spoofed", event: { kind: "role", role: "Pilot" } });
-    await tablet.next((m) => m.type === "error" && /rol necunoscut/.test(m.reason), "invalid role rejection");
-    tablet.send({ type: "tablet", tabletId: "spoofed", event: { kind: "role", role: "Navigator" } });
-    const roleUpdate = await control.next(
-      (m) => m.type === "tablets" && m.tablets.some((t) => t.id === "tablet-smoke" && t.role === "Navigator"),
-      "role update",
+    await tablet.next((m) => m.type === "tabletView" && m.interaction?.type === "post-assign", "post assignment view");
+    tablet.send({ type: "tablet", tabletId: "spoofed", event: { kind: "set-post", post: 6 } });
+    await tablet.next((m) => m.type === "error" && /post invalid/.test(m.reason), "invalid post rejection");
+    tablet.send({ type: "tablet", tabletId: "spoofed", event: { kind: "set-post", post: 1 } });
+    const postUpdate = await control.next(
+      (m) => m.type === "tablets" && m.tablets.some((t) => t.id === "tablet-smoke" && t.post === 1 && t.role === "Navigator"),
+      "post update",
     );
-    assert.equal(roleUpdate.tablets[0].connected, true);
+    assert.equal(postUpdate.tablets[0].connected, true);
+    await tablet.next((m) => m.type === "tabletView" && m.post === 1 && m.lens === "Navigator", "personalized post view");
 
     screen.send({ type: "cmd", cmd: { action: "restart" } });
     await screen.next((m) => m.type === "error" && /doar consola/.test(m.reason), "screen command rejection");
@@ -172,9 +222,22 @@ async function main() {
       body: JSON.stringify({ action: "seek", time: -1.5 }),
     });
     assert.equal(seekResponse.status, 200);
-    await tablet.next((m) => m.type === "tabletView" && m.interaction?.type === "question", "question view");
-    tablet.send({ type: "tablet", tabletId: "spoofed", event: { kind: "answer", cueId: "question", text: "Curiozitatea" } });
-    await control.next((m) => m.type === "tablets" && m.answers.some((a) => a.text === "Curiozitatea"), "answer update");
+    await tablet.next((m) => m.type === "tabletView" && m.interaction?.type === "paired-choice", "paired choice view");
+    tablet.send({ type: "tablet", tabletId: "spoofed", event: { kind: "choice", cueId: "tech-tablet-perspectives", zone: "A", value: "Curiozitatea" } });
+    await control.next(
+      (m) => m.type === "tablets" && m.answers.some((a) => a.text === "Curiozitatea" && a.post === 1 && a.zone === "A"),
+      "zone A answer update",
+    );
+    await tablet.next(
+      (m) => m.type === "tabletView" && m.zoneChoices?.A?.value === "Curiozitatea" && m.zoneChoices?.B === undefined,
+      "private zone A confirmation",
+    );
+    tablet.send({ type: "tablet", tabletId: "spoofed", event: { kind: "choice", cueId: "tech-tablet-perspectives", zone: "B", value: "Grija" } });
+    await control.next((m) => m.type === "tablets" && m.answers.some((a) => a.text === "Grija" && a.zone === "B"), "zone B answer update");
+    await screen.next(
+      (m) => m.type === "applyCmd" && m.cmd.action === "fireCue" && m.cmd.cueId === "v3-tech-0635-diverse",
+      "adaptive diverse voice dispatch",
+    );
 
     // Reports inside the post-command grace window are deliberately ignored; this one represents the
     // reference renderer genuinely reaching the end after it has applied the command.
@@ -185,7 +248,7 @@ async function main() {
     control.send({ type: "cmd", cmd: { action: "restart" } });
     await screen.next((m) => m.type === "applyCmd" && m.cmd.action === "restart", "restart apply");
     const reset = await control.next(
-      (m) => m.type === "tablets" && m.tablets.some((t) => t.id === "tablet-smoke" && !t.role) && m.answers.length === 0,
+      (m) => m.type === "tablets" && m.tablets.some((t) => t.id === "tablet-smoke" && t.post === 1) && m.answers.length === 0,
       "tablet session reset",
     );
     assert.equal(reset.answers.length, 0);

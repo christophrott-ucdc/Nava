@@ -125,7 +125,7 @@ async function main(): Promise<void> {
   // --- .env (API keys for TTS; values never logged) ---------------------------------------------
   const env = loadDotEnv(path.join(paths.appRoot, ".env"));
   if (env) log("info", `.env loaded (${env.loaded.length} keys)`, { loaded: env.loaded, alreadySet: env.skipped });
-  else log("info", "no .env file - TTS keys absent (pre-generated voices / browser voice will be used)");
+  else log("info", "no .env file - offline manifest remains active; production cues never use browser TTS fallback");
 
   // --- config ----------------------------------------------------------------------------------
   const { config, configPath, created } = loadConfig({

@@ -14,12 +14,12 @@ Consola este la `http://localhost:4321/control/`; de pe alt dispozitiv folosiți
 
 ## Fluxul unei sesiuni
 
-1. În starea `IDLE`, verificați: ecrane conectate, `videoReady`, numărul tabletelor și volumul. Pe ecranul master apare panoul de lansare; click oriunde sau `Space`/`Enter` pornește direct experiența.
-2. Apăsați **PRE-SHOW** când intră copiii. Tabletele oferă rolurile; replicile sunt la 8, 28 și 48 de secunde.
-3. Apăsați **START** când sala este pregătită. Urmează countdown-ul T−10…0 pe cadrul înghețat, apoi pornește filmul.
+1. În starea `IDLE`, verificați: ecrane conectate, `videoReady`, cinci tablete și volumul. Pe ecranul master apare panoul de lansare; click oriunde, **PORNEȘTE EXPERIENȚA** sau `Space`/`Enter` pornește fluxul complet.
+2. Pre-show-ul durează 50 s și oferă pe cele cinci tablete posturile NAVIGAȚIE, PROPULSIE, COMUNICAȚII, BIOSEMNALE și MEMORIE, câte unul pentru fiecare pereche de copii. Replicile sunt la 4, 15, 24, 35 și 43 s.
+3. Lansarea pornește automat după pre-show. Urmează countdown-ul T−10…0 pe cadrul înghețat, apoi filmul. Pentru a omite pre-show-ul, folosiți **SARI LA LANSARE** sau `S`; `P` pornește explicit pre-show-ul.
 4. Folosiți **PAUSE/PLAY** numai dacă este necesar. Pentru repetiții puteți muta sliderul, sări la o scenă sau declanșa un cue manual.
 5. La întrebarea Planetei Tehnologiei, lăsați timp copiilor să răspundă pe tablete; răspunsurile apar în consolă.
-6. După revelație există un hold lung pe Pământ. Declanșați **EPILOG** când copiii trec în capsula VR sau lăsați tranziția automată la finalul filmului.
+6. Playerul oprește determinist masterul video la 465 s și continuă automat în epilog pe aceleași cinci ecrane și aceleași cinci posturi. Publicul nu se mută, iar Căpitanul rămâne numai în fereastra GLB de pe ecranul configurat.
 7. După ultima replică, apăsați **RESTART** pentru următorul grup. Ștergeți răspunsurile tabletelor numai după ce nu mai sunt necesare.
 
 ## Taste pe ecranul master
@@ -28,7 +28,7 @@ Consola este la `http://localhost:4321/control/`; de pe alt dispozitiv folosiți
 |---|---|
 | `P` | pre-show |
 | `S` | start |
-| `Space` | pauză/reluare |
+| `Space` | din idle: pre-show; în film: pauză/reluare |
 | `←` / `→` | seek −5/+5 secunde |
 | `E` | epilog |
 | `R` | restart |
@@ -48,10 +48,10 @@ Consola este la `http://localhost:4321/control/`; de pe alt dispozitiv folosiți
 - **Consola nu se deschide:** verificați `/api/health`, portul, firewall-ul și dacă rolul este `master`.
 - **Tableta nu se conectează:** trebuie să fie în aceeași rețea; folosiți IP-ul LAN, nu `localhost`.
 - **Avatar absent:** confirmați calea GLB și că ecranul are `showAvatar: true`. Show-ul continuă fără avatar.
-- **Fără voce:** verificați `playAudio`, ieșirea Windows și volumul. Fără manifest/TTS se folosește `speechSynthesis`; instalați o voce română Windows dacă lipsește.
+- **Fără voce:** verificați `playAudio`, ieșirea Windows, volumul, `assets/voice/ro/manifest.json` și existența MP3-ului cue-ului. Vocile V3 de producție nu cad pe TTS Windows/browser; lipsa unui asset produce subtitrare + tăcere și o eroare explicită în jurnal.
 - **Ecrane decalate:** cablați LAN-ul, verificați un singur `isClockSource`, evitați economisirea energiei și urmăriți driftul din OSD.
 - **Proces blocat:** închideți NavaPlayer și porniți din nou. Jurnalele sunt în `runs/*.jsonl`.
 
 ## Înainte de public
 
-Faceți o repetiție completă pe hardware-ul real. Verificați citirea subtitrărilor de la 17 m, volumul tuturor personajelor/SFX, ordinea display-urilor, scanarea QR pe zece tablete și tranziția copiilor spre VR. Vocile sintetice și opțiunile artistice trebuie aprobate de client.
+Faceți o repetiție completă pe hardware-ul real. Verificați citirea subtitrărilor de la 17 m, volumul tuturor personajelor/SFX, ordinea celor cinci display-uri, scanarea QR și interacțiunile pe cinci tablete, precum și trecerea continuă la epilog fără mutarea copiilor. Ascultați cele trei montaje V3 înainte de public.

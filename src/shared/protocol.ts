@@ -9,7 +9,7 @@
  * Clientul se identifica imediat dupa conectare cu un mesaj `hello`.
  */
 
-import type { Lang, PlaybackState, SceneTheme, ShowState, Cue, TabletCue } from "./types";
+import type { Lang, PlaybackState, SceneTheme, ShowState, Cue, TabletCue, TabletPost, TabletZone } from "./types";
 
 export type ClientKind = "screen" | "control" | "tablet";
 
@@ -23,6 +23,8 @@ export interface HelloMsg {
   /** screen: id-ul ecranului din config; tablet: id persistent (localStorage); control: "control". */
   id: string;
   name?: string;
+  /** Tabletă: postul fizic presetat prin URL/configurația locală. */
+  post?: TabletPost;
   /** screen: daca acest ecran este ceasul de referinta (ecranul "center" al masterului). */
   isClockSource?: boolean;
 }
@@ -64,8 +66,10 @@ export interface CmdMsg {
 export interface TabletEventMsg {
   type: "tablet";
   tabletId: string;
-  name?: string;
   event:
+    | { kind: "set-post"; post: TabletPost }
+    | { kind: "choice"; cueId: string; zone: TabletZone; value: string }
+    // Evenimentele vechi rămân în contract până la eliminarea show-ului V2.
     | { kind: "join"; name: string }
     | { kind: "role"; role: string }
     | { kind: "answer"; cueId: string; text: string }
@@ -128,16 +132,32 @@ export interface TabletViewMsg {
   theme: SceneTheme;
   sceneLabel: string;
   subtitle: { speaker: string; text: string; color: string } | null;
+  /** Cue-ul este transmis explicit; clientul nu îl mai deduce din timp/text. */
+  cueId: string | null;
   interaction: TabletCue["interaction"] | null;
-  /** Rezumat live (ex. voturi) pentru afisare pe tablete. */
+  post: TabletPost | null;
+  lens: string | null;
+  /** Alegerile confirmate de server pentru tableta curentă. Nu conține date despre alte posturi. */
+  zoneChoices: Partial<Record<TabletZone, { value: string; observed: boolean }>>;
+  /** Compatibilitate V2 pentru consola existentă; interfața V3 nu afișează agregate. */
   aggregate?: Record<string, number>;
 }
 
 /** Lista tabletelor + raspunsurile lor (pentru consola). */
 export interface TabletsMsg {
   type: "tablets";
-  tablets: Array<{ id: string; name: string; role?: string; connected: boolean; lastSeenMs: number }>;
-  answers: Array<{ tabletId: string; name: string; cueId: string; kind: "answer" | "vote" | "message"; text: string; atMs: number }>;
+  tablets: Array<{ id: string; name: string; role?: string; post?: TabletPost; connected: boolean; lastSeenMs: number }>;
+  answers: Array<{
+    tabletId: string;
+    name: string;
+    cueId: string;
+    kind: "answer" | "vote" | "message" | "choice";
+    text: string;
+    atMs: number;
+    post?: TabletPost;
+    zone?: TabletZone;
+    interactionType?: "color" | "pulse" | "perspective";
+  }>;
 }
 
 export interface ErrorMsg {

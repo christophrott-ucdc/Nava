@@ -18,6 +18,10 @@ function clipKey(clip: VoiceClip): string {
   return `${clip.lang}|${clip.cueId}|${clip.provider}|${clip.generatedAt}|${clip.file}`;
 }
 
+function requestKey(lang: Lang, cueId: string, speaker: Speaker, text: string): string {
+  return `${lang}|${cueId}|${speaker}|${text}`;
+}
+
 function validClipMeta(meta: VoiceManifest["clips"][string], cueId: string, speaker: Speaker, text: string, lang: Lang): boolean {
   return (
     meta.cueId === cueId &&
@@ -45,6 +49,8 @@ class VoiceEngineImpl implements VoiceEngine {
   private readonly manifests = new Map<Lang, VoiceManifest | null>();
   private readonly preparing = new Map<Lang, Promise<void>>();
   private readonly clips = new Map<string, VoiceClip>();
+  /** Manifest entries that failed readiness; never retry their I/O on the live cue boundary. */
+  private readonly preloadFailures = new Set<string>();
   private readonly inflight = new Map<string, Promise<VoiceClip | null>>();
   private readonly sfx = new Set<SfxHandle>();
   private volume: number;
@@ -56,13 +62,14 @@ class VoiceEngineImpl implements VoiceEngine {
   }
 
   prepare(lang: Lang): Promise<void> {
-    if (this.manifests.has(lang)) return Promise.resolve();
     const existing = this.preparing.get(lang);
     if (existing) return existing;
+    if (this.manifests.has(lang)) return Promise.resolve();
     const request = loadManifest(this.opts.voiceBaseUrl, lang)
-      .then((manifest) => {
+      .then(async (manifest) => {
         this.manifests.set(lang, manifest);
-        if (!manifest) console.info(`[voice] no offline ${lang} manifest; live/browser fallback enabled`);
+        if (!manifest) console.info(`[voice] no offline ${lang} manifest; each cue's fallback policy will be enforced`);
+        else await this.preloadManifest(manifest);
       })
       .catch((err) => {
         // prepare() is contractually non-throwing for a missing or bad file.
@@ -75,25 +82,65 @@ class VoiceEngineImpl implements VoiceEngine {
   }
 
   async getClip(cueId: string, speaker: Speaker, text: string, lang: Lang): Promise<VoiceClip | null> {
-    const requestKey = `${lang}|${cueId}|${speaker}|${text}`;
-    const cached = this.clips.get(requestKey);
+    const key = requestKey(lang, cueId, speaker, text);
+    const cached = this.clips.get(key);
     if (cached) return cached;
-    const pending = this.inflight.get(requestKey);
+    const pending = this.inflight.get(key);
     if (pending) return pending;
     const request = this.resolveClip(cueId, speaker, text, lang)
       .then((clip) => {
-        if (clip) this.clips.set(requestKey, clip);
+        if (clip) this.clips.set(key, clip);
         return clip;
       })
-      .finally(() => this.inflight.delete(requestKey));
-    this.inflight.set(requestKey, request);
+      .finally(() => this.inflight.delete(key));
+    this.inflight.set(key, request);
     return request;
+  }
+
+  /**
+   * Fetch and decode the complete offline manifest before the show can be armed. Cue playback then
+   * reads an already-decoded buffer from memory instead of racing the next tightly-spaced cue.
+   * Individual failures stay non-fatal but are remembered: production cues still honour
+   * `fallback: "silent"`, without retrying network I/O or decode on the live cue boundary.
+   */
+  private async preloadManifest(manifest: VoiceManifest): Promise<void> {
+    const entries = Object.values(manifest.clips);
+    if (!entries.length) return;
+    let cursor = 0;
+    const workers = Array.from({ length: Math.min(6, entries.length) }, async () => {
+      while (cursor < entries.length) {
+        const meta = entries[cursor++];
+        if (!validClipMeta(meta, meta.cueId, meta.speaker, meta.text, manifest.lang)) {
+          console.warn(`[voice] skipping malformed manifest entry for ${meta?.cueId ?? "?"}`);
+          continue;
+        }
+        const key = requestKey(manifest.lang, meta.cueId, meta.speaker, meta.text);
+        if (this.clips.has(key)) continue;
+        try {
+          const audio = await fetchClipBytes(clipFileUrl(this.opts.voiceBaseUrl, manifest.lang, meta.file));
+          if (!audio.byteLength) throw new Error("empty audio file");
+          const clip: VoiceClip = { ...meta, audio };
+          await this.player.decode(audio, clipKey(clip));
+          this.clips.set(key, clip);
+          this.preloadFailures.delete(key);
+        } catch (err) {
+          this.preloadFailures.add(key);
+          console.warn(`[voice] preload failed for ${meta.cueId}:`, err);
+        }
+      }
+    });
+    await Promise.all(workers);
   }
 
   private async resolveClip(cueId: string, speaker: Speaker, text: string, lang: Lang): Promise<VoiceClip | null> {
     await this.prepare(lang);
     const meta = this.manifests.get(lang)?.clips[cueId];
     if (meta) {
+      const key = requestKey(lang, cueId, speaker, text);
+      if (this.preloadFailures.has(key)) {
+        console.warn(`[voice] ${cueId} failed readiness; skipping cue-time fetch/decode`);
+        return null;
+      }
       if (!validClipMeta(meta, cueId, speaker, text, lang)) {
         console.warn(`[voice] ignoring stale/invalid manifest entry for ${cueId}`);
       } else {

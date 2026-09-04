@@ -82,10 +82,56 @@ for (const [index, cue] of (show.cues ?? []).entries()) {
   if (cue.kind === "voice") {
     if (!speakers.has(cue.speaker)) fail(`${cue.id} has an invalid speaker`);
     if (!cue.text || typeof cue.text.ro !== "string" || !cue.text.ro.trim()) fail(`${cue.id} is missing Romanian text`);
+    if (cue.fallback !== undefined && !["browser", "silent"].includes(cue.fallback)) fail(`${cue.id} has an invalid fallback policy`);
   }
   if (cue.kind === "theme" && !themes.has(cue.theme)) fail(`${cue.id} has an invalid theme`);
   if (cue.kind === "entity" && !["LUMINA", "NATURA", "TEHNOLOGIC"].includes(cue.entity)) fail(`${cue.id} has an invalid entity`);
-  if (cue.kind === "tablet" && (!cue.interaction || typeof cue.interaction.type !== "string")) fail(`${cue.id} has an invalid interaction`);
+  if (cue.kind === "tablet") {
+    const interaction = cue.interaction;
+    if (!interaction || typeof interaction.type !== "string") {
+      fail(`${cue.id} has an invalid interaction`);
+    } else if (interaction.type === "post-assign") {
+      if (
+        !Array.isArray(interaction.posts) ||
+        interaction.posts.length !== 5 ||
+        new Set(interaction.posts).size !== 5 ||
+        !interaction.posts.every((post) => typeof post === "string" && post.trim())
+      ) fail(`${cue.id} must assign five unique posts`);
+    } else if (interaction.type === "paired-choice") {
+      const validOption = (option) =>
+        (typeof option === "string" && option.trim()) ||
+        (option && typeof option === "object" && !Array.isArray(option) && typeof option.value === "string" && option.value.trim() && typeof option.label === "string" && option.label.trim());
+      if (
+        !["color", "pulse", "perspective"].includes(interaction.mode) ||
+        typeof interaction.prompt !== "string" ||
+        !interaction.prompt.trim() ||
+        !Array.isArray(interaction.options) ||
+        !interaction.options.length ||
+        !interaction.options.every(validOption) ||
+        interaction.allowObserve !== true
+      ) fail(`${cue.id} has an invalid paired-choice interaction`);
+    } else if (!['waiting', 'thanks'].includes(interaction.type)) {
+      fail(`${cue.id} uses retired tablet interaction type ${JSON.stringify(interaction.type)}`);
+    }
+  }
+}
+
+if (show.version === "0.4.0-v3-complete") {
+  const voices = show.cues.filter((cue) => cue.kind === "voice");
+  const adaptive = voices.filter((cue) => cue.id.startsWith("v3-tech-0635-"));
+  if (show.videoDurationSec !== 465 || show.launchLeadInSec !== 10 || !show.preshowAutoStart || !show.epilogueOnVideoEnd) {
+    fail("V3 timing contract must be preshow auto-start + 10s lead-in + 465s film cut + automatic epilogue");
+  }
+  if (voices.length !== 51) fail(`V3 show must contain 51 voice assets, found ${voices.length}`);
+  if (voices.some((cue) => cue.fallback !== "silent")) fail("every V3 voice must block browser/Windows TTS");
+  if (adaptive.length !== 3 || adaptive.some((cue) => !cue.manual)) fail("the three V3 adaptive voices must exist and remain manual");
+  if (!cueIds.has("tech-adaptive-select")) fail("V3 show is missing the adaptive selection marker");
+  for (const retired of ["tech-tablet-question", "rev-tablet-message"]) {
+    if (cueIds.has(retired)) fail(`V3 show still contains retired cue ${retired}`);
+  }
+  for (const required of ["pre-tablet-roles", "light-tablet-color", "nature-tablet-pulse", "tech-tablet-perspectives", "epi-tablet-thanks"]) {
+    if (!cueIds.has(required)) fail(`V3 show is missing tablet cue ${required}`);
+  }
 }
 
 if (!process.exitCode) {

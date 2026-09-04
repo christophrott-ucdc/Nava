@@ -6,7 +6,8 @@
  *
  * Rules mirrored:
  *  - every cue of the current phase with `at <= t`, not fired and not `manual`, fires in order;
- *  - seek back: cues with `at > t` become pending again;
+ *  - an explicit seek back rearms cues with `at > t`; a late clock report that moves backwards
+ *    keeps statuses intact so a marker/voice cannot fire twice;
  *  - seek forward: skipped cues are marked "skipped" WITHOUT firing, except state-like cues
  *    (`theme`, and here also `tablet`) whose last value is applied;
  *  - one voice at a time: a new voice cue replaces the current subtitle.
@@ -122,7 +123,14 @@ export class CueTracker {
    */
   advance(t: number): Cue[] {
     if (this.phase === null) return [];
-    if (t < this.lastT - 0.05 || t > this.lastT + JUMP_AS_SEEK_SEC) {
+    if (t < this.lastT - 0.05) {
+      // Media seek/buffering reports can briefly trail the extrapolated server clock. Explicit
+      // seek commands already call seekTo(); treating report jitter as another seek rearms cues
+      // and can dispatch adaptive/manual voices twice.
+      this.lastT = t;
+      return [];
+    }
+    if (t > this.lastT + JUMP_AS_SEEK_SEC) {
       this.seekTo(t);
       // fall through: cues at exactly `t` fire below
     }

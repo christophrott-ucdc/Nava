@@ -1,35 +1,39 @@
-# Scenariu executabil — „A Patra Lume”
+# Scenariu executabil — „A Patra Lume · Protocolul Acasă”
 
-Acesta este rezumatul literar cu id-urile de execuție. Textul și timpii canonici pentru software rămân în `assets/show/show.json`; sursa clientului este `docs/reference/scenariu-docx.txt`.
+Scenariul regizoral complet, cu dialogurile integrale, inflexiunile, acțiunea pe ecrane și interacțiunile copiilor, este în [`SCENARIU-REGIZORAL-10-MIN.md`](SCENARIU-REGIZORAL-10-MIN.md). Acest document este rezumatul rapid al versiunii V3 executabile. Textele și timpii vocali sunt în `assets/show/voice-script-v3.json` și sunt sincronizați în `assets/show/show.json`.
 
-## 1. Intrarea în navă — pre-show
+Experiența durează exact 10:00: pre-show 0:00–0:50, lead-in de lansare 0:50–1:00, film 1:00–8:45 și epilog continuu 8:45–10:00. Cei zece copii rămân tot timpul în cinci perechi, la cinci posturi și cinci tablete.
 
-Copiii intră într-o navă tăcută, albastră. Căpitanul Unitree îi întâmpină (`pre-01`), apoi avatarul navei se materializează și se prezintă (`pre-02`). Căpitanul le predă simbolic nava (`pre-03`). Tabletele oferă rolurile de echipaj (`pre-tablet-roles`).
+Căpitanul este singurul personaj humanoid GLB. El apare numai în fereastra dedicată de pe ecranul `center`; nu este fizic în sală și nu se multiplică pe celelalte ecrane. Avatarul Navei este voce și HUD, iar LUMINA, NATURA și TEHNOLOGIC sunt forme non-umanoide.
 
-## 2. Decolarea
+## 1. Semnalul fără adresă — 0:00–0:50
 
-Pe cadrul înghețat cu Pământul începe T−10 (`launch-countdown`). Avatarul anunță lansarea (`launch-01`); la zero pornesc filmul și valul sonor (`launch-liftoff-sfx`). Căpitanul invită copiii să privească (`launch-02`).
+EXODUS-7 primește cinci fragmente, câte unul pentru fiecare post. Căpitanul și Avatarul Navei descoperă instrucțiunea „Găsiți a patra lume”, transformă publicul din pasageri în cinci echipe și stabilesc participarea sigură: fiecare copil poate atinge sau doar observa. Replicile V3 sunt `v3-cap-0004`, `v3-ai-0015`, `v3-cap-0024`, `v3-ai-0035` și `v3-cap-0043`.
 
-## 3. Planeta Luminii
+## 2. Decolarea și urma imposibilă — 0:50–2:24
 
-Avatarul explică prima civilizație (`light-01`). Entitatea LUMINĂ apare și spune că înțelegerea vine prin ceea ce simțim (`light-02`), apoi leagă iubirea de lumină, minciuna de stingere și înțelegerea de grija pentru ceilalți (`light-03`). Căpitanul cere continuarea drumului (`light-04`).
+Numărătoarea T−10 conduce fără întrerupere spre film. Pământul se îndepărtează, iar echipajul descoperă că semnalul pare trimis din viitor. Cele cinci posturi devin cinci lentile ale aceleiași investigații.
 
-## 4. Planeta Naturii
+## 3. Lumea Luminii — 2:24–3:24
 
-Avatarul descrie planeta ca o singură ființă (`nature-01`). NATURA spune că suferința unui copac este cunoscută întregii păduri (`nature-02`) și că oamenii sunt legați în același fel, dar au uitat (`nature-03`). Ploaia și tăcerea încheie întâlnirea.
+LUMINA nu oferă o lecție, ci o probă: același semnal poate căpăta culori diferite fără ca una să o anuleze pe alta. Cele zece urme ale copiilor intră anonim în compoziție, grupate egal în cele cinci sigilii.
 
-## 5. Planeta Tehnologiei
+## 4. Lumea Naturii — 3:24–5:06
 
-Avatarul prezintă civilizația care a învins boala, moartea și distanța (`tech-01`). TEHNOLOGIC declară că nimic nu-l mai surprinde sau doare (`tech-02`) și întreabă ce mai rămâne viu în aceste condiții (`tech-03`). Tabletele primesc aceeași întrebare (`tech-tablet-question`). După tăcere, Căpitanul cere întoarcerea (`tech-04`), iar Avatarul confirmă coordonatele (`tech-05`).
+NATURA răspunde prin ritm și legătură. Fiecare pereche contribuie independent, iar lipsa unei atingeri nu lasă un gol. Căpitanul începe să privească experiența înaintea datelor.
 
-## 6. Revelația
+## 5. Lumea Tehnologiei — 5:06–7:02
 
-Înainte ca Pământul să apară, Avatarul recapitulează cele trei lumi și cere echipajului să o privească pe a patra (`rev-01`). Căpitanul spune că altcineva poate pune aceeași întrebare despre noi (`rev-02`). Avatarul numește capacitatea de a se minuna (`rev-03`), iar copiii trimit un mesaj Pământului (`rev-tablet-message`). Căpitanul încheie: nimeni nu se întoarce la fel (`rev-04`). Urmează hold-ul pentru trecerea în capsula VR.
+TEHNOLOGIC cere un singur răspuns corect la întrebarea despre ceea ce ne face vii. Tabletele permit perspective egale, inclusiv „Doar observ”. Dacă nu există input, replica adaptivă `v3-tech-0635-observe` păstrează povestea completă: tăcerea trece și ea prin cele cinci lentile. Căpitanul refuză reducerea echipajului la un scor.
 
-## 7. Capsula VR — epilog
+## 6. A patra lume — 7:02–8:45
 
-Pe alb cald, Avatarul ghidează respirația în coborâre (`epi-01`), numește Pământul „acasă” și locul întrebării (`epi-02`), apoi încheie: copiii au plecat să găsească alte lumi și s-au întors cu a lor văzută pentru prima dată (`epi-03`). Tabletele afișează mulțumirea (`epi-tablet-thanks`).
+Urma duce la Pământ și la momentul prezent. Cele trei lumi revin ca ecouri, iar semnăturile celor cinci posturi închid bucla. Căpitanul corectează jurnalul: a patra lume nu era necunoscută; echipajul încă nu învățase s-o vadă.
+
+## 7. Protocolul Acasă — 8:45–10:00
+
+La 465 s filmul este oprit exact, însă pentru public experiența nu se taie: ultimul cadru al Pământului, HUD-ul și ambianța trec continuu în alb cald. Copiii rămân la aceleași posturi, Căpitanul reapare în aceeași fereastră GLB, iar Avatarul Navei înțelege de ce o coordonată poate deveni „acasă”. La 9:53 tabletele încheie misiunea.
 
 ## Arc regizoral
 
-Curiozitate → entuziasm → uimire → empatie → tensiune filozofică → recunoaștere → recunoștință. Temele urmăresc `prologue`, `launch`, `light`, `nature`, `tech`, `void`, `home`, `white`.
+Mister → apartenență → uimire → empatie → conflict între scor și perspectivă → recunoaștere → recunoștință. Spectacolul nu examinează copiii, nu cere consens și nu depinde de participarea tuturor pentru a continua.

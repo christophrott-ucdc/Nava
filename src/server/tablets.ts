@@ -1,28 +1,39 @@
 /**
- * Registry of the kids' tablets: identity (id from `hello`, name from `join`), chosen role,
- * answers / votes / messages with timestamps, live aggregates (vote counts, roles taken),
- * and the `tabletView` / `tablets` messages derived from them.
+ * Registrul celor cinci tablete de post. Identitatea este anonimă și fizică:
+ * o tabletă aparține unui post, iar zonele A/B păstrează răspunsuri independente.
  */
 
 import type { WebSocket } from "ws";
-import type { SceneTheme, TabletCue } from "../shared/types";
+import {
+  TABLET_OBSERVE_VALUE,
+  TABLET_POSTS,
+  type SceneTheme,
+  type TabletCue,
+  type TabletOption,
+  type TabletPost,
+  type TabletZone,
+} from "../shared/types";
 import type { TabletEventMsg, TabletViewMsg, TabletsMsg } from "../shared/protocol";
 import type { Subtitle } from "./cues";
 
+type PairedInteraction = Extract<TabletCue["interaction"], { type: "paired-choice" }>;
+export type PerspectiveBranch = "diverse" | "same" | "observe";
+
 export interface TabletRecord {
   id: string;
-  name: string;
-  role?: string;
+  post?: TabletPost;
   connected: boolean;
   lastSeenMs: number;
 }
 
 export interface TabletAnswer {
   tabletId: string;
-  name: string;
+  post: TabletPost;
+  zone: TabletZone;
   cueId: string;
-  kind: "answer" | "vote" | "message";
-  text: string;
+  kind: "choice";
+  interactionType: PairedInteraction["mode"];
+  value: string;
   atMs: number;
 }
 
@@ -30,63 +41,81 @@ export interface TabletViewInput {
   theme: SceneTheme;
   sceneLabel: string;
   subtitle: Subtitle | null;
-  /** Current tablet cue (null -> waiting). */
   tabletCue: TabletCue | null;
 }
 
 export interface TabletEventResult {
-  /** Something visible to the console changed (registry / answers). */
   changed: boolean;
-  /** Kind for the run log (null -> not logged, e.g. ping). */
   logKind: string | null;
   error?: string;
 }
 
-const MAX_NAME = 16;
-const MAX_TEXT_DEFAULT = 200;
 const MAX_TABLETS = 64;
 const MAX_ANSWERS = 5000;
+const VALID_POSTS = new Set<number>([1, 2, 3, 4, 5]);
+const VALID_ZONES = new Set<string>(["A", "B"]);
 
-function cleanText(s: unknown, max: number): string {
-  if (typeof s !== "string") return "";
-  return s.replace(/[\x00-\x1f\x7f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+function cleanText(value: unknown, max: number): string {
+  if (typeof value !== "string") return "";
+  return value.replace(/[\x00-\x1f\x7f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+function isPost(value: unknown): value is TabletPost {
+  return typeof value === "number" && Number.isInteger(value) && VALID_POSTS.has(value);
+}
+
+function isZone(value: unknown): value is TabletZone {
+  return typeof value === "string" && VALID_ZONES.has(value);
+}
+
+function normalizeOption(option: TabletOption): { value: string; label: string } {
+  if (typeof option === "string") {
+    const value = cleanText(option, 80);
+    return { value, label: value };
+  }
+  return { value: cleanText(option.value, 80), label: cleanText(option.label, 120) };
+}
+
+function defaultPostLabels(): string[] {
+  return ([1, 2, 3, 4, 5] as TabletPost[]).map((post) => TABLET_POSTS[post].lens);
 }
 
 export class TabletRegistry {
   readonly tablets = new Map<string, TabletRecord>();
   answers: TabletAnswer[] = [];
   private sockets = new Map<string, Set<WebSocket>>();
-  private lastViewJson = "";
+  private lastView: TabletViewMsg | null = null;
+  private lastViewKey = "";
+  private postLabels = defaultPostLabels();
 
   // ---------------------------------------------------------------------------
   // Connections
 
-  connect(id: string, name: string | undefined, ws: WebSocket): TabletRecord {
+  connect(id: string, ws: WebSocket, configuredPost?: unknown): TabletRecord {
     let rec = this.tablets.get(id);
     if (!rec) {
       if (this.tablets.size >= MAX_TABLETS) {
-        // Drop the oldest disconnected tablet to make room.
         const victim = [...this.tablets.values()]
-          .filter((t) => !t.connected)
+          .filter((tablet) => !tablet.connected)
           .sort((a, b) => a.lastSeenMs - b.lastSeenMs)[0];
         if (victim) this.tablets.delete(victim.id);
       }
-      rec = { id, name: cleanText(name, MAX_NAME) || "—", connected: true, lastSeenMs: Date.now() };
+      rec = { id, connected: true, lastSeenMs: Date.now() };
       this.tablets.set(id, rec);
     } else {
       rec.connected = true;
       rec.lastSeenMs = Date.now();
-      const n = cleanText(name, MAX_NAME);
-      if (n) rec.name = n;
     }
+
+    if (isPost(configuredPost)) this.claimPost(rec, configuredPost);
+
     let set = this.sockets.get(id);
     if (!set) {
       set = new Set();
       this.sockets.set(id, set);
     }
     set.add(ws);
-    // A reconnecting tablet must get the current view immediately.
-    if (this.lastViewJson) this.safeSend(ws, this.lastViewJson);
+    if (this.lastView) this.safeSend(ws, JSON.stringify(this.personalize(this.lastView, rec)));
     return rec;
   }
 
@@ -104,162 +133,222 @@ export class TabletRegistry {
   }
 
   connectedCount(): number {
-    let n = 0;
-    for (const t of this.tablets.values()) if (t.connected) n += 1;
-    return n;
+    let count = 0;
+    for (const tablet of this.tablets.values()) if (tablet.connected) count += 1;
+    return count;
   }
 
   // ---------------------------------------------------------------------------
   // Events
 
-  /** Apply a `tablet` event; the current tablet cue is needed to validate answers/votes. */
   handleEvent(msg: TabletEventMsg, current: TabletCue | null): TabletEventResult {
     const rec = this.tablets.get(msg.tabletId);
     if (!rec) return { changed: false, logKind: null, error: "tabletă necunoscută (trimite hello)" };
     rec.lastSeenMs = Date.now();
-    const ev = msg.event;
-    if (!ev || typeof ev !== "object" || typeof ev.kind !== "string") {
+    const event = msg.event;
+    if (!event || typeof event !== "object" || typeof event.kind !== "string") {
       return { changed: false, logKind: null, error: "eveniment invalid" };
     }
-    switch (ev.kind) {
+
+    switch (event.kind) {
       case "ping":
         return { changed: false, logKind: null };
-      case "join": {
-        const n = cleanText(ev.name, MAX_NAME);
-        if (n) rec.name = n;
-        return { changed: true, logKind: "tablet.join" };
-      }
-      case "role": {
-        const role = cleanText(ev.role, 40);
-        if (!role) return { changed: false, logKind: null, error: "rol gol" };
-        if (!current || current.interaction.type !== "role-pick") {
-          return { changed: false, logKind: null, error: "alegerea rolului nu este activă" };
+      case "set-post": {
+        if (!isPost(event.post)) return { changed: false, logKind: null, error: "post invalid (alege 1–5)" };
+        if (rec.post === event.post) return { changed: false, logKind: null };
+        if (rec.post !== undefined) {
+          return { changed: false, logKind: null, error: `tableta este deja fixată la postul ${rec.post}` };
         }
-        if (!current.interaction.roles.includes(role)) {
-          return { changed: false, logKind: null, error: "rol necunoscut" };
-        }
-        rec.role = role;
-        return { changed: true, logKind: "tablet.role" };
+        const error = this.claimPost(rec, event.post);
+        if (error) return { changed: false, logKind: null, error };
+        return { changed: true, logKind: "tablet.post" };
       }
+      case "choice":
+        return this.handleChoice(rec, event, current);
+      case "join":
+      case "role":
       case "answer":
-      case "message": {
-        const cueId = cleanText(ev.cueId, 80);
-        const inter = current?.interaction;
-        const expectedType = ev.kind === "answer" ? "question" : "message";
-        if (!current || current.id !== cueId || inter?.type !== expectedType) {
-          return { changed: false, logKind: null, error: "interacțiunea nu mai este activă" };
-        }
-        const maxLen =
-          (inter.type === "question" || inter.type === "message") && inter.maxLen ? inter.maxLen : MAX_TEXT_DEFAULT;
-        const text = cleanText(ev.text, Math.min(maxLen, 1000));
-        if (!cueId || !text) return { changed: false, logKind: null, error: "răspuns gol" };
-        this.upsertAnswer({ tabletId: rec.id, name: rec.name, cueId, kind: ev.kind, text, atMs: Date.now() });
-        return { changed: true, logKind: `tablet.${ev.kind}` };
-      }
-      case "vote": {
-        const cueId = cleanText(ev.cueId, 80);
-        const option = cleanText(ev.option, 80);
-        if (!cueId || !option) return { changed: false, logKind: null, error: "vot gol" };
-        if (!current || current.id !== cueId || current.interaction.type !== "vote") {
-          return { changed: false, logKind: null, error: "votul nu mai este activ" };
-        }
-        if (!current.interaction.options.includes(option)) {
-          return { changed: false, logKind: null, error: "opțiune necunoscută" };
-        }
-        this.upsertAnswer({ tabletId: rec.id, name: rec.name, cueId, kind: "vote", text: option, atMs: Date.now() });
-        return { changed: true, logKind: "tablet.vote" };
-      }
-      default:
-        return { changed: false, logKind: null, error: "eveniment necunoscut" };
+      case "vote":
+      case "message":
+        return { changed: false, logKind: null, error: "interacțiune V2 dezactivată; folosește postul și zonele A/B" };
     }
   }
 
-  /** One answer per (tablet, cue, kind): a resend replaces the previous one. */
-  private upsertAnswer(a: TabletAnswer): void {
-    const idx = this.answers.findIndex((x) => x.tabletId === a.tabletId && x.cueId === a.cueId && x.kind === a.kind);
-    if (idx >= 0) this.answers[idx] = a;
-    else this.answers.push(a);
+  private handleChoice(
+    rec: TabletRecord,
+    event: Extract<TabletEventMsg["event"], { kind: "choice" }>,
+    current: TabletCue | null,
+  ): TabletEventResult {
+    if (rec.post === undefined) return { changed: false, logKind: null, error: "alege mai întâi postul tabletei" };
+    const cueId = cleanText(event.cueId, 80);
+    if (!cueId || !isZone(event.zone)) return { changed: false, logKind: null, error: "zonă sau cue invalid" };
+    if (!current || current.id !== cueId || current.interaction.type !== "paired-choice") {
+      return { changed: false, logKind: null, error: "interacțiunea în pereche nu mai este activă" };
+    }
+
+    const value = cleanText(event.value, 80);
+    const options = current.interaction.options.map(normalizeOption).filter((option) => option.value);
+    const allowed = new Set(options.map((option) => option.value));
+    if (current.interaction.allowObserve) allowed.add(TABLET_OBSERVE_VALUE);
+    if (!value || !allowed.has(value)) return { changed: false, logKind: null, error: "opțiune necunoscută" };
+
+    const existing = this.answers.find(
+      (answer) => answer.tabletId === rec.id && answer.cueId === cueId && answer.zone === event.zone,
+    );
+    if (existing) {
+      if (existing.value === value) return { changed: false, logKind: null };
+      return { changed: false, logKind: null, error: `zona ${event.zone} a răspuns deja` };
+    }
+
+    this.answers.push({
+      tabletId: rec.id,
+      post: rec.post,
+      zone: event.zone,
+      cueId,
+      kind: "choice",
+      interactionType: current.interaction.mode,
+      value,
+      atMs: Date.now(),
+    });
     if (this.answers.length > MAX_ANSWERS) this.answers.splice(0, this.answers.length - MAX_ANSWERS);
+    return { changed: true, logKind: "tablet.choice" };
+  }
+
+  private claimPost(rec: TabletRecord, post: TabletPost): string | null {
+    const occupant = [...this.tablets.values()].find(
+      (tablet) => tablet.id !== rec.id && tablet.post === post && tablet.connected,
+    );
+    if (occupant) return `postul ${post} este deja conectat`;
+
+    // O sesiune locală pierdută nu ține postul blocat pentru tableta fizică înlocuitoare.
+    for (const tablet of this.tablets.values()) {
+      if (tablet.id !== rec.id && tablet.post === post && !tablet.connected) delete tablet.post;
+    }
+    rec.post = post;
+    return null;
   }
 
   clearAnswers(): void {
     this.answers = [];
   }
 
-  /** New session: roles are re-picked in the next preshow. */
+  /** Postul este o proprietate fizică persistentă; restartul resetează doar răspunsurile. */
   resetRoles(): void {
-    for (const t of this.tablets.values()) delete t.role;
+    // API de compatibilitate pentru server/index.ts.
+  }
+
+  /**
+   * Ramura vocală deterministică pentru un cue `paired-choice` în modul `perspective`.
+   * Lipsa răspunsului este observație: fără alegeri exprimate => `observe`.
+   */
+  perspectiveBranch(cueId: string): PerspectiveBranch {
+    const expressed = this.answers
+      .filter(
+        (answer) =>
+          answer.cueId === cueId &&
+          answer.interactionType === "perspective" &&
+          answer.value !== TABLET_OBSERVE_VALUE,
+      )
+      .map((answer) => answer.value);
+    if (expressed.length === 0) return "observe";
+    return new Set(expressed).size > 1 ? "diverse" : "same";
   }
 
   // ---------------------------------------------------------------------------
   // Derived messages
 
-  aggregateFor(cue: TabletCue | null): Record<string, number> | undefined {
-    if (!cue) return undefined;
-    const inter = cue.interaction;
-    if (inter.type === "vote") {
-      const agg: Record<string, number> = {};
-      for (const o of inter.options) agg[o] = 0;
-      for (const a of this.answers) {
-        if (a.kind === "vote" && a.cueId === cue.id) agg[a.text] = (agg[a.text] ?? 0) + 1;
-      }
-      return agg;
-    }
-    if (inter.type === "role-pick") {
-      const agg: Record<string, number> = {};
-      for (const r of inter.roles) agg[r] = 0;
-      for (const t of this.tablets.values()) {
-        if (t.role) agg[t.role] = (agg[t.role] ?? 0) + 1;
-      }
-      return agg;
-    }
-    if (inter.type === "question" || inter.type === "message") {
-      let n = 0;
-      for (const a of this.answers) if (a.cueId === cue.id && a.kind !== "vote") n += 1;
-      return { answered: n };
-    }
-    return undefined;
-  }
-
   buildView(input: TabletViewInput): TabletViewMsg {
-    const view: TabletViewMsg = {
+    if (input.tabletCue?.interaction.type === "post-assign") {
+      this.postLabels = input.tabletCue.interaction.posts.slice(0, 5).map((post) => cleanText(post, 80));
+    }
+    return {
       type: "tabletView",
       theme: input.theme,
       sceneLabel: input.sceneLabel,
       subtitle: input.subtitle,
-      interaction: input.tabletCue ? input.tabletCue.interaction : null,
+      cueId: input.tabletCue?.id ?? null,
+      interaction: input.tabletCue?.interaction ?? null,
+      post: null,
+      lens: null,
+      zoneChoices: {},
     };
-    const agg = this.aggregateFor(input.tabletCue);
-    if (agg) view.aggregate = agg;
-    return view;
   }
 
-  /** Send the view to every connected tablet if it changed since the last push (or `force`). */
+  /** Trimite fiecărei tablete numai propriul post și propriile răspunsuri A/B. */
   pushView(view: TabletViewMsg, force = false): boolean {
-    const json = JSON.stringify(view);
-    if (!force && json === this.lastViewJson) return false;
-    this.lastViewJson = json;
-    for (const set of this.sockets.values()) for (const ws of set) this.safeSend(ws, json);
+    const key = JSON.stringify({
+      theme: view.theme,
+      sceneLabel: view.sceneLabel,
+      subtitle: view.subtitle,
+      cueId: view.cueId,
+      interaction: view.interaction,
+    });
+    if (!force && key === this.lastViewKey) return false;
+    this.lastView = view;
+    this.lastViewKey = key;
+    for (const [id, set] of this.sockets) {
+      const rec = this.tablets.get(id);
+      if (!rec) continue;
+      const json = JSON.stringify(this.personalize(view, rec));
+      for (const ws of set) this.safeSend(ws, json);
+    }
     return true;
+  }
+
+  private personalize(view: TabletViewMsg, rec: TabletRecord): TabletViewMsg {
+    const zoneChoices: TabletViewMsg["zoneChoices"] = {};
+    if (view.cueId) {
+      for (const answer of this.answers) {
+        if (answer.tabletId === rec.id && answer.cueId === view.cueId) {
+          zoneChoices[answer.zone] = {
+            value: answer.value,
+            observed: answer.value === TABLET_OBSERVE_VALUE,
+          };
+        }
+      }
+    }
+    return {
+      ...view,
+      post: rec.post ?? null,
+      lens: rec.post ? this.postLabels[rec.post - 1] || TABLET_POSTS[rec.post].lens : null,
+      zoneChoices,
+      aggregate: undefined,
+    };
   }
 
   toMsg(): TabletsMsg {
     return {
       type: "tablets",
       tablets: [...this.tablets.values()]
-        .sort((a, b) => a.name.localeCompare(b.name, "ro"))
-        .map((t) => ({ id: t.id, name: t.name, role: t.role, connected: t.connected, lastSeenMs: t.lastSeenMs })),
-      answers: this.answers.map((a) => ({ ...a })),
+        .sort((a, b) => (a.post ?? 99) - (b.post ?? 99) || a.id.localeCompare(b.id))
+        .map((tablet) => ({
+          id: tablet.id,
+          name: tablet.post ? `Postul ${tablet.post}` : "Tabletă nealocată",
+          role: tablet.post ? this.postLabels[tablet.post - 1] || TABLET_POSTS[tablet.post].lens : undefined,
+          post: tablet.post,
+          connected: tablet.connected,
+          lastSeenMs: tablet.lastSeenMs,
+        })),
+      answers: this.answers.map((answer) => ({
+        tabletId: answer.tabletId,
+        name: `Postul ${answer.post} · Zona ${answer.zone}`,
+        cueId: answer.cueId,
+        kind: answer.kind,
+        text: answer.value === TABLET_OBSERVE_VALUE ? "Doar observ" : answer.value,
+        atMs: answer.atMs,
+        post: answer.post,
+        zone: answer.zone,
+        interactionType: answer.interactionType,
+      })),
     };
   }
 
   private safeSend(ws: WebSocket, json: string): void {
-    // 1 === WebSocket.OPEN
     if (ws.readyState === 1) {
       try {
         ws.send(json);
       } catch {
-        /* closed in between */
+        /* socket closed between check and send */
       }
     }
   }

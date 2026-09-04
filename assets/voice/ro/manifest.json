@@ -1,6 +1,6 @@
 {
   "lang": "ro",
-  "generatedAt": "2026-09-04T17:13:07.901Z",
+  "generatedAt": "2026-09-04T17:47:31.250Z",
   "clips": {
     "v3-cap-0004": {
       "cueId": "v3-cap-0004",
@@ -619,6 +619,204 @@
       "generationKey": "2d9c4eaf239cc0c90c21",
       "generatedAt": "2026-09-04T17:00:32.191Z"
     },
+    "v3-light-0224": {
+      "cueId": "v3-light-0224",
+      "lang": "ro",
+      "speaker": "LUMINA",
+      "text": "Cuvintele voastre ajung greu până la noi. Culorile, imediat.",
+      "file": "v3-light-0224.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 4720,
+      "words": [
+        "Cuvintele",
+        "voastre",
+        "ajung",
+        "greu",
+        "până",
+        "la",
+        "noi",
+        "Culorile",
+        "imediat"
+      ],
+      "wtimes": [
+        136,
+        533,
+        1120,
+        1500,
+        1800,
+        2053,
+        2240,
+        2740,
+        4027
+      ],
+      "wdurations": [
+        344,
+        507,
+        320,
+        260,
+        200,
+        107,
+        240,
+        1020,
+        533
+      ],
+      "provider": "elevenlabs",
+      "direction": "eteric și intim, ca o voce care ajunge de foarte departe; articulație limpede",
+      "modelId": "eleven_v3",
+      "voiceId": "GRHbHyXbUO8nF4YexVTa",
+      "audioTags": [
+        "ethereal",
+        "softly"
+      ],
+      "voiceSettings": {
+        "stability": 0.42,
+        "similarity_boost": 0.78,
+        "style": 0.35,
+        "speed": 0.9,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "c527ddfe05d551d20992",
+      "generatedAt": "2026-09-04T17:34:36.563Z"
+    },
+    "v3-light-0236": {
+      "cueId": "v3-light-0236",
+      "lang": "ro",
+      "speaker": "LUMINA",
+      "text": "Dacă vreți, alegeți o culoare pe care ați purta-o în întuneric.",
+      "file": "v3-light-0236.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 3840,
+      "words": [
+        "Dacă",
+        "vreți",
+        "alegeți",
+        "o",
+        "culoare",
+        "pe",
+        "care",
+        "ați",
+        "purta-o",
+        "în",
+        "întuneric"
+      ],
+      "wtimes": [
+        76,
+        360,
+        880,
+        1400,
+        1472,
+        1893,
+        2032,
+        2200,
+        2360,
+        2933,
+        3100
+      ],
+      "wdurations": [
+        244,
+        360,
+        480,
+        40,
+        368,
+        107,
+        128,
+        120,
+        520,
+        107,
+        660
+      ],
+      "provider": "elevenlabs",
+      "direction": "invitație caldă, fără obligație; o pauză blândă după «vreți»",
+      "modelId": "eleven_v3",
+      "voiceId": "GRHbHyXbUO8nF4YexVTa",
+      "audioTags": [
+        "warmly",
+        "inviting"
+      ],
+      "voiceSettings": {
+        "stability": 0.42,
+        "similarity_boost": 0.78,
+        "style": 0.35,
+        "speed": 0.9,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "b8eb8c167ae3968cca20",
+      "generatedAt": "2026-09-04T17:34:38.714Z"
+    },
+    "v3-light-0258": {
+      "cueId": "v3-light-0258",
+      "lang": "ro",
+      "speaker": "LUMINA",
+      "text": "Fiecare lumină oferită schimbă imaginea. Iar ceea ce rămâne nerostit îi dă adâncime.",
+      "file": "v3-light-0258.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 6800,
+      "words": [
+        "Fiecare",
+        "lumină",
+        "oferită",
+        "schimbă",
+        "imaginea",
+        "Iar",
+        "ceea",
+        "ce",
+        "rămâne",
+        "nerostit",
+        "îi",
+        "dă",
+        "adâncime"
+      ],
+      "wtimes": [
+        248,
+        613,
+        1040,
+        1740,
+        2310,
+        3280,
+        3840,
+        4133,
+        4280,
+        4700,
+        5560,
+        5880,
+        6080
+      ],
+      "wdurations": [
+        312,
+        347,
+        640,
+        500,
+        570,
+        480,
+        240,
+        107,
+        360,
+        740,
+        280,
+        120,
+        640
+      ],
+      "provider": "elevenlabs",
+      "direction": "reflectiv și luminos; nu moralizează, observă",
+      "modelId": "eleven_v3",
+      "voiceId": "GRHbHyXbUO8nF4YexVTa",
+      "audioTags": [
+        "reflective",
+        "ethereal"
+      ],
+      "voiceSettings": {
+        "stability": 0.42,
+        "similarity_boost": 0.78,
+        "style": 0.35,
+        "speed": 0.9,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "698e95aeb3abd84f76ad",
+      "generatedAt": "2026-09-04T17:34:42.102Z"
+    },
     "v3-cap-0310": {
       "cueId": "v3-cap-0310",
       "lang": "ro",
@@ -733,6 +931,249 @@
       },
       "generationKey": "52de8b2793e199606bcd",
       "generatedAt": "2026-09-04T17:00:38.038Z"
+    },
+    "v3-nature-0415": {
+      "cueId": "v3-nature-0415",
+      "lang": "ro",
+      "speaker": "NATURA",
+      "text": "Voi desenați o linie în jurul vostru și îi spuneți „eu”. Dar aerul vostru a trecut prin frunze. Apa din voi a fost nor.",
+      "file": "v3-nature-0415.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 8480,
+      "words": [
+        "Voi",
+        "desenați",
+        "o",
+        "linie",
+        "în",
+        "jurul",
+        "vostru",
+        "și",
+        "îi",
+        "spuneți",
+        "eu",
+        "Dar",
+        "aerul",
+        "vostru",
+        "a",
+        "trecut",
+        "prin",
+        "frunze",
+        "Apa",
+        "din",
+        "voi",
+        "a",
+        "fost",
+        "nor"
+      ],
+      "wtimes": [
+        148,
+        220,
+        760,
+        860,
+        1147,
+        1260,
+        1600,
+        2107,
+        2200,
+        2373,
+        3200,
+        3600,
+        4140,
+        4533,
+        4920,
+        5000,
+        5328,
+        5573,
+        6213,
+        6620,
+        6880,
+        7240,
+        7440,
+        7880
+      ],
+      "wdurations": [
+        20,
+        500,
+        40,
+        260,
+        53,
+        260,
+        480,
+        53,
+        120,
+        507,
+        160,
+        480,
+        340,
+        347,
+        40,
+        280,
+        192,
+        427,
+        347,
+        180,
+        240,
+        120,
+        320,
+        360
+      ],
+      "provider": "elevenlabs",
+      "direction": "vechi, blând și povestit; imaginile respiră între propoziții",
+      "modelId": "eleven_v3",
+      "voiceId": "9nKRcmsd1bEJbszIZ2HO",
+      "audioTags": [
+        "warmly",
+        "storytelling"
+      ],
+      "voiceSettings": {
+        "stability": 0.58,
+        "similarity_boost": 0.82,
+        "style": 0.3,
+        "speed": 0.88,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "a673fd39ce8c1648fd6b",
+      "generatedAt": "2026-09-04T17:34:46.442Z"
+    },
+    "v3-nature-0433": {
+      "cueId": "v3-nature-0433",
+      "lang": "ro",
+      "speaker": "NATURA",
+      "text": "Dacă vreți, atingeți sigiliul când pulsează. Puteți avea ritmuri diferite.",
+      "file": "v3-nature-0433.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 5120,
+      "words": [
+        "Dacă",
+        "vreți",
+        "atingeți",
+        "sigiliul",
+        "când",
+        "pulsează",
+        "Puteți",
+        "avea",
+        "ritmuri",
+        "diferite"
+      ],
+      "wtimes": [
+        76,
+        360,
+        960,
+        1560,
+        1893,
+        2147,
+        3220,
+        3660,
+        3960,
+        4293
+      ],
+      "wdurations": [
+        244,
+        360,
+        560,
+        280,
+        187,
+        653,
+        380,
+        260,
+        280,
+        587
+      ],
+      "provider": "elevenlabs",
+      "direction": "invitație calmă și permisivă, cu accent pe libertatea ritmurilor diferite",
+      "modelId": "eleven_v3",
+      "voiceId": "9nKRcmsd1bEJbszIZ2HO",
+      "audioTags": [
+        "gentle",
+        "inviting"
+      ],
+      "voiceSettings": {
+        "stability": 0.58,
+        "similarity_boost": 0.82,
+        "style": 0.3,
+        "speed": 0.88,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "f59634e24abbeeca2cb8",
+      "generatedAt": "2026-09-04T17:34:49.207Z"
+    },
+    "v3-nature-0453": {
+      "cueId": "v3-nature-0453",
+      "lang": "ro",
+      "speaker": "NATURA",
+      "text": "Ritmurile voastre au intrat în rețea. Niciunul nu trebuie să fie identic cu altul.",
+      "file": "v3-nature-0453.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 5840,
+      "words": [
+        "Ritmurile",
+        "voastre",
+        "au",
+        "intrat",
+        "în",
+        "rețea",
+        "Niciunul",
+        "nu",
+        "trebuie",
+        "să",
+        "fie",
+        "identic",
+        "cu",
+        "altul"
+      ],
+      "wtimes": [
+        210,
+        613,
+        1120,
+        1344,
+        1733,
+        1893,
+        2900,
+        3653,
+        3800,
+        4107,
+        4220,
+        4467,
+        4960,
+        5180
+      ],
+      "wdurations": [
+        350,
+        427,
+        160,
+        336,
+        107,
+        347,
+        700,
+        107,
+        280,
+        53,
+        180,
+        413,
+        160,
+        340
+      ],
+      "provider": "elevenlabs",
+      "direction": "cald și afirmativ; evită tonul de evaluare",
+      "modelId": "eleven_v3",
+      "voiceId": "9nKRcmsd1bEJbszIZ2HO",
+      "audioTags": [
+        "warmly",
+        "reassuring"
+      ],
+      "voiceSettings": {
+        "stability": 0.58,
+        "similarity_boost": 0.82,
+        "style": 0.3,
+        "speed": 0.88,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "47cb03ba45c7c27882a1",
+      "generatedAt": "2026-09-04T17:34:51.852Z"
     },
     "v3-cap-0501": {
       "cueId": "v3-cap-0501",
@@ -858,10 +1299,10 @@
       "cueId": "v3-ai-0534",
       "lang": "ro",
       "speaker": "AVATAR_AI",
-      "text": "Mann. Civilizația de aici a redus boala, distanța și hazardul. Poate calcula aproape orice.",
+      "text": "Mann. Civilizația de aici a redus boala, distanța și riscul. Poate calcula aproape orice.",
       "file": "v3-ai-0534.mp3",
       "mime": "audio/mpeg",
-      "durationMs": 9440,
+      "durationMs": 8400,
       "words": [
         "Mann",
         "Civilizația",
@@ -872,7 +1313,7 @@
         "boala",
         "distanța",
         "și",
-        "hazardul",
+        "riscul",
         "Poate",
         "calcula",
         "aproape",
@@ -884,15 +1325,15 @@
         1867,
         1960,
         2320,
-        2460,
+        2440,
         2880,
-        3904,
-        4853,
-        5371,
-        6800,
-        7417,
-        8176,
-        8827
+        3488,
+        4587,
+        4880,
+        5733,
+        6537,
+        7040,
+        7680
       ],
       "wdurations": [
         85,
@@ -900,15 +1341,15 @@
         53,
         280,
         80,
-        340,
+        360,
+        400,
+        992,
+        213,
+        480,
+        747,
+        423,
         560,
-        736,
-        427,
-        789,
-        560,
-        663,
-        544,
-        533
+        640
       ],
       "provider": "elevenlabs",
       "direction": "precis, admirativ dar rece; descriere de sistem, nu avertisment",
@@ -925,8 +1366,75 @@
         "speed": 0.96,
         "use_speaker_boost": true
       },
+      "postprocessTempo": 1,
       "generationKey": "7fd902b33be00e526e8a",
-      "generatedAt": "2026-09-04T17:00:51.137Z"
+      "generatedAt": "2026-09-04T17:47:31.249Z"
+    },
+    "v3-tech-0556": {
+      "cueId": "v3-tech-0556",
+      "lang": "ro",
+      "speaker": "TEHNOLOGIC",
+      "text": "Bun venit, EXODUS-7. V-am prevăzut sosirea. Căpitanul va spune: „Scanați sursa.”",
+      "file": "v3-tech-0556.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 7440,
+      "words": [
+        "Bun",
+        "venit",
+        "EXODUS-7",
+        "V-am",
+        "prevăzut",
+        "sosirea",
+        "Căpitanul",
+        "va",
+        "spune",
+        "Scanați",
+        "sursa"
+      ],
+      "wtimes": [
+        147,
+        220,
+        880,
+        2200,
+        2752,
+        3200,
+        4160,
+        5093,
+        5280,
+        6160,
+        6800
+      ],
+      "wdurations": [
+        20,
+        420,
+        880,
+        520,
+        368,
+        520,
+        880,
+        107,
+        400,
+        560,
+        480
+      ],
+      "provider": "elevenlabs",
+      "direction": "precis și aproape muzical; predicția sună factual, nu amenințător",
+      "modelId": "eleven_v3",
+      "voiceId": "3z9q8Y7plHbvhDZehEII",
+      "audioTags": [
+        "precise",
+        "calm"
+      ],
+      "voiceSettings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82,
+        "style": 0.18,
+        "speed": 0.97,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "2e2612025cfc25e01466",
+      "generatedAt": "2026-09-04T17:34:55.509Z"
     },
     "v3-cap-0604": {
       "cueId": "v3-cap-0604",
@@ -965,6 +1473,312 @@
       "postprocessTempo": 1.1636363636363636,
       "generationKey": "a499c9e195a50c5aeaae",
       "generatedAt": "2026-09-04T17:04:25.641Z"
+    },
+    "v3-tech-0606": {
+      "cueId": "v3-tech-0606",
+      "lang": "ro",
+      "speaker": "TEHNOLOGIC",
+      "text": "Știm.",
+      "file": "v3-tech-0606.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 1840,
+      "words": [
+        "Știm"
+      ],
+      "wtimes": [
+        80
+      ],
+      "wdurations": [
+        480
+      ],
+      "provider": "elevenlabs",
+      "direction": "sec, foarte scurt și discret amuzat",
+      "modelId": "eleven_v3",
+      "voiceId": "3z9q8Y7plHbvhDZehEII",
+      "audioTags": [
+        "dryly",
+        "brief"
+      ],
+      "voiceSettings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82,
+        "style": 0.18,
+        "speed": 1.08,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "51d87e28c900de89273a",
+      "generatedAt": "2026-09-04T17:34:56.894Z"
+    },
+    "v3-tech-0610": {
+      "cueId": "v3-tech-0610",
+      "lang": "ro",
+      "speaker": "TEHNOLOGIC",
+      "text": "Instrumentele noastre cer un singur răspuns: ce păstrează o lume vie?",
+      "file": "v3-tech-0610.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 6320,
+      "words": [
+        "Instrumentele",
+        "noastre",
+        "cer",
+        "un",
+        "singur",
+        "răspuns",
+        "ce",
+        "păstrează",
+        "o",
+        "lume",
+        "vie"
+      ],
+      "wtimes": [
+        360,
+        613,
+        1200,
+        1493,
+        1632,
+        1880,
+        2960,
+        3800,
+        4520,
+        4680,
+        5040
+      ],
+      "wdurations": [
+        200,
+        507,
+        240,
+        107,
+        208,
+        600,
+        800,
+        600,
+        120,
+        280,
+        240
+      ],
+      "provider": "elevenlabs",
+      "direction": "curiozitate analitică autentică; întrebarea rămâne deschisă",
+      "modelId": "eleven_v3",
+      "voiceId": "3z9q8Y7plHbvhDZehEII",
+      "audioTags": [
+        "precise",
+        "curious"
+      ],
+      "voiceSettings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82,
+        "style": 0.18,
+        "speed": 0.97,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "1efc1b0c6c8e867a41f0",
+      "generatedAt": "2026-09-04T17:34:59.810Z"
+    },
+    "v3-tech-0635-diverse": {
+      "cueId": "v3-tech-0635-diverse",
+      "lang": "ro",
+      "speaker": "TEHNOLOGIC",
+      "text": "Nu există un singur răspuns. Modelul meu nu poate alege între ele.",
+      "file": "v3-tech-0635-diverse.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 5440,
+      "words": [
+        "Nu",
+        "există",
+        "un",
+        "singur",
+        "răspuns",
+        "Modelul",
+        "meu",
+        "nu",
+        "poate",
+        "alege",
+        "între",
+        "ele"
+      ],
+      "wtimes": [
+        234,
+        293,
+        667,
+        768,
+        1080,
+        1893,
+        2720,
+        3013,
+        3173,
+        3480,
+        3880,
+        4160
+      ],
+      "wdurations": [
+        20,
+        347,
+        53,
+        272,
+        600,
+        747,
+        240,
+        107,
+        267,
+        360,
+        200,
+        240
+      ],
+      "provider": "elevenlabs",
+      "direction": "surpriză analitică reținută; admite limita modelului fără frustrare",
+      "modelId": "eleven_v3",
+      "voiceId": "3z9q8Y7plHbvhDZehEII",
+      "audioTags": [
+        "surprised",
+        "thoughtful"
+      ],
+      "voiceSettings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82,
+        "style": 0.18,
+        "speed": 1.02,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "86cd9025acec9ae8631a",
+      "generatedAt": "2026-09-04T17:45:44.996Z"
+    },
+    "v3-tech-0635-same": {
+      "cueId": "v3-tech-0635-same",
+      "lang": "ro",
+      "speaker": "TEHNOLOGIC",
+      "text": "Alegerile exprimate sunt la fel. Dar cele cinci lentile păstrează perspective diferite.",
+      "file": "v3-tech-0635-same.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 6400,
+      "words": [
+        "Alegerile",
+        "exprimate",
+        "sunt",
+        "la",
+        "fel",
+        "Dar",
+        "cele",
+        "cinci",
+        "lentile",
+        "păstrează",
+        "perspective",
+        "diferite"
+      ],
+      "wtimes": [
+        220,
+        528,
+        1088,
+        1307,
+        1460,
+        2000,
+        2528,
+        2800,
+        3104,
+        3920,
+        4607,
+        5187
+      ],
+      "wdurations": [
+        260,
+        512,
+        192,
+        53,
+        300,
+        480,
+        192,
+        240,
+        576,
+        640,
+        513,
+        573
+      ],
+      "provider": "elevenlabs",
+      "direction": "precis, apoi ușor nedumerit pe ideea perspectivelor diferite",
+      "modelId": "eleven_v3",
+      "voiceId": "3z9q8Y7plHbvhDZehEII",
+      "audioTags": [
+        "precise",
+        "curious"
+      ],
+      "voiceSettings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82,
+        "style": 0.18,
+        "speed": 1.03,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "1679d737c138cf110833",
+      "generatedAt": "2026-09-04T17:45:47.981Z"
+    },
+    "v3-tech-0635-observe": {
+      "cueId": "v3-tech-0635-observe",
+      "lang": "ro",
+      "speaker": "TEHNOLOGIC",
+      "text": "Ați ales să observați. Chiar și tăcerea trece prin cinci lentile.",
+      "file": "v3-tech-0635-observe.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 6160,
+      "words": [
+        "Ați",
+        "ales",
+        "să",
+        "observați",
+        "Chiar",
+        "și",
+        "tăcerea",
+        "trece",
+        "prin",
+        "cinci",
+        "lentile"
+      ],
+      "wtimes": [
+        150,
+        320,
+        853,
+        1177,
+        2427,
+        3573,
+        3720,
+        4360,
+        4848,
+        5120,
+        5504
+      ],
+      "wdurations": [
+        90,
+        400,
+        267,
+        663,
+        1093,
+        107,
+        520,
+        440,
+        192,
+        320,
+        576
+      ],
+      "provider": "elevenlabs",
+      "direction": "varianta sigură fără răspunsuri; constatare respectuoasă, fără presiune",
+      "modelId": "eleven_v3",
+      "voiceId": "3z9q8Y7plHbvhDZehEII",
+      "audioTags": [
+        "thoughtful",
+        "accepting"
+      ],
+      "voiceSettings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82,
+        "style": 0.18,
+        "speed": 0.97,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "be4200f1a7c654b3e4d3",
+      "generatedAt": "2026-09-04T17:35:02.631Z"
     },
     "v3-cap-0642": {
       "cueId": "v3-cap-0642",
@@ -1006,6 +1820,69 @@
       },
       "generationKey": "9a465faa9261aed020f5",
       "generatedAt": "2026-09-04T17:00:53.741Z"
+    },
+    "v3-tech-0645": {
+      "cueId": "v3-tech-0645",
+      "lang": "ro",
+      "speaker": "TEHNOLOGIC",
+      "text": "Trimiteți-le pe toate. Un adevăr poate avea mai multe forme.",
+      "file": "v3-tech-0645.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 4560,
+      "words": [
+        "Trimiteți-le",
+        "pe",
+        "toate",
+        "Un",
+        "adevăr",
+        "poate",
+        "avea",
+        "mai",
+        "multe",
+        "forme"
+      ],
+      "wtimes": [
+        146,
+        667,
+        800,
+        2027,
+        2440,
+        3027,
+        3400,
+        3620,
+        3728,
+        4147
+      ],
+      "wdurations": [
+        494,
+        53,
+        480,
+        373,
+        520,
+        333,
+        200,
+        60,
+        352,
+        333
+      ],
+      "provider": "elevenlabs",
+      "direction": "acceptare calmă, fără concluzie moralizatoare",
+      "modelId": "eleven_v3",
+      "voiceId": "3z9q8Y7plHbvhDZehEII",
+      "audioTags": [
+        "calm",
+        "accepting"
+      ],
+      "voiceSettings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82,
+        "style": 0.18,
+        "speed": 0.97,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "19a5fddf530e88d7dd6f",
+      "generatedAt": "2026-09-04T17:35:04.865Z"
     },
     "v3-ai-0651": {
       "cueId": "v3-ai-0651",
@@ -1612,6 +2489,138 @@
       },
       "generationKey": "ca800ccee87d1fbe2d29",
       "generatedAt": "2026-09-04T17:01:21.194Z"
+    },
+    "v3-echo-0820": {
+      "cueId": "v3-echo-0820",
+      "lang": "ro",
+      "speaker": "LUMINA",
+      "text": "Vă recunoaștem lumina.",
+      "file": "v3-echo-0820.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 3600,
+      "words": [
+        "Vă",
+        "recunoaștem",
+        "lumina"
+      ],
+      "wtimes": [
+        68,
+        140,
+        1020
+      ],
+      "wdurations": [
+        20,
+        820,
+        500
+      ],
+      "provider": "elevenlabs",
+      "direction": "ecou stratificat al celor trei lumi; foarte scurt, îndepărtat și recognoscibil",
+      "modelId": "eleven_v3",
+      "voiceId": "GRHbHyXbUO8nF4YexVTa",
+      "audioTags": [
+        "whispers",
+        "echoing"
+      ],
+      "voiceSettings": {
+        "stability": 0.42,
+        "similarity_boost": 0.78,
+        "style": 0.35,
+        "speed": 0.9,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "be9ec77d7793ab445f98",
+      "generatedAt": "2026-09-04T17:35:06.655Z"
+    },
+    "v3-echo-nature-0824": {
+      "cueId": "v3-echo-nature-0824",
+      "lang": "ro",
+      "speaker": "NATURA",
+      "text": "Vă recunoaștem legătura.",
+      "file": "v3-echo-nature-0824.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 1840,
+      "words": [
+        "Vă",
+        "recunoaștem",
+        "legătura"
+      ],
+      "wtimes": [
+        76,
+        230,
+        860
+      ],
+      "wdurations": [
+        124,
+        570,
+        660
+      ],
+      "provider": "elevenlabs",
+      "direction": "al doilea ecou; blând, apropiat, ca o amintire",
+      "modelId": "eleven_v3",
+      "voiceId": "9nKRcmsd1bEJbszIZ2HO",
+      "audioTags": [
+        "softly",
+        "echoing"
+      ],
+      "voiceSettings": {
+        "stability": 0.58,
+        "similarity_boost": 0.82,
+        "style": 0.3,
+        "speed": 1.12,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1,
+      "generationKey": "e81b4f21209fabfb97d0",
+      "generatedAt": "2026-09-04T17:45:49.871Z"
+    },
+    "v3-echo-tech-0826": {
+      "cueId": "v3-echo-tech-0826",
+      "lang": "ro",
+      "speaker": "TEHNOLOGIC",
+      "text": "Nu încăpeți într-un singur răspuns.",
+      "file": "v3-echo-tech-0826.mp3",
+      "mime": "audio/mpeg",
+      "durationMs": 2350,
+      "words": [
+        "Nu",
+        "încăpeți",
+        "într-un",
+        "singur",
+        "răspuns"
+      ],
+      "wtimes": [
+        130,
+        173,
+        784,
+        1037,
+        1555
+      ],
+      "wdurations": [
+        20,
+        588,
+        184,
+        415,
+        726
+      ],
+      "provider": "elevenlabs",
+      "direction": "al treilea ecou; precis, dar cu uimire nouă și discretă",
+      "modelId": "eleven_v3",
+      "voiceId": "3z9q8Y7plHbvhDZehEII",
+      "audioTags": [
+        "softly",
+        "wondering"
+      ],
+      "voiceSettings": {
+        "stability": 0.65,
+        "similarity_boost": 0.82,
+        "style": 0.18,
+        "speed": 1.12,
+        "use_speaker_boost": true
+      },
+      "postprocessTempo": 1.1574468085106382,
+      "generationKey": "b525fc957c886aebdc57",
+      "generatedAt": "2026-09-04T17:45:51.461Z"
     },
     "v3-cap-0829": {
       "cueId": "v3-cap-0829",

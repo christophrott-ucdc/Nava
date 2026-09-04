@@ -1560,3 +1560,220 @@ Validare:
 - închiderea ferestrei a oprit curat serverul și procesul launcherului.
 
 Pentru a vedea remedierea, orice instanță pornită înainte de acest commit trebuie închisă, apoi `RUN.bat` trebuie lansat din nou; build-ul este executat automat la fiecare pornire.
+
+---
+
+## 25. ADDENDUM APPEND-ONLY — curățenie vocală V3, experiență executabilă și tablete 5×2 (Codex + agenții scenarist/regizor/expert copii, 2026-09-04)
+
+> Această secțiune a fost adăugată strict la final. Nicio secțiune anterioară din `HANDOFF.md` nu a fost rescrisă sau ștearsă.
+>
+> **Această secțiune înlocuiește operațional limitările și pașii rămași descriși în §22.9–§22.11 și comportamentul de start descris în §24.** Starea executabilă curentă este `show.json` v`0.4.0-v3-complete`, cu 87 cue-uri și 51 de asset-uri vocale V3. Clickul principal/`Space`/`Enter` din idle pornește acum pre-show-ul complet; `S` sau **SARI LA LANSARE** omit pre-show-ul.
+
+### 25.1 Incidentul raportat și cauza reală
+
+Utilizatorul a raportat că TTS-ul de la început este inacceptabil. Cauza nu era vocea V3 generată, ci faptul că sursa executabilă `assets/show/show.json` conținea încă 24 de ID-uri vocale legacy (`pre-01`, `launch-01` etc.), în timp ce manifestul local conținea ID-uri `v3-*`. Playerul nu găsea clipul local, încerca `/api/tts`, primea eroare deoarece nu există cheie la runtime, apoi cădea pe `speechSynthesis`/vocea Windows. Așadar pista V3 exista pe disc, dar era ocolită de show-ul executabil.
+
+Remedierea este structurală, nu cosmetică:
+
+- toate vocile legacy au fost scoase din `show.json`;
+- toate asset-urile V3 sunt sincronizate cu aceleași ID-uri, texte, vorbitori și timpi;
+- fiecare cue vocal de producție are `fallback: "silent"`;
+- dacă un MP3 lipsește, rendererul afișează subtitrarea, păstrează fereastra de timp prin tăcere și scrie o eroare explicită; nu apelează browserul/Windows;
+- fallback-ul browser rămâne în motor numai pentru cue-uri ad-hoc/de test care îl permit explicit;
+- mesajele de startup nu mai afirmă înșelător că lipsa `.env` activează automat vocea browserului pentru spectacol.
+
+### 25.2 Pista vocală completă
+
+`assets/show/voice-script-v3.json` este acum v`3.2.0-adaptive-complete`. Conține 51 de asset-uri:
+
+- 17 replici `CAPITANUL`;
+- 18 replici `AVATAR_AI`;
+- 16 replici/variante pentru LUMINA, NATURA, TEHNOLOGIC și ecourile finale.
+
+Într-o reprezentație se redau 49 de clipuri, nu 51, deoarece la 6:35 serverul selectează exact una dintre cele trei variante TEHNOLOGIC. Toate cele 51 rămân în manifest și show pentru disponibilitate și operare manuală.
+
+Vocile configurate sunt:
+
+- Căpitan: ElevenLabs voice ID `Z1I8XGyUmANP9h72LN2z` (`Paul Bogorin`);
+- Avatarul Navei: `Q8ZbQAANLFvLw8uPBR8d` (`AGEIS-7`);
+- LUMINA: `GRHbHyXbUO8nF4YexVTa` (`Anca — Warm Voice for Every Story`);
+- NATURA: `9nKRcmsd1bEJbszIZ2HO` (`Vasile Poenaru`);
+- TEHNOLOGIC: `3z9q8Y7plHbvhDZehEII` (`Antonia`).
+
+Cheia API oferită temporar de utilizator a fost folosită numai ca variabilă de proces pentru generare și QA. Nu a fost scrisă în `.env`, cod, manifest, loguri, documentație sau commit. O scanare după un fragment distinct al cheii a ieșit curată pe întregul proiect, inclusiv `runs/`.
+
+Au fost adăugate cele 16 asset-uri care lipseau din setul inițial de 35:
+
+- `v3-light-0224.mp3`, `v3-light-0236.mp3`, `v3-light-0258.mp3`;
+- `v3-nature-0415.mp3`, `v3-nature-0433.mp3`, `v3-nature-0453.mp3`;
+- `v3-tech-0556.mp3`, `v3-tech-0606.mp3`, `v3-tech-0610.mp3`, `v3-tech-0635-observe.mp3`, `v3-tech-0645.mp3`;
+- `v3-echo-0820.mp3`;
+- `v3-tech-0635-diverse.mp3`, `v3-tech-0635-same.mp3`;
+- `v3-echo-nature-0824.mp3`, `v3-echo-tech-0826.mp3`.
+
+Replica `v3-ai-0534` a fost simplificată pentru copii din „hazardul” în „riscul”, modificată simultan în scenariul regizoral, sursa vocală, show și audio, apoi regenerată. Toate vocile noi folosesc `eleven_v3`, indicații de joc/inflexiune, seed-uri stabile și retiming numai când durata depășea fereastra.
+
+Montajele de audiție actuale sunt:
+
+- `assets/voice/ro/preview-capitan-v3.mp3` — 17 cue-uri;
+- `assets/voice/ro/preview-avatar-v3.mp3` — 18 cue-uri;
+- `assets/voice/ro/preview-civilizatii-v3.mp3` — 16 cue-uri/variante.
+
+QA final cu ElevenLabs Scribe v2, limba română:
+
+- Căpitan: 136/138 cuvinte, WER 2,2%;
+- Avatarul Navei: 214/216 cuvinte, WER 3,7%;
+- civilizații/ecouri/ramuri: 165/165 cuvinte, WER 3,0%;
+- niciun tag de performanță Eleven v3 nu a fost rostit ca text.
+
+### 25.3 Ramura adaptivă TEHNOLOGIC și ecourile finale
+
+Auditul agentului scenarist a descoperit că versiunea intermediară reda necondiționat „Ați ales să observați”, indiferent ce apăsau copiii. Au fost adăugate toate cele trei variante canonice:
+
+- `v3-tech-0635-diverse`: există minimum două alegeri exprimate diferite;
+- `v3-tech-0635-same`: toate alegerile exprimate sunt identice;
+- `v3-tech-0635-observe`: nu există alegeri exprimate; include cazul în care toți aleg „Doar observ” sau nu răspund.
+
+Cele trei cue-uri sunt `manual: true`, deci timeline-ul nu le poate reda împreună. Markerul automat `tech-adaptive-select` de la `play:335` cere serverului ramura prin `tablets.perspectiveBranch("tech-tablet-perspectives")`, apoi serverul difuzează un singur `fireCue` către toate ecranele. Ramurile returnate sunt literal `diverse | same | observe`.
+
+Un raport video întârziat după seek putea muta ceasul serverului puțin înapoi și rearma markerul, producând două redări ale aceleiași replici. `src/server/cues.ts` distinge acum seek-ul explicit de jitterul unui raport de ceas: numai comanda de seek rearmează cue-uri. Există regresie automată și testul real a confirmat o singură redare.
+
+Climaxul de la 8:20 conține acum toate cele trei ecouri, secvențiate fără suprapunere:
+
+- LUMINA: „Vă recunoaștem lumina.”;
+- NATURA: „Vă recunoaștem legătura.”;
+- TEHNOLOGIC: „Nu încăpeți într-un singur răspuns.”
+
+### 25.4 Cinci tablete, cinci posturi, zece perspective
+
+Agentul cu experiență în lucrul cu copii a auditat și apoi a înlocuit modelul vechi „o tabletă = un copil cu nume și rol”. Contractul actual este anonim și corespunde scenariului:
+
+- cinci tablete, fiecare legată de un post fix 1–5;
+- posturile sunt NAVIGAȚIE, PROPULSIE, COMUNICAȚII, BIOSEMNALE și MEMORIE;
+- posturile se pot fixa prin onboarding sau direct prin query `?post=N`, apoi persistă local;
+- un post nu poate fi revendicat simultan de două tablete conectate;
+- fiecare tabletă are două zone vizuale egale, A și B, pentru cei doi copii;
+- fiecare zonă răspunde independent o singură dată per cue și nu poate suprascrie alegerea celeilalte;
+- fiecare zonă oferă „Doar observ”; observația și lipsa inputului sunt stări valide;
+- nu se colectează prenume, text liber, clasamente, procente sau consens;
+- confirmarea A/B este privată pe tableta respectivă; celelalte tablete nu primesc răspunsurile;
+- posturile persistă la restart, dar răspunsurile sesiunii se șterg;
+- reconectarea recuperează postul și confirmările A/B din server.
+
+Contractele noi sunt:
+
+```text
+post-assign { posts: string[5] }
+paired-choice {
+  mode: "color" | "pulse" | "perspective",
+  prompt,
+  options,
+  allowObserve: true,
+  timeoutSec?
+}
+set-post { post: 1..5 }
+choice { cueId, zone: "A" | "B", value }
+```
+
+`options` acceptă string sau `{ value, label, symbol?, color? }`. Valoarea stabilă pentru observație este `TABLET_OBSERVE_VALUE = "observe"`.
+
+Interacțiunile V3 executabile sunt acum:
+
+- `light-tablet-color`, fereastră `play:103–115` / public 2:43–2:55;
+- `nature-tablet-pulse`, fereastră `play:219–231` / public 4:39–4:51;
+- `tech-tablet-perspectives`, fereastră `play:317–334` / public 6:17–6:34;
+- `epi-tablet-thanks` la epilog 68 / public 9:53.
+
+Au fost eliminate `tech-tablet-question` și `rev-tablet-message`; în revelație copiii privesc ecranele, nu scriu text. UI-ul tabletelor a fost refăcut cu două jumătăți simetrice, ținte de minimum 56 px, gap de minimum 8 px, simboluri/culori, mod reduced-motion și fără indicatori competitivi.
+
+### 25.5 Continuitate vizuală și sonoră
+
+Entity hide-urile legacy tăiau personajele în timpul ultimelor replici. Timpii actuali sunt:
+
+- LUMINA hide la `play:125.2`, după finalul clipului de la 2:58;
+- NATURA hide la `play:239.2`, după finalul clipului de la 4:53;
+- TEHNOLOGIC hide la `play:350.5`, după replica de la 6:45.
+
+Alte corecții de sunet/cue:
+
+- ploaia NATURA durează 45 s și acoperă replica finală;
+- `wormhole-whoosh` pornește la video 360 s / public 7:00;
+- `wormhole-exit-swell` este limitat la 2 s, la video 400–402, înaintea următoarei replici;
+- `home-transmit-chime` și `home-transmit-marker` marchează nota a patra și trimiterea semnalului la 463,5 s.
+
+Nu s-a introdus un al doilea corp pentru Avatarul Navei. Numai `CAPITANUL` comandă GLB-ul și numai rendererul cu `showAvatar: true` îl instanțiază.
+
+### 25.6 Preload audio și durată deterministă
+
+Motorul vocal încarcă acum manifestul complet și face fetch + decode pentru toate clipurile înainte ca UI-ul de lansare să fie armat. Sunt folosite maximum șase operații concurente. La cue, clipul vine din memoria decodată, eliminând I/O-ul din ferestrele scurte dintre replici. Un asset care eșuează la preload este memorat ca indisponibil și nu mai este recitit/decodat pe muchia cue-ului; politica `fallback: silent` rămâne activă.
+
+Contractul public este exact:
+
+```text
+0:00–0:50   pre-show
+0:50–1:00   lead-in T−10
+1:00–8:45   film video 0–465 s
+8:45–10:00  epilog 0–75 s
+TOTAL       600 s
+```
+
+Sursa video fizică rămâne 741,78 s, dar `Player.duration()` expune 465 s și rendererul oprește local la această limită. Tranziția play→epilogue se face imediat în renderer, fără a aștepta round-trip-ul WS; ecoul serverului nu resetează ceasul epilogului. Epilogul se oprește local exact la 75 s. Testele verifică masterul fizic lung, tăietura la 465 și finalul determinist.
+
+### 25.7 Pornirea de pe ecran
+
+§24 descrie o versiune intermediară în care clickul principal sărea direct la lansare. Comportamentul final este:
+
+- click oriunde pe panoul idle, **PORNEȘTE EXPERIENȚA**, `Space` sau `Enter` → `preshow`;
+- la 50 s, `preshowAutoStart: true` pornește automat lead-in-ul T−10;
+- **SARI LA LANSARE** sau `S` → start direct la T−10;
+- `P` → pre-show explicit;
+- în timpul filmului, `Space` păstrează funcția pause/play.
+
+Astfel, dublu-click pe `RUN.bat`, apoi o singură atingere pe ecran, pornesc fluxul continuu complet.
+
+### 25.8 Automatizare și documentație
+
+Au fost adăugate:
+
+- `scripts/sync-v3-voices-to-show.mjs` / `npm run sync:voices`: migrează determinist toate vocile V3, tabletele V3, timpii entity/SFX și metadatele de durată în `show.json`; scriptul este idempotent și a fost rulat de două ori consecutiv fără duplicate;
+- `scripts/build-cue-sheet.mjs` / `npm run docs:cues`: generează `docs/CUE-SHEET.md` direct din sursa executabilă; documentul nu mai conține cue-uri V2;
+- validare extinsă în `scripts/validate-voice-script.mjs`: 51/51 asset-uri obligatorii, potrivire cu scenariul, manifest și show, durate maxime, tag-uri nerostite, cele trei ramuri manuale și fallback strict;
+- validare extinsă în `scripts/validate-show.mjs`: contractele `post-assign`/`paired-choice`, exact cinci posturi, tipurile legacy interzise și invariantele V3;
+- teste extinse în `scripts/smoke-core.mjs` și `scripts/smoke-platform.mjs`: 5×2 tablete, ramuri `observe/same/diverse`, imutabilitate A/B, confidențialitate, reconnect/restart, dispatch adaptiv, jitter fără dublare, preload/cache/failure și fallback silent;
+- reel și QA pentru civilizații în `scripts/build-voice-reels.mjs` și `scripts/qa-voice-transcription.mjs`.
+
+Au fost actualizate `README.md`, `docs/OPERARE.md`, `docs/SPEC-SHEET.md`, `docs/SCENARIU.md`, `docs/BRIEF.md`, `docs/DECIZII.md` și `docs/CUE-SHEET.md`. Documentele active spun acum cinci tablete pentru zece copii, fără Unitree fizic, fără VR, Căpitan numai în fereastra GLB `center`, 51 de asset-uri locale și tăietură la 465 s.
+
+### 25.9 Verificări finale și probă reală
+
+`npm run check` a trecut integral după toate modificările:
+
+- TypeScript strict: PASS;
+- show validator: 8 scene, 87 cue-uri (`countdown=1`, `entity=6`, `marker=6`, `sfx=6`, `tablet=9`, `theme=8`, `voice=51`);
+- voice validator: 51 asset-uri, toate potrivite cu scenariul și show-ul;
+- build Electron/main/preload/renderer/control/tablet: PASS;
+- smoke core: timing de lansare, epilog determinist, preload audio, jitter și fallback silent: PASS;
+- smoke platform: HTTP, static, QR, WS, state machine, posturi 5×2, ramură adaptivă și shutdown: PASS;
+- smoke media: transcodare CPU, overwrite Windows-safe și contact sheet: PASS.
+
+Proba reală a fost făcută cu `RUN.bat --no-control`, fără `.env` și fără cheie TTS la runtime. Logul `runs/app-20260904-205725.jsonl` și run-logul `runs/show-20260904-205746-2.jsonl` au confirmat:
+
+- show `0.4.0-v3-complete`, 87 cue-uri;
+- video 3840×2052 / 741,78 s încărcat, limită configurată 465 s;
+- GLB ready;
+- cue-ul de început `v3-cap-0004` redat din manifest;
+- niciun request `/api/tts` și niciun 502/fallback browser;
+- seek la `play:335` fără răspunsuri a selectat `v3-tech-0635-observe`;
+- după corecția de jitter, ramura a fost declanșată o singură dată.
+
+### 25.10 Starea exactă rămasă pentru instalarea fizică
+
+Curățenia TTS, integrarea V3 și contractul tabletelor sunt finalizate în software. Pentru instalarea în locație rămân verificări care nu pot fi simulate pe PC-ul de dezvoltare:
+
+- audiție pe sistemul real de sunet și reglarea volumelor pe sală;
+- test cu cinci tablete fizice, fiecare fixată prin `?post=1` … `?post=5`;
+- maparea indicilor Windows ai celor cinci display-uri și confirmarea că `showAvatar: true` există numai pe `center`;
+- repetiție completă de 10 minute cu facilitator și zece copii/adulți-surogat;
+- eventualul score/ambient muzical original și mixul cinematic final; filmul sursă nu are pistă audio, iar versiunea curentă folosește vocile și SFX-urile sintetizate descrise mai sus.
+
+`config.json` local nu a fost suprascris: rămâne configurat pentru un singur display `center`, deoarece mașina de dezvoltare a raportat un singur monitor. În locație trebuie configurate display-urile reale după ordinea detectată; nu inventați indicii înainte de instalare.

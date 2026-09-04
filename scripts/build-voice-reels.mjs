@@ -29,9 +29,9 @@ function concatPath(file) {
   return file.replaceAll("\\", "/").replaceAll("'", "'\\''");
 }
 
-async function buildReel(speaker, outputName, title) {
-  const cues = source.cues.filter((cue) => cue.speaker === speaker);
-  const silence = path.join(tempDir, `silence-${speaker}.mp3`);
+async function buildReel(name, selectCue, outputName, title) {
+  const cues = source.cues.filter(selectCue);
+  const silence = path.join(tempDir, `silence-${name}.mp3`);
   await run("ffmpeg", [
     "-hide_banner",
     "-loglevel",
@@ -57,7 +57,7 @@ async function buildReel(speaker, outputName, title) {
     await fs.access(audio);
     lines.push(`file '${concatPath(audio)}'`, `file '${concatPath(silence)}'`);
   }
-  const list = path.join(tempDir, `${speaker}.txt`);
+  const list = path.join(tempDir, `${name}.txt`);
   await fs.writeFile(list, `${lines.join("\n")}\n`, "utf8");
   const output = path.join(voiceDir, outputName);
   await run("ffmpeg", [
@@ -84,8 +84,14 @@ async function buildReel(speaker, outputName, title) {
 }
 
 try {
-  await buildReel("CAPITANUL", "preview-capitan-v3.mp3", "Protocolul Acasă — Căpitanul — V3");
-  await buildReel("AVATAR_AI", "preview-avatar-v3.mp3", "Protocolul Acasă — Avatarul navei — V3");
+  await buildReel("CAPITANUL", (cue) => cue.speaker === "CAPITANUL", "preview-capitan-v3.mp3", "Protocolul Acasă — Căpitanul — V3");
+  await buildReel("AVATAR_AI", (cue) => cue.speaker === "AVATAR_AI", "preview-avatar-v3.mp3", "Protocolul Acasă — Avatarul navei — V3");
+  await buildReel(
+    "CIVILIZATII",
+    (cue) => cue.speaker !== "CAPITANUL" && cue.speaker !== "AVATAR_AI",
+    "preview-civilizatii-v3.mp3",
+    "Protocolul Acasă — Civilizațiile — V3",
+  );
 } finally {
   await fs.rm(tempDir, { recursive: true, force: true });
 }

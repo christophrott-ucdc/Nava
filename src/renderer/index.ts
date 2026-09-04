@@ -175,7 +175,9 @@ async function main(): Promise<void> {
     log("error", `createVoiceEngine failed — folosesc motorul nul: ${describeError(err)}`);
     voice = createNullVoiceEngine();
   }
-  voice.prepare(config.lang).catch((err) => log("warn", `voice.prepare failed: ${describeError(err)}`));
+  // Do not expose the launch controls until every offline production line is fetched and decoded.
+  // This removes per-cue I/O/decode latency from the tightly timed performance.
+  await voice.prepare(config.lang).catch((err) => log("warn", `voice.prepare failed: ${describeError(err)}`));
   voice.unlock().catch(() => {});
 
   const entities = createEntities($<HTMLCanvasElement>("entities"), { enabled: screen.showEntities, getAmplitude: () => voice.getAmplitude() });
@@ -248,6 +250,11 @@ async function main(): Promise<void> {
     onStateChange: (state) => {
       launchControls.hidden = !isClockSource || state !== "idle";
     },
+    onConfiguredVideoEnd: () => {
+      // The player has already entered epilogue locally without a visible hold. Tell the server at
+      // once so followers/tablets adopt the same phase instead of waiting for the next 4 Hz report.
+      if (isClockSource) window.nava.sendCommand({ action: "epilogue" });
+    },
   });
   player.attach(boot.videoUrl);
   launchControls.hidden = !isClockSource || player.getPlaybackState() !== "idle";
@@ -311,7 +318,7 @@ async function main(): Promise<void> {
   launchControls.addEventListener("click", (ev) => {
     voice.unlock().catch(() => {});
     const target = ev.target instanceof Element ? ev.target : null;
-    dispatch({ action: target?.closest("#launch-preshow") ? "preshow" : "start" });
+    dispatch({ action: target?.closest("#launch-start") ? "start" : "preshow" });
   });
   let lastEsc = 0;
   window.addEventListener("keydown", (ev) => {
@@ -332,11 +339,11 @@ async function main(): Promise<void> {
     switch (ev.key) {
       case " ":
         ev.preventDefault();
-        dispatch(player.getPlaybackState() === "playing" || (player.rate() > 0 && player.getPlaybackState() !== "idle") ? { action: "pause" } : { action: "play" });
+        dispatch(player.getPlaybackState() === "idle" ? { action: "preshow" } : player.getPlaybackState() === "playing" || player.rate() > 0 ? { action: "pause" } : { action: "play" });
         break;
       case "Enter":
         ev.preventDefault();
-        dispatch(player.getPlaybackState() === "idle" ? { action: "start" } : { action: "play" });
+        dispatch(player.getPlaybackState() === "idle" ? { action: "preshow" } : { action: "play" });
         break;
       case "s":
       case "S":

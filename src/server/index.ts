@@ -201,7 +201,34 @@ async function loadShowFile(showPath: string): Promise<ShowFile> {
           Array.isArray(inter.options) &&
           inter.options.length > 0 &&
           inter.options.every((x) => typeof x === "string" && x.trim());
-        if (!simple && !prompted && !rolePick && !vote) throw new Error(`show.json invalid: interacțiune tabletă "${cue.id}"`);
+        const postAssign =
+          type === "post-assign" &&
+          Array.isArray(inter.posts) &&
+          inter.posts.length === 5 &&
+          inter.posts.every((x) => typeof x === "string" && x.trim());
+        const optionValid = (option: unknown): boolean =>
+          (typeof option === "string" && !!option.trim()) ||
+          (!!option &&
+            typeof option === "object" &&
+            !Array.isArray(option) &&
+            typeof (option as Record<string, unknown>).value === "string" &&
+            !!String((option as Record<string, unknown>).value).trim() &&
+            typeof (option as Record<string, unknown>).label === "string" &&
+            !!String((option as Record<string, unknown>).label).trim());
+        const pairedChoice =
+          type === "paired-choice" &&
+          typeof inter.prompt === "string" &&
+          inter.prompt.trim().length > 0 &&
+          Array.isArray(inter.options) &&
+          inter.options.length > 0 &&
+          inter.options.every(optionValid) &&
+          inter.allowObserve === true &&
+          (inter.mode === "color" || inter.mode === "pulse" || inter.mode === "perspective") &&
+          (inter.timeoutSec === undefined ||
+            (typeof inter.timeoutSec === "number" && Number.isFinite(inter.timeoutSec) && inter.timeoutSec > 0));
+        if (!simple && !prompted && !rolePick && !vote && !postAssign && !pairedChoice) {
+          throw new Error(`show.json invalid: interacțiune tabletă "${cue.id}"`);
+        }
         break;
       }
       case "theme":
@@ -324,6 +351,15 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       runlog.write("cue", { id: cue.id, kind: cue.kind, phase: cue.phase, at: cue.at, manual });
       broadcast(["control"], { type: "cueFired", cue, serverTimeMs: Date.now() });
       pushTabletView();
+      if (cue.id === "tech-adaptive-select" && !manual) {
+        const branch = tablets.perspectiveBranch("tech-tablet-perspectives");
+        const cueId = `v3-tech-0635-${branch}`;
+        runlog.write("tablet.adaptive", { sourceCueId: "tech-tablet-perspectives", branch, cueId });
+        queueMicrotask(() => {
+          const result = director.dispatchCommand({ action: "fireCue", cueId }, "tablet.adaptive");
+          if (!result.ok) log("error", "adaptive voice dispatch failed", { branch, cueId, reason: result.reason });
+        });
+      }
     },
     onLog: (kind, data) => runlog.write(kind, data),
     onRunStart: () => {
@@ -556,14 +592,17 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     client.kind = msg.client;
     const rawId = typeof msg.id === "string" ? msg.id.replace(/[\x00-\x1f\x7f]/g, "").trim().slice(0, 64) : "";
     client.id = rawId || `${msg.client}-${Math.random().toString(36).slice(2, 8)}`;
-    client.name = typeof msg.name === "string" ? msg.name.replace(/[\x00-\x1f\x7f]/g, " ").trim().slice(0, 32) : undefined;
+    client.name =
+      msg.client !== "tablet" && typeof msg.name === "string"
+        ? msg.name.replace(/[\x00-\x1f\x7f]/g, " ").trim().slice(0, 32)
+        : undefined;
     const expectedClockId = config.screens[0]?.id;
     client.isClockSource = msg.client === "screen" && !!msg.isClockSource && client.id === expectedClockId;
     if (msg.client === "screen" && msg.isClockSource && !client.isClockSource) {
       log("warn", "ws rejected unexpected clock-source claim", { id: client.id, expectedClockId, remote: client.remote });
     }
     if (client.isClockSource) setClockSource(client);
-    if (client.kind === "tablet") tablets.connect(client.id, client.name, client.ws);
+    if (client.kind === "tablet") tablets.connect(client.id, client.ws, msg.post);
     runlog.write("ws.hello", { kind: client.kind, id: client.id, name: client.name, clockSource: client.isClockSource, remote: client.remote });
     log("info", `ws hello ${client.kind} ${client.id}${client.isClockSource ? " (clock source)" : ""}`);
     updateCounts();
@@ -584,11 +623,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     const fixed: TabletEventMsg = { ...msg, tabletId: client.id };
     const res = tablets.handleEvent(fixed, director.cues.tablet);
     if (res.error) send(client, { type: "error", reason: res.error });
-    if (res.logKind) runlog.write(res.logKind, { tabletId: client.id, name: tablets.tablets.get(client.id)?.name, event: fixed.event });
-    if (fixed.event.kind === "join" && typeof fixed.event.name === "string") client.name = fixed.event.name.slice(0, 32);
+    if (res.logKind) runlog.write(res.logKind, { tabletId: client.id, post: tablets.tablets.get(client.id)?.post, event: fixed.event });
     if (res.changed) {
       broadcastTablets();
-      pushTabletView();
+      // Postul și răspunsurile A/B sunt personalizate; baza cue-ului poate rămâne identică.
+      pushTabletView(true);
     }
   };
 

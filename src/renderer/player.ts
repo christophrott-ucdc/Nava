@@ -2,11 +2,12 @@
  * Player: owns the <video>, the PlaybackState machine and the phase clock, applies Commands
  * (always received via the server's `applyCmd`, on every screen) and drives the Timeline.
  *
- *   idle -> preshow -> playing <-> paused -> ended -> epilogue -> (restart) idle
+ *   idle -> preshow -> playing <-> paused -> epilogue -> ended -> (restart) idle
  *
  * phaseTime: preshow/epilogue and the negative launch lead-in use a pausable timer;
  * once launch reaches zero, play time is video.currentTime.
- * On video `ended`, `ShowFile.epilogueOnVideoEnd` selects automatic epilogue or a final-frame hold.
+ * At the configured video cut, `ShowFile.epilogueOnVideoEnd` selects immediate epilogue or a
+ * final-frame hold.
  */
 
 import type { AvatarController, VoiceEngine } from "../shared/contracts";
@@ -39,6 +40,8 @@ export interface PlayerDeps {
   /** Autoplay refused by the browser: the boot code shows the "click to start" veil. */
   onAutoplayBlocked?: () => void;
   onStateChange?: (state: PlaybackState) => void;
+  /** Clock-source hook: publish the already-applied local cut->epilogue transition immediately. */
+  onConfiguredVideoEnd?: () => void;
 }
 
 /** Pausable timer for the preshow / epilogue phases. */
@@ -90,7 +93,6 @@ export class Player {
   private buffering = false;
   private pendingSeek: number | null = null;
   private autoplayBlocked = false;
-  private autoEpilogueTimer: ReturnType<typeof setTimeout> | null = null;
   private raf = 0;
   private lastOsd = 0;
   private remoteCounts = { screens: 0, tablets: 0 };
@@ -142,7 +144,6 @@ export class Player {
 
   dispose(): void {
     this.disposed = true;
-    this.clearAutoEpilogue();
     if (this.raf) cancelAnimationFrame(this.raf);
     this.timeline.reset();
   }
@@ -190,8 +191,10 @@ export class Player {
   }
 
   duration(): number {
-    const d = this.video.duration;
-    return Number.isFinite(d) && d > 0 ? d : this.getShow().videoDurationSec;
+    const physical = this.video.duration;
+    const configured = this.getShow().videoDurationSec;
+    if (Number.isFinite(physical) && physical > 0 && Number.isFinite(configured) && configured > 0) return Math.min(physical, configured);
+    return Number.isFinite(physical) && physical > 0 ? physical : configured;
   }
 
   sceneId(): string | null {
@@ -253,7 +256,10 @@ export class Player {
           this.enterIdle();
           break;
         case "epilogue":
-          this.enterEpilogue(0, true);
+          // The clock-source screen enters epilogue locally at the configured cut and then asks
+          // the server to publish the same command. Do not reset its already-running local clock
+          // when that command returns a few milliseconds later.
+          if (this.phaseMode !== "epilogue") this.enterEpilogue(0, true);
           break;
         case "fireCue":
           this.timeline.fireById(cmd.cueId);
@@ -415,7 +421,6 @@ export class Player {
   }
 
   private enterIdle(): void {
-    this.clearAutoEpilogue();
     this.phaseMode = null;
     this.playLeadIn = false;
     this.timeline.reset();
@@ -435,7 +440,6 @@ export class Player {
   }
 
   private enterPreshow(at: number, running: boolean): void {
-    this.clearAutoEpilogue();
     this.phaseMode = "preshow";
     this.playLeadIn = false;
     this.video.pause();
@@ -451,7 +455,6 @@ export class Player {
   }
 
   private enterPlay(at: number, play: boolean): void {
-    this.clearAutoEpilogue();
     this.phaseMode = "play";
     const t = this.clampPhasePlayTime(at);
     this.playLeadIn = t < 0;
@@ -462,7 +465,7 @@ export class Player {
     }
     this.setState("paused");
     this.timeline.setPhase("play", t);
-    const d = this.video.duration;
+    const d = this.duration();
     if (Number.isFinite(d) && t >= d - 0.05) {
       this.handleEnded();
       return;
@@ -473,7 +476,6 @@ export class Player {
   }
 
   private enterEpilogue(at: number, running: boolean): void {
-    this.clearAutoEpilogue();
     this.phaseMode = "epilogue";
     this.playLeadIn = false;
     this.video.pause();
@@ -490,23 +492,13 @@ export class Player {
   private handleEnded(): void {
     if (this.phase() !== "play") return;
     this.video.playbackRate = 1;
-    this.setState("ended");
-    this.deps.log("info", "video ended — hold pe ultimul cadru, aștept operatorul (epilog)");
     if (this.getShow().epilogueOnVideoEnd) {
-      // Leave enough time for the clock source's next report to tell the authoritative server
-      // that the video ended. The server then broadcasts `epilogue` to every screen. In a
-      // disconnected/offline run this local fallback still advances the show.
-      this.autoEpilogueTimer = setTimeout(() => {
-        this.autoEpilogueTimer = null;
-        if (this.state === "ended") this.enterEpilogue(0, true);
-      }, 750);
-    }
-  }
-
-  private clearAutoEpilogue(): void {
-    if (this.autoEpilogueTimer !== null) {
-      clearTimeout(this.autoEpilogueTimer);
-      this.autoEpilogueTimer = null;
+      this.deps.log("info", "video cut — intrare locală imediată în epilog");
+      this.enterEpilogue(0, true);
+      this.deps.onConfiguredVideoEnd?.();
+    } else {
+      this.setState("ended");
+      this.deps.log("info", "video ended — hold pe ultimul cadru, aștept operatorul (epilog)");
     }
   }
 
@@ -523,7 +515,7 @@ export class Player {
   // ---------------------------------------------------------------- video helpers
 
   private clampPlayTime(t: number): number {
-    const d = this.video.duration;
+    const d = this.duration();
     const max = Number.isFinite(d) && d > 0 ? d : Number.POSITIVE_INFINITY;
     return Math.min(Math.max(0, t), max);
   }
@@ -749,7 +741,6 @@ export class Player {
           return d;
         }
         if (this.phaseMode !== "play") this.enterPlay(expected, false);
-        this.clearAutoEpilogue();
         this.video.pause();
         this.video.playbackRate = 1;
         // Our video is still short of the end: only jump if clearly behind.
@@ -803,11 +794,32 @@ export class Player {
     this.raf = requestAnimationFrame(this.tick);
     if (this.isClockAdvancing()) this.timeline.update(this.phaseTime());
     if (this.playLeadIn && this.state === "playing" && this.clock.now() >= 0) this.finishLeadIn();
+    if (!this.playLeadIn && this.state === "playing" && this.phaseMode === "play" && this.phaseTime() >= this.duration() - 0.02) {
+      this.video.pause();
+      this.seekVideo(this.duration());
+      this.handleEnded();
+      return;
+    }
+    if (this.state === "epilogue" && this.phaseMode === "epilogue") {
+      const end = this.phaseEnd("epilogue");
+      if (end > 0 && this.phaseTime() >= end) {
+        this.clock.pause();
+        this.clock.set(end);
+        this.setState("ended");
+        return;
+      }
+    }
     if (now - this.lastOsd > 120) {
       this.lastOsd = now;
       this.onOsd?.();
     }
   };
+
+  private phaseEnd(phase: Phase): number {
+    return this.getShow().scenes
+      .filter((scene) => scene.phase === phase)
+      .reduce((end, scene) => Math.max(end, scene.end), 0);
+  }
 
   /** Boot code hooks the OSD refresh here (needs sync status too). */
   onOsd: (() => void) | null = null;
