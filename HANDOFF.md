@@ -980,3 +980,77 @@ Acestea sunt menționate în scenariu și nu au fost implementate în această e
 ### 18.8 Erată append-only
 
 În §18.5, forma `semiiună` este o eroare de tastare; se citește `semilună`. Corecția este adăugată aici, fără modificarea textului anterior.
+
+---
+
+## 19. ADDENDUM APPEND-ONLY — reconstrucția creativă „Protocolul Acasă” (Codex, 2026-09-04)
+
+> Această secțiune este adăugată la final. Nicio secțiune anterioară, inclusiv scenariul de lucru descris în §18, nu a fost rescrisă. Pentru direcția creativă actuală, §19 înlocuiește concluziile artistice din §18 fără să le șteargă din istoricul proiectului.
+
+### 19.1 Motivul reconstrucției
+
+Utilizatorul a respins explicit prima versiune de zece minute ca fiind prea simplă și a cerut creativitate totală, un scenariu mult mai bun și mai complex. Diagnosticul acceptat a fost că versiunea anterioară funcționa ca un tur ghidat, corect și sigur, dar nu avea suficient mister, cauzalitate, transformare de personaj sau un rol indispensabil pentru public.
+
+Cei trei consultanți `scenarist`, `regizor_film` și `expert_copii` au primit un nou mandat: reconcepere de la zero, nu cosmetizare. Au propus independent motor dramatic, structură vizual-sonoră, participare cu payoff și limite de siguranță. Agentul principal a sintetizat ideile, a scris versiunea 2 integrală și a trecut-o prin trei runde de audit dur. Fiecare problemă raportată a fost corectată înainte de verdictul final.
+
+### 19.2 Conceptul nou
+
+Titlul complet este **„A PATRA LUME — PROTOCOLUL ACASĂ”**. Misterul central este **Semnalul fără adresă**:
+
+- EXODUS-7 primește înaintea misiunii un mesaj spart în zece fragmente: `GĂSIȚI A PATRA LUME`;
+- cele zece fragmente corespund celor zece stații ale copiilor;
+- Lumina dă semnalului o culoare;
+- Natura îi dă un ritm;
+- Tehnologica îi dă cele zece perspective pe care nu le poate reduce la un singur răspuns;
+- în wormhole se descoperă clar că mesajul a călătorit înapoi în timp și a ajuns înainte de a fi trimis;
+- la apariția Pământului, echipajul înțelege că el este chiar expeditorul;
+- la 8:39 Avatarul reatașează explicit mesajul inițial, iar la 8:43 Căpitanul spune `Trimite`; aceasta este singura transmisie și închide cauzal bucla;
+- a patra lume nu este o planetă necunoscută, ci prima lume pe care echipajul a învățat s-o privească din nou.
+
+### 19.3 Complexitatea reală adăugată
+
+- Un inel periferic cu patru arce și un motiv muzical de patru note acumulează memoria călătoriei. Al patrulea arc și ultima notă apar numai la Pământ.
+- Fiecare dintre cele zece roluri primește automat o lentilă narativă distinctă: direcție, energie, undă, puls, anomalie, traseu, coerență, viață, traiectorie sau memorie. Rolul are payoff fără a adăuga sarcini.
+- Există trei interacțiuni scurte: culoare, puls paralel și o alegere despre ce păstrează o lume vie. Toate au `Doar observ`, timeout și fallback complet.
+- Replica Tehnologicei este adaptivă pentru trei situații reale: alegeri diverse, o singură alegere sau numai observație. Scenariul nu pretinde un rezultat care nu s-a produs.
+- Tehnologica anticipează comic replica `Scanați sursa`; Căpitanul o rostește, iar ea răspunde sec `Știm`.
+- Căpitanul are acum un arc complet: protocol → observație → îndoială → alegere → apartenență. Punctul lui de transformare este `Atunci sunt autentice`, iar în wormhole înțelege înaintea sistemului: `Atunci noi suntem expeditorul`.
+- Climaxul elimină HUD-ul și lasă Pământul neacoperit. Efectul final este o diagramă schematică ce părăsește cadrul, nu un wormhole fotorealist inventat peste film.
+
+### 19.4 Textul Căpitanului
+
+Noul scenariu conține 17 intervenții ale Căpitanului și o anexă separată `TEXTUL INTEGRAL AL CĂPITANULUI`, pentru actor, TTS sau programarea robotului. Textul din anexă a fost comparat automat cu replicile din scenariul principal și este identic, inclusiv timecode-urile.
+
+Indicația de interpretare este că nu joacă un robot fără emoție, ci o ființă care și-a organizat emoția sub forma disciplinei. Căldura apare prin pauze, volum și direcția privirii, nu printr-o schimbare bruscă de voce.
+
+### 19.5 Corecțiile rezultate din audit
+
+Auditurile succesive au reparat:
+
+- două transmisii contradictorii ale semnalului — a rămas una singură, la 8:43;
+- lipsa mesajului `GĂSIȚI A PATRA LUME` din semnalul final;
+- confuzia dintre punctul de origine și momentul transmiterii;
+- formulări care presupuneau zece răspunsuri diferite chiar dacă publicul nu participa;
+- afirmația falsă că o mașină nu poate reproduce semnătura; ideea actuală este că mașina nu putea **alege** semnătura în locul copiilor;
+- o explicație prea abstractă a buclei temporale; textul spune acum direct că semnalul a trecut prin wormhole înapoi în timp și a ajuns înainte să fie trimis;
+- promisiunea falsă că rolurile văd lucruri diferite, prin definirea lentilelor lor automate;
+- trei coliziuni de voce și un whoosh prea apropiat de dialog;
+- un trigger sonor rămas legat de cuvântul eliminat `far`; acum primul arc se aprinde pe `adâncime`;
+- lipsa instrucțiunii finale de a rămâne pe loc până la aprinderea luminilor și indicația facilitatorului;
+- formulări care amenințau involuntar, invadau intimitatea emoțională sau transformau finalul într-o lecție morală.
+
+### 19.6 Verificări finale
+
+- contract temporal: 600 s exact;
+- film: video 0–465 s, cu offset public constant de +60 s, aliniat pe toate corpurile și tranzițiile reale;
+- 48 de intervenții vocale în scenariul principal, 477 de cuvinte;
+- 17 replici ale Căpitanului, cu anexă verificată automat ca identică;
+- verificare la o rostire lentă de 120 cuvinte/minut plus minimum 1 s buffer: zero coliziuni între ferestrele vocale;
+- `git diff --check`: fără erori de whitespace;
+- verdict final `VERDE` de la scenarist;
+- verdict final `VERDE CA SCENARIU` de la regizorul de film;
+- verdict final `VERDE` de la expertul pentru copii.
+
+### 19.7 Fișierul autoritativ pentru etapa creativă
+
+Scenariul curent este `docs/SCENARIU-REGIZORAL-10-MIN.md`, versiunea 2. `assets/show/show.json` și codul aplicației nu au fost încă schimbate după această versiune, deoarece utilizatorul a cerut mai întâi scenariul. Cerințele de producție și implementare sunt enumerate la finalul documentului.
