@@ -25,6 +25,8 @@ npm run dev -- --windowed
 
 În starea inițială, click oriunde pe ecran, butonul **PORNEȘTE EXPERIENȚA** sau `Space`/`Enter` pornește fluxul complet, de la primirea publicului. După 50 de secunde, lansarea continuă automat. **SARI LA LANSARE** sau `S` omit primirea și pornesc direct numărătoarea T−10. `P` pornește explicit primirea publicului. În timpul filmului, `Space` pune pauză/reia; săgețile fac salt ±5 secunde, `E` intră în epilog, `R` revine în idle și `I` identifică ecranele. `Esc` de două ori închide doar în modul windowed/dezvoltare.
 
+Pentru test rapid din consola operatorului, butonul mare **START EXPERIENCE** pornește direct numărătoarea T−10 și filmul; în `IDLE` sau `PRE-SHOW`, `Space` și `Enter` din consolă fac același lucru. Acest shortcut de test nu schimbă fluxul complet al butonului de pe ecranul master.
+
 ## Verificare și distribuție
 
 ```powershell

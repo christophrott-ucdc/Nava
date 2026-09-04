@@ -49,6 +49,7 @@ const dom = {
   toast: byId<HTMLDivElement>("toast"),
   playButton: byId<HTMLButtonElement>("play-button"),
   pauseButton: byId<HTMLButtonElement>("pause-button"),
+  startExperience: byId<HTMLButtonElement>("start-experience"),
 };
 
 let socket: WebSocket | null = null;
@@ -294,6 +295,7 @@ function renderState(): void {
   dom.timeline.disabled = phase === null || state.state === "ended";
   dom.playButton.disabled = state.state !== "paused";
   dom.pauseButton.disabled = state.state !== "playing";
+  dom.startExperience.disabled = state.state !== "idle" && state.state !== "preshow";
   const restart = document.querySelector<HTMLButtonElement>('[data-command="restart"]');
   if (restart) restart.disabled = state.state === "idle";
   if (currentScene) dom.sceneSelect.value = currentScene.id;
@@ -491,6 +493,8 @@ document.querySelectorAll<HTMLButtonElement>("[data-command]").forEach((button) 
   });
 });
 
+dom.startExperience.addEventListener("click", () => void dispatch({ action: "start" }));
+
 dom.timeline.addEventListener("pointerdown", () => (timelineDragging = true));
 dom.timeline.addEventListener("input", () => {
   timelineDragging = true;
@@ -544,9 +548,10 @@ dom.clearAnswers.addEventListener("click", async () => {
 window.addEventListener("keydown", (event) => {
   const target = event.target as HTMLElement | null;
   if (target?.matches("input, select, textarea, button")) return;
-  if (event.code === "Space") {
+  if (event.code === "Space" || event.code === "Enter") {
     event.preventDefault();
-    if (state?.state === "playing") void dispatch({ action: "pause" });
+    if (state?.state === "idle" || state?.state === "preshow") void dispatch({ action: "start" });
+    else if (state?.state === "playing") void dispatch({ action: "pause" });
     else if (state?.state === "paused") void dispatch({ action: "play" });
   }
 });

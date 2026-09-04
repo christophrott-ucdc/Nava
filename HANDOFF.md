@@ -1777,3 +1777,21 @@ Curățenia TTS, integrarea V3 și contractul tabletelor sunt finalizate în sof
 - eventualul score/ambient muzical original și mixul cinematic final; filmul sursă nu are pistă audio, iar versiunea curentă folosește vocile și SFX-urile sintetizate descrise mai sus.
 
 `config.json` local nu a fost suprascris: rămâne configurat pentru un singur display `center`, deoarece mașina de dezvoltare a raportat un singur monitor. În locație trebuie configurate display-urile reale după ordinea detectată; nu inventați indicii înainte de instalare.
+
+---
+
+## 26. 2026-09-04 — buton START EXPERIENCE pentru test rapid în consola operatorului
+
+Utilizatorul a cerut un buton explicit de pornire deoarece controalele existente `PRE-SHOW` și `START` nu făceau suficient de clar care comandă începe imediat filmul. Verificarea efectivă în `http://localhost:4321/control/` a confirmat că vechiul `PRE-SHOW` intra corect în faza de 50 s, însă acest flux începe cu câteva secunde de liniște și putea fi perceput ca lipsă de răspuns. În plus, `Space` în consola web nu avea nicio acțiune din `IDLE`.
+
+Au fost făcute următoarele schimbări, fără a modifica fluxul public continuu al playerului master descris în §25.7:
+
+- `src/web/control/index.html`: a fost adăugat deasupra transportului un buton mare și vizibil **START EXPERIENCE**, cu explicația „Test: pornește imediat numărătoarea și filmul”;
+- `src/web/control/styles.css`: butonul are stil primar cyan, țintă de 82 px, focus vizibil, hover și stare disabled;
+- `src/web/control/index.ts`: clickul trimite comanda autoritativă `{ action: "start" }`, pornește direct la T−10 și butonul se dezactivează când show-ul nu mai este în `IDLE`/`PRE-SHOW`;
+- în consola operatorului, `Space` sau `Enter` din `IDLE` ori `PRE-SHOW` execută același start imediat; în timpul filmului, `Space` continuă să facă pauză/reluare;
+- `README.md` și `docs/OPERARE.md` documentează diferența dintre shortcut-ul de test din consolă și **PORNEȘTE EXPERIENȚA** de pe ecranul master, care păstrează experiența completă de la pre-show.
+
+Verificarea a fost făcută prin interacțiune reală în browser, nu doar prin API: butonul era vizibil și activ în `IDLE`; clickul a schimbat starea în `ÎN REDARE`, ceasul în `T−00:09.x`, nota în `Start · HH:MM:SS` și a dezactivat butonul. A fost verificat separat și `Space`, cu aceeași tranziție. După teste, show-ul a fost readus în `idle`.
+
+`npm run check` a trecut integral după build-ul final: TypeScript, validator show, validator voci, build Electron/web, smoke core, smoke platform și smoke media. Build-ul final păstrează comportamentul playerului master: clickul pe panoul său principal/`Space`/`Enter` pornește pre-show-ul continuu; numai noul buton **START EXPERIENCE** din consola operatorului este shortcut-ul evident pentru pornire imediată de test.

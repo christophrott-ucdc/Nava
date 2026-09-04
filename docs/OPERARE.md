@@ -16,7 +16,7 @@ Consola este la `http://localhost:4321/control/`; de pe alt dispozitiv folosiți
 
 1. În starea `IDLE`, verificați: ecrane conectate, `videoReady`, cinci tablete și volumul. Pe ecranul master apare panoul de lansare; click oriunde, **PORNEȘTE EXPERIENȚA** sau `Space`/`Enter` pornește fluxul complet.
 2. Pre-show-ul durează 50 s și oferă pe cele cinci tablete posturile NAVIGAȚIE, PROPULSIE, COMUNICAȚII, BIOSEMNALE și MEMORIE, câte unul pentru fiecare pereche de copii. Replicile sunt la 4, 15, 24, 35 și 43 s.
-3. Lansarea pornește automat după pre-show. Urmează countdown-ul T−10…0 pe cadrul înghețat, apoi filmul. Pentru a omite pre-show-ul, folosiți **SARI LA LANSARE** sau `S`; `P` pornește explicit pre-show-ul.
+3. Lansarea pornește automat după pre-show. Urmează countdown-ul T−10…0 pe cadrul înghețat, apoi filmul. Pentru a omite pre-show-ul, folosiți **SARI LA LANSARE** sau `S` pe ecranul master ori butonul mare **START EXPERIENCE** din consolă; în `IDLE`/`PRE-SHOW`, `Space` și `Enter` din consolă sunt shortcut-uri pentru același start imediat. `P` pornește explicit pre-show-ul.
 4. Folosiți **PAUSE/PLAY** numai dacă este necesar. Pentru repetiții puteți muta sliderul, sări la o scenă sau declanșa un cue manual.
 5. La întrebarea Planetei Tehnologiei, lăsați timp copiilor să răspundă pe tablete; răspunsurile apar în consolă.
 6. Playerul oprește determinist masterul video la 465 s și continuă automat în epilog pe aceleași cinci ecrane și aceleași cinci posturi. Publicul nu se mută, iar Căpitanul rămâne numai în fereastra GLB de pe ecranul configurat.
