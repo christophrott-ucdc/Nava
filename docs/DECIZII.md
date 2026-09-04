@@ -34,7 +34,7 @@ Acceptat. Ordinea este manifest local, TTS live cu cache și `speechSynthesis`. 
 
 ## ADR-09 — Avatar și entități separate
 
-Acceptat. Numai `AVATAR_AI` folosește GLB/TalkingHead. Cele trei civilizații sunt randate procedural pe canvas, astfel încât nu cer asset-uri sau licențe suplimentare.
+Actualizat pentru scenariul V3. Numai `CAPITANUL` folosește GLB/TalkingHead și lip-sync, exclusiv pe ecranul configurat cu `showAvatar: true`. `AVATAR_AI` este vocea și interfața/HUD-ul navei, fără corp umanoid. Cele trei civilizații sunt randate procedural pe canvas, astfel încât nu cer asset-uri sau licențe suplimentare.
 
 ## ADR-10 — Aplicații web pe LAN
 

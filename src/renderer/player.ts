@@ -68,7 +68,7 @@ class PhaseClock {
   }
 }
 
-const TEST_LINE_RO = "Sistemele navei sunt online. Vă aud și vă văd, exploratori.";
+const TEST_LINE_RO = "Căpitanul EXODUS-7 online. Vă aud, echipaj.";
 /** Follower jumps larger than this use seek semantics (skip cues) instead of catching up. */
 const BIG_JUMP_SEC = 2.0;
 const RATE_DEADBAND_SEC = 0.02;
@@ -273,7 +273,7 @@ export class Player {
           break;
         case "testAvatar":
           this.ensureAvatarVisible();
-          void this.timeline.speak({ id: "test-avatar", speaker: "AVATAR_AI", text: TEST_LINE_RO, subtitle: true });
+          void this.timeline.speak({ id: "test-avatar", speaker: "CAPITANUL", text: TEST_LINE_RO, subtitle: true });
           break;
         case "identifyScreens":
           this.deps.osd.identify(3000);

@@ -186,7 +186,7 @@ Pământul se îndepărtează. La video 20 s dispare, iar câmpul stelar rămân
 
 Mai încet decât în prolog. În fereastra GLB, privirea lui urmărește Pământul care se îndepărtează, nu datele HUD.
 
-> Pământul se îndepărtează. Păstrați-i imaginea. Când îl vom vedea din nou, s-ar putea ca noi să nu-l mai privim la fel.
+> Pământul se îndepărtează. Păstrați-i imaginea. Când îl vom revedea, noi vom fi alții.
 
 La dispariția Pământului urmează trei secunde de aproape-tăcere.
 
@@ -505,7 +505,7 @@ Această anexă este foaia de lucru pentru interpretul vocal, TTS, lip-sync și 
 | 0:04 | protocolar; privirea GLB spre HUD | „EXODUS-7 a primit un semnal fără adresă. Cinci fragmente, câte unul pentru fiecare post. Fiecare poartă două urme.” |
 | 0:24 | GLB-ul trece la privire directă | „Atunci nu avem pasageri. Avem cinci echipe. Fiecare post privește prin altă lentilă. Împreună vom vedea forma semnalului.” |
 | 0:43 | calm și protector; cadru ușor mai apropiat | „Rămâneți stabili. La cinci, numărăm împreună.” |
-| 1:09 | prima urmă de contemplare | „Pământul se îndepărtează. Păstrați-i imaginea. Când îl vom vedea din nou, s-ar putea ca noi să nu-l mai privim la fel.” |
+| 1:09 | prima urmă de contemplare | „Pământul se îndepărtează. Păstrați-i imaginea. Când îl vom revedea, noi vom fi alții.” |
 | 3:10 | încă formal | „Primul fragment: un semnal trimis altcuiva. Înregistrat.” |
 | 5:01 | privește camera înaintea datelor | „Cinci posturi. Zece urme. Un singur echipaj.” |
 | 6:04 | reflex procedural | „Scanați sursa.” |

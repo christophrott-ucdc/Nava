@@ -34,6 +34,16 @@ Filmul de 2,5 GB nu intră în Git și nu este inclus în installer. Copiați `m
 
 Vocile pre-generate sunt opționale. Fără chei sau manifest, playerul folosește vocea română disponibilă în Windows. Pentru generare, copiați variabilele necesare din `.env.example` într-un fișier local `.env`, apoi rulați `npm run tts`. Nu comiteți `.env`.
 
+Setul expresiv pentru scenariul V3 este definit separat în `assets/show/voice-script-v3.json`: 17 replici ale Căpitanului și 18 ale Avatarului Navei. Fișierele generate și timpii de lip-sync sunt în `assets/voice/ro/manifest.json`. Comenzi utile:
+
+```powershell
+npm run validate:voices
+npm run voice:reels
+npm run tts -- --source assets/show/voice-script-v3.json --provider elevenlabs
+```
+
+Ultima comandă cere `ELEVENLABS_API_KEY` numai în mediul local. Cele două montaje de audiție sunt `assets/voice/ro/preview-capitan-v3.mp3` și `assets/voice/ro/preview-avatar-v3.mp3`. Sursa V3 rămâne separată de `show.json` până la migrarea integrală a cue-urilor vizuale și interactive, pentru a nu amesteca două versiuni de scenariu în aceeași experiență executabilă.
+
 ## Configurare
 
 `config.json` este ignorat de Git. Porniți de la `config.example.json` și configurați rolul `master`/`follower`, ecranele, calea filmului, ieșirea audio și adresa masterului. Referința completă este în [docs/SPEC-SHEET.md](docs/SPEC-SHEET.md), iar procedura de show în [docs/OPERARE.md](docs/OPERARE.md).

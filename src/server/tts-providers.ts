@@ -22,6 +22,26 @@ export type TtsResult =
 
 type Provider = "elevenlabs" | "gemini";
 
+export interface ElevenVoiceSettings {
+  stability?: number;
+  similarity_boost?: number;
+  style?: number;
+  speed?: number;
+  use_speaker_boost?: boolean;
+}
+
+export interface TtsControls {
+  /** Overrides the configured voice for this generated asset. Voice IDs are not secrets. */
+  voiceId?: string;
+  /** ElevenLabs model override, e.g. eleven_v3 for audio-tag direction. */
+  modelId?: string;
+  /** Spoken-delivery tags. Applied only by Eleven v3 and never stored as subtitle text. */
+  audioTags?: string[];
+  voiceSettings?: ElevenVoiceSettings;
+  seed?: number;
+  outputFormat?: string;
+}
+
 const ELEVEN_DEFAULTS: Record<Speaker, string> = {
   // Legacy IDs remain API-compatible and route to their maintained
   // replacements. Production should pin reviewed voices through .env.
@@ -40,12 +60,12 @@ const GEMINI_DEFAULTS: Record<Speaker, string> = {
   TEHNOLOGIC: "Iapetus", // clear
 };
 
-const ELEVEN_SETTINGS: Record<Speaker, { stability: number; similarity_boost: number; style: number; speed: number }> = {
-  AVATAR_AI: { stability: 0.62, similarity_boost: 0.78, style: 0.18, speed: 0.98 },
-  CAPITANUL: { stability: 0.8, similarity_boost: 0.78, style: 0.08, speed: 0.9 },
-  LUMINA: { stability: 0.56, similarity_boost: 0.7, style: 0.3, speed: 0.9 },
-  NATURA: { stability: 0.75, similarity_boost: 0.76, style: 0.14, speed: 0.88 },
-  TEHNOLOGIC: { stability: 0.9, similarity_boost: 0.8, style: 0.02, speed: 1.02 },
+const ELEVEN_SETTINGS: Record<Speaker, Required<ElevenVoiceSettings>> = {
+  AVATAR_AI: { stability: 0.62, similarity_boost: 0.78, style: 0.18, speed: 0.98, use_speaker_boost: true },
+  CAPITANUL: { stability: 0.8, similarity_boost: 0.78, style: 0.08, speed: 0.9, use_speaker_boost: true },
+  LUMINA: { stability: 0.56, similarity_boost: 0.7, style: 0.3, speed: 0.9, use_speaker_boost: true },
+  NATURA: { stability: 0.75, similarity_boost: 0.76, style: 0.14, speed: 0.88, use_speaker_boost: true },
+  TEHNOLOGIC: { stability: 0.9, similarity_boost: 0.8, style: 0.02, speed: 1.02, use_speaker_boost: true },
 };
 
 const GEMINI_STYLE: Record<Speaker, string> = {
@@ -119,7 +139,7 @@ interface CharacterAlignment {
 }
 
 /** Character alignment -> word timing arrays in milliseconds. */
-export function alignmentToWords(alignment: CharacterAlignment | null | undefined): {
+export function alignmentToWords(alignment: CharacterAlignment | null | undefined, omitAudioTags = false): {
   words: string[];
   wtimes: number[];
   wdurations: number[];
@@ -137,6 +157,7 @@ export function alignmentToWords(alignment: CharacterAlignment | null | undefine
   let token = "";
   let tokenStart = 0;
   let tokenEnd = 0;
+  let insideAudioTag = false;
   const spoken = /[\p{L}\p{N}]/u;
   const connector = /['’\-]/u;
   const flush = () => {
@@ -155,6 +176,15 @@ export function alignmentToWords(alignment: CharacterAlignment | null | undefine
     const start = Number.isFinite(starts[i]) ? Math.max(0, starts[i]) : tokenEnd;
     const end = Number.isFinite(ends[i]) ? Math.max(start, ends[i]) : start;
     for (const char of [...chunk]) {
+      if (omitAudioTags && char === "[") {
+        flush();
+        insideAudioTag = true;
+        continue;
+      }
+      if (omitAudioTags && insideAudioTag) {
+        if (char === "]") insideAudioTag = false;
+        continue;
+      }
       if (spoken.test(char) || (connector.test(char) && token.length > 0)) {
         if (!token) tokenStart = start;
         token += char;
@@ -167,6 +197,36 @@ export function alignmentToWords(alignment: CharacterAlignment | null | undefine
   flush();
   const durationMs = count ? Math.max(0, Math.round(Math.max(...ends.slice(0, count).filter(Number.isFinite), 0) * 1000)) : 0;
   return { words, wtimes, wdurations, durationMs };
+}
+
+function clamp(value: number | undefined, fallback: number, min: number, max: number): number {
+  return typeof value === "number" && Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
+}
+
+function elevenSettings(speaker: Speaker, controls?: TtsControls): Required<ElevenVoiceSettings> {
+  const base = ELEVEN_SETTINGS[speaker];
+  const value = controls?.voiceSettings;
+  return {
+    stability: clamp(value?.stability, base.stability, 0, 1),
+    similarity_boost: clamp(value?.similarity_boost, base.similarity_boost, 0, 1),
+    style: clamp(value?.style, base.style, 0, 1),
+    speed: clamp(value?.speed, base.speed, 0.7, 1.2),
+    use_speaker_boost: value?.use_speaker_boost ?? base.use_speaker_boost,
+  };
+}
+
+function audioTaggedText(text: string, modelId: string, tags: string[] | undefined): string {
+  if (modelId !== "eleven_v3" || !tags?.length) return text;
+  const safe = tags
+    .map((tag) => tag.trim().replace(/^\[|\]$/g, ""))
+    .filter((tag) => /^[\p{L}\p{N} ,.'’!?-]{1,48}$/u.test(tag))
+    .slice(0, 3);
+  return safe.length ? `${safe.map((tag) => `[${tag}]`).join(" ")} ${text}` : text;
+}
+
+function outputFormat(value: string | undefined): string {
+  const selected = value?.trim() || "mp3_44100_128";
+  return /^(?:mp3_\d+_\d+|opus_\d+_\d+|pcm_\d+|ulaw_\d+|alaw_\d+)$/u.test(selected) ? selected : "mp3_44100_128";
 }
 
 function estimateWordTimings(text: string, durationMs: number): { words: string[]; wtimes: number[]; wdurations: number[] } {
@@ -194,19 +254,29 @@ function estimateWordTimings(text: string, durationMs: number): { words: string[
   return { words: matches.map((m) => m[0]), wtimes, wdurations };
 }
 
-async function synthesizeElevenLabs(text: string, speaker: Speaker): Promise<TtsResult> {
+async function synthesizeElevenLabs(text: string, speaker: Speaker, controls?: TtsControls): Promise<TtsResult> {
   const apiKey = envValue("ELEVENLABS_API_KEY");
   if (!apiKey) return { ok: false, reason: "ElevenLabs indisponibil: lipsește ELEVENLABS_API_KEY." };
-  const voiceId = resolveVoiceId(speaker, "elevenlabs");
-  const modelId = envValue("ELEVENLABS_MODEL_ID") ?? "eleven_multilingual_v2";
+  const voiceId = controls?.voiceId?.trim() || resolveVoiceId(speaker, "elevenlabs");
+  const modelId = controls?.modelId?.trim() || envValue("ELEVENLABS_MODEL_ID") || "eleven_multilingual_v2";
+  const inputText = audioTaggedText(text, modelId, controls?.audioTags);
+  const format = outputFormat(controls?.outputFormat ?? envValue("ELEVENLABS_OUTPUT_FORMAT"));
+  const body: Record<string, unknown> = {
+    text: inputText,
+    model_id: modelId,
+    voice_settings: elevenSettings(speaker, controls),
+  };
+  if (typeof controls?.seed === "number" && Number.isInteger(controls.seed) && controls.seed >= 0 && controls.seed <= 4_294_967_295) {
+    body.seed = controls.seed;
+  }
   let response: Response;
   try {
     response = await fetchWithTimeout(
-      `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}/with-timestamps?output_format=mp3_44100_128`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voiceId)}/with-timestamps?output_format=${encodeURIComponent(format)}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json", "xi-api-key": apiKey },
-        body: JSON.stringify({ text, model_id: modelId, voice_settings: ELEVEN_SETTINGS[speaker] }),
+        body: JSON.stringify(body),
       },
     );
   } catch (err) {
@@ -227,8 +297,9 @@ async function synthesizeElevenLabs(text: string, speaker: Speaker): Promise<Tts
   if (!audio.length) return { ok: false, reason: "ElevenLabs: audio gol." };
   const normalized = payload.normalized_alignment as CharacterAlignment | null | undefined;
   const original = payload.alignment as CharacterAlignment | null | undefined;
-  let timing = alignmentToWords(normalized);
-  if (!timing.words.length) timing = alignmentToWords(original);
+  const omitAudioTags = modelId === "eleven_v3";
+  let timing = alignmentToWords(normalized, omitAudioTags);
+  if (!timing.words.length) timing = alignmentToWords(original, omitAudioTags);
   const durationMs = timing.durationMs || Math.max(900, Math.round(text.length * 72));
   const fallback = timing.words.length ? timing : { ...estimateWordTimings(text, durationMs), durationMs };
   return {
@@ -342,6 +413,7 @@ export async function synthesize(opts: {
   speaker: Speaker;
   lang: Lang;
   provider?: Provider;
+  controls?: TtsControls;
 }): Promise<TtsResult> {
   if (!SPEAKER_IDS.has(opts.speaker)) return { ok: false, reason: "Vorbitor TTS necunoscut." };
   if (!LANG_IDS.has(opts.lang)) return { ok: false, reason: "Limbă TTS necunoscută." };
@@ -350,6 +422,6 @@ export async function synthesize(opts: {
   if (text.length > 4000) return { ok: false, reason: "Textul TTS depășește 4000 de caractere." };
   const provider: Provider = opts.provider ?? (process.env.TTS_PROVIDER === "gemini" ? "gemini" : "elevenlabs");
   return provider === "elevenlabs"
-    ? synthesizeElevenLabs(text, opts.speaker)
+    ? synthesizeElevenLabs(text, opts.speaker, opts.controls)
     : synthesizeGemini(text, opts.speaker, opts.lang);
 }

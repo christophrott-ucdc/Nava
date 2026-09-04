@@ -1131,3 +1131,97 @@ Verificările automate finale pentru document:
 ### 20.7 Limită de etapă
 
 Această schimbare finalizează **scenariul**, nu implementarea lui în player. `assets/show/show.json`, interfața tabletelor și configurația efectivă cu cinci ecrane nu au fost încă rescrise după versiunea 3. Lista exactă a cue-urilor și cerințelor necesare implementării se află la finalul scenariului.
+
+---
+
+## 21. ADDENDUM APPEND-ONLY — vocile expresive V3 pentru Căpitan și Avatarul Navei (Codex, 2026-09-04)
+
+> Această secțiune a fost adăugată la final. Nicio secțiune anterioară din `HANDOFF.md` nu a fost rescrisă sau ștearsă.
+
+### 21.1 Rezultatul livrat
+
+Au fost generate toate cele **35 de intervenții vocale** Căpitan/Avatar din scenariul regizoral V3:
+
+- 17 fișiere pentru `CAPITANUL`, cu vocea profesională română „Paul Bogorin” furnizată de utilizator;
+- 18 fișiere pentru `AVATAR_AI`, cu vocea profesională română „AGEIS-7 - AI Alignment == 4/10” furnizată de utilizator;
+- 354 de cuvinte vorbite în total: 138 Căpitanul și 216 Avatarul Navei;
+- MP3 mono, 44,1 kHz, 192 kbps, cu timpi de cuvinte pentru lip-sync în `assets/voice/ro/manifest.json`;
+- durată vocală cumulată în manifest: 210,84 s.
+
+Cheia API transmisă de utilizator a fost injectată numai în mediul proceselor de generare și QA. Nu a fost scrisă în `.env`, cod, manifest, documentație sau Git. O scanare finală după un marker intern al cheii a confirmat absența ei din proiect.
+
+### 21.2 Sursa vocală și interpretarea
+
+A fost creat `assets/show/voice-script-v3.json`, sursa deterministă pentru cele 35 de cue-uri. Fiecare cue conține:
+
+- speaker, fază, timp public și timp intern de player;
+- text românesc identic cu scenariul;
+- direcție actoricească în limbaj natural;
+- maximum de durată admis;
+- ID de voce, model, seed și setări de interpretare;
+- taguri expresive precum `thoughtful`, `warmly`, `whispers`, `precise`, `reassuring` sau `authoritative`, acolo unde modelul le suportă.
+
+Modelul principal este `eleven_v3`, ales pentru controlul prin taguri audio, punctuație și inflexiuni. O singură replică foarte strânsă temporal, `v3-ai-0035`, folosește `eleven_multilingual_v2` cu parametri proprii de stabilitate, stil și viteză. Generatorul nu introduce tagurile în timpii de lip-sync și nu le lasă să fie citite ca text.
+
+### 21.3 Generatorul și controlul ferestrelor temporale
+
+`src/server/tts-providers.ts` acceptă acum control vocal per cue: `voiceId`, `modelId`, taguri audio, setări de voce, seed și format de ieșire. `scripts/tts-generate.mjs` acceptă `--source <json>`, include toate controalele în cheia de generație și salvează proveniența completă în manifest.
+
+Dacă o interpretare expresivă depășește fereastra fixă, generatorul aplică automat `ffmpeg atempo`, recalculează timpii cuvintelor și notează factorul în `postprocessTempo`. Această protecție a fost necesară pentru patru cue-uri: `v3-ai-0035`, `v3-cap-0604`, `v3-ai-0651` și `v3-ai-0718`. Niciunul dintre cele 35 de fișiere finale nu depășește fereastra lui.
+
+### 21.4 Corecția regizorală de la 1:09
+
+Primul audit de film a blocat replica Căpitanului de la 1:09: versiunea inițială dura 8,40 s, dar avea aproximativ 153 cuvinte/minut, mai rapid decât prologul de aproximativ 110 cuvinte/minut, deși indicația cerea o rostire mai lentă și contemplativă. Fereastra de 15 s ar fi permis și intrarea peste dispariția Pământului și tăcerea de la 1:20.
+
+Replica a fost rescrisă în scenariul principal, în anexa Căpitanului și în sursa vocală ca:
+
+> Pământul se îndepărtează. Păstrați-i imaginea. Când îl vom revedea, noi vom fi alții.
+
+Fereastra maximă a devenit 10,8 s, iar interpretarea regenerată durează 7,36 s, aproximativ 106 cuvinte/minut. Se termină la aproximativ 1:16,36 și lasă peste trei secunde curate înainte de momentul de la 1:20. După această corecție, regizorul a dat verdictul `VERDE`. Scenariul principal are acum 48 de replici și 467 de cuvinte.
+
+### 21.5 Proprietatea corpului și lip-sync-ul
+
+Contractul runtime a fost corectat pentru cerința fizică actuală:
+
+- `CAPITANUL` este singurul speaker cu `lipsyncAvatar: true` și vorbește prin personajul GLB de pe ecranul central;
+- `AVATAR_AI` este vocea și HUD-ul navei, cu `lipsyncAvatar: false`, fără corp umanoid;
+- comanda de test din player folosește acum Căpitanul și o replică dedicată lui;
+- aceeași decizie este consemnată în `docs/DECIZII.md` și în comentariile contractului `src/shared/types.ts`.
+
+### 21.6 Instrumente de verificare și audiție
+
+Au fost adăugate:
+
+- `scripts/validate-voice-script.mjs`: compară automat textul, ordinea, speakerul, timecode-ul și faza tuturor cue-urilor cu scenariul V3; verifică fișierele, ferestrele și absența tagurilor din lip-sync;
+- `scripts/build-voice-reels.mjs`: construiește două montaje cu pauze de 0,75 s între replici;
+- `scripts/qa-voice-transcription.mjs`: retranscrie montajele cu ElevenLabs Scribe v2 și măsoară WER, fără a salva cheia;
+- comenzile npm `validate:voices`, `voice:reels` și `qa:voices`; `validate:voices` face parte acum din `npm run check`;
+- instrucțiuni de regenerare și audiție în `README.md`.
+
+Montajele rezultate sunt:
+
+- `assets/voice/ro/preview-capitan-v3.mp3`: 17 replici, 92,93 s;
+- `assets/voice/ro/preview-avatar-v3.mp3`: 18 replici, 145,09 s.
+
+QA-ul final de retranscriere a identificat româna (`ron`) și a obținut WER 2,9% pentru Căpitan și 6,5% pentru Avatar, mult sub pragul automat de 18%. Niciun tag actoricesc în limba engleză nu a fost rostit.
+
+### 21.7 Audit și verificări finale
+
+Verdictele consultanților după generare și corecție:
+
+- `scenarist`: **VERDE** pentru concordanța integrală dintre scenariu, sursa vocală și manifest;
+- `regizor_film`: a identificat blocajul de la 1:09, apoi **VERDE** după rescriere și regenerare;
+- `expert_copii`: **VERDE** pentru ton, claritate, ritm și siguranța ferestrelor.
+
+Verificări tehnice finale:
+
+- `npm run check`: trecut integral — TypeScript, show existent, cele 35 de voci V3, build și toate cele trei smoke tests;
+- `npm run validate:voices`: 35/35 cue-uri identice cu scenariul, 17 Căpitan și 18 Avatar;
+- `npm run qa:voices`: trecut pentru ambele montaje;
+- `git diff --check`: fără erori de whitespace;
+- toate fișierele audio sunt ne-goale și se încadrează în durata maximă alocată;
+- markerul cheii API lipsește din fișierele proiectului.
+
+### 21.8 Limită de integrare rămasă
+
+Vocile V3, manifestul și timpii de lip-sync sunt finalizate și pregătite pentru player, dar nu au fost amestecate în `assets/show/show.json`, care execută încă vechea versiune de scenariu. `voice-script-v3.json` rămâne intenționat separat până când cue-urile vizuale, interactive și vocale ale întregului scenariu V3 sunt migrate împreună; astfel aplicația nu redă simultan două versiuni incompatibile ale poveștii.

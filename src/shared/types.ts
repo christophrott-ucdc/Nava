@@ -10,8 +10,8 @@
 
 /** Vorbitorii din scenariul "A Patra Lume" (docs/reference/scenariu.txt). */
 export type Speaker =
-  | "AVATAR_AI" // Avatarul navei — GLB 3D vizibil in coltul stanga-jos, cu lip-sync
-  | "CAPITANUL" // Robotul umanoid Unitree din sala; in player: doar voce + subtitrare
+  | "AVATAR_AI" // Vocea/interfata navei — HUD fara corp umanoid
+  | "CAPITANUL" // Personajul GLB de pe ecranul dedicat, cu lip-sync; fara prezenta fizica in sala
   | "LUMINA" // Avatarul Planetei Luminii — entitate procedurala aurie in centru
   | "NATURA" // Avatarul Planetei Naturii — entitate procedurala verde (ramuri, ploaie)
   | "TEHNOLOGIC"; // Avatarul Planetei Tehnologiei — entitate procedurala de cristal cyan
@@ -24,15 +24,15 @@ export interface SpeakerProfile {
   label: string;
   /** Culoare OKLCH/hex folosita pentru subtitrare, entitate si tema tabletelor. */
   color: string;
-  /** Daca avatarul GLB face lip-sync la aceasta voce (doar AVATAR_AI). */
+  /** Daca personajul GLB al Capitanului face lip-sync la aceasta voce. */
   lipsyncAvatar: boolean;
   /** Efect audio aplicat la redare (vezi src/renderer/voice). */
   fx: "clean" | "hologram" | "choir" | "forest" | "crystal";
 }
 
 export const SPEAKERS: Record<Speaker, SpeakerProfile> = {
-  AVATAR_AI: { id: "AVATAR_AI", label: "AVATAR AI", color: "#7dd3fc", lipsyncAvatar: true, fx: "hologram" },
-  CAPITANUL: { id: "CAPITANUL", label: "CĂPITANUL", color: "#e2e8f0", lipsyncAvatar: false, fx: "clean" },
+  AVATAR_AI: { id: "AVATAR_AI", label: "AVATARUL NAVEI", color: "#7dd3fc", lipsyncAvatar: false, fx: "hologram" },
+  CAPITANUL: { id: "CAPITANUL", label: "CĂPITANUL", color: "#e2e8f0", lipsyncAvatar: true, fx: "clean" },
   LUMINA: { id: "LUMINA", label: "AVATAR LUMINĂ", color: "#fcd34d", lipsyncAvatar: false, fx: "choir" },
   NATURA: { id: "NATURA", label: "AVATAR NATURĂ", color: "#86efac", lipsyncAvatar: false, fx: "forest" },
   TEHNOLOGIC: { id: "TEHNOLOGIC", label: "AVATAR TEHNOLOGIC", color: "#a5f3fc", lipsyncAvatar: false, fx: "crystal" },
