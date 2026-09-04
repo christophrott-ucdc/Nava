@@ -1525,3 +1525,38 @@ La testul complet, logul a confirmat:
 - avatar GLB `ready`;
 - `GET http://localhost:4321/control/` → HTTP 200, 6438 bytes;
 - închiderea ferestrei a declanșat shutdown normal, deconectare WebSocket și oprirea serverului; portul 4321 a fost eliberat.
+
+---
+
+## 24. ADDENDUM APPEND-ONLY — remediere input pe ecran și taste în `IDLE` (Codex, 2026-09-04)
+
+> Această secțiune a fost adăugată la final. Nicio secțiune anterioară din `HANDOFF.md` nu a fost rescrisă sau ștearsă.
+
+Utilizatorul a raportat că apăsarea ecranului sau a tastelor nu producea nimic. Logul real `runs/app-20260904-202444.jsonl` a arătat că inputul de tastatură ajungea în renderer, dar `Space` trimitea comanda `play` în starea `idle`, iar serverul o respingea repetat cu `PLAY funcționează doar din PAUZĂ (folosește START)`. Clickul pe suprafața filmului nu avea niciun handler, iar singurul strat clickabil era veil-ul de autoplay, afișat doar când browserul refuza redarea. Problema era deci de contract și affordance, nu de focus sau de capturarea tastelor.
+
+Remedierea aplicată:
+
+- `src/server/state.ts`: `play` din `idle` este acum echivalent cu pornirea unei sesiuni noi; apelează `onRunStart`, intră în faza `play` la `-launchLeadInSec` și pornește countdown-ul;
+- `src/renderer/index.html`: a fost adăugat un panou de lansare vizibil numai pe ecranul master/sursa de ceas în starea `idle`;
+- panoul conține **PORNEȘTE EXPERIENȚA**, **PRE-SHOW**, plus indicațiile `Space`, `Enter`, `S`, `P`, `O` și `F`;
+- click oriunde pe panou sau butonul principal trimite `start`; butonul secundar trimite `preshow`;
+- `Space` în `idle` funcționează acum prin contractul `play`; `Enter` în `idle` trimite direct `start`;
+- tastele `Space`/`Enter` pe un buton focalizat sunt lăsate browserului, evitând dublarea comenzii;
+- panoul se ascunde automat la orice ieșire din `idle` și reapare după `restart`;
+- textul veil-ului de autoplay a fost corectat: acel click activează sunetul și continuă, nu pretinde că inițiază nava;
+- `src/renderer/styles.css`: a fost adăugată interfața responsive, cu ținte mari, focus vizibil, contrast și cursor activ;
+- comentariul vechi care spunea că GLB-ul apare la prima replică `AVATAR_AI` a fost corectat la `CAPITANUL`;
+- `scripts/smoke-core.mjs`: există acum regresie automată care cere ca `PLAY` din `IDLE` să înceapă show-ul și să creeze o singură sesiune;
+- `README.md` și `docs/OPERARE.md` explică noul comportament click/Space/Enter.
+
+Validare:
+
+- `npm run check`: trecut integral;
+- test real prin `RUN.bat --no-control`: aplicația, serverul, filmul și avatarul au pornit fără eroare;
+- înainte de comandă `/api/state` a raportat `idle`;
+- `POST /api/cmd` cu `{ "cmd": { "action": "play" } }` a răspuns `ok: true`;
+- după comandă, `/api/state` a raportat `playing`, timp negativ în countdown și rată 1;
+- rendererul a aplicat `play` și a declanșat cue-urile de launch/countdown;
+- închiderea ferestrei a oprit curat serverul și procesul launcherului.
+
+Pentru a vedea remedierea, orice instanță pornită înainte de acest commit trebuie închisă, apoi `RUN.bat` trebuie lansat din nou; build-ul este executat automat la fiecare pornire.

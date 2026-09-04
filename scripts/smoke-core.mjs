@@ -31,17 +31,19 @@ try {
   const { ShowDirector } = await bundle("src/server/state.ts", "state");
   const applied = [];
   const fired = [];
+  let runStarts = 0;
   const director = new ShowDirector(show, config, {
     onApplyCmd: (cmd) => applied.push(cmd),
     onStateChange: () => {},
     onCueFired: (cue) => fired.push(cue.id),
     onLog: () => {},
-    onRunStart: () => {},
+    onRunStart: () => runStarts++,
   });
-  assert.equal(director.dispatchCommand({ action: "start" }).ok, true);
+  assert.equal(director.dispatchCommand({ action: "play" }).ok, true, "PLAY from IDLE must start the experience");
   assert.equal(director.playbackState, "playing");
   assert.ok(director.now() >= -10 && director.now() < -9.8, "server launch lead-in must begin at T-10");
-  assert.deepEqual(applied.at(-1), { action: "start" });
+  assert.equal(runStarts, 1, "PLAY from IDLE must open a new run");
+  assert.deepEqual(applied.at(-1), { action: "play" });
   assert.ok(fired.includes("launch-theme"), "the first launch cue must fire immediately");
 
   let now = 0;

@@ -14,7 +14,7 @@ Consola este la `http://localhost:4321/control/`; de pe alt dispozitiv folosiți
 
 ## Fluxul unei sesiuni
 
-1. În starea `IDLE`, verificați: ecrane conectate, `videoReady`, numărul tabletelor și volumul.
+1. În starea `IDLE`, verificați: ecrane conectate, `videoReady`, numărul tabletelor și volumul. Pe ecranul master apare panoul de lansare; click oriunde sau `Space`/`Enter` pornește direct experiența.
 2. Apăsați **PRE-SHOW** când intră copiii. Tabletele oferă rolurile; replicile sunt la 8, 28 și 48 de secunde.
 3. Apăsați **START** când sala este pregătită. Urmează countdown-ul T−10…0 pe cadrul înghețat, apoi pornește filmul.
 4. Folosiți **PAUSE/PLAY** numai dacă este necesar. Pentru repetiții puteți muta sliderul, sări la o scenă sau declanșa un cue manual.

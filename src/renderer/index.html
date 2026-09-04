@@ -51,11 +51,25 @@
       <div class="detail"></div>
     </div>
 
-    <!-- z7: shown only if autoplay is refused -->
+    <!-- z7: visible on the master clock-source screen while the show is idle -->
+    <div id="launch-controls" class="layer" hidden>
+      <div class="launch-card">
+        <div class="launch-kicker">EXODUS-7 · SISTEM PREGĂTIT</div>
+        <div class="launch-title">A PATRA LUME</div>
+        <div class="launch-text">Apasă oriunde sau <kbd>SPACE</kbd> / <kbd>ENTER</kbd> pentru a începe.</div>
+        <div class="launch-actions">
+          <button id="launch-start" type="button">PORNEȘTE EXPERIENȚA</button>
+          <button id="launch-preshow" class="secondary" type="button">PRE-SHOW</button>
+        </div>
+        <div class="launch-help"><kbd>S</kbd> start · <kbd>P</kbd> pre-show · <kbd>O</kbd> diagnostic · <kbd>F</kbd> fullscreen</div>
+      </div>
+    </div>
+
+    <!-- z8: shown only if autoplay is refused -->
     <div id="veil" class="layer" hidden>
       <div class="veil-box">
         <div class="veil-title">A PATRA LUME</div>
-        <div class="veil-text">Atingeți ecranul sau apăsați o tastă pentru a porni nava.</div>
+        <div class="veil-text">Atingeți ecranul sau apăsați o tastă pentru a activa sunetul și a continua.</div>
       </div>
     </div>
   </div>

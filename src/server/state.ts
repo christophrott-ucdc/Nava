@@ -339,6 +339,11 @@ export class ShowDirector {
         this.enter("playing", "play", -this.leadInSec, "cmd start");
         return { ok: true };
       case "play":
+        if (this.state === "idle") {
+          this.hooks.onRunStart();
+          this.enter("playing", "play", -this.leadInSec, "cmd play from idle");
+          return { ok: true };
+        }
         if (this.state !== "paused") return { ok: false, reason: "PLAY funcționează doar din PAUZĂ (folosește START)." };
         this.reanchor(this.now(), 1);
         this.setState("playing", "cmd play");

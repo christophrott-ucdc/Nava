@@ -159,6 +159,7 @@ async function main(): Promise<void> {
   const theme = createTheme(document.body, $("white-fade"));
   const subtitles = createSubtitles($("subtitles"), { enabled: screen.showSubtitles });
   const countdown = createCountdown($("countdown"), { enabled: true });
+  const launchControls = $("launch-controls");
 
   // ---- Voice engine (Agent C) — never audible on screens with playAudio=false
   let voice: VoiceEngine;
@@ -201,7 +202,7 @@ async function main(): Promise<void> {
           osdReal.note(`Avatar indisponibil: ${describeError(err)}`, 8000);
         },
       });
-      avatar.setVisible(false, false); // beams in on the first AVATAR_AI line
+      avatar.setVisible(false, false); // appears when the first CAPITANUL line requests GLB lip-sync
       avatar.load().catch((err) => {
         log("error", `avatar.load failed (${boot.avatarUrl}): ${describeError(err)}`);
         osdReal.note(`GLB lipsă sau invalid: ${config.avatar.glb}`, 8000);
@@ -244,8 +245,12 @@ async function main(): Promise<void> {
     onAutoplayBlocked: () => {
       veil.hidden = false;
     },
+    onStateChange: (state) => {
+      launchControls.hidden = !isClockSource || state !== "idle";
+    },
   });
   player.attach(boot.videoUrl);
+  launchControls.hidden = !isClockSource || player.getPlaybackState() !== "idle";
 
   // ---- Sync (WS)
   let syncStatus: SyncStatus = { connected: false, reconnecting: true, driftSec: null, offsetMs: 0, attempts: 0 };
@@ -303,6 +308,11 @@ async function main(): Promise<void> {
       player.apply(cmd);
     }
   };
+  launchControls.addEventListener("click", (ev) => {
+    voice.unlock().catch(() => {});
+    const target = ev.target instanceof Element ? ev.target : null;
+    dispatch({ action: target?.closest("#launch-preshow") ? "preshow" : "start" });
+  });
   let lastEsc = 0;
   window.addEventListener("keydown", (ev) => {
     if (!veil.hidden) {
@@ -318,10 +328,15 @@ async function main(): Promise<void> {
     }
     if (!isClockSource) return;
     if (ev.repeat) return;
+    if (ev.target instanceof HTMLButtonElement && (ev.key === " " || ev.key === "Enter")) return;
     switch (ev.key) {
       case " ":
         ev.preventDefault();
         dispatch(player.getPlaybackState() === "playing" || (player.rate() > 0 && player.getPlaybackState() !== "idle") ? { action: "pause" } : { action: "play" });
+        break;
+      case "Enter":
+        ev.preventDefault();
+        dispatch(player.getPlaybackState() === "idle" ? { action: "start" } : { action: "play" });
         break;
       case "s":
       case "S":

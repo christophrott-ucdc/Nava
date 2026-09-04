@@ -23,7 +23,7 @@ npm run dev -- --windowed
 - tablete: `http://<ip-ul-PC-ului>:4321/tablet/`;
 - stare: `http://localhost:4321/api/health`.
 
-Comenzile principale pe ecranul master sunt `P` pre-show, `S` start, `Space` pauză/reluare, săgeți pentru ±5 secunde, `E` epilog, `R` restart și `I` identificarea ecranelor. `Esc` de două ori închide doar în modul windowed/dezvoltare.
+În starea inițială, click oriunde pe ecran sau `Space`/`Enter` pornește experiența; butonul **PRE-SHOW** sau tasta `P` pornește primirea publicului. Celelalte comenzi pe ecranul master sunt `S` start, `Space` pauză/reluare în timpul filmului, săgeți pentru ±5 secunde, `E` epilog, `R` restart și `I` identificarea ecranelor. `Esc` de două ori închide doar în modul windowed/dezvoltare.
 
 ## Verificare și distribuție
 

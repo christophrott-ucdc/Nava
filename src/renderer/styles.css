@@ -286,9 +286,116 @@ body.show-cursor { cursor: default; }
   white-space: pre-wrap;
 }
 
+/* ------------------------------------------------------- idle launch UI */
+#launch-controls {
+  z-index: 98;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 5vh 5vw;
+  pointer-events: auto;
+  cursor: pointer;
+  background:
+    radial-gradient(circle at 50% 45%, oklch(0.3 0.09 230 / 0.42), transparent 42%),
+    linear-gradient(to bottom, oklch(0.08 0.025 250 / 0.38), oklch(0.05 0.02 250 / 0.8));
+}
+
+#launch-controls[hidden] { display: none; }
+
+.launch-card {
+  width: min(780px, 84vw);
+  padding: clamp(28px, 5vh, 64px) clamp(26px, 5vw, 72px);
+  text-align: center;
+  color: var(--ink);
+  background: oklch(0.1 0.035 245 / 0.86);
+  border: 1px solid oklch(from var(--cyan) l c h / 0.72);
+  border-radius: 22px;
+  box-shadow: 0 0 4vh oklch(from var(--cyan) l c h / 0.28), inset 0 0 5vh oklch(0.2 0.06 235 / 0.26);
+  backdrop-filter: blur(12px);
+}
+
+.launch-kicker {
+  color: var(--cyan);
+  font: 600 clamp(12px, 1.4vw, 18px)/1.2 var(--font-mono);
+  letter-spacing: 0.2em;
+}
+
+.launch-title {
+  margin-top: 2.2vh;
+  font-size: clamp(42px, 6vw, 92px);
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
+  text-shadow: 0 0 2.5vh var(--cyan);
+}
+
+.launch-text {
+  margin-top: 2vh;
+  font-size: clamp(18px, 2vw, 28px);
+  line-height: 1.4;
+  color: oklch(0.9 0.03 220);
+}
+
+kbd {
+  display: inline-block;
+  padding: 0.15em 0.45em;
+  color: var(--ink);
+  font: 600 0.78em/1.35 var(--font-mono);
+  letter-spacing: 0.05em;
+  background: oklch(0.19 0.04 240);
+  border: 1px solid oklch(from var(--cyan) l c h / 0.55);
+  border-radius: 0.35em;
+  box-shadow: inset 0 -2px 0 oklch(0.05 0.02 250 / 0.8);
+}
+
+.launch-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 3.4vh;
+}
+
+.launch-actions button {
+  min-height: 58px;
+  padding: 14px 28px;
+  border: 1px solid var(--glow);
+  border-radius: 10px;
+  color: oklch(0.12 0.035 245);
+  background: var(--glow);
+  font: 700 clamp(14px, 1.3vw, 19px)/1 var(--font);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 0 0 2.2vh oklch(from var(--glow) l c h / 0.45);
+}
+
+.launch-actions button:hover,
+.launch-actions button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+  filter: brightness(1.12);
+}
+
+.launch-actions button.secondary {
+  color: var(--ink);
+  background: oklch(0.16 0.045 240 / 0.92);
+  border-color: oklch(from var(--cyan) l c h / 0.8);
+  box-shadow: none;
+}
+
+.launch-help {
+  margin-top: 3.2vh;
+  color: oklch(0.7 0.04 220);
+  font: 400 clamp(12px, 1.15vw, 16px)/1.6 var(--font-mono);
+}
+
+@media (max-width: 680px) {
+  .launch-actions { flex-direction: column; }
+  .launch-actions button { width: 100%; }
+}
+
 /* ----------------------------------------------------------------- veil */
 #veil {
-  z-index: 100;
+  z-index: 110;
   inset: 0;
   display: grid;
   place-items: center;
