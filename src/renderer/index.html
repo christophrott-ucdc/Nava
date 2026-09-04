@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A Patra Lume — Nava</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-theme="prologue">
+  <div id="stage">
+    <!-- z0: film (no audio track; kept muted) -->
+    <video id="video" muted playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+
+    <!-- z1: theme layers -->
+    <div id="vignette" class="layer" aria-hidden="true"></div>
+    <div id="white-fade" class="layer" aria-hidden="true"></div>
+
+    <!-- z2: procedural civilisation entities (center) -->
+    <canvas id="entities" class="layer" aria-hidden="true"></canvas>
+
+    <!-- z3: countdown (center) -->
+    <div id="countdown" class="layer" aria-hidden="true"><div class="digit"></div></div>
+
+    <!-- z4: subtitles (bottom-center) -->
+    <div id="subtitles" class="layer" aria-live="polite">
+      <div class="speaker"></div>
+      <div class="text"></div>
+    </div>
+
+    <!-- z5: 3D avatar (rendered by src/renderer/avatar) -->
+    <div id="avatar" class="layer"></div>
+
+    <!-- z6: OSD / diagnostics -->
+    <div id="osd" class="layer" hidden>
+      <div class="row"><span class="k">ecran</span><span class="v" data-f="screen"></span></div>
+      <div class="row"><span class="k">stare</span><span class="v" data-f="state"></span></div>
+      <div class="row"><span class="k">timp</span><span class="v" data-f="time"></span></div>
+      <div class="row"><span class="k">scenă</span><span class="v" data-f="scene"></span></div>
+      <div class="row"><span class="k">sync</span><span class="v" data-f="sync"></span></div>
+      <div class="row"><span class="k">video</span><span class="v" data-f="video"></span></div>
+      <div class="row"><span class="k">ultimul cue</span><span class="v" data-f="cue"></span></div>
+      <div class="note" data-f="note"></div>
+    </div>
+    <div id="identify" class="layer" hidden>
+      <div class="id"></div>
+      <div class="label"></div>
+    </div>
+    <div id="spinner" class="layer" hidden><div class="ring"></div></div>
+    <div id="error-banner" class="layer" hidden>
+      <div class="title"></div>
+      <div class="detail"></div>
+    </div>
+
+    <!-- z7: shown only if autoplay is refused -->
+    <div id="veil" class="layer" hidden>
+      <div class="veil-box">
+        <div class="veil-title">A PATRA LUME</div>
+        <div class="veil-text">Atingeți ecranul sau apăsați o tastă pentru a porni nava.</div>
+      </div>
+    </div>
+  </div>
+  <script src="renderer.js"></script>
+</body>
+</html>

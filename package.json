@@ -1,0 +1,44 @@
+{
+  "name": "nava-player",
+  "productName": "A Patra Lume - Nava",
+  "version": "0.1.0",
+  "description": "A Patra Lume / UCDC HUB AI - executabil unic: player video 4K sincronizat pe 5 ecrane, avatar AI 3D vorbitor (lip-sync), server Node pentru consola operatorului si tabletele copiilor.",
+  "author": "UCDC HUB AI",
+  "license": "UNLICENSED",
+  "private": true,
+  "main": "dist/main/main.js",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:watch": "node scripts/build.mjs --watch",
+    "start": "npm run build && electron . --config config.json",
+    "dev": "npm run build && electron . --dev --config config.json",
+    "dist": "npm run build && electron-builder --win",
+    "typecheck": "tsc --noEmit",
+    "validate:show": "node scripts/validate-show.mjs",
+    "smoke:core": "node scripts/smoke-core.mjs",
+    "smoke:platform": "node scripts/smoke-platform.mjs",
+    "smoke:media": "node scripts/smoke-media.mjs",
+    "check": "npm run typecheck && npm run validate:show && npm run build && npm run smoke:core && npm run smoke:platform && npm run smoke:media",
+    "tts": "node scripts/tts-generate.mjs",
+    "media:transcode": "node scripts/media-transcode.mjs",
+    "media:sheet": "node scripts/media-contact-sheet.mjs"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "@met4citizen/talkinghead": "^1.7.0",
+    "hono": "^4.6.13",
+    "qrcode": "^1.5.4",
+    "three": "^0.184.0",
+    "ws": "^8.20.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "@types/qrcode": "^1.5.5",
+    "@types/three": "^0.184.0",
+    "@types/ws": "^8.18.1",
+    "electron": "^44.2.0",
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.25.12",
+    "typescript": "^5.8.3"
+  }
+}

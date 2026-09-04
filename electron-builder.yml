@@ -1,0 +1,67 @@
+# electron-builder configuration for NavaPlayer.       npm run dist  (= node scripts/build.mjs && electron-builder --win)
+#
+# RUNTIME LAYOUT — what lives where once installed (nsis) or unpacked (portable):
+#   <appRoot>/NavaPlayer.exe                 (portable: appRoot = PORTABLE_EXECUTABLE_DIR, the folder holding the exe;
+#                                             electron-builder extracts the portable payload to %TEMP% — see src/main/paths.ts)
+#   <appRoot>/config.json                    user config; created on first start from resources/config.example.json
+#   <appRoot>/.env                           optional TTS API keys (never packaged, never committed)
+#   <appRoot>/media/cinema_4k_h264.mp4       the 4K film — NOT packaged (multi-GB); copy it next to the exe
+#   <appRoot>/runs/  <appRoot>/cache/        created at runtime (JSONL logs, TTS cache)
+#   <appRoot>/resources/app.asar             dist/** + package.json (all code, dependencies bundled by esbuild)
+#   <appRoot>/resources/assets/**            bundled assets: avatar GLB (13.6 MB), show/show.json, voice/**
+#   <appRoot>/resources/config.example.json
+# config.json paths like "assets/..." are resolved appRoot first (user override), then resources/ (bundled).
+
+appId: ro.ucdc.hubai.nava
+productName: NavaPlayer
+copyright: Copyright (c) 2026 UCDC HUB AI
+
+directories:
+  output: dist-app
+  buildResources: build
+
+# Everything is bundled by esbuild into dist/**, so node_modules are not needed at runtime.
+files:
+  - dist/**
+  - package.json
+  - "!node_modules/**"
+
+extraResources:
+  - from: assets
+    to: assets
+    filter:
+      - "**/*"
+  - from: config.example.json
+    to: config.example.json
+
+asar: true
+# asarUnpack: nothing needed — Electron's fs patches read dist/** from the asar (renderer via loadFile, dist/web via
+# the Hono static server). If static serving from the asar ever misbehaves, add: asarUnpack: ["dist/web/**"]
+# (src/main/paths.ts already prefers app.asar.unpacked/dist/web when it exists).
+compression: normal
+npmRebuild: false
+nodeGypRebuild: false
+
+win:
+  # icon: build/icon.ico is picked up automatically when present (electron-builder falls back to its default icon).
+  target:
+    - target: portable
+      arch: [x64]
+    - target: nsis
+      arch: [x64]
+  artifactName: NavaPlayer-${version}-${arch}.${ext}
+  requestedExecutionLevel: asInvoker
+
+# Both targets produce .exe, so the portable one needs its own name to avoid overwriting the installer.
+portable:
+  artifactName: NavaPlayer-${version}-${arch}-portable.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: NavaPlayer
+  artifactName: NavaPlayer-${version}-${arch}-setup.${ext}

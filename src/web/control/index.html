@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#07111f" />
+    <title>Nava · Consolă operator</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div><strong>EXODUS-7</strong><span>Consolă operator</span></div>
+      </div>
+      <div class="connection" id="connection" data-status="connecting" role="status">
+        <span class="connection-dot" aria-hidden="true"></span>
+        <span id="connection-label">Conectare…</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero panel" aria-labelledby="show-title">
+        <div class="hero-copy">
+          <p class="eyebrow" id="show-version">SISTEM DE ZBOR</p>
+          <h1 id="show-title">A Patra Lume</h1>
+          <p class="scene" id="scene-label">În așteptare</p>
+        </div>
+        <div class="clock-block">
+          <span class="state-pill" id="playback-state" data-state="idle">IDLE</span>
+          <time id="main-clock">00:00</time>
+          <span id="duration-label">/ 12:22</span>
+        </div>
+        <div class="telemetry" aria-label="Telemetrie">
+          <div><span>Ecrane</span><strong id="screens-count">0</strong></div>
+          <div><span>Tablete</span><strong id="tablets-count">0</strong></div>
+          <div><span>Video</span><strong id="video-status">—</strong></div>
+          <div><span>Temă</span><strong id="theme-label">PROLOGUE</strong></div>
+        </div>
+      </section>
+
+      <section class="panel transport" aria-labelledby="transport-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">REGIE</p><h2 id="transport-title">Control show</h2></div>
+          <span class="command-note" id="command-note" role="status">Pregătit</span>
+        </div>
+        <div class="primary-actions">
+          <button class="button button-preshow" data-command="preshow"><span>01</span> PRE-SHOW</button>
+          <button class="button button-start" data-command="start"><span>02</span> START</button>
+          <button class="button" data-command="play" id="play-button">REDĂ</button>
+          <button class="button" data-command="pause" id="pause-button">PAUZĂ</button>
+          <button class="button button-epilogue" data-command="epilogue">EPILOG</button>
+          <button class="button button-danger" data-command="restart">RESTART</button>
+        </div>
+
+        <div class="timeline-wrap">
+          <div class="timeline-labels"><span id="timeline-start">T−00:10</span><strong id="timeline-current">00:00</strong><span id="timeline-end">12:22</span></div>
+          <input id="timeline" type="range" min="-10" max="741.78" step="0.1" value="0" aria-label="Poziție în cronologie" />
+        </div>
+
+        <div class="secondary-controls">
+          <label>Scenă
+            <span class="inline-field"><select id="scene-select" aria-label="Scenă"></select><button class="button compact" id="scene-go">SALT</button></span>
+          </label>
+          <label>Limbă
+            <select id="language" aria-label="Limba vocilor"><option value="ro">Română</option><option value="en">English</option><option value="fr">Français</option></select>
+          </label>
+          <label>Voce <output id="voice-output">100%</output>
+            <input id="voice-volume" type="range" min="0" max="1" step="0.05" value="1" />
+          </label>
+          <label>Efecte <output id="sfx-output">100%</output>
+            <input id="sfx-volume" type="range" min="0" max="1" step="0.05" value="1" />
+          </label>
+        </div>
+
+        <div class="utility-actions">
+          <button class="button subtle" data-command="stopVoice">Oprește vocea</button>
+          <button class="button subtle" data-command="testAvatar">Testează avatarul</button>
+          <button class="button subtle" data-command="identifyScreens">Identifică ecranele</button>
+          <button class="button subtle" data-command="reloadShow">Reîncarcă scenariul</button>
+        </div>
+      </section>
+
+      <div class="workspace-grid">
+        <section class="panel cues-panel" aria-labelledby="cues-title">
+          <div class="section-heading">
+            <div><p class="eyebrow">TIMELINE</p><h2 id="cues-title">Cue-uri <span id="cue-count"></span></h2></div>
+            <div class="filters">
+              <input id="cue-search" type="search" placeholder="Caută cue…" aria-label="Caută cue" />
+              <select id="cue-phase" aria-label="Filtrează după fază"><option value="all">Toate fazele</option><option value="preshow">Pre-show</option><option value="play">Film</option><option value="epilogue">Epilog</option></select>
+            </div>
+          </div>
+          <div class="cue-list" id="cue-list" aria-live="polite"></div>
+        </section>
+
+        <aside class="side-column">
+          <section class="panel access-panel" aria-labelledby="access-title">
+            <div class="section-heading"><div><p class="eyebrow">ACCES ECHIPAJ</p><h2 id="access-title">Tablete</h2></div><strong class="live-count" id="tablet-live-count">0 online</strong></div>
+            <div class="qr-layout">
+              <img id="tablet-qr" src="/api/qr?size=320" alt="Cod QR pentru aplicația tabletelor" width="200" height="200" />
+              <div><p>Scanează pentru conectare la navă.</p><a id="tablet-url" href="/tablet/" target="_blank" rel="noreferrer">/tablet/</a><button id="copy-url" class="button subtle compact">Copiază adresa</button></div>
+            </div>
+            <div class="tablet-list" id="tablet-list"><p class="empty">Nicio tabletă conectată.</p></div>
+          </section>
+
+          <section class="panel answers-panel" aria-labelledby="answers-title">
+            <div class="section-heading"><div><p class="eyebrow">RĂSPUNSURI LIVE</p><h2 id="answers-title">Mesaje <span id="answer-count"></span></h2></div><button id="clear-answers" class="text-button">Șterge</button></div>
+            <div class="answer-list" id="answer-list"><p class="empty">Răspunsurile copiilor vor apărea aici.</p></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>

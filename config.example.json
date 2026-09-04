@@ -1,0 +1,48 @@
+{
+  "$comment": "Copiaza in config.json (langa executabil sau in radacina proiectului). Toate caile relative sunt fata de folderul executabilului / proiectului.",
+  "role": "master",
+  "masterUrl": "ws://192.168.1.10:4321/ws",
+  "server": {
+    "port": 4321,
+    "bindHost": "0.0.0.0"
+  },
+  "lang": "ro",
+  "show": "assets/show/show.json",
+  "video": {
+    "path": "media/cinema_4k_h264.mp4",
+    "fit": "cover",
+    "preloadPoster": true
+  },
+  "avatar": {
+    "glb": "assets/avatar/avatar-ai.glb",
+    "corner": "bottom-left",
+    "widthPercent": 22,
+    "marginPx": 40
+  },
+  "audio": {
+    "voiceVolume": 1.0,
+    "sfxVolume": 0.8,
+    "outputDeviceId": "default"
+  },
+  "screens": [
+    {
+      "id": "center",
+      "displayIndex": 0,
+      "roleLabel": "FEREASTRA FRONTALA",
+      "showAvatar": true,
+      "showSubtitles": true,
+      "showEntities": true,
+      "playAudio": true,
+      "kiosk": true
+    }
+  ],
+  "sync": {
+    "clockHz": 4,
+    "seekThresholdSec": 0.25,
+    "rateNudge": 0.03
+  },
+  "dev": {
+    "openDevTools": false,
+    "windowed": false
+  }
+}

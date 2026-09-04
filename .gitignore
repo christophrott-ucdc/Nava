@@ -1,0 +1,32 @@
+# dependencies / build output
+node_modules/
+dist/
+dist-app/
+*.tsbuildinfo
+
+# media (too large for git) - see docs/HANDOFF.md for how to regenerate
+media/*.mp4
+media/*.mkv
+media/*.mov
+media/*.log
+media/analysis/*.png
+!media/analysis/.gitkeep
+
+# runtime
+runs/
+logs/
+*.log
+.env
+.env.*
+!.env.example
+config.json
+!config.example.json
+
+# voice cache produced at runtime (pre-generated voices under assets/voice ARE committed)
+cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
