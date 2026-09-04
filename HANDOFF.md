@@ -898,3 +898,85 @@ Codul, configurația exemplu, show-ul, avatarul, aplicațiile web, documentația
 - este necesară repetiția de acceptanță pe hardware-ul real: cinci ieșiri video, routing audio, router dedicat și tablete;
 - serverul de control nu are autentificare. Configurația este acceptabilă numai pe LAN privat/dedicat; pe Wi-Fi partajat, autentificarea/PIN-ul din lista istorică de TODO devine obligatoriu înainte de utilizare;
 - executabilele nu au semnătură Authenticode, conform verificării de mai sus.
+
+---
+
+## 18. ADDENDUM APPEND-ONLY — scenariul regizoral de 10 minute (Codex, 2026-09-04)
+
+> Această secțiune a fost adăugată la final. Nicio secțiune anterioară din `HANDOFF.md` nu a fost rescrisă sau ștearsă.
+
+### 18.1 Consultanții creați
+
+La cererea utilizatorului au fost creați trei agenți consultanți, fiecare lucrând independent și fără să editeze fișiere:
+
+1. `scenarist` — structură dramatică, personaje, replici și cronometrare;
+2. `regizor_film` — potrivirea cu montajul și imaginile reale, ritm, muzică și SFX;
+3. `expert_copii` — limbaj, siguranță fizică și emoțională, incluziune, interacțiuni și operarea grupului.
+
+Fiecare a citit documentele proiectului și show-ul executabil. După prima sinteză, toți trei au citit și auditat noul scenariu. Observațiile lor au fost integrate, iar versiunea corectată a fost trimisă încă o dată tuturor. Verdicturile finale au fost `VERDE`, `VERDE CA SCENARIU`, respectiv `VERDE`.
+
+### 18.2 Constatarea comună de durată
+
+- Cerința din brief este o experiență de 10:00.
+- Configurația actuală, rulată integral, durează 15:31,78: 60 s pre-show + 10 s lead-in + 741,78 s film + 120 s epilog.
+- Chiar dacă epilogul este declanșat după ultima replică, la video aproximativ 465 s, durata este aproximativ 10:55 cu structura actuală.
+- Ultimele 276,78 s ale filmului după secunda 465 sunt aproape integral un hold pe Pământ. Nu sunt necesare pentru arcul principal.
+- Consensul a fost construirea unui master regizoral de exact 600 s, care folosește filmul numai până la secunda 465 și pornește apoi epilogul.
+
+### 18.3 Fișierul nou și structura lui
+
+A fost creat `docs/SCENARIU-REGIZORAL-10-MIN.md`. Este primul livrabil de conținut, pentru aprobare, și nu schimbă încă `assets/show/show.json` sau codul aplicației.
+
+Contractul temporal este:
+
+| Timp public | Conținut | Durată |
+|---|---|---:|
+| 0:00–0:50 | activarea echipajului | 0:50 |
+| 0:50–1:00 | countdown T−10 | 0:10 |
+| 1:00–8:45 | film video 0–465 s | 7:45 |
+| 8:45–9:55 | epilog / re-entry simbolic | 1:10 |
+| 9:55–10:00 | alb cald și tăcere | 0:05 |
+
+Suma a fost verificată automat: 600 s. Documentul are 28 de replici, 389 de cuvinte și aproximativ 180 s de vorbire la 130 de cuvinte/minut; circa 70% din spectacol rămâne pentru imagine, sound design, reacții și pauze.
+
+### 18.4 Deciziile dramaturgice și de public
+
+- Firul central este explicit la început și revine în revelație: echipajul caută alte lumi și se întreabă dacă suntem singuri.
+- Copiii sunt echipaj, nu „selectați”; participarea și rolurile sunt opționale, iar statutul de observator este la fel de valid.
+- Indicația „țineți-vă respirația” a fost eliminată. Instrucțiunile corporale nu presupun picioare pe podea, scaun cu spătar sau o anumită mobilitate.
+- Există două semnale echivalente pentru oprire: copilul spune „pauză” sau face semn. Un facilitator dedicat stă lângă ieșire și vede toate cele zece locuri.
+- Traseul low-sensory este operaționalizat: loc în grup aproape de ieșire, protecție auditivă, fără cască/efect fizic, însoțire discretă și revenire într-un moment vizual stabil.
+- Singura interacțiune pe tabletă în timpul filmului este un vot printr-o atingere, cu cinci opțiuni și „Trec mai departe”. Nu există răspuns corect, clasament sau confirmări sonore în sală.
+- Tabletele rămân întunecate în revelația Pământului. Copilul alege în gând ceva de ocrotit; nu este obligat să tasteze sau să vorbească.
+- Formulările anxiogene, moralizatoare sau absolute din versiunea inițială au fost reformulate: nu se mai folosesc „cine minte se stinge”, „au învins moartea”, „nimic nu te mai doare” sau garanția „sunteți în siguranță”.
+- Responsabilitatea pentru Pământ este colectivă, nu pusă pe umerii copilului.
+
+### 18.5 Deciziile de imagine și sunet
+
+- Scenariul descrie numai ce există în film: Pământul, Siwarha cu inele în mediul turcoaz, Kepler-186 d albastră cu nori, Mann lângă discul Gargantua, wormhole și Pământul-semiiună de la final.
+- Nu mai pretinde că filmul arată păduri, râuri, orașe de cristal, țări, ferestre sau Saturn. Metaforele pot aparține vocilor și entităților, dar nu indicațiilor de cadru.
+- Re-entry-ul vizual nu este pretins ca material existent; epilogul poate rula pe alb în sală sau într-un conținut VR separat, confirmat ulterior.
+- Partitura cere o ambianță continuă, ducking cu aproximativ 8–10 dB sub voce și trei tăceri deliberate: după dispariția Pământului, după Natură și după întrebarea Tehnologică.
+- Rumble-ul este anticipat prin puls, ploaia nu acoperă vocea, swell-ul coboară înaintea revelației și nu există stroboscop.
+
+### 18.6 Cerințe înainte de implementare
+
+Acestea sunt menționate în scenariu și nu au fost implementate în această etapă, deoarece utilizatorul a cerut mai întâi scriptul:
+
+1. tranziția automată la epilog la video 465 s — aplicația actuală așteaptă finalul real de la 741,78 s, iar un marker nu poate schimba faza;
+2. repoziționarea/redimensionarea entităților, care pot acoperi acum planeta din centrul cadrului;
+3. producerea ambianței continue și implementarea ducking-ului automat al efectelor;
+4. adaptarea votului de pe tabletă la opțiunile și regulile scenariului;
+5. alegerea operațională pentru VR: echipament deja pregătit și utilizare simultană sau extensie post-show. Mutarea și echiparea a zece copii nu pot fi comprimate în 75 s în siguranță.
+
+### 18.7 Verificări efectuate
+
+- suma celor zece segmente temporale: 600 s exact;
+- conversia dintre timpul public și video: corectă pentru intervalul video 0–465 s;
+- estimarea dialogului: 389 de cuvinte, aproximativ 180 s la 130 cuvinte/minut;
+- `git diff --check` pentru document: fără erori de whitespace;
+- audit final separat al tuturor celor trei consultanți: verde.
+
+### 18.8 Erată append-only
+
+În §18.5, forma `semiiună` este o eroare de tastare; se citește `semilună`. Corecția este adăugată aici, fără modificarea textului anterior.
