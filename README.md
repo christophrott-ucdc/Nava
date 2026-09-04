@@ -8,6 +8,8 @@ Documentul de intrare pentru dezvoltare și operare este [HANDOFF.md](HANDOFF.md
 
 Cerințe: Windows 11, Node.js 22 sau mai nou, npm și un fișier video H.264 4:2:0 la `media/cinema_4k_h264.mp4`.
 
+Pentru pornirea completă pe Windows, dați dublu-click pe `RUN.bat`. Launcherul verifică mediul și asset-urile, instalează dependențele dacă lipsesc, construiește aplicația, pornește playerul și serverul local, apoi deschide consola operatorului. Implicit pornește în fereastră; pentru instalația fullscreen folosiți `RUN.bat --kiosk`. `RUN.bat --check` rulează toate verificările fără să deschidă playerul.
+
 ```powershell
 npm install
 Copy-Item config.example.json config.json

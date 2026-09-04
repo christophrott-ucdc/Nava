@@ -1472,3 +1472,56 @@ Următorul agent trebuie să implementeze integral scenariul V3, nu să-l rescri
 - Nu șterge fallback-urile TTS existente până când manifestul V3 este integrat și testat în scenariul executabil.
 - `ffmpeg` trebuie să fie disponibil în PATH pentru retiming și montaje.
 - `npm run qa:voices` consumă API; `npm run check` nu consumă API.
+
+---
+
+## 23. ADDENDUM APPEND-ONLY — launcher Windows end-to-end `RUN.bat` (Codex, 2026-09-04)
+
+> Această secțiune a fost adăugată la final. Nicio secțiune anterioară din `HANDOFF.md` nu a fost rescrisă sau ștearsă.
+
+La cererea utilizatorului a fost creat `RUN.bat` în rădăcina proiectului, astfel încât un dublu-click să pornească întregul stack local. Launcherul:
+
+- își fixează working directory-ul la folderul în care se află, deci funcționează și când este lansat din Explorer;
+- verifică existența `node.exe`, `npm.cmd` și impune Node.js 22+;
+- verifică `package.json` și `package-lock.json`;
+- creează `config.json` din `config.example.json` numai dacă lipsește și nu suprascrie niciodată configurația existentă;
+- verifică înainte de pornire `assets/show/show.json`, `assets/avatar/avatar-ai.glb` și `media/cinema_4k_h264.mp4`;
+- rulează `npm ci --no-audit --no-fund` numai dacă instalarea locală Electron lipsește;
+- rulează build-ul prin comanda npm existentă și pornește Electron, serverul Hono/WebSocket, consola și endpoint-ul tabletelor în același proces de aplicație;
+- așteaptă până la 45 s după răspunsul `http://localhost:4321/control/`, apoi deschide automat consola în browserul implicit;
+- păstrează consola batch deschisă cât timp rulează aplicația, astfel încât logurile de startup să fie vizibile;
+- la eroare păstrează fereastra deschisă prin `pause` și indică folderul `runs\` pentru loguri;
+- la închiderea normală a aplicației termină cu exit code 0.
+
+Modul implicit de dublu-click adaugă `--windowed`, pentru ca aplicația să poată fi închisă ușor în dezvoltare. Sunt disponibile:
+
+```text
+RUN.bat               pornire windowed + deschidere automată a consolei web
+RUN.bat --kiosk       respectă kiosk/fullscreen din config.json
+RUN.bat --no-control  nu deschide automat browserul
+RUN.bat --check       rulează npm run check fără a lansa playerul
+RUN.bat --help        afișează opțiunile
+```
+
+`README.md` și `docs/OPERARE.md` au fost actualizate cu această cale de pornire. Launcherul nu conține și nu solicită cheia ElevenLabs la pornirea obișnuită; folosește vocile pre-generate disponibile și mecanismele de fallback existente.
+
+### 23.1 Verificarea launcherului
+
+Au fost testate trei trasee reale:
+
+- `cmd.exe /d /c RUN.bat --help`: exit 0 și afișarea corectă a tuturor opțiunilor;
+- `cmd.exe /d /c RUN.bat --check --no-control`: exit 0 după TypeScript, ambele validatoare, build și cele trei smoke tests;
+- `cmd.exe /d /c RUN.bat`: startup end-to-end reușit în modul windowed.
+
+La testul complet, logul a confirmat:
+
+- build reușit pentru main, preload, renderer, control și tablet;
+- încărcarea `config.json` în rol master;
+- găsirea filmului de 2,5 GB, a GLB-ului, a show-ului și a directorului de voci;
+- server pe portul 4321 și WebSocket local conectat;
+- fereastra `center` creată;
+- `show.json` încărcat cu 53 de cue-uri;
+- metadata filmului 3840×2052, 741,78 s;
+- avatar GLB `ready`;
+- `GET http://localhost:4321/control/` → HTTP 200, 6438 bytes;
+- închiderea ferestrei a declanșat shutdown normal, deconectare WebSocket și oprirea serverului; portul 4321 a fost eliberat.

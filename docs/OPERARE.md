@@ -8,6 +8,8 @@
 4. Verificați sunetul pe ieșirea implicită și opriți notificările/sleep-ul Windows.
 5. Lansați NavaPlayer. Ecranul tehnic poate fi identificat cu `I`.
 
+Din checkout-ul de dezvoltare, varianta simplă este dublu-click pe `RUN.bat`. Aceasta pornește playerul în fereastră, serverul, consola și endpoint-ul tabletelor. Pentru rulare fullscreen/kiosk folosiți `RUN.bat --kiosk`; pentru diagnostic fără lansare, `RUN.bat --check`.
+
 Consola este la `http://localhost:4321/control/`; de pe alt dispozitiv folosiți adresa LAN afișată în consolă. QR-ul duce copiii la `/tablet/`.
 
 ## Fluxul unei sesiuni
