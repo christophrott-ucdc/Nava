@@ -1054,3 +1054,80 @@ Auditurile succesive au reparat:
 ### 19.7 Fișierul autoritativ pentru etapa creativă
 
 Scenariul curent este `docs/SCENARIU-REGIZORAL-10-MIN.md`, versiunea 2. `assets/show/show.json` și codul aplicației nu au fost încă schimbate după această versiune, deoarece utilizatorul a cerut mai întâi scenariul. Cerințele de producție și implementare sunt enumerate la finalul documentului.
+
+---
+
+## 20. ADDENDUM APPEND-ONLY — cinci posturi, continuitate și Căpitan exclusiv GLB (Codex, 2026-09-04)
+
+> Această secțiune a fost adăugată la final. Nicio secțiune anterioară din `HANDOFF.md` nu a fost rescrisă sau ștearsă. Pentru configurația fizică actualizată, §20 înlocuiește informațiile de producție incompatibile din §18–§19 fără a le elimina din istoric.
+
+### 20.1 Corecțiile cerute
+
+Utilizatorul a precizat trei date de producție care devin autoritative:
+
+1. instalația are **cinci posturi și cinci tablete**, nu zece posturi/tablete;
+2. experiența este una continuă, fără mutarea publicului, schimbarea echipamentului sau un modul separat perceput la 8:45;
+3. Căpitanul este exclusiv personajul GLB din fereastra lui de pe ecran și nu are nicio prezență fizică în sală.
+
+Cei zece copii din brief au fost păstrați ca cinci perechi egale, câte una la fiecare post. Conceptul rezultat este `5 posturi × 2 urme = 10 contribuții`, fără lider, ajutor sau consens obligatoriu în pereche.
+
+### 20.2 Adaptarea dramaturgică
+
+`docs/SCENARIU-REGIZORAL-10-MIN.md` a fost actualizat la versiunea 3:
+
+- semnalul conține cinci fragmente, câte unul pentru fiecare post;
+- fiecare fragment și sigiliu păstrează două urme egale, câte una pentru fiecare copil din pereche;
+- există cinci lentile cauzale: NAVIGAȚIE, PROPULSIE, COMUNICAȚII, BIOSEMNALE și MEMORIE;
+- rolurile nu sunt decorative: Comunicațiile reconstruiesc mesajul, Navigația confirmă direcția și originea, Biosemnalele autentifică urma vie, Propulsia confirmă coerența undei, iar Memoria descoperă anomalia temporală;
+- cele cinci sigilii se curbează la Pământ și închid vizibil al patrulea arc; apoi se deschid în zece trasee luminoase egale;
+- replica Căpitanului de la 5:01 este acum `Cinci posturi. Zece urme. Un singur echipaj.`;
+- toate referințele narative la zece fragmente, zece stații sau zece tablete au fost eliminate.
+
+### 20.3 Mecanica celor cinci tablete
+
+Fiecare tabletă landscape este fixată între cei doi copii și are două zone egale. Fiecare copil poate atinge sau observa independent, iar răspunsurile pot fi identice sau diferite. Lentilele aparțin postului, nu exclusiv unui copil, pentru ca adultul să nu fie obligat să arbitreze rolurile.
+
+Cele trei interacțiuni păstrează timpul fix și au fallback complet. La expirare, tableta cere ridicarea privirii și povestea continuă fără confirmare `5/5`, loading sau intervenție de operator. Dacă un dispozitiv se deconectează, perechea rămâne în poveste ca observator.
+
+Cerințele de producție adăugate sunt: ținte de minimum 56 × 56 CSS px, spațiu de minimum 8 px, etichetă plus simbol, contrast verificat și cel puțin un suport reglabil ca înălțime și unghi. Dacă opțiunile nu încap, cele două jumătăți sunt prezentate succesiv; țintele nu sunt micșorate. Pentru traseul low-sensory, vibrația se reduce global la cerere dacă instalația nu o poate izola fizic pe un singur post.
+
+### 20.4 Topologia ecranelor și Căpitanul
+
+Scenariul definește o singură compoziție globală decupată pe cinci ecrane, nu cinci copii identice. Topologia logică este `left-outer`, `left-inner`, `center`, `right-inner`, `right-outer`, asociată în ordine celor cinci posturi.
+
+Ecranul `center`, pe care configurația exemplu redă deja GLB-ul, conține unica fereastră a Căpitanului. Celelalte patru renderere trebuie să aibă `showAvatar: false` și să nu instanțieze modelul. Avatarul navei a devenit numai voce și HUD, fără al doilea corp umanoid; civilizațiile rămân forme non-umanoide. Indicațiile de robot fizic au fost înlocuite cu cue-uri realizabile de privire, cap, clipit, respirație, expresie, lip-sync și cadraj GLB.
+
+### 20.5 Continuitatea de la 8:45
+
+Eticheta tehnică `epilogue` nu mai reprezintă o schimbare vizibilă de experiență. La 8:45:
+
+- publicul rămâne la aceleași cinci posturi, cu aceleași ecrane și tablete;
+- ultimul cadru al Pământului persistă peste schimbarea fazei;
+- marginea albastră se extinde continuu într-un alb cald;
+- nota a patra și ambianța se suprapun fără oprire;
+- HUD-ul și sigiliile se transformă, fără ramă neagră sau reset vizibil;
+- tabletele pulsează automat și nu solicită o nouă acțiune;
+- Căpitanul reapare numai în aceeași fereastră GLB pentru jurnal și încheiere.
+
+Orice referire la VR, căști sau mutarea copiilor în timpul celor zece minute a fost eliminată din versiunea curentă a scenariului.
+
+### 20.6 Audit și verificări
+
+Cei trei consultanți existenți au fost reactivați și au auditat independent versiunea 3:
+
+- `scenarist`: **VERDE** după ce cele cinci lentile au primit funcții cauzale și al patrulea arc a primit payoff vizual;
+- `regizor_film`: **VERDE CA SCENARIU** după fixarea topologiei celor cinci ecrane și a rendererului GLB unic;
+- `expert_copii`: **VERDE** după corectarea regulii de pereche, a ramurii adaptive, a accesibilității tactile și a vibrației low-sensory.
+
+Verificările automate finale pentru document:
+
+- durată totală: 600 s exact;
+- 48 de replici și 475 de cuvinte;
+- 17 intervenții ale Căpitanului;
+- anexa Căpitanului este identică cu textul din scenariul principal, inclusiv timecode-urile;
+- zero coliziuni la 120 cuvinte/minut plus minimum 1 s buffer;
+- `git diff --check` fără erori de whitespace.
+
+### 20.7 Limită de etapă
+
+Această schimbare finalizează **scenariul**, nu implementarea lui în player. `assets/show/show.json`, interfața tabletelor și configurația efectivă cu cinci ecrane nu au fost încă rescrise după versiunea 3. Lista exactă a cue-urilor și cerințelor necesare implementării se află la finalul scenariului.

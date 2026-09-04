@@ -2,17 +2,17 @@
 
 ## PROTOCOLUL ACASĂ
 
-### Scenariu cinematografic imersiv · versiunea 2 · 10:00 exact
+### Scenariu cinematografic imersiv · versiunea 3 · 10:00 exact
 
-> Nu este o lecție despre trei planete. Este un mister căruia cei zece copii din sală îi dau o formă pe care nava singură nu ar fi putut-o alege.
+> Nu este o lecție despre trei planete. Este un mister căruia cele cinci posturi ale echipajului îi dau o formă pe care nava singură nu ar fi putut-o alege.
 
 ## Premisa
 
-EXODUS-7 interceptează un semnal imposibil: nu are adresă, a fost transmis înainte de începutul misiunii și este spart în zece fragmente — exact câte posturi are echipajul. Din fragmente se recompune o singură instrucțiune:
+EXODUS-7 interceptează un semnal imposibil: nu are adresă, a fost transmis înainte de începutul misiunii și este spart în cinci fragmente — exact câte posturi și tablete are echipajul. Fiecare fragment poartă în interior două urme, câte una pentru fiecare copil din pereche. Din fragmente se recompune o singură instrucțiune:
 
 > GĂSIȚI A PATRA LUME.
 
-Căpitanul, Avatarul și copiii urmăresc semnalul prin trei civilizații. Lumea Luminii îi dă o culoare. Lumea Naturii îi dă un ritm. Lumea Tehnologiei îi dă ceva ce nu poate reduce la un singur răspuns: cele zece perspective ale echipajului.
+Căpitanul, Avatarul și copiii urmăresc semnalul prin trei civilizații. Lumea Luminii îi dă o culoare. Lumea Naturii îi dă un ritm. Lumea Tehnologiei îi dă ceva ce nu poate reduce la un singur răspuns: perspectivele echipajului, reunite prin cinci lentile.
 
 În wormhole, nava descoperă că semnalul nu vine din fața lor, ci din urma lor. Când Pământul reapare, echipajul înțelege bucla: semnalul pe care l-au urmărit a fost construit chiar de călătoria lor. Ei îl trimit acum înapoi către început.
 
@@ -21,10 +21,10 @@ Căpitanul, Avatarul și copiii urmăresc semnalul prin trei civilizații. Lumea
 ## Motorul dramatic
 
 - **Mister:** cine a trimis mesajul și unde este a patra lume?
-- **Miză:** misiunea caută sensul celor zece fragmente, iar orice formă de participare — inclusiv observația — schimbă semnătura pe care o poartă echipajul. Nava nu este în pericol, iar copiii nu poartă răspunderea unui eșec.
+- **Miză:** misiunea caută sensul celor cinci fragmente, iar orice formă de participare — inclusiv observația — schimbă semnătura pe care o poartă echipajul. Nava nu este în pericol, iar copiii nu poartă răspunderea unui eșec.
 - **Regulă:** instrumentele pot măsura unde se află o lume; nu pot măsura de ce cineva se întoarce la ea.
 - **Probe:** culoare, ritm și alegere.
-- **Răsturnare:** semnăturile celor zece stații și toate felurile de a participa, inclusiv observația, compun un adevăr care nu încape într-un singur răspuns.
+- **Răsturnare:** semnăturile celor cinci posturi și toate felurile de a participa, inclusiv observația, compun un adevăr care nu încape într-un singur răspuns.
 - **Revelație:** expeditorul este chiar echipajul, iar semnalul este trimis înapoi prin wormhole.
 - **Payoff:** Pământul ocupă locul gol din instrument, motivul de patru note se completează, iar Căpitanul rescrie protocolul.
 
@@ -32,11 +32,11 @@ Căpitanul, Avatarul și copiii urmăresc semnalul prin trei civilizații. Lumea
 
 ### CĂPITANUL
 
-Un robot fizic, disciplinat și exact. La început traduce orice lucru în limbaj de misiune: fragmente, proceduri, rezultate. Lumea Tehnologiei îi oferă o oglindă a propriei rigidități. Când aceasta cere un singur răspuns și întâlnește zece perspective, el este primul care spune: „Atunci sunt autentice.” În final nu abandonează protocolul; îl face mai uman.
+Un personaj digital disciplinat și exact, redat ca GLB în fereastra dedicată de pe ecran. Căpitanul nu este prezent fizic în sală și nu este un robot Unitree. La început traduce orice lucru în limbaj de misiune: fragmente, proceduri, rezultate. Lumea Tehnologiei îi oferă o oglindă a propriei rigidități. Când aceasta cere un singur răspuns și întâlnește perspectivele echipajului reunite prin cinci lentile, el este primul care spune: „Atunci sunt autentice.” În final nu abandonează protocolul; îl face mai uman.
 
 ### AVATARUL NAVEI
 
-Poate calcula orice traseu, dar nu înțelege de la început noțiunea de întoarcere. Are umor sec, rar. Pe parcurs devine interpretul dintre lumi și echipaj. Prima sa ezitare reală apare când descoperă momentul transmisiei: „acum”. La final recunoaște că știa coordonatele Pământului, dar nu și motivul pentru care un drum devine „acasă”.
+Este vocea și interfața navei, fără un al doilea corp umanoid pe ecran. Poate calcula orice traseu, dar nu înțelege de la început noțiunea de întoarcere. Are umor sec, rar. Pe parcurs devine interpretul dintre lumi și echipaj. Prima sa ezitare reală apare când descoperă momentul transmisiei: „acum”. La final recunoaște că știa coordonatele Pământului, dar nu și motivul pentru care un drum devine „acasă”.
 
 ### LUMINA
 
@@ -52,7 +52,7 @@ Nu este un antagonist. Este o civilizație fascinantă, aproape imposibil de sur
 
 ### ECHIPAJUL
 
-Copiii nu sunt examinați. Cele zece stații dau semnalului o formă nouă. Orice alegere, inclusiv „doar observ”, rămâne în compoziție. Ficțional, echipajul transformă semnalul; tehnic, povestea continuă elegant indiferent câți participă.
+Copiii nu sunt examinați. Cei zece copii lucrează în cinci perechi, câte una la fiecare post și tabletă. În fiecare pereche există două perspective egale, fără „șef” și „ajutor”; niciun copil nu trebuie să răspundă în numele celuilalt. Cele cinci posturi dau semnalului o formă nouă. Orice alegere, inclusiv „doar observ”, rămâne în compoziție. Ficțional, echipajul transformă semnalul; tehnic, povestea continuă elegant indiferent câți participă.
 
 ## Limbajul vizual și sonor
 
@@ -67,9 +67,39 @@ Se aude un motiv de patru note:
 
 În prolog se aud numai primele trei, urmate de tăcere. În final se aud toate patru o singură dată.
 
-Tabletele primesc câte un **sigiliu anonim de stație**, reprezentat printr-o formă și un număr de la 1 la 10. Nu apar nume, clasamente sau procente. La final, cele zece sigilii formează o constelație egală în jurul Pământului.
+Cele cinci tablete primesc câte un **sigiliu anonim de post**, reprezentat printr-o formă și un număr de la 1 la 5. Fiecare sigiliu este împărțit discret în două jumătăți egale — cele două urme ale perechii. Nu apar nume, clasamente sau procente. La final, cele cinci sigilii formează o constelație egală în jurul Pământului și se deschid în zece trasee luminoase egale.
 
-Fiecare rol aplică automat o lentilă diferită asupra aceluiași semnal, fără să îi ceară copilului o sarcină suplimentară: Navigatorul vede direcția, Inginerul energia, Comunicațiile forma de undă, Medicul pulsul stabil, Cercetătorul anomalia, Cartograful traseul, Ofițerul de sisteme coerența, Astrobiologul semnul de viață, Pilotul secund traiectoria, iar Cronicarul memoria. Lentila rămâne activă și pentru copilul care doar observă.
+Fiecare post aplică automat o lentilă diferită asupra aceluiași semnal, fără sarcini suplimentare. Înainte de T0, copiii pot explora liber cele două perspective egale ale postului și le pot schimba între ei fără anunț public:
+
+| Post | Cele două perspective | Ce descoperă lentila |
+|---|---|---|
+| **NAVIGAȚIE** | Navigator + Cartograf | direcția și traseul semnalului |
+| **PROPULSIE** | Inginer + Pilot secund | energia și coerența undei |
+| **COMUNICAȚII** | Comunicator + Operator de sisteme | mesajul și forma de undă |
+| **BIOSEMNALE** | Medic + Astrobiolog | pulsul și semnul de viață |
+| **MEMORIE** | Cercetător + Cronicar | anomalia temporală și jurnalul misiunii |
+
+Lentilele aparțin postului, nu exclusiv copiilor. Dacă ambii preferă aceeași perspectivă, o pot folosi amândoi, iar sistemul păstrează automat ambele lentile. Acestea rămân active și când unul sau ambii copii aleg doar să observe.
+
+## Regula de spațiu și continuitate
+
+Experiența se desfășoară de la 0:00 la 10:00 în aceleași cinci posturi, pe aceleași cinci ecrane și cinci tablete. Copiii nu se ridică, nu schimbă locul și nu primesc alt echipament. Denumirea tehnică `epilog` din contractul temporal indică numai schimbarea sursei vizuale la 8:45; pentru public nu începe un modul nou.
+
+Căpitanul este **singurul personaj humanoid GLB**. Apare exclusiv în fereastra GLB de pe ecranul configurat pentru el, niciodată fizic în sală și niciodată multiplicat pe toate ecranele. Avatarul navei rămâne voce, inel și formă de undă/HUD, fără corp. Civilizațiile sunt forme non-umanoide. Subtitrările pot fi replicate pentru lizibilitate, dar imaginea Căpitanului nu se duplică.
+
+Cele cinci ecrane formează o singură compoziție globală, decupată continuu de la stânga la dreapta; inelul, semnalul și mișcările panoramice nu sunt cinci copii identice. Topologia regizorală este fixă:
+
+| Poziție / ID logic | Post | Conținut distinct |
+|---|---|---|
+| exterior stânga / `left-outer` | NAVIGAȚIE | traseul și primul sigiliu |
+| interior stânga / `left-inner` | PROPULSIE | energie, coerența undei și entități |
+| centru / `center` | COMUNICAȚII | planeta, subtitrarea principală și **unica fereastră GLB a Căpitanului** |
+| interior dreapta / `right-inner` | BIOSEMNALE | puls, rețeaua vie și entități |
+| exterior dreapta / `right-outer` | MEMORIE | forma de undă, anomalia temporală și ultimul sigiliu |
+
+ID-ul `center` este ecranul pe care este configurat acum GLB-ul. Celelalte patru renderere au `showAvatar: false` și nu instanțiază modelul. Entitățile Lumina, Natura și Tehnologica se întind numai pe cele două ecrane interioare, lăsând planeta și fereastra Căpitanului lizibile pe centru.
+
+Tabletele rămân fixate și centrate între cei doi copii; nu se pasează și nu se ridică. În fiecare interacțiune, interfața are două zone egale, marcate prin cele două jumătăți ale sigiliului. Fiecare copil poate atinge sau observa independent. Spectacolul nu cere consens, sincronizare sau confirmarea tuturor posturilor și continuă la același timp chiar dacă o tabletă se deconectează.
 
 ## Contractul temporal
 
@@ -86,7 +116,7 @@ Fiecare rol aplică automat o lentilă diferită asupra aceluiași semnal, făr�
 | 8:45–9:55 | epilog 0–70 | Protocolul Acasă | 1:10 |
 | 9:55–10:00 | epilog 70–75 | Tăcerea finală | 0:05 |
 
-**Total: 600 de secunde.** Filmul este oprit determinist la secunda video 465; porțiunea 465–741,78 nu face parte din masterul de zece minute.
+**Total: 600 de secunde.** Filmul este oprit determinist la secunda video 465; porțiunea 465–741,78 nu face parte din masterul de zece minute. Ultimul cadru, HUD-ul și rezonanța sonoră persistă peste schimbarea tehnică de fază, astfel încât nu există tăietură, negru sau reset vizibil la 8:45.
 
 ---
 
@@ -94,9 +124,9 @@ Fiecare rol aplică automat o lentilă diferită asupra aceluiași semnal, făr�
 
 ## Înainte de T0 · pregătirea nevăzută
 
-Copiii sunt așezați înainte de pornirea cronometrului. Tabletele sunt conectate și afișează numai sigiliul stației. Un facilitator stă lângă ieșirea liberă și vede toate cele zece locuri. Semnalul verbal „pauză” și semnalul prin gest sunt explicate înainte de stingerea luminilor.
+Cele cinci perechi sunt așezate înainte de pornirea cronometrului, câte doi copii la fiecare post. Tabletele sunt fixate, conectate și afișează sigiliul postului, împărțit în două zone egale. Regula este dată o singură dată: „Fiecare folosește propria jumătate. Puteți răspunde la fel sau diferit.” Un facilitator stă lângă ieșirea liberă și vede toate cele cinci perechi. Semnalul verbal „pauză” și semnalul prin gest sunt explicate înainte de stingerea luminilor.
 
-Participarea este opțională. Locul low-sensory rămâne în grup, aproape de ieșire, cu protecție auditivă și fără cască sau efect fizic. Operatorul tehnic nu este simultan facilitatorul care supraveghează copiii.
+Participarea este opțională și individuală: unul dintre copii poate participa, iar celălalt poate observa. Postul low-sensory rămâne în grup, aproape de ieșire, cu protecție auditivă. Dacă vibrația nu poate fi localizată pe post, intensitatea ei se reduce global la cererea facilitatorului; nu se promite reducere locală pe care instalația nu o poate produce. Operatorul tehnic nu este simultan facilitatorul care supraveghează copiii.
 
 ## 0:00–0:50 · SEMNALUL FĂRĂ ADRESĂ
 
@@ -106,37 +136,37 @@ Sala coboară în albastru profund. Pe cele cinci ecrane, cadrul zero: Pământu
 
 În jurul lui se trasează încet un inel incomplet. Trei impulsuri sonore. În locul celui de-al patrulea: tăcere.
 
-Cele zece tablete se aprind, fiecare cu alt sigiliu. Sigiliile apar ca zece puncte discrete la periferia inelului.
+Cele cinci tablete se aprind, fiecare cu alt sigiliu. Pe ecranele asociate apar cinci puncte discrete la periferia inelului; în fiecare punct se văd două urme fine.
 
 ### 0:04 · CĂPITANUL
 
-Voce joasă, protocolară. Privește instrumentul, nu copiii.
+În fereastra GLB dedicată, voce joasă și protocolară. Privirea avatarului este orientată spre HUD, nu spre camera publicului.
 
-> Cu puțin timp în urmă, EXODUS-7 a primit un semnal fără adresă. Zece fragmente. Exact câte stații are echipajul.
+> EXODUS-7 a primit un semnal fără adresă. Cinci fragmente, câte unul pentru fiecare post. Fiecare poartă două urme.
 
 ### 0:15 · AVATARUL NAVEI
 
-Se materializează din particule care par desprinse din marginea Pământului.
+Inelul și forma de undă ale navei se aprind din particule desprinse din marginea Pământului; nu apare un al doilea personaj.
 
-> Fragmentele au format o propoziție: „Găsiți a patra lume.” Nu știm cine a trimis-o. Nu încă.
+> Postul Comunicații a reunit fragmentele: „Găsiți a patra lume.” Expeditor necunoscut.
 
-Pe HUD, propoziția apare o singură dată, apoi se fragmentează iar în zece semne.
+Pe HUD, propoziția apare o singură dată, apoi se fragmentează iar în cinci semne, fiecare despărțit în două urme.
 
 ### 0:24 · CĂPITANUL
 
-Se întoarce pentru prima dată către grup.
+GLB-ul trece lent din profil trei-sferturi la privire directă în camera publicului.
 
-> Atunci nu avem pasageri. Avem martori. Fiecare post va privi semnalul prin alt instrument. Împreună îi vom vedea forma.
+> Atunci nu avem pasageri. Avem cinci echipe. Fiecare post privește prin altă lentilă. Împreună vom vedea forma semnalului.
 
 ### 0:35 · AVATARUL NAVEI
 
 Calm, fără a rupe ficțiunea.
 
-> Participați sau observați; ambele contează. Pentru pauză, spuneți „pauză” sau faceți semn.
+> Puteți atinge sau observa. Ambele contează. Pentru pauză, spuneți „pauză” sau faceți semn.
 
 ### 0:43 · CĂPITANUL
 
-Deschide palma către cele zece posturi.
+Fereastra GLB se apropie foarte puțin; privirea rămâne directă și calmă.
 
 > Rămâneți stabili. La cinci, numărăm împreună.
 
@@ -144,7 +174,7 @@ Ambianța introduce un puls subgrav lent. Nu este alarmă. Inelul se retrage spr
 
 ## 0:50–1:00 · COUNTDOWN
 
-T−10 apare peste Pământ. Primele cinci secunde sunt numai sunet și lumină. La T−5, Căpitanul ridică mâna și marchează ritmul fără să rostească numerele. Copiii pot număra; vocile lor devin prima amprentă a echipajului.
+T−10 apare peste Pământ. Primele cinci secunde sunt numai sunet și lumină. La T−5, Căpitanul marchează fiecare puls printr-o înclinare mică a capului GLB, fără să rostească numerele. Cifrele și pulsul HUD rămân reperul principal. Copiii pot număra; vocile lor devin prima amprentă a echipajului.
 
 La zero, inelul se contractă într-un punct. Un val grav pornește filmul. Nu există flash și nu există șoc sonor.
 
@@ -154,7 +184,7 @@ Pământul se îndepărtează. La video 20 s dispare, iar câmpul stelar rămân
 
 ### 1:09 · CĂPITANUL
 
-Mai încet decât în prolog. Pentru prima dată se uită la Pământ, nu la instrumente.
+Mai încet decât în prolog. În fereastra GLB, privirea lui urmărește Pământul care se îndepărtează, nu datele HUD.
 
 > Pământul se îndepărtează. Păstrați-i imaginea. Când îl vom vedea din nou, s-ar putea ca noi să nu-l mai privim la fel.
 
@@ -170,7 +200,7 @@ Foarte sec; singura glumă din prima jumătate.
 
 O lumină turcoaz crește în depărtare.
 
-> Semnalul indică lumina din față. Prima urmă.
+> Navigatorii confirmă: semnalul indică lumina din față. Prima urmă.
 
 Primul arc al instrumentului începe să pulseze slab, fără să se umple.
 
@@ -194,9 +224,9 @@ Voce fără vârstă. Nu vine din centru, ci pare să traverseze încet panorama
 
 ### 2:43–2:55 · INTERACȚIUNEA 1
 
-Tabletele oferă patru câmpuri de culoare și opțiunea „Doar observ”. Alegerea necesită o singură atingere. Fiecare opțiune are și o formă, nu doar o culoare.
+Fiecare jumătate de tabletă oferă aceleași patru câmpuri de culoare și opțiunea „Doar observ”. Fiecare copil poate răspunde independent printr-o singură atingere. Opțiunile au și forme, nu doar culori.
 
-Pe ecranele laterale, culorile intră anonim în entitate. Efectul are o compoziție completă chiar dacă nimeni nu atinge nimic.
+Pe ecranele laterale, până la zece urme de culoare intră anonim în entitate, grupate vizual în cele cinci sigilii. Efectul are o compoziție completă chiar dacă nimeni nu atinge nimic. La închiderea ferestrei, tabletele afișează pentru o secundă „ACUM, PRIVIȚI SEMNALUL”, apoi se întunecă.
 
 ### 2:58 · LUMINA
 
@@ -232,13 +262,13 @@ Voce gravă, blândă. Ploaia apare jos în mix, aproape tactilă.
 
 ### 4:33 · NATURA
 
-> Dacă vreți, atingeți sigiliul când pulsează. Nu trebuie să o faceți împreună.
+> Dacă vreți, atingeți sigiliul când pulsează. Puteți avea ritmuri diferite.
 
-### 4:42–4:51 · INTERACȚIUNEA 2
+### 4:39–4:51 · INTERACȚIUNEA 2
 
-Toate cele zece sigilii primesc pulsul în paralel, cu aceeași fereastră personală. Copilul poate atinge o dată sau poate alege „Doar observ”. Nu există scor de sincronizare.
+Cele cinci sigilii primesc pulsul în paralel. Fiecare jumătate are propria zonă, iar fiecare copil poate atinge o dată sau poate alege „Doar observ”. Nu există scor de viteză ori sincronizare și nicio interfață nu arată cine nu a atins.
 
-Fiecare atingere schimbă ușor ritmul, iar sistemul îl readuce blând într-o pulsație comună. Vizual, zece linii imperfecte formează o rețea. Absența unui răspuns nu lasă un gol.
+Fiecare atingere schimbă ușor ritmul, iar sistemul îl readuce blând într-o pulsație comună. Vizual, din cele cinci sigilii se deschid până la zece linii imperfecte și formează o rețea. Absența unui răspuns nu lasă un gol. La final, tabletele cer doar ridicarea privirii și se întunecă.
 
 ### 4:53 · NATURA
 
@@ -246,11 +276,13 @@ Fiecare atingere schimbă ușor ritmul, iar sistemul îl readuce blând într-o 
 
 La ultimul cuvânt, al doilea arc se aprinde și intră a doua notă.
 
+Pe sigiliul postului BIOSEMNALE apare confirmarea: `SEMNĂTURĂ VIE`.
+
 ### 5:01 · CĂPITANUL
 
-Privește pentru prima dată copiii înainte să privească datele.
+GLB-ul privește pentru prima dată camera publicului înainte să consulte datele HUD.
 
-> Zece ritmuri. Un singur echipaj.
+> Cinci posturi. Zece urme. Un singur echipaj.
 
 Entitatea dispare. Ploaia se stinge. Ultimele secunde ale planetei rămân fără dialog.
 
@@ -292,11 +324,11 @@ Este singurul umor al scenei și trebuie jucat complet drept.
 
 > Instrumentele noastre cer un singur răspuns: ce păstrează o lume vie?
 
-### 6:18–6:33 · INTERACȚIUNEA 3
+### 6:17–6:34 · INTERACȚIUNEA 3
 
-Tabletele oferă: „Curiozitatea”, „Grija”, „Poveștile”, „Alegerile”, „Altceva” și „Doar observ”. O singură atingere. Fără câștigător, procent sau răspuns individual pe ecran.
+Fiecare jumătate de tabletă oferă: „Curiozitatea”, „Grija”, „Poveștile”, „Alegerile”, „Altceva” și „Doar observ”. Mesajul local spune: „Alege pentru lentila ta. Răspunsurile pot fi la fel sau diferite.” O singură atingere este suficientă. Fără câștigător, procent sau răspuns individual pe ecranele sălii.
 
-Fiecare răspuns devine un punct egal într-o constelație. Feedback-ul este numai local, vizual sau haptic.
+Fiecare răspuns devine o urmă egală în sigiliul postului. Feedback-ul este numai local, vizual sau haptic. La expirarea timpului, orice stare devine o perspectivă validă, tableta cere ridicarea privirii și povestea continuă fără ecran de încărcare.
 
 ### 6:35 · TEHNOLOGICA — REPLICĂ ADAPTIVĂ
 
@@ -305,8 +337,8 @@ Bucla muzicală se oprește înaintea ultimei note.
 Se redă o singură variantă, în funcție de rezultat:
 
 - dacă există cel puțin două alegeri diferite: **„Nu există un singur răspuns. Modelul meu nu poate alege între ele.”**
-- dacă există o singură alegere: **„Ați ales un răspuns. Dar sigiliile voastre încă descriu zece perspective.”**
-- dacă toți observă: **„Ați ales să observați. Chiar și tăcerea voastră păstrează zece perspective.”**
+- dacă toate alegerile exprimate sunt la fel: **„Alegerile exprimate sunt la fel. Dar cele cinci lentile păstrează perspective diferite.”**
+- dacă toți observă: **„Ați ales să observați. Chiar și tăcerea trece prin cinci lentile.”**
 
 ### 6:42 · CĂPITANUL
 
@@ -320,11 +352,11 @@ Pentru prima dată, cu o urmă de uimire.
 
 > Trimiteți-le pe toate. Un adevăr poate avea mai multe forme.
 
-Al treilea arc se aprinde. A treia notă intră în motiv, iar constelația celor zece stații rămâne în locul arcului absent.
+Al treilea arc se aprinde. A treia notă intră în motiv, iar constelația celor cinci sigilii rămâne în locul arcului absent. Fiecare sigiliu păstrează vizibil cele două urme egale.
 
 ### 6:51 · AVATARUL NAVEI
 
-> Semnătura a luat formă.
+> Propulsia confirmă: undă coerentă.
 
 ### 6:54 · CĂPITANUL
 
@@ -340,7 +372,7 @@ Cele trei arce și constelația se desfac în fâșii, apoi se recompun ca o for
 
 Prima ezitare foarte mică.
 
-> Urma semnalului traversează wormhole-ul în sens invers. Momentul de origine... încă nu s-a întâmplat.
+> Memoria semnalează o anomalie: urma traversează wormhole-ul invers. Momentul de origine încă nu s-a produs.
 
 ### 7:27 · CĂPITANUL
 
@@ -352,7 +384,7 @@ Prima ezitare foarte mică.
 
 ### 7:38 · CĂPITANUL
 
-Înțelege înaintea sistemului. Nu mai privește datele; privește echipajul.
+Înțelege înaintea sistemului. În fereastra GLB, ochii se mută de la HUD direct spre camera publicului.
 
 > Atunci noi suntem expeditorul.
 
@@ -362,9 +394,9 @@ Swell-ul crește numai două secunde și cade complet sub următoarea replică.
 
 ### 7:42 · AVATARUL NAVEI
 
-> Origine confirmată.
+> Navigația confirmă originea.
 
-La 7:43, Pământul apare ca o semilună albastră. Toate overlay-urile dispar. Rămân numai planeta și tăcerea.
+La 7:43, Pământul apare ca o semilună albastră. Constelația celor cinci sigilii se curbează și închide arcul lipsă. Pentru o clipă, inelul este complet, iar al patrulea arc urmează marginea albastră a Pământului. Apoi overlay-urile dispar. Rămân numai planeta și tăcerea.
 
 ### 7:50 · CĂPITANUL
 
@@ -376,13 +408,13 @@ Aproape șoptit.
 
 > Punct de origine confirmat: aici. Momentul transmiterii este încă în fața noastră.
 
-Cele zece sigilii reapar în jurul Pământului. Culoarea Luminii, pulsul Naturii și constelația alegerilor reconstruiesc exact forma de undă din prima secundă.
+Cele cinci sigilii reapar în jurul Pământului. Culoarea Luminii, pulsul Naturii și constelația alegerilor reconstruiesc exact forma de undă din prima secundă. Lentilele confirmă succesiv, numai vizual: `NAVIGAȚIE · ORIGINE: PĂMÂNT`, `PROPULSIE · UNDĂ: STABILĂ`, `COMUNICAȚII · MESAJ RECONSTRUIT`, `BIOSEMNALE · SEMNĂTURĂ: VIE`, `MEMORIE · ÎNAINTE DE T0`.
 
 ### 8:02 · CĂPITANUL
 
 Fără triumf; cu uimire autentică.
 
-> Înțeleg. Cele zece fragmente nu ne așteptau. Noi le-am adus.
+> Înțeleg. Cele cinci fragmente nu ne așteptau. Noi le-am adus.
 
 ### 8:09 · AVATARUL NAVEI
 
@@ -406,23 +438,27 @@ Vocile apar pe rând, ca niște amintiri, nu ca entități vizibile.
 
 ### 8:29 · CĂPITANUL
 
-Deschide palma către copii. Aceasta este replica-titlu.
+Fereastra GLB se mărește discret, iar Căpitanul păstrează contactul vizual direct. Aceasta este replica-titlu.
 
 > Corectez jurnalul: a patra lume nu era necunoscută. Noi încă nu învățaserăm s-o vedem.
 
 ### 8:38 · AVATARUL NAVEI
 
-> Semnal pregătit. Mesaj: „Găsiți a patra lume.”
+> Posturile confirmă. Mesaj: „Găsiți a patra lume.”
 
 ### 8:43 · CĂPITANUL
 
+Un singur nod scurt al capului GLB.
+
 > Trimite.
 
-La comanda Căpitanului, unda devine o diagramă schematică și părăsește cadrul către urma temporală calculată; nu apare un portal fotorealist peste Pământ. Se aude nota a patra. La 8:45, imaginea trece lent în alb cald și începe epilogul.
+La comanda Căpitanului, unda pleacă din cele cinci sigilii, înconjoară marginea luminoasă a Pământului și devine o diagramă schematică îndreptată spre urma temporală calculată; nu apare un portal fotorealist peste planetă. Se aude nota a patra.
 
 ## 8:45–10:00 · PROTOCOLUL ACASĂ
 
-Epilogul rulează simultan pe ecranele sălii sau într-un echipament deja pregătit. Nu presupune mutarea și reglarea a zece căști în timpul rămas.
+La 8:45 **nu există tăietură și nu începe o experiență separată**. Ultimul cadru al Pământului rămâne pe aceleași cinci ecrane. Marginea lui albastră se dilată ca un iris până când devine alb cald; stelele dispar treptat, iar cele cinci sigilii se contractă într-un instrument de întoarcere abia vizibil. Rezonanța notei a patra trece neîntrerupt în ambianța de coborâre. Schimbarea tehnică la faza `epilogue` este ascunsă sub această imagine persistentă, fără ramă neagră, reset de HUD sau oprire audio.
+
+Copiii rămân la aceleași posturi. Cele cinci tablete pulsează automat și nu cer nicio acțiune. Căpitanul se estompează odată cu HUD-ul, dar rămâne exclusiv în aceeași fereastră GLB când reapare; Avatarul continuă numai ca voce.
 
 ### 8:50 · AVATARUL NAVEI
 
@@ -436,7 +472,7 @@ Fără corp vizibil. Vocea este apropiată, iar albul respiră aproape impercept
 
 ### 9:20 · CĂPITANUL
 
-Ton de jurnal, dar fără răceala de la început.
+Fereastra GLB reapare în același loc. Ton de jurnal, dar fără răceala de la început.
 
 > Jurnal de bord: semnal trimis. Bucla este completă.
 
@@ -446,11 +482,11 @@ Ton de jurnal, dar fără răceala de la început.
 
 ### 9:43 · CĂPITANUL
 
-Complet cald. Nu mai privește instrumentele.
+Complet cald. GLB-ul păstrează privirea directă până când fereastra se stinge.
 
 > Protocolul Acasă: încheiat. Bun venit acasă, echipaj. Rămâneți pe loc până se aprind luminile și vă spune facilitatorul.
 
-La 9:53, tabletele afișează: „MISIUNE ÎNCHEIATĂ · SEMNAL TRANSMIS”. Cele zece sigilii sunt egale și complete. Luminile sălii cresc lent.
+La 9:53, tabletele afișează: „MISIUNE ÎNCHEIATĂ · SEMNAL TRANSMIS”. Cele cinci sigilii sunt egale și complete; fiecare se deschide în cele două trasee luminoase ale perechii. Abia acum luminile sălii cresc lent.
 
 Între 9:55 și 10:00 dispare orice sunet. Rămâne albul cald.
 
@@ -462,33 +498,33 @@ Facilitatorul preia grupul și confirmă când copiii se pot ridica.
 
 # TEXTUL INTEGRAL AL CĂPITANULUI
 
-Această anexă este foaia de lucru pentru actor, TTS sau programarea robotului. Replicile sunt identice cu cele din scenariu.
+Această anexă este foaia de lucru pentru interpretul vocal, TTS, lip-sync și animația personajului GLB. Replicile sunt identice cu cele din scenariu.
 
 | Timp | Arc actoricesc | Text |
 |---:|---|---|
-| 0:04 | protocolar; privește instrumentul | „Cu puțin timp în urmă, EXODUS-7 a primit un semnal fără adresă. Zece fragmente. Exact câte stații are echipajul.” |
-| 0:24 | se întoarce spre grup | „Atunci nu avem pasageri. Avem martori. Fiecare post va privi semnalul prin alt instrument. Împreună îi vom vedea forma.” |
-| 0:43 | calm, fizic, protector | „Rămâneți stabili. La cinci, numărăm împreună.” |
+| 0:04 | protocolar; privirea GLB spre HUD | „EXODUS-7 a primit un semnal fără adresă. Cinci fragmente, câte unul pentru fiecare post. Fiecare poartă două urme.” |
+| 0:24 | GLB-ul trece la privire directă | „Atunci nu avem pasageri. Avem cinci echipe. Fiecare post privește prin altă lentilă. Împreună vom vedea forma semnalului.” |
+| 0:43 | calm și protector; cadru ușor mai apropiat | „Rămâneți stabili. La cinci, numărăm împreună.” |
 | 1:09 | prima urmă de contemplare | „Pământul se îndepărtează. Păstrați-i imaginea. Când îl vom vedea din nou, s-ar putea ca noi să nu-l mai privim la fel.” |
 | 3:10 | încă formal | „Primul fragment: un semnal trimis altcuiva. Înregistrat.” |
-| 5:01 | observă copiii înaintea datelor | „Zece ritmuri. Un singur echipaj.” |
+| 5:01 | privește camera înaintea datelor | „Cinci posturi. Zece urme. Un singur echipaj.” |
 | 6:04 | reflex procedural | „Scanați sursa.” |
 | 6:42 | prima abatere asumată de la protocol | „Atunci sunt autentice.” |
 | 6:54 | hotărât | „Ruta e deschisă.” |
 | 7:27 | foarte scurt, tensiune controlată | „Repetă.” |
 | 7:38 | înțelege înaintea mașinii | „Atunci noi suntem expeditorul.” |
 | 7:50 | aproape șoptit | „Pământ.” |
-| 8:02 | uimire reală | „Înțeleg. Cele zece fragmente nu ne așteptau. Noi le-am adus.” |
-| 8:29 | deschide palma; replica-titlu | „Corectez jurnalul: a patra lume nu era necunoscută. Noi încă nu învățaserăm s-o vedem.” |
-| 8:43 | simplu, fără triumf | „Trimite.” |
-| 9:20 | jurnal devenit mărturie | „Jurnal de bord: semnal trimis. Bucla este completă.” |
-| 9:43 | complet cald | „Protocolul Acasă: încheiat. Bun venit acasă, echipaj. Rămâneți pe loc până se aprind luminile și vă spune facilitatorul.” |
+| 8:02 | uimire reală | „Înțeleg. Cele cinci fragmente nu ne așteptau. Noi le-am adus.” |
+| 8:29 | fereastra GLB se mărește; replica-titlu | „Corectez jurnalul: a patra lume nu era necunoscută. Noi încă nu învățaserăm s-o vedem.” |
+| 8:43 | simplu, fără triumf; nod scurt | „Trimite.” |
+| 9:20 | GLB-ul reapare; jurnal devenit mărturie | „Jurnal de bord: semnal trimis. Bucla este completă.” |
+| 9:43 | complet cald; privire directă | „Protocolul Acasă: încheiat. Bun venit acasă, echipaj. Rămâneți pe loc până se aprind luminile și vă spune facilitatorul.” |
 
 Durata estimată a tuturor intervențiilor Căpitanului este de aproximativ 75–85 de secunde, în funcție de joc și pauze. Căpitanul are o transformare audibilă: **protocol → observație → îndoială → alegere → apartenență**.
 
 ## Indicație de interpretare
 
-Căpitanul nu trebuie jucat ca un robot fără emoție, ci ca o ființă care și-a organizat emoția sub forma disciplinei. Nu își schimbă brusc vocea la final. Căldura apare prin pauze mai lungi, volum mai mic și faptul că începe să privească echipajul înaintea instrumentelor.
+Căpitanul nu trebuie jucat ca un avatar inert, ci ca o ființă care și-a organizat emoția sub forma disciplinei. Nu își schimbă brusc vocea la final. Căldura apare prin pauze mai lungi, volum mai mic, contact vizual și apropierea cadrului, nu prin gesturi corporale complexe. Patru stări GLB sunt suficiente: **protocol/frontal → ascultă/HUD → uimire/privire directă → acasă/close-up calm**.
 
 ---
 
@@ -496,19 +532,20 @@ Căpitanul nu trebuie jucat ca un robot fără emoție, ci ca o ființă care ș
 
 Acestea nu sunt încă implementate și vor fi transformate în cue-uri numai după aprobarea textului:
 
-1. tranziție automată la epilog la video 465 s;
-2. inel periferic cu patru arce și cele zece sigilii anonime;
-3. trei interacțiuni tabletă cu timeout și fallback estetic complet;
+1. tranziție automată la epilog la video 465 s, cu ultimul cadru, HUD-ul și sunetul păstrate fără nicio ramă de întrerupere;
+2. inel periferic cu patru arce și cinci sigilii anonime, fiecare împărțit în două urme egale;
+3. trei interacțiuni pe cinci tablete landscape, fiecare cu două zone independente, timeout fix și fallback estetic complet; fiecare țintă are minimum 56 × 56 CSS px, spațiu de minimum 8 px, etichetă plus simbol și contrast verificat; dacă opțiunile nu încap, cele două jumătăți sunt servite succesiv, fără micșorarea țintelor;
 4. repoziționarea entităților pe laterale, fără acoperirea planetelor;
 5. motiv sonor de patru note, ambianță continuă și ducking de 8–10 dB sub voce;
 6. memorarea anonimă în sesiune a culorii, pulsului și voturilor pentru forma de undă finală;
 7. cue-ul de transmitere la 8:43 și transformarea undei în semnalul din prolog;
-8. programarea mișcărilor Căpitanului: privire, întoarcere, palmă deschisă și marcarea countdown-ului;
+8. cue-uri pentru unicul GLB al Căpitanului: poziție fixă pe ecranul dedicat, lip-sync, privire, cap, clipit, respirație, expresie și cadraj; fără a presupune animații de brațe neverificate;
 9. repetiție cu trei grupe-pilot: 8–9, 10–11 și 12–14 ani.
 10. cele trei variante vocale adaptive ale Tehnologicei și logica de selecție după vot;
-11. lentilele automate ale celor zece roluri, astfel încât rolul să aibă payoff fără sarcini suplimentare;
+11. cele cinci lentile automate și cele două perspective egale ale fiecărui post, astfel încât rolurile să aibă payoff fără sarcini suplimentare;
 12. un sistem global de coordonate pentru compoziția pe cinci ecrane și o hartă audio verificată; altfel mișcările panoramice se repetă pe fiecare televizor;
-13. integrare Unitree sau operator/cue-monitor dedicat pentru gesturile sincronizate ale Căpitanului.
+13. controlul GLB sincronizat cu cue-urile vocale și garanția că personajul este redat numai de rendererul `center`, cu `showAvatar: false` pe celelalte patru ecrane;
+14. cel puțin un suport de tabletă reglabil ca înălțime și unghi, traseu liber al cablurilor și control global al vibrației atunci când efectul nu poate fi izolat la postul low-sensory.
 
 ## Criteriul creativ de acceptanță
 
