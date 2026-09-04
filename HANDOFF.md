@@ -724,3 +724,177 @@ Tabletele și consola au nevoie de **aceeași rețea LAN/Wi-Fi** ca PC-ul master
 | **Exodus** | proiectul-sursă (`C:\Users\Chris\Documents\GitHub\Exodus`) din care vin avatarul și codul de referință |
 | **Orchestrator** | agentul principal care deține `src/shared`, `show.json`, integrarea și commit-urile |
 | **Agenții A–D, F** | main+build · renderer · avatar+voce · server+web · documentație (`docs/BRIEF.md` §5) |
+
+---
+
+## 16. CONTINUARE APPEND-ONLY — integrare și finalizare (Codex, 2026-09-04)
+
+> Această secțiune a fost **adăugată la final** la cererea utilizatorului. Conținutul anterior, inclusiv starea istorică din §12, nu a fost rescris. Pentru starea curentă se citesc în ordine toate addendum-urile de la §16 în jos.
+
+### 16.1 Explorare și constatări inițiale
+
+- A fost citit integral acest `HANDOFF.md`, apoi `docs/BRIEF.md`, contractele `src/shared/types.ts`, `src/shared/protocol.ts`, `src/shared/contracts.ts` și scenariul executabil `assets/show/show.json`.
+- Repo-ul era pe branch-ul `board/nava-player`, fără niciun commit, iar toate fișierele erau untracked.
+- Implementarea existentă era mult mai avansată decât starea istorică din §12, dar integrarea era întreruptă: lipseau `src/renderer/avatar/index.ts`, `src/renderer/voice/index.ts`, `src/server/tts-providers.ts`, `scripts/tts-generate.mjs` și ambele aplicații web din `src/web/`.
+- `npm run typecheck` eșua din cauza modulelor lipsă și a celor două câmpuri noi absente din fallback-ul rendererului: `launchLeadInSec` și `epilogueOnVideoEnd`.
+- `npm run build` eșua la aceleași importuri și sărea peste consola și aplicația tabletelor.
+- S-a confirmat starea reală a show-ului: `0.2.0-aligned`, 8 scene, 53 cue-uri, dintre care 24 voce, 8 teme, 6 entități, 5 SFX, 5 tablete, 4 markere și un countdown.
+- S-au confirmat local media H.264 de 2.504.162.463 B, avatarul GLB de 14.302.780 B și planșele de cadre.
+
+### 16.2 Lucru paralel cu agenți
+
+Utilizatorul a autorizat explicit folosirea mai multor agenți. Au fost pornite patru piste de lucru, cu proprietate de fișiere separată:
+
+1. **avatar_voice** — avatar, motor voce, TTS providers și generatorul de voci;
+2. **web_apps** — consola operatorului și aplicația tabletelor;
+3. **platform_audit** — Electron main/preload, server, build, packaging și smoke tests;
+4. **release_qa** — audit independent, fără editări, al produsului integrat.
+
+### 16.3 Renderer: lead-in real la T−10 și epilog automat
+
+- În `src/renderer/index.ts`, show-ul fallback a primit câmpurile obligatorii `launchLeadInSec: 10` și `epilogueOnVideoEnd: false`.
+- În `src/renderer/player.ts` s-a reparat integrarea câmpului `launchLeadInSec`. Înainte, serverul pornea la `phaseTime=-10`, dar rendererul pornea imediat filmul la 0. Acum:
+  - faza `play` poate avea timp negativ;
+  - video-ul rămâne înghețat pe cadrul zero în lead-in;
+  - pause/play îngheață și reia countdown-ul negativ;
+  - seek la un timp negativ reintră în lead-in;
+  - follower-ele urmăresc corect ceasul negativ;
+  - filmul începe când ceasul ajunge la zero.
+- Citirea vechiului câmp inexistent `autoEpilogue` a fost înlocuită cu contractul real `epilogueOnVideoEnd`.
+- Tranziția locală automată spre epilog este întârziată 750 ms după evenimentul video `ended`, astfel încât ecranul-sursă să raporteze mai întâi serverului starea `ended`; serverul rămâne autoritatea și poate difuza simultan comanda `epilogue`. Într-o rulare offline, timeout-ul local păstrează comportamentul automat.
+- A fost adăugat `scripts/smoke-core.mjs`, care verifică serverul și rendererul la T−10, filmul înghețat, pauza countdown-ului și pornirea filmului la zero. Testul trece.
+
+### 16.4 Avatar, voce și TTS
+
+Au fost create/completate:
+
+- `src/renderer/avatar/index.ts` — `createAvatarController` cu TalkingHead, încărcare GLB, transporter, Romanian visemes, lip-sync pe un buffer mut sincronizat cu audio-ul real, fallback sintetic, mood/attention/resize/dispose și recuperare după pierderea contextului WebGL;
+- `src/renderer/voice/index.ts` — `createVoiceEngine` cu lanț manifest offline → `/api/tts` → `speechSynthesis`, validare/decode/cache audio, efecte per personaj, amplitudine, SFX și ecrane follower mute;
+- `src/server/tts-providers.ts` — ElevenLabs cu endpoint de timestamps și Gemini prin schema curentă `v1beta/interactions`, erori sigure când lipsesc cheile, WAV pentru PCM și estimare de timpi;
+- `scripts/tts-generate.mjs` — generator reluabil cu `--lang`, `--provider`, `--cue`, `--force`, `--dry-run`, încărcare `.env` fără afișarea secretelor și păstrarea rezultatelor parțiale;
+- `assets/voice/{ro,en,fr}/manifest.json` — manifeste offline valide, momentan goale.
+
+În `.env.example` a fost documentat și `GEMINI_TTS_MODEL=gemini-3.1-flash-tts-preview`. Schema API a fost verificată față de documentația oficială curentă ElevenLabs și Google Gemini. `node scripts/tts-generate.mjs --dry-run` găsește toate cele 24 de replici. Nu au fost generate MP3/WAV deoarece nu există chei API; fallback-ul Windows rămâne funcțional.
+
+### 16.5 Consola operatorului și tabletele
+
+Au fost adăugate `index.html`, `styles.css` și `index.ts` în ambele directoare:
+
+- `src/web/control/` — WebSocket cu reconectare și fallback HTTP, toate comenzile protocolului, ceas interpolat și timeline T−10…durată, scene, căutare/filtrare cue-uri, statusuri și fire manual, volume, limbă, QR/URL LAN, starea video/ecranelor/tabletelor, roluri și răspunsuri live;
+- `src/web/tablet/` — identitate UUID persistentă, nume/rol, reconectare cu backoff și ping, coadă offline, teme/scene/subtitrări, alegere rol, întrebare, vot, mesaj, mulțumire și reset de sesiune.
+
+Interfețele folosesc numai DOM și `textContent` pentru datele copiilor/serverului; nu a fost introdus un framework sau HTML nesigur.
+
+### 16.6 Platformă, server și build
+
+Auditul platformei a reparat și verificat:
+
+- normalizarea completă a configurației și validarea URL-ului WebSocket;
+- blocarea popup-urilor și navigării rendererului Electron;
+- reconectarea followerului când constructorul WebSocket eșuează;
+- validarea show-ului, rolurilor WS și a handshake-urilor duplicate;
+- shutdown bounded și închiderea conexiunilor keep-alive;
+- validarea strictă a interacțiunilor tabletelor și resetul sesiunii la restart;
+- recomputarea corectă a subtitrării după seek/reload;
+- build one-shot care eșuează dacă lipsesc entrypoint-uri sau fișiere runtime, în loc să livreze parțial;
+- overwrite sigur pe Windows pentru utilitarele media.
+
+Au fost adăugate `scripts/smoke-platform.mjs` și `scripts/smoke-media.mjs`. Testul de platformă acoperă HTTP, static assets, QR, roluri WS, state machine, tablete și shutdown. Testul media acoperă transcodarea CPU într-un director temporar, overwrite Windows-safe și contact sheet.
+
+### 16.7 Validare show și comanda unică de verificare
+
+- A fost adăugat `scripts/validate-show.mjs`: validează schema de bază, fazele, temele, scenele, suprapunerile, id-urile duplicate, ordinea cue-urilor, limitele lead-in/video, vorbitorii, entitățile și textul românesc.
+- În `package.json` au fost adăugate scripturile `validate:show`, `smoke:core`, `smoke:platform`, `smoke:media` și `check`.
+- `npm run validate:show` trece pentru 8 scene și 53 cue-uri.
+- `npm run typecheck` trece fără erori.
+- Build-ul normal și cel minificat trec pentru `main`, `preload`, `renderer`, `web/control` și `web/tablet`.
+- `smoke-core`, `smoke-platform` și `smoke-media` trec.
+
+### 16.8 Documentație creată
+
+Au fost adăugate documentele care erau promise în acest handoff, dar lipseau efectiv:
+
+- `README.md` — pornire, verificare, distribuție, configurare și structură;
+- `docs/SPEC-SHEET.md` — cerințe funcționale/nefuncționale, configurație, interfețe și acceptanță;
+- `docs/SCENARIU.md` — scenariul executabil pe scene și id-uri;
+- `docs/CUE-SHEET.md` — tabelul celor 53 de cue-uri și regulile de editare;
+- `docs/OPERARE.md` — pregătire, rularea sesiunii, follower, taste și depanare;
+- `docs/DECIZII.md` — deciziile arhitecturale consolidate.
+
+### 16.9 Rulare Electron reală
+
+Aplicația a fost pornită în Electron 44.2.0, în mod windowed, pe configurația master reală. Au fost confirmate în log:
+
+- server master pe portul 4321 și URL-ul LAN;
+- încărcarea rendererului și conectarea WebSocket a ecranului `center` ca sursă de ceas;
+- show-ul `0.2.0-aligned` cu 53 cue-uri;
+- metadata filmului real `3840×2052`, `741.78 s`;
+- încărcarea cu succes a avatarului GLB (`avatar ready`);
+- `/control/` și `/tablet/` răspund HTTP 200;
+- `/api/health` raportează `videoReady: true`, un ecran și clock source `center`;
+- `start` răspunde la `phaseTime: -10`; timpul avansează negativ, `pause` îl îngheață, apoi s-au verificat seek la revelație, epilog și restart;
+- lipsa cheilor face `/api/tts` să răspundă controlat cu fallback, fără crash;
+- shutdown-ul serverului și al aplicației este curat.
+
+### 16.10 Packaging și identitate vizuală
+
+- `npm run dist` a produs cu succes:
+  - `dist-app/NavaPlayer-0.1.0-x64-portable.exe` — 107.733.306 B;
+  - `dist-app/NavaPlayer-0.1.0-x64-setup.exe` — 107.963.481 B.
+- Conținutul ASAR include main/preload/renderer/control/tablet, iar `resources` include avatarul, show-ul, manifestele vocale și exemplul de config. Filmul mare rămâne intenționat extern.
+- Packaging-ul a avertizat că lipsește iconul produsului. Pentru a elimina aspectul generic a fost generat un mark Nava/EXODUS-7 (fereastră de navă, Pământ și stea de navigație, cyan pe navy, fără text), salvat ca `build/icon.png` și convertit în `build/icon.ico` pentru Windows. Artifactele trebuie reconstruite după integrarea tuturor remedierilor finale.
+
+### 16.11 Problemă găsită de auditul independent — în curs de remediere
+
+Auditul `release_qa` a reprodus o problemă de fază pe follower: după terminarea epilogului, starea serverului `ended` era interpretată de `Player.follow()` ca sfârșit al fazei `play`, ceea ce putea muta followerul de la alb/epilog înapoi la ultimul cadru al filmului/tema `home`. Cauza este că `Player.phase()` asociază istoric orice `ended` cu `play`. Remedierea planificată este păstrarea explicită a fazei active (`play` sau `epilogue`) prin starea `ended`, plus un test de regresie. Starea finală a acestei remedieri va fi **adăugată** într-un addendum ulterior, fără rescrierea acestei secțiuni.
+
+---
+
+## 17. ADDENDUM FINAL APPEND-ONLY — remediere, QA și livrare (Codex, 2026-09-04)
+
+> Această secțiune a fost adăugată după §16. Nicio secțiune anterioară din `HANDOFF.md` nu a fost rescrisă sau ștearsă.
+
+### 17.1 Remedierea fazei `ended`
+
+- `src/renderer/player.ts` păstrează acum separat faza activă în `phaseMode`, deoarece `PlaybackState="ended"` poate reprezenta fie finalul filmului, fie finalul epilogului.
+- Toate tranzițiile setează explicit faza: `idle → null`, `preshow`, `play`, respectiv `epilogue`.
+- `phase()` și `phaseTime()` nu mai deduc greșit faza exclusiv din `PlaybackState`.
+- La `follow("ended", ...)`, un follower aflat deja în epilog oprește ceasul, se aliniază la timpul autoritar și păstrează timeline-ul și tema epilogului; nu mai repornește și nu mai caută filmul.
+- Pentru un follower nou conectat direct într-o stare `ended`, faza este inferată prin apropierea timpului autoritar de capătul epilogului sau de durata filmului. O fază locală deja stabilită are întotdeauna prioritate.
+- Pe calea finalului de film sunt oprite video-ul și timerul de auto-epilog, iar seek-ul mare actualizează împreună video-ul și timeline-ul.
+- `scripts/smoke-core.mjs` conține testul de regresie complet: intrare în epilog, temă `white`, recepție `ended` la 120 s, fază păstrată `epilogue` și zero apeluri noi către `video.play()`.
+- Testul țintit `npm run smoke:core` trece.
+- Remedierea a fost salvată în commit-ul `ab3941b` — `fix: preserve epilogue phase after playback ends`.
+
+### 17.2 Verificarea finală
+
+După remediere s-a rulat din nou `npm run check`; toate etapele sunt verzi:
+
+1. `tsc --noEmit`;
+2. validarea show-ului: 8 scene, 53 cue-uri;
+3. build pentru main, preload, renderer, control și tablet;
+4. `smoke-core`, inclusiv regresia ended/epilog;
+5. `smoke-platform`: HTTP, static, QR, WS, state machine, tablete și shutdown;
+6. `smoke-media`: transcodare CPU, overwrite sigur pe Windows și contact sheet.
+
+Agentul independent `release_qa` a reinspectat remedierea și a rulat separat aceeași suită. Verdictul lui: **verde, fără regresii sau blocante de cod**.
+
+### 17.3 Reîmpachetarea Windows
+
+- Prima reîncercare `npm run dist` după adăugarea iconului a eșuat cu `EPERM` la ștergerea `dist-app/win-unpacked/d3dcompiler_47.dll`.
+- Cauza verificată a fost existența a patru procese `NavaPlayer.exe` care rulau din pachetul vechi și țineau DLL-ul deschis.
+- Au fost închise numai procesele `NavaPlayer` cu calea exactă din `C:\Users\Chris\Documents\GitHub\Nava\dist-app\win-unpacked`; după confirmarea ieșirii lor, împachetarea a fost reluată.
+- A doua rulare `npm run dist` a terminat cu exit code 0, fără avertismentul anterior despre icon generic.
+- Artifactele finale, reconstruite după remedierea `ended`, sunt:
+  - `dist-app/NavaPlayer-0.1.0-x64-portable.exe` — 108.042.526 B — SHA-256 `D6C3D1A81604FD3BF88C7C3ED6784C19E39C6EAD0D35D3CBEDEE7D3F8C8397A6`;
+  - `dist-app/NavaPlayer-0.1.0-x64-setup.exe` — 108.336.891 B — SHA-256 `4BA6C0A8277AAC3BC8F5B101969A14BEA05CF28AB6C06988A0C181836FE5EF25`.
+- Ambele executabile au fost verificate cu `Get-AuthenticodeSignature`: starea este `NotSigned`. Pentru distribuție publică fără avertismente SmartScreen va fi necesar ulterior un certificat de code-signing; acest lucru nu împiedică rularea locală în instalația dedicată.
+
+### 17.4 Starea de livrare și limite externe
+
+Codul, configurația exemplu, show-ul, avatarul, aplicațiile web, documentația, testele și pachetele Windows sunt finalizate. Rămân numai activități dependente de resurse sau de mediul fizic, nu lucrări de implementare:
+
+- manifestele de voce sunt valide, dar goale; lipsesc cheile ElevenLabs/Gemini și aprobarea vocilor, deci în prezent se folosește fallback-ul `speechSynthesis`;
+- este necesară repetiția de acceptanță pe hardware-ul real: cinci ieșiri video, routing audio, router dedicat și tablete;
+- serverul de control nu are autentificare. Configurația este acceptabilă numai pe LAN privat/dedicat; pe Wi-Fi partajat, autentificarea/PIN-ul din lista istorică de TODO devine obligatoriu înainte de utilizare;
+- executabilele nu au semnătură Authenticode, conform verificării de mai sus.
