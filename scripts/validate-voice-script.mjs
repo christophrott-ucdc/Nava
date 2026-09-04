@@ -12,6 +12,7 @@ const showPath = path.join(root, "assets", "show", "show.json");
 const speakerNames = {
   "CĂPITANUL": "CAPITANUL",
   "AVATARUL NAVEI": "AVATAR_AI",
+  "VOCEA NAVEI": "AVATAR_AI",
   LUMINA: "LUMINA",
   NATURA: "NATURA",
   TEHNOLOGICA: "TEHNOLOGIC",
@@ -65,7 +66,7 @@ const cues = Array.isArray(source.cues) ? source.cues : [];
 const expected = screenplayCues();
 const ids = new Set();
 
-if (source.version !== "3.2.0-adaptive-complete") fail(`unexpected source version: ${source.version}`);
+if (source.version !== "3.3.0-ro-stage-adaptation") fail(`unexpected source version: ${source.version}`);
 if (source.tts?.provider !== "elevenlabs") fail("provider must be elevenlabs");
 if (source.tts?.modelId !== "eleven_v3") fail("model must be eleven_v3");
 if (cues.length !== expected.length) fail(`source has ${cues.length} cues, screenplay has ${expected.length}`);
@@ -140,5 +141,5 @@ if (!process.exitCode) {
   const captain = cues.filter((cue) => cue.speaker === "CAPITANUL").length;
   const avatar = cues.filter((cue) => cue.speaker === "AVATAR_AI").length;
   const other = cues.length - captain - avatar;
-  console.log(`[voices] OK: ${cues.length} assets match screenplay V3 (${captain} Captain, ${avatar} Ship Avatar, ${other} civilisation/echo; one of three adaptive assets plays)`);
+  console.log(`[voices] OK: ${cues.length} assets match screenplay V3.3 (${captain} Captain, ${avatar} Ship Voice, ${other} civilisation/echo; one of three adaptive assets plays)`);
 }

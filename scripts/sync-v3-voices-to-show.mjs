@@ -76,7 +76,7 @@ const v3TabletCues = [
     interaction: {
       type: "paired-choice",
       mode: "color",
-      prompt: "Alegeți fiecare o culoare pe care ați purta-o în întuneric.",
+      prompt: "Ce culoare ai lua cu tine prin întuneric?",
       options: ["AURIU · CERC", "ALBASTRU · UNDĂ", "VERDE · FRUNZĂ", "VIOLET · STEA"],
       allowObserve: true,
     },
@@ -98,7 +98,7 @@ const v3TabletCues = [
     interaction: {
       type: "paired-choice",
       mode: "pulse",
-      prompt: "Atingeți fiecare sigiliul când îi simțiți pulsul.",
+      prompt: "Atinge cercul o singură dată când pulsează.",
       options: ["ATINGE ACUM"],
       allowObserve: true,
     },
@@ -120,7 +120,7 @@ const v3TabletCues = [
     interaction: {
       type: "paired-choice",
       mode: "perspective",
-      prompt: "Ce păstrează o lume vie? Alegeți fiecare pentru lentila voastră.",
+      prompt: "Ce crezi că ține o lume în viață?",
       options: ["CURIOZITATEA", "GRIJA", "POVEȘTILE", "ALEGERILE", "ALTCEVA"],
       allowObserve: true,
     },
@@ -164,14 +164,14 @@ const phaseRank = { preshow: 0, play: 1, epilogue: 2 };
 const kindRank = { theme: 0, entity: 1, tablet: 2, countdown: 3, sfx: 4, voice: 5, marker: 6 };
 
 show.title = "A Patra Lume — Protocolul Acasă";
-show.version = "0.4.0-v3-complete";
+show.version = "0.5.0-ro-stage";
 show.videoDurationSec = 465;
 show.timingStatus = "aligned";
 show.preshowAutoStart = true;
 show.launchLeadInSec = 10;
 show.epilogueOnVideoEnd = true;
 show.$comment =
-  "Pista vocală integrală V3 este sincronizată din assets/show/voice-script-v3.json. " +
+  "Adaptarea scenică românească V3.3 este sincronizată din assets/show/voice-script-v3.json. " +
   "Flux public: preshow 0–50 s, countdown 50–60 s, video 0–465 s, epilog 0–75 s; total 600 s. " +
   "Video-ul sursă are 741,78 s, dar playerul îl oprește determinist la timpul configurat de 465 s.";
 

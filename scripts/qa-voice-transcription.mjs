@@ -8,6 +8,30 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const voiceDir = path.join(root, "assets", "voice", "ro");
 const source = JSON.parse(await fs.readFile(path.join(root, "assets", "show", "voice-script-v3.json"), "utf8"));
+
+function unquoteEnv(value) {
+  const trimmed = value.trim();
+  if (trimmed.length >= 2 && trimmed.startsWith('"') && trimmed.endsWith('"')) return trimmed.slice(1, -1);
+  if (trimmed.length >= 2 && trimmed.startsWith("'") && trimmed.endsWith("'")) return trimmed.slice(1, -1);
+  return trimmed.replace(/\s+#.*$/, "").trim();
+}
+
+async function loadDotEnv() {
+  let contents;
+  try {
+    contents = await fs.readFile(path.join(root, ".env"), "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") return;
+    throw error;
+  }
+  for (const raw of contents.split(/\r?\n/)) {
+    const match = raw.trim().match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+    if (!match || raw.trim().startsWith("#") || process.env[match[1]] !== undefined) continue;
+    process.env[match[1]] = unquoteEnv(match[2]);
+  }
+}
+
+await loadDotEnv();
 const apiKey = process.env.ELEVENLABS_API_KEY?.trim();
 if (!apiKey) throw new Error("ELEVENLABS_API_KEY is required for transcription QA");
 

@@ -84,13 +84,13 @@ async function buildReel(name, selectCue, outputName, title) {
 }
 
 try {
-  await buildReel("CAPITANUL", (cue) => cue.speaker === "CAPITANUL", "preview-capitan-v3.mp3", "Protocolul Acasă — Căpitanul — V3");
-  await buildReel("AVATAR_AI", (cue) => cue.speaker === "AVATAR_AI", "preview-avatar-v3.mp3", "Protocolul Acasă — Avatarul navei — V3");
+  await buildReel("CAPITANUL", (cue) => cue.speaker === "CAPITANUL", "preview-capitan-v3.mp3", "Protocolul Acasă — Căpitanul — V3.3");
+  await buildReel("AVATAR_AI", (cue) => cue.speaker === "AVATAR_AI", "preview-avatar-v3.mp3", "Protocolul Acasă — Vocea Navei — V3.3");
   await buildReel(
     "CIVILIZATII",
     (cue) => cue.speaker !== "CAPITANUL" && cue.speaker !== "AVATAR_AI",
     "preview-civilizatii-v3.mp3",
-    "Protocolul Acasă — Civilizațiile — V3",
+    "Protocolul Acasă — Civilizațiile — V3.3",
   );
 } finally {
   await fs.rm(tempDir, { recursive: true, force: true });

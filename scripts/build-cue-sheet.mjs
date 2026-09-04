@@ -8,6 +8,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const showPath = path.join(root, "assets", "show", "show.json");
 const outputPath = path.join(root, "docs", "CUE-SHEET.md");
 const show = JSON.parse(fs.readFileSync(showPath, "utf8"));
+const displayName = {
+  AVATAR_AI: "VOCEA NAVEI",
+  CAPITANUL: "CĂPITANUL",
+  LUMINA: "LUMINA",
+  NATURA: "NATURA",
+  TEHNOLOGIC: "TEHNOLOGICA",
+};
 
 function clock(seconds) {
   if (!Number.isFinite(seconds)) return "—";
@@ -31,7 +38,7 @@ function escapeCell(value) {
 
 function content(cue) {
   if (cue.kind === "voice") {
-    return `${cue.speaker} — ${cue.text?.ro ?? ""}${cue.fallback === "silent" ? " · asset local obligatoriu" : ""}`;
+    return `${displayName[cue.speaker] ?? cue.speaker} — ${cue.text?.ro ?? ""}${cue.fallback === "silent" ? " · asset local obligatoriu" : ""}`;
   }
   if (cue.kind === "theme") return cue.theme;
   if (cue.kind === "tablet") {
@@ -40,7 +47,7 @@ function content(cue) {
     return `${interaction.type ?? "interaction"}${roles}${cue.note ? ` · ${cue.note}` : ""}`;
   }
   if (cue.kind === "sfx") return `${cue.effect ?? cue.sfx ?? "efect"}${cue.durationSec ? ` · ${cue.durationSec} s` : ""}`;
-  if (cue.kind === "entity") return `${cue.entity ?? "entitate"} · ${cue.action ?? ""}`;
+  if (cue.kind === "entity") return `${displayName[cue.entity] ?? cue.entity ?? "entitate"} · ${cue.action ?? ""}`;
   if (cue.kind === "countdown") return `${cue.from ?? 10}→${cue.to ?? 0}`;
   if (cue.kind === "marker") return cue.note ?? cue.label ?? "marker";
   const details = Object.entries(cue)
@@ -68,7 +75,7 @@ lines.push(
   "",
   "## Editare sigură",
   "",
-  "Dialogurile și timpii V3 se modifică în `assets/show/voice-script-v3.json`, apoi se rulează `npm run sync:voices`, `npm run docs:cues` și `npm run check`. Cele 51 de asset-uri vocale de producție trebuie să rămână cu `fallback: silent`; la 6:35 se redă exact una dintre cele trei ramuri adaptive. Nu se activează TTS Windows/browser pentru spectacol.",
+  "Dialogurile și timpii V3.3 se modifică în `assets/show/voice-script-v3.json`, apoi se rulează `npm run sync:voices`, `npm run docs:cues` și `npm run check`. Cele 51 de asset-uri vocale de producție trebuie să rămână cu `fallback: silent`; la 6:35 se redă exact una dintre cele trei ramuri adaptive. Nu se activează TTS Windows/browser pentru spectacol.",
   "",
   "La seek înainte, vocile/SFX-urile trecute se marchează fără redare, iar ultima temă și stare de entitate se aplică. La seek înapoi, cue-urile viitoare se rearmează.",
   "",

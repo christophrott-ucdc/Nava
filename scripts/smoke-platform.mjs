@@ -63,6 +63,7 @@ function socketClient(url, hello) {
 async function main() {
   const temp = await mkdtemp(path.join(os.tmpdir(), "nava-platform-smoke-"));
   let handle = null;
+  let focusCalls = 0;
   try {
     const bundle = path.join(temp, "server.cjs");
     await esbuild.build({
@@ -176,6 +177,10 @@ async function main() {
       cacheDir: path.join(temp, "cache"),
       runsDir: path.join(temp, "runs"),
       log: () => {},
+      focusPlayer: () => {
+        focusCalls += 1;
+        return true;
+      },
     });
     assert.ok(handle.port > 0, "ephemeral port was resolved");
     const http = `http://127.0.0.1:${handle.port}`;
@@ -184,6 +189,10 @@ async function main() {
     const health = await fetch(`${http}/api/health`).then((r) => r.json());
     assert.equal(health.ok, true);
     assert.equal(health.state, "idle");
+    const focusResponse = await fetch(`${http}/api/player/focus`, { method: "POST" });
+    assert.equal(focusResponse.status, 200);
+    assert.equal((await focusResponse.json()).ok, true);
+    assert.equal(focusCalls, 1, "operator focus endpoint must call the local player focus hook exactly once");
     assert.match(await fetch(`${http}/control/`).then((r) => r.text()), /control smoke/);
     assert.equal((await fetch(`${http}/control/missing.js`)).status, 404);
     const qr = new Uint8Array(await fetch(`${http}/api/qr?size=96`).then((r) => r.arrayBuffer()));

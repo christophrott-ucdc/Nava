@@ -67,11 +67,14 @@ export class WindowManager {
     return [...this.byScreenId.values()].filter((w) => !w.isDestroyed());
   }
 
-  focusFirst(): void {
+  focusFirst(): boolean {
     const win = this.all()[0];
-    if (!win) return;
+    if (!win) return false;
+    win.show();
     if (win.isMinimized()) win.restore();
+    win.moveTop();
     win.focus();
+    return true;
   }
 
   setQuitting(): void {

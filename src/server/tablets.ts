@@ -334,7 +334,7 @@ export class TabletRegistry {
         name: `Postul ${answer.post} · Zona ${answer.zone}`,
         cueId: answer.cueId,
         kind: answer.kind,
-        text: answer.value === TABLET_OBSERVE_VALUE ? "Doar observ" : answer.value,
+        text: answer.value === TABLET_OBSERVE_VALUE ? "Doar privesc" : answer.value,
         atMs: answer.atMs,
         post: answer.post,
         zone: answer.zone,

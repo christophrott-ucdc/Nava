@@ -27,6 +27,8 @@ npm run dev -- --windowed
 
 Pentru test rapid din consola operatorului, butonul mare **START EXPERIENCE** pornește direct numărătoarea T−10 și filmul; în `IDLE` sau `PRE-SHOW`, `Space` și `Enter` din consolă fac același lucru. Acest shortcut de test nu schimbă fluxul complet al butonului de pe ecranul master.
 
+Consola din browser este numai pentru regie; filmul și Căpitanul sunt randate în fereastra Electron separată **A Patra Lume — Nava**. Comenzile de pornire aduc automat playerul în față. Butonul **ARATĂ PLAYERUL** îl readuce manual dacă operatorul revine în browser.
+
 ## Verificare și distribuție
 
 ```powershell
@@ -34,20 +36,30 @@ npm run check          # tipuri + show.json + build + smoke tests
 npm run dist           # executabil portabil + installer în dist-app/
 ```
 
+Pentru verificarea vizuală live a compositorului Electron (overlay, cadre video și avatar), porniți aplicația cu DevTools Protocol și apoi rulați testul în alt terminal:
+
+```powershell
+.\node_modules\.bin\electron.cmd --remote-debugging-port=19191 . --config config.json --windowed
+npm run smoke:renderer
+```
+
+Testul păstrează capturile diagnostice în `runs/` și confirmă faptul că două cadre succesive diferă, `currentTime`/contorul de cadre avansează, overlay-ul ascuns nu acoperă filmul și canvasul GLB este vizibil la prima replică a Căpitanului.
+
 Filmul de 2,5 GB nu intră în Git și nu este inclus în installer. Copiați `media/cinema_4k_h264.mp4` lângă executabil, păstrând structura `media/`. Avatarul și scenariul sunt incluse în pachet.
 
-Pista vocală V3 este pre-generată și face parte din spectacolul executabil. Pentru toate cue-urile de producție, `fallback: "silent"` interzice vocea Windows/browser: dacă un MP3 lipsește, playerul păstrează subtitrarea, notează eroarea și folosește tăcere temporizată. Fallback-ul TTS rămâne disponibil numai pentru cue-uri ad-hoc/de test care îl cer explicit. Pentru regenerare, copiați variabilele necesare din `.env.example` într-un fișier local `.env`, apoi rulați `npm run tts`. Nu comiteți `.env`.
+Pista vocală V3.3, adaptată scenic în limba română, este pre-generată și face parte din spectacolul executabil. Pentru toate cue-urile de producție, `fallback: "silent"` interzice vocea Windows/browser: dacă un MP3 lipsește, playerul păstrează subtitrarea, notează eroarea și folosește tăcere temporizată. Fallback-ul TTS rămâne disponibil numai pentru cue-uri ad-hoc/de test care îl cer explicit. Pentru regenerare, copiați variabilele necesare din `.env.example` într-un fișier local `.env`, apoi rulați `npm run tts`. Nu comiteți `.env`.
 
-Setul expresiv este definit în `assets/show/voice-script-v3.json` și sincronizat integral în `assets/show/show.json`: 17 replici ale Căpitanului, 18 ale Avatarului Navei și 16 asset-uri ale civilizațiilor/ecourilor. Manifestul conține 51 de clipuri; într-o reprezentație se redau 49, deoarece la 6:35 serverul alege exact una dintre cele trei variante TEHNOLOGIC în funcție de cele zece perspective. Fișierele și timpii de lip-sync sunt în `assets/voice/ro/manifest.json`. Comenzi utile:
+Setul expresiv este definit în `assets/show/voice-script-v3.json` și sincronizat integral în `assets/show/show.json`: 17 replici ale Căpitanului, 18 ale Vocii Navei și 16 asset-uri ale civilizațiilor/ecourilor. Manifestul conține 51 de clipuri; într-o reprezentație se redau 49, deoarece la 6:35 serverul alege exact una dintre cele trei variante ale Tehnologicei în funcție de cele zece perspective. Fișierele și timpii de lip-sync sunt în `assets/voice/ro/manifest.json`. Comenzi utile:
 
 ```powershell
 npm run validate:voices
 npm run sync:voices
 npm run voice:reels
+npm run qa:voices
 npm run tts -- --source assets/show/voice-script-v3.json --provider elevenlabs
 ```
 
-Ultima comandă cere `ELEVENLABS_API_KEY` numai în mediul local. Montajele de audiție sunt `assets/voice/ro/preview-capitan-v3.mp3`, `assets/voice/ro/preview-avatar-v3.mp3` și `assets/voice/ro/preview-civilizatii-v3.mp3`. După orice modificare de text sau timing vocal, rulați `npm run sync:voices` și apoi `npm run check`.
+Generarea și controlul de dicție cer `ELEVENLABS_API_KEY` numai în mediul local. Montajele de audiție sunt `assets/voice/ro/preview-capitan-v3.mp3`, `assets/voice/ro/preview-avatar-v3.mp3` și `assets/voice/ro/preview-civilizatii-v3.mp3`. După orice modificare de text sau timing vocal, regenerați clipurile afectate, rulați `npm run voice:reels`, `npm run qa:voices`, `npm run sync:voices` și apoi `npm run check`.
 
 ## Configurare
 

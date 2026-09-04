@@ -50,7 +50,7 @@ Actualizat. Experiența V3 nu presupune robot Unitree, capsulă VR sau mutarea p
 
 ## ADR-13 — Cinci posturi, două perspective per tabletă
 
-Acceptat. Cele cinci tablete sunt legate anonim de posturile 1–5. Fiecare interacțiune are zone A/B independente și opțiunea „Doar observ”, fără nume, scor, clasament sau consens obligatoriu. La întrebarea TEHNOLOGIC, serverul selectează determinist una dintre cele trei replici pre-generate: perspective diferite, alegeri identice sau observație.
+Acceptat. Cele cinci tablete sunt legate anonim de posturile 1–5. Fiecare interacțiune are zone A/B independente și opțiunea „Doar privesc”, fără nume, scor, clasament sau consens obligatoriu. La întrebarea Tehnologicei, serverul selectează determinist una dintre cele trei replici pre-generate: perspective diferite, alegeri identice sau niciun răspuns înregistrat.
 
 ## ADR-14 — Durată publică deterministă
 

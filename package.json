@@ -18,6 +18,7 @@
     "validate:voices": "node scripts/validate-voice-script.mjs",
     "smoke:core": "node scripts/smoke-core.mjs",
     "smoke:platform": "node scripts/smoke-platform.mjs",
+    "smoke:renderer": "node scripts/smoke-renderer.mjs",
     "smoke:media": "node scripts/smoke-media.mjs",
     "check": "npm run typecheck && npm run validate:show && npm run validate:voices && npm run build && npm run smoke:core && npm run smoke:platform && npm run smoke:media",
     "tts": "node scripts/tts-generate.mjs",

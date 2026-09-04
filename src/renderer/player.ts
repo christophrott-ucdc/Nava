@@ -91,6 +91,7 @@ export class Player {
   private videoReady = false;
   private videoError: string | null = null;
   private buffering = false;
+  private playProbeGeneration = 0;
   private pendingSeek: number | null = null;
   private autoplayBlocked = false;
   private raf = 0;
@@ -421,6 +422,7 @@ export class Player {
   }
 
   private enterIdle(): void {
+    this.playProbeGeneration += 1;
     this.phaseMode = null;
     this.playLeadIn = false;
     this.timeline.reset();
@@ -455,6 +457,7 @@ export class Player {
   }
 
   private enterPlay(at: number, play: boolean): void {
+    this.playProbeGeneration += 1;
     this.phaseMode = "play";
     const t = this.clampPhasePlayTime(at);
     this.playLeadIn = t < 0;
@@ -507,6 +510,7 @@ export class Player {
     this.avatarVisible = true;
     try {
       this.deps.avatar.setVisible(true, true);
+      this.deps.log("info", "avatar visibility requested", { screenId: this.deps.screen.id, phaseTime: this.phaseTime() });
     } catch (err) {
       this.deps.log("warn", `avatar.setVisible failed: ${describeError(err)}`);
     }
@@ -566,6 +570,9 @@ export class Player {
 
   private tryPlay(): void {
     this.setState("playing");
+    const probeGeneration = ++this.playProbeGeneration;
+    const startedAt = this.video.currentTime;
+    const startedFrames = this.presentedFrames();
     let p: Promise<void> | undefined;
     try {
       p = this.video.play();
@@ -573,7 +580,19 @@ export class Player {
       this.deps.log("error", `video.play() threw: ${describeError(err)}`);
       return;
     }
-    p?.catch((err: unknown) => {
+    const onStarted = () => {
+      this.autoplayBlocked = false;
+      this.deps.log("info", "video.play() confirmed", {
+        currentTime: this.video.currentTime,
+        readyState: this.video.readyState,
+      });
+      globalThis.setTimeout(() => this.verifyPlaybackProgress(probeGeneration, startedAt, startedFrames), 2500);
+    };
+    if (!p) {
+      onStarted();
+      return;
+    }
+    void p.then(onStarted).catch((err: unknown) => {
       const name = err instanceof Error ? err.name : "";
       if (name === "AbortError") return; // interrupted by pause()/load(): harmless
       if (name === "NotAllowedError") {
@@ -582,8 +601,40 @@ export class Player {
         this.deps.onAutoplayBlocked?.();
         return;
       }
+      this.videoError = `video.play() rejected: ${describeError(err)}`;
+      this.deps.osd.setError("VIDEO BLOCAT", `${describeError(err)}\n\nApăsați pe ecran sau folosiți RESTART din panoul de control.`);
       this.deps.log("error", `video.play() rejected: ${describeError(err)}`);
     });
+  }
+
+  private presentedFrames(): number | null {
+    const quality = typeof this.video.getVideoPlaybackQuality === "function" ? this.video.getVideoPlaybackQuality() : null;
+    return quality && Number.isFinite(quality.totalVideoFrames) ? quality.totalVideoFrames : null;
+  }
+
+  /** Detect a resolved play() promise that still produces neither timeline nor rendered-frame progress. */
+  private verifyPlaybackProgress(generation: number, startedAt: number, startedFrames: number | null): void {
+    if (generation !== this.playProbeGeneration || this.state !== "playing" || this.phaseMode !== "play" || this.playLeadIn) return;
+    const currentTime = this.video.currentTime;
+    const currentFrames = this.presentedFrames();
+    const timeAdvanced = currentTime - startedAt;
+    const framesAdvanced = startedFrames !== null && currentFrames !== null ? currentFrames - startedFrames : null;
+    const healthy = !this.video.paused && timeAdvanced >= 0.35 && (framesAdvanced === null || framesAdvanced > 0);
+    const evidence = { currentTime, timeAdvanced, framesAdvanced, readyState: this.video.readyState, paused: this.video.paused };
+    if (healthy) {
+      this.videoReady = true;
+      this.videoError = null;
+      this.deps.osd.setError(null);
+      this.deps.log("info", "video frames advancing", evidence);
+      return;
+    }
+    this.videoError = "playback-ul nu a avansat după video.play()";
+    this.setBuffering(false);
+    this.deps.osd.setError(
+      "VIDEO BLOCAT",
+      "Redarea a fost pornită, dar timpul/cadrele nu avansează. Verificați acceleratorul grafic, codecul H.264 și reporniți aplicația.",
+    );
+    this.deps.log("error", "video playback watchdog detected no rendered progress", evidence);
   }
 
   /** Called by the boot code after a user gesture (veil click) if autoplay was refused. */
@@ -598,7 +649,7 @@ export class Player {
     const on = <K extends keyof HTMLMediaElementEventMap>(ev: K, fn: (e: HTMLMediaElementEventMap[K]) => void) => v.addEventListener(ev, fn);
 
     on("loadedmetadata", () => {
-      this.videoReady = true;
+      this.videoReady = false;
       this.videoError = null;
       this.deps.osd.setError(null);
       this.deps.log("info", `video metadata: ${v.videoWidth}x${v.videoHeight}, ${v.duration.toFixed(2)} s`);
@@ -634,7 +685,13 @@ export class Player {
     on("waiting", () => this.setBuffering(true));
     on("stalled", () => this.setBuffering(true));
     on("playing", () => this.setBuffering(false));
-    on("canplay", () => this.setBuffering(false));
+    on("canplay", () => {
+      this.videoReady = true;
+      this.videoError = null;
+      this.deps.osd.setError(null);
+      this.setBuffering(false);
+      this.deps.log("info", "video can play", { readyState: v.readyState, currentTime: v.currentTime });
+    });
     on("seeked", () => {
       if (!v.paused) this.setBuffering(false);
     });

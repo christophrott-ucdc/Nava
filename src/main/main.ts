@@ -175,6 +175,7 @@ async function main(): Promise<void> {
         cacheDir: paths.cacheDir,
         runsDir: paths.runsDir,
         log: (level, msg, data) => log(level, msg, data, "server"),
+        focusPlayer: () => windows?.focusFirst() ?? false,
       });
       wsUrl = `ws://127.0.0.1:${server.port}/ws`;
       log("info", `server listening on port ${server.port}`, server.urls);

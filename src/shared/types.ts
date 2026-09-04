@@ -31,11 +31,11 @@ export interface SpeakerProfile {
 }
 
 export const SPEAKERS: Record<Speaker, SpeakerProfile> = {
-  AVATAR_AI: { id: "AVATAR_AI", label: "AVATARUL NAVEI", color: "#7dd3fc", lipsyncAvatar: false, fx: "hologram" },
+  AVATAR_AI: { id: "AVATAR_AI", label: "VOCEA NAVEI", color: "#7dd3fc", lipsyncAvatar: false, fx: "hologram" },
   CAPITANUL: { id: "CAPITANUL", label: "CĂPITANUL", color: "#e2e8f0", lipsyncAvatar: true, fx: "clean" },
   LUMINA: { id: "LUMINA", label: "AVATAR LUMINĂ", color: "#fcd34d", lipsyncAvatar: false, fx: "choir" },
   NATURA: { id: "NATURA", label: "AVATAR NATURĂ", color: "#86efac", lipsyncAvatar: false, fx: "forest" },
-  TEHNOLOGIC: { id: "TEHNOLOGIC", label: "AVATAR TEHNOLOGIC", color: "#a5f3fc", lipsyncAvatar: false, fx: "crystal" },
+  TEHNOLOGIC: { id: "TEHNOLOGIC", label: "TEHNOLOGICA", color: "#a5f3fc", lipsyncAvatar: false, fx: "crystal" },
 };
 
 // ---------------------------------------------------------------------------
@@ -119,12 +119,12 @@ export type TabletZone = "A" | "B";
 /** Valoare stabilă pentru participarea prin observație, independentă de textul afișat. */
 export const TABLET_OBSERVE_VALUE = "observe" as const;
 
-export const TABLET_POSTS: Record<TabletPost, { label: string; lens: string }> = {
-  1: { label: "POSTUL 1", lens: "NAVIGAȚIE" },
-  2: { label: "POSTUL 2", lens: "PROPULSIE" },
-  3: { label: "POSTUL 3", lens: "COMUNICAȚII" },
-  4: { label: "POSTUL 4", lens: "BIOSEMNALE" },
-  5: { label: "POSTUL 5", lens: "MEMORIE" },
+export const TABLET_POSTS: Record<TabletPost, { label: string; lens: string; perspectives: readonly [string, string] }> = {
+  1: { label: "POSTUL 1", lens: "NAVIGAȚIE", perspectives: ["DIRECȚIE", "TRASEU"] },
+  2: { label: "POSTUL 2", lens: "PROPULSIE", perspectives: ["ENERGIE", "STABILITATE"] },
+  3: { label: "POSTUL 3", lens: "COMUNICAȚII", perspectives: ["CUVINTE", "SEMNAL"] },
+  4: { label: "POSTUL 4", lens: "BIOSEMNALE", perspectives: ["PULS", "LEGĂTURĂ"] },
+  5: { label: "POSTUL 5", lens: "MEMORIE", perspectives: ["AMINTIRE", "TIMP"] },
 };
 
 /**

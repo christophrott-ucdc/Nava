@@ -116,7 +116,7 @@ for (const [index, cue] of (show.cues ?? []).entries()) {
   }
 }
 
-if (show.version === "0.4.0-v3-complete") {
+if (show.version === "0.5.0-ro-stage") {
   const voices = show.cues.filter((cue) => cue.kind === "voice");
   const adaptive = voices.filter((cue) => cue.id.startsWith("v3-tech-0635-"));
   if (show.videoDurationSec !== 465 || show.launchLeadInSec !== 10 || !show.preshowAutoStart || !show.epilogueOnVideoEnd) {

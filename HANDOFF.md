@@ -1795,3 +1795,165 @@ Au fost făcute următoarele schimbări, fără a modifica fluxul public continu
 Verificarea a fost făcută prin interacțiune reală în browser, nu doar prin API: butonul era vizibil și activ în `IDLE`; clickul a schimbat starea în `ÎN REDARE`, ceasul în `T−00:09.x`, nota în `Start · HH:MM:SS` și a dezactivat butonul. A fost verificat separat și `Space`, cu aceeași tranziție. După teste, show-ul a fost readus în `idle`.
 
 `npm run check` a trecut integral după build-ul final: TypeScript, validator show, validator voci, build Electron/web, smoke core, smoke platform și smoke media. Build-ul final păstrează comportamentul playerului master: clickul pe panoul său principal/`Space`/`Enter` pornește pre-show-ul continuu; numai noul buton **START EXPERIENCE** din consola operatorului este shortcut-ul evident pentru pornire imediată de test.
+
+---
+
+## 27. 2026-09-04 — sweep complet PM/QA/senior: cauza filmului invizibil, remediere și test vizual Electron
+
+### 27.1 Cauza reală
+
+Problema „se aude, dar filmul nu pornește și avatarul nu se vede” a fost reprodusă în Electron și inspectată prin Chrome DevTools Protocol. Video-ul era încărcat, `video.play()` reușea, timpul și cadrele avansau, iar canvasul GLB era sănătos. Cauza era stratul `#veil`: HTML îi aplica atributul `hidden`, dar regula CSS proprie `#veil { display: grid; }` câștiga în cascadă în fața stilului nativ al browserului pentru `[hidden]`. Veil-ul rămânea astfel desenat peste film și peste Căpitan, deși în DOM apărea ca ascuns.
+
+Remedierea este regula globală din `src/renderer/styles.css`:
+
+```css
+[hidden] { display: none !important; }
+```
+
+Aceasta acoperă toate overlay-urile care folosesc contractul HTML `hidden`, nu doar veil-ul. `scripts/smoke-core.mjs` conține o regresie statică obligatorie pentru regulă.
+
+### 27.2 Separarea clară dintre regie și spectacol
+
+Browserul de la `/control/` este numai consola de regie; nu este și nu trebuie să devină suprafața de redare. Filmul, subtitrările și GLB-ul Căpitanului rămân în fereastra Electron separată.
+
+Pentru ca această diferență să nu mai poată fi confundată:
+
+- `src/web/control/index.html` afișează bannerul „ACESTA ESTE DOAR PANOUL DE CONTROL” și butonul **ARATĂ PLAYERUL**;
+- `src/main/windows.ts` are acum `focusFirst(): boolean`, care face `show`, `restore`, `moveTop` și `focus` pe prima fereastră de spectacol;
+- `src/server/index.ts` expune local `POST /api/player/focus` prin callback-ul opțional `focusPlayer`;
+- `src/main/main.ts` leagă endpoint-ul de managerul de ferestre;
+- comenzile `PRE-SHOW`, `START`, `START EXPERIENCE`, `Space` și `Enter` din consola web aduc automat playerul în față;
+- textul butonului explică explicit cele 10 secunde de numărătoare și faptul că prima apariție a Căpitanului după start direct este la aproximativ 19 secunde.
+
+`scripts/smoke-platform.mjs` verifică endpoint-ul de focus și faptul că hook-ul local este apelat exact o dată.
+
+### 27.3 Telemetrie și diagnostic de redare
+
+`src/renderer/player.ts` nu mai tratează simpla citire a metadatelor drept dovadă că filmul poate fi redat. `videoReady` devine adevărat la `canplay`. După fiecare `video.play()` reușit, un watchdog verifică după 2,5 s:
+
+- că elementul nu este în pauză;
+- că `currentTime` a avansat cu minimum 0,35 s;
+- că numărul de cadre prezentate a crescut, dacă API-ul este disponibil.
+
+Un blocaj real afișează `VIDEO BLOCAT` în OSD, cu recomandări despre acceleratorul grafic și codecul H.264, și scrie dovezile în log. Un caz sănătos scrie `video.play() confirmed` și `video frames advancing`. Cererea de afișare a avatarului este de asemenea jurnalizată cu `screenId` și timpul fazei.
+
+Consola operatorului afișează stări oneste: `NEÎNCĂRCAT`, `T−10 · ÎNCĂRCAT`, `RULEAZĂ`, `BLOCAT` sau `ÎNCĂRCAT`; nu mai confundă filmul pregătit cu filmul aflat în mișcare.
+
+### 27.4 Test Electron real
+
+A fost adăugat `scripts/smoke-renderer.mjs` / `npm run smoke:renderer`. Testul se conectează la instanța Electron reală, nu la un mock, pornește experiența și verifică DOM-ul, video-ul și WebGL-ul. Ultima rulare, pe build-ul final, a trecut cu:
+
+- veil: `hidden=true`, `display=none`, suprafață 0×0 și absent din hit-test;
+- primul eșantion video: `currentTime=1.190728`, 81 cadre;
+- al doilea eșantion: `currentTime=2.717329`, 173 cadre;
+- GLB: `shown=true`, `opacity=1`, canvas 523×654, context WebGL activ;
+- captură: `runs/renderer-smoke-avatar.png`, cu filmul, Pământul, Căpitanul și subtitrarea finală „Când îl vom revedea, îl vom privi altfel.” vizibile simultan.
+
+Logul final este `runs/app-20260904-220948.jsonl`, iar run-logul este `runs/show-20260904-221003-2.jsonl`. Aplicația de probă a fost oprită după test; porturile 4321 și 19191 au rămas libere.
+
+---
+
+## 28. 2026-09-04 — adaptarea scenică românească V3.3 și regenerarea integrală a vocilor
+
+### 28.1 Audit în trei specializări
+
+La cererea utilizatorului au lucrat în paralel trei agenți read-only, iar concluziile lor au fost integrate de agentul principal:
+
+- **Maxwell / redactor_romana**: gramatică, topică, acorduri, eliminarea calcurilor și un vocabular canonic consecvent;
+- **Helmholtz / dramaturg_ro**: arc dramatic, cauzalitate, revelație, intenție actoricească și rostire în fereastra exactă de timp;
+- **Godel / public_copii_ro**: claritate pentru 8–14 ani, participare fără presiune, egalitatea copiilor din pereche și coerența textelor de pe cele cinci tablete.
+
+Auditul a găsit două probleme de logică ce depășeau stilistica:
+
+1. Căpitanul concluziona că echipajul va trimite semnalul înainte ca Vocea Navei să dovedească faptul că amprentele din semnal aparțin chiar acestui echipaj. Replica de la 7:29 conține acum dovada explicită.
+2. Ramura fără input afirma implicit că publicul „a ales să observe”. Sistemul nu poate cunoaște intenția. Replica spune acum numai că nu s-a înregistrat niciun răspuns, apoi tratează tăcerea ca element scenic.
+
+### 28.2 Dicționarul canonic
+
+În toate documentele active și în UI se folosesc consecvent:
+
+- **semnal** = transmisia întreagă;
+- **fragment** = una dintre cele cinci părți primite de posturi;
+- **amprentă** = contribuția unuia dintre cei zece copii;
+- **indiciu** = descoperirea adusă de o lume;
+- **lentilă** = felul diferit în care un post citește același semnal;
+- **Vocea Navei** = voce + HUD, fără corp umanoid;
+- **Căpitanul** = unicul GLB, vizibil numai pe ecranul `center`;
+- **Tehnologica** = numele scenic; identificatorul tehnic stabil rămâne `TEHNOLOGIC`.
+
+Au fost eliminate din textul scenic formulări precum „semnal fără adresă”, „cinci echipe”, `wormhole`, „momentul în fața noastră”, „Doar observ”, „nivelul de uimire depășește parametrii” și alte propoziții corecte formal, dar nenaturale în rostire.
+
+### 28.3 Scenariul și replica finală
+
+Sursa canonică este `assets/show/voice-script-v3.json`, versiunea `3.3.0-ro-stage-adaptation`. Scenariul regizoral complet este `docs/SCENARIU-REGIZORAL-10-MIN.md`; rezumatul este `docs/SCENARIU.md`. Validatorul compară automat fiecare replică din sursa vocală cu scenariul regizoral.
+
+Toate cele 51 de replici au fost recitite și adaptate pentru română vorbită, cu indicații actoricești revizuite. Schimbările dramatice importante includ:
+
+- Căpitanul formează explicit „un singur echipaj”, nu „cinci echipe”;
+- participarea este formulată simplu: „Alegeți sau priviți”, fără vină sau evaluare;
+- Vocea Navei spune natural „Nivelul de uimire depășește estimările. Îl las așa.”;
+- NATURA cere o singură atingere și precizează că nu trebuie făcută de toți deodată;
+- TEHNOLOGICA are trei răspunsuri firești pentru alegeri diferite, alegeri identice și niciun răspuns;
+- înaintea revelației, Vocea Navei confirmă: „A ajuns la noi înainte să fie trimis. Și poartă amprentele acestui echipaj.”;
+- replica-titlu este: „Corectez jurnalul. A patra lume nu era ascunsă. Noi nu știam încă s-o vedem.”;
+- Vocea Navei înțelege sensul uman prin: „Știam unde este Pământul. Nu știam de ce îi spuneți «acasă». Asta am învățat de la voi.”;
+- ultima replică a Căpitanului spune „Bun venit acasă, echipaj”, apoi păstrează instrucțiunea de siguranță pentru ridicarea copiilor.
+
+`assets/show/show.json` a fost resincronizat la versiunea `0.5.0-ro-stage`, iar `docs/CUE-SHEET.md` a fost regenerat din cele 87 de cue-uri. Generatorul foii de cue afișează acum numele scenice `VOCEA NAVEI`, `CĂPITANUL` și `TEHNOLOGICA`, păstrând identificatorii interni neschimbați.
+
+### 28.4 Cinci posturi, cinci tablete, două perspective egale
+
+`TABLET_POSTS` din `src/shared/types.ts` definește acum perspective concrete, nu etichete abstracte A/B:
+
+| Post | Lentilă | Jumătatea A | Jumătatea B |
+|---:|---|---|---|
+| 1 | NAVIGAȚIE | DIRECȚIE | TRASEU |
+| 2 | PROPULSIE | ENERGIE | STABILITATE |
+| 3 | COMUNICAȚII | CUVINTE | SEMNAL |
+| 4 | BIOSEMNALE | PULS | LEGĂTURĂ |
+| 5 | MEMORIE | AMINTIRE | TIMP |
+
+`src/web/tablet/index.ts` arată aceste nume pe cele două jumătăți, explică „Un singur echipaj · cinci posturi”, folosește **DOAR PRIVESC** și confirmă neutru cu „E în regulă.”. Nu mai spune că observația „a intrat în semnal” ca și cum ar fi fost o alegere activă. Ecranul final spune simplu că postul a făcut parte din semnal până la capăt. `src/server/tablets.ts` folosește aceeași formulare în consola operatorului.
+
+Prompturile au fost scurtate pentru copii și pentru timpul fizic disponibil:
+
+- LUMINA: „Ce culoare ai lua cu tine prin întuneric?”;
+- NATURA: „Atinge cercul o singură dată când pulsează.”;
+- TEHNOLOGICA: „Ce crezi că ține o lume în viață?”.
+
+`scripts/smoke-core.mjs` verifică explicit toate cele cinci perechi de perspective și existența textului natural **DOAR PRIVESC**.
+
+### 28.5 Vocile regenerate
+
+Au fost regenerate forțat toate cele 51 de MP3-uri ElevenLabs cu profilurile și vocile deja aprobate de utilizator: 17 Căpitan, 18 Vocea Navei și 16 civilizații/ecouri. Modelul principal rămâne `eleven_v3`, cu tag-uri de interpretare și seed-uri pe cue; instrucțiunea de siguranță de la 0:35 folosește în continuare profilul explicit `eleven_multilingual_v2`. Timpii de cuvânt și lip-sync au fost rescriși în `assets/voice/ro/manifest.json`.
+
+Durata cumulată a materialului vocal este 298,93 s. Generatorul păstrează fiecare clip în fereastra sa. Instrucțiunea de la 0:35 a fost rescrisă și a coborât de la o compresie inacceptabilă de 1,76× la 1,21×. Cea mai mare compresie rămasă este 1,55× numai pe comanda de două cuvinte „Scanați semnalul.”, care trebuie să încapă între predicția Tehnologicei și răspunsul „Știam.”; următoarea este 1,21×, iar toate celelalte sunt cel mult 1,15×.
+
+Montajele de audiție au fost reconstruite:
+
+- `assets/voice/ro/preview-capitan-v3.mp3` — 17 cue-uri;
+- `assets/voice/ro/preview-avatar-v3.mp3` — 18 cue-uri;
+- `assets/voice/ro/preview-civilizatii-v3.mp3` — 16 cue-uri.
+
+Controlul automat cu ElevenLabs Scribe V2, limba română fixată, a trecut mult sub pragul WER de 18%:
+
+- Căpitan: 160/160 de cuvinte, WER 1,3%;
+- Vocea Navei: 245/252 de cuvinte, WER 5,6%;
+- civilizații și ecouri: 168/168 de cuvinte, WER 0,6%;
+- niciun tag actoricesc nu a fost rostit în audio.
+
+`scripts/qa-voice-transcription.mjs` poate încărca acum cheia din `.env`, la fel ca generatorul. Fișierul `.env` temporar folosit pentru generare și QA a fost șters; cheia API nu a fost scrisă în documentație, manifest, log sau Git.
+
+### 28.6 Verificarea finală
+
+După ultima schimbare de text și ultima regenerare, `npm run check` a trecut integral:
+
+- TypeScript strict: PASS;
+- show validator: 8 scene / 87 cue-uri / 51 voci: PASS;
+- voice validator: 51/51 asset-uri identice cu scenariul și show-ul: PASS;
+- build main, preload, renderer, control și tabletă: PASS;
+- smoke core, platform și media: PASS;
+- `git diff --check`: PASS;
+- `.env` absent și niciun proces NavaPlayer/port de diagnostic rămas activ.
+
+Testul live `npm run smoke:renderer` a fost repetat după regenerarea finală și a trecut din nou. Captura curentă arată subtitrarea românească revizuită, video-ul în mișcare și unicul GLB al Căpitanului simultan. Verificarea care rămâne dependentă de locație este numai repetiția fizică pe toate cele cinci display-uri, cele cinci tablete și sistemul real de sunet.

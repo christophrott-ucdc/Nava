@@ -27,6 +27,26 @@ async function bundle(entry, name) {
 try {
   const show = JSON.parse(fs.readFileSync(path.join(root, "assets/show/show.json"), "utf8"));
   const config = JSON.parse(fs.readFileSync(path.join(root, "config.example.json"), "utf8"));
+  const rendererCss = fs.readFileSync(path.join(root, "src/renderer/styles.css"), "utf8");
+  assert.match(
+    rendererCss,
+    /\[hidden\]\s*\{\s*display:\s*none\s*!important;?\s*\}/,
+    "renderer overlays with hidden=true must never remain visible above video/avatar",
+  );
+  const tabletSource = fs.readFileSync(path.join(root, "src/web/tablet/index.ts"), "utf8");
+  assert.match(tabletSource, /DOAR PRIVESC/, "tablet observation copy must use natural Romanian");
+  const { TABLET_POSTS } = await bundle("src/shared/types.ts", "types");
+  assert.deepEqual(
+    Object.values(TABLET_POSTS).map((post) => post.perspectives),
+    [
+      ["DIRECȚIE", "TRASEU"],
+      ["ENERGIE", "STABILITATE"],
+      ["CUVINTE", "SEMNAL"],
+      ["PULS", "LEGĂTURĂ"],
+      ["AMINTIRE", "TIMP"],
+    ],
+    "all five posts must expose two concrete, equal perspectives",
+  );
 
   const { CueTracker } = await bundle("src/server/cues.ts", "cues");
   const firedByTracker = [];

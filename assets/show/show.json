@@ -1,12 +1,12 @@
 {
   "title": "A Patra Lume — Protocolul Acasă",
-  "version": "0.4.0-v3-complete",
+  "version": "0.5.0-ro-stage",
   "videoDurationSec": 465,
   "timingStatus": "aligned",
   "preshowAutoStart": true,
   "launchLeadInSec": 10,
   "epilogueOnVideoEnd": true,
-  "$comment": "Pista vocală integrală V3 este sincronizată din assets/show/voice-script-v3.json. Flux public: preshow 0–50 s, countdown 50–60 s, video 0–465 s, epilog 0–75 s; total 600 s. Video-ul sursă are 741,78 s, dar playerul îl oprește determinist la timpul configurat de 465 s.",
+  "$comment": "Adaptarea scenică românească V3.3 este sincronizată din assets/show/voice-script-v3.json. Flux public: preshow 0–50 s, countdown 50–60 s, video 0–465 s, epilog 0–75 s; total 600 s. Video-ul sursă are 741,78 s, dar playerul îl oprește determinist la timpul configurat de 465 s.",
   "scenes": [
     {
       "id": "intro",
@@ -114,7 +114,7 @@
       "speaker": "CAPITANUL",
       "direction": "jos, protocolar, autoritate liniștită; fiecare propoziție fixează o informație",
       "text": {
-        "ro": "EXODUS-7 a primit un semnal fără adresă. Cinci fragmente, câte unul pentru fiecare post. Fiecare poartă două urme."
+        "ro": "Exodus Șapte a interceptat un semnal fără coordonate. E împărțit în cinci fragmente — câte unul pentru fiecare post. În fiecare fragment apar două amprente."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -127,7 +127,7 @@
       "speaker": "AVATAR_AI",
       "direction": "clar, precis, neutru; o urmă de mister pe ultimele două cuvinte",
       "text": {
-        "ro": "Postul Comunicații a reunit fragmentele: „Găsiți a patra lume.” Expeditor necunoscut."
+        "ro": "Postul Comunicații a reconstituit mesajul: „Găsiți a patra lume.” Expeditorul nu poate fi identificat."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -138,9 +138,9 @@
       "at": 24,
       "kind": "voice",
       "speaker": "CAPITANUL",
-      "direction": "ferm, dar incluziv; accent pe «cinci echipe» și «împreună»",
+      "direction": "ferm, dar incluziv; o pauză după «pasageri», apoi accent pe «un singur echipaj»",
       "text": {
-        "ro": "Atunci nu avem pasageri. Avem cinci echipe. Fiecare post privește prin altă lentilă. Împreună vom vedea forma semnalului."
+        "ro": "Din clipa asta, nu mai sunteți pasageri. Sunteți un singur echipaj: cinci posturi, cinci feluri de a citi același semnal. Fiecare contează."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -153,7 +153,7 @@
       "speaker": "AVATAR_AI",
       "direction": "cald și foarte limpede; instrucțiune sigură, fără ton clinic",
       "text": {
-        "ro": "Puteți atinge sau observa. Ambele contează. Pentru pauză, spuneți „pauză” sau faceți semn."
+        "ro": "Alegeți sau priviți. Pentru pauză, spuneți „pauză” ori faceți semnul."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -166,7 +166,7 @@
       "speaker": "CAPITANUL",
       "direction": "protector și calm; pregătește numărătoarea fără dramatizare de alarmă",
       "text": {
-        "ro": "Rămâneți stabili. La cinci, numărăm împreună."
+        "ro": "Pregătiți-vă de plecare. Când apare cifra cinci, numărăm împreună."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -216,7 +216,7 @@
       "speaker": "CAPITANUL",
       "direction": "foarte lent, contemplativ; prima fisură în tonul strict procedural; lasă liniște după ultima propoziție",
       "text": {
-        "ro": "Pământul se îndepărtează. Păstrați-i imaginea. Când îl vom revedea, noi vom fi alții."
+        "ro": "Pământul se îndepărtează. Priviți-l bine. Când îl vom revedea, îl vom privi altfel."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -236,7 +236,7 @@
       "speaker": "AVATAR_AI",
       "direction": "sec și discret amuzat; gluma nu trebuie împinsă",
       "text": {
-        "ro": "Echipaj stabil. Nivel de uimire: peste specificații. Nu îl corectez."
+        "ro": "Echipajul este stabil. Nivelul de uimire depășește estimările. Îl las așa."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -247,9 +247,9 @@
       "at": 36,
       "kind": "voice",
       "speaker": "AVATAR_AI",
-      "direction": "confirmare de navigație precisă; curiozitate fină pe «prima urmă»",
+      "direction": "confirmare de navigație precisă; curiozitate fină pe «prima destinație»",
       "text": {
-        "ro": "Navigatorii confirmă: semnalul indică lumina din față. Prima urmă."
+        "ro": "Postul Navigație confirmă direcția. Semnalul ne conduce spre o sursă de lumină. Prima destinație."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -269,7 +269,7 @@
       "speaker": "AVATAR_AI",
       "direction": "cald, fascinat, cu deschidere pe cuvântul «lumină»",
       "text": {
-        "ro": "Siwarha. Aici, când alegi să arăți ce simți, emoția poate deveni lumină."
+        "ro": "Siwarha. Aici, emoțiile pe care alegeți să le arătați devin lumină."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -290,7 +290,7 @@
       "speaker": "LUMINA",
       "direction": "eteric și intim, ca o voce care ajunge de foarte departe; articulație limpede",
       "text": {
-        "ro": "Cuvintele voastre ajung greu până la noi. Culorile, imediat."
+        "ro": "Cuvintele voastre ajung greu la noi. Culorile ajung într-o clipă."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -303,7 +303,7 @@
       "speaker": "LUMINA",
       "direction": "invitație caldă, fără obligație; o pauză blândă după «vreți»",
       "text": {
-        "ro": "Dacă vreți, alegeți o culoare pe care ați purta-o în întuneric."
+        "ro": "Dacă vreți, alegeți culoarea pe care ați lua-o cu voi prin întuneric."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -316,7 +316,7 @@
       "interaction": {
         "type": "paired-choice",
         "mode": "color",
-        "prompt": "Alegeți fiecare o culoare pe care ați purta-o în întuneric.",
+        "prompt": "Ce culoare ai lua cu tine prin întuneric?",
         "options": [
           "AURIU · CERC",
           "ALBASTRU · UNDĂ",
@@ -345,7 +345,7 @@
       "speaker": "LUMINA",
       "direction": "reflectiv și luminos; nu moralizează, observă",
       "text": {
-        "ro": "Fiecare lumină oferită schimbă imaginea. Iar ceea ce rămâne nerostit îi dă adâncime."
+        "ro": "Fiecare culoare schimbă imaginea. Iar liniștea dintre culori îi dă adâncime."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -366,7 +366,7 @@
       "speaker": "CAPITANUL",
       "direction": "formal și reținut; reduce experiența la o notă de jurnal",
       "text": {
-        "ro": "Primul fragment: un semnal trimis altcuiva. Înregistrat."
+        "ro": "Primul indiciu: semnalul poartă acum culoarea echipajului. Consemnat."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -386,7 +386,7 @@
       "speaker": "AVATAR_AI",
       "direction": "blând și meditativ; nu sună ca o lecție",
       "text": {
-        "ro": "Kepler-186 d. Aici, nimic viu nu există doar pentru sine."
+        "ro": "A doua destinație: Kepler o sută optzeci și șase d. Pe lumea aceasta, nimic viu nu trăiește singur."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -417,7 +417,7 @@
       "speaker": "NATURA",
       "direction": "vechi, blând și povestit; imaginile respiră între propoziții",
       "text": {
-        "ro": "Voi desenați o linie în jurul vostru și îi spuneți „eu”. Dar aerul vostru a trecut prin frunze. Apa din voi a fost nor."
+        "ro": "Credeți că „eu” se termină la marginea trupului. Și totuși, aerul din voi a trecut prin frunze. Apa din voi a fost, cândva, nor."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -430,7 +430,7 @@
       "speaker": "NATURA",
       "direction": "invitație calmă și permisivă, cu accent pe libertatea ritmurilor diferite",
       "text": {
-        "ro": "Dacă vreți, atingeți sigiliul când pulsează. Puteți avea ritmuri diferite."
+        "ro": "Când sigiliul pulsează, îl puteți atinge. Nu trebuie s-o faceți toți deodată."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -443,7 +443,7 @@
       "interaction": {
         "type": "paired-choice",
         "mode": "pulse",
-        "prompt": "Atingeți fiecare sigiliul când îi simțiți pulsul.",
+        "prompt": "Atinge cercul o singură dată când pulsează.",
         "options": [
           "ATINGE ACUM"
         ],
@@ -469,7 +469,7 @@
       "speaker": "NATURA",
       "direction": "cald și afirmativ; evită tonul de evaluare",
       "text": {
-        "ro": "Ritmurile voastre au intrat în rețea. Niciunul nu trebuie să fie identic cu altul."
+        "ro": "V-am auzit ritmurile. Sunt diferite — și totuși, împreună alcătuiesc o singură rețea."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -497,7 +497,7 @@
       "speaker": "CAPITANUL",
       "direction": "ușor impresionat, cu trei bătăi distincte și fără triumf",
       "text": {
-        "ro": "Cinci posturi. Zece urme. Un singur echipaj."
+        "ro": "Cinci posturi. Zece amprente. Un echipaj."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -510,7 +510,7 @@
       "speaker": "AVATAR_AI",
       "direction": "curios și prudent; lasă predicția să pară neliniștitor de exactă",
       "text": {
-        "ro": "A treia urmă nu seamănă cu un mesaj. Seamănă cu o predicție."
+        "ro": "A treia destinație nu ne trimite un mesaj. Ne așteaptă cu o predicție."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -530,7 +530,7 @@
       "speaker": "AVATAR_AI",
       "direction": "precis, admirativ dar rece; descriere de sistem, nu avertisment",
       "text": {
-        "ro": "Mann. Civilizația de aici a redus boala, distanța și riscul. Poate calcula aproape orice."
+        "ro": "Mann. Aici, bolile au fost aproape învinse, distanțele aproape șterse, iar riscul poate fi calculat. Civilizația de aici prevede aproape orice."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -551,7 +551,7 @@
       "speaker": "TEHNOLOGIC",
       "direction": "precis și aproape muzical; predicția sună factual, nu amenințător",
       "text": {
-        "ro": "Bun venit, EXODUS-7. V-am prevăzut sosirea. Căpitanul va spune: „Scanați sursa.”"
+        "ro": "Bun venit, Exodus Șapte. Știam că veniți. Căpitanul va spune: „Scanați semnalul.”"
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -564,7 +564,7 @@
       "speaker": "CAPITANUL",
       "direction": "reflex procedural instantaneu, scurt și fără ezitare",
       "text": {
-        "ro": "Scanați sursa."
+        "ro": "Scanați semnalul."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -577,7 +577,7 @@
       "speaker": "TEHNOLOGIC",
       "direction": "sec, foarte scurt și discret amuzat",
       "text": {
-        "ro": "Știm."
+        "ro": "Știam."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -590,7 +590,7 @@
       "speaker": "TEHNOLOGIC",
       "direction": "curiozitate analitică autentică; întrebarea rămâne deschisă",
       "text": {
-        "ro": "Instrumentele noastre cer un singur răspuns: ce păstrează o lume vie?"
+        "ro": "Modelele noastre acceptă un singur răspuns. Spuneți-mi: ce ține o lume în viață?"
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -603,7 +603,7 @@
       "interaction": {
         "type": "paired-choice",
         "mode": "perspective",
-        "prompt": "Ce păstrează o lume vie? Alegeți fiecare pentru lentila voastră.",
+        "prompt": "Ce crezi că ține o lume în viață?",
         "options": [
           "CURIOZITATEA",
           "GRIJA",
@@ -633,7 +633,7 @@
       "speaker": "TEHNOLOGIC",
       "direction": "surpriză analitică reținută; admite limita modelului fără frustrare",
       "text": {
-        "ro": "Nu există un singur răspuns. Modelul meu nu poate alege între ele."
+        "ro": "Modelele cereau un singur răspuns. Voi ați găsit mai multe."
       },
       "manual": true,
       "fallback": "silent",
@@ -645,9 +645,9 @@
       "at": 335,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
-      "direction": "varianta sigură fără răspunsuri; constatare respectuoasă, fără presiune",
+      "direction": "varianta sigură fără răspunsuri; descrie numai ce știe sistemul, fără să atribuie intenții",
       "text": {
-        "ro": "Ați ales să observați. Chiar și tăcerea trece prin cinci lentile."
+        "ro": "Niciun răspuns nu a fost înregistrat. Uneori, și tăcerea spune ceva."
       },
       "manual": true,
       "fallback": "silent",
@@ -661,7 +661,7 @@
       "speaker": "TEHNOLOGIC",
       "direction": "precis, apoi ușor nedumerit pe ideea perspectivelor diferite",
       "text": {
-        "ro": "Alegerile exprimate sunt la fel. Dar cele cinci lentile păstrează perspective diferite."
+        "ro": "Ați ales la fel. Dar fiecare post privește răspunsul din alt unghi."
       },
       "manual": true,
       "fallback": "silent",
@@ -682,7 +682,7 @@
       "speaker": "CAPITANUL",
       "direction": "liniștit surprins; prima concluzie care nu vine din protocol",
       "text": {
-        "ro": "Atunci sunt autentice."
+        "ro": "Atunci nu elimina nimic."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -695,7 +695,7 @@
       "speaker": "TEHNOLOGIC",
       "direction": "acceptare calmă, fără concluzie moralizatoare",
       "text": {
-        "ro": "Trimiteți-le pe toate. Un adevăr poate avea mai multe forme."
+        "ro": "Păstrez tot. Adevărul nu are o singură formă."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -716,7 +716,7 @@
       "speaker": "AVATAR_AI",
       "direction": "confirmare tehnică scurtă și limpede",
       "text": {
-        "ro": "Propulsia confirmă: undă coerentă."
+        "ro": "Semnal complet. Unda e stabilă."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -729,7 +729,7 @@
       "speaker": "CAPITANUL",
       "direction": "decisiv, compact, energie de plecare",
       "text": {
-        "ro": "Ruta e deschisă."
+        "ro": "Urmăm semnalul."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -766,7 +766,7 @@
       "speaker": "AVATAR_AI",
       "direction": "prima ezitare audibilă; precizia se fisurează pe «încă nu»",
       "text": {
-        "ro": "Memoria semnalează o anomalie: urma traversează wormhole-ul invers. Momentul de origine încă nu s-a produs."
+        "ro": "Postul Memorie raportează o anomalie. Semnalul traversează tunelul în sens invers. Încă nu a fost trimis."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -792,7 +792,7 @@
       "speaker": "AVATAR_AI",
       "direction": "rar, foarte clar; fiecare propoziție trebuie înțeleasă din prima",
       "text": {
-        "ro": "Semnalul a trecut prin wormhole înapoi în timp. A ajuns înainte să-l trimitem."
+        "ro": "A ajuns la noi înainte să fie trimis. Și poartă amprentele acestui echipaj."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -805,7 +805,7 @@
       "speaker": "CAPITANUL",
       "direction": "realizare profundă, fără melodramă; accent pe «noi»",
       "text": {
-        "ro": "Atunci noi suntem expeditorul."
+        "ro": "Atunci... noi îl vom trimite."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -834,7 +834,7 @@
       "speaker": "AVATAR_AI",
       "direction": "uimire reținută în interiorul unei confirmări tehnice",
       "text": {
-        "ro": "Navigația confirmă originea."
+        "ro": "Navigația confirmă. Punctul de origine este chiar în fața noastră."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -847,7 +847,7 @@
       "speaker": "CAPITANUL",
       "direction": "aproape șoptit; recunoaștere, nu anunț",
       "text": {
-        "ro": "Pământ."
+        "ro": "Pământul."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -860,7 +860,7 @@
       "speaker": "AVATAR_AI",
       "direction": "precis la început, apoi conștient de paradox",
       "text": {
-        "ro": "Punct de origine confirmat: aici. Momentul transmiterii este încă în fața noastră."
+        "ro": "Originea semnalului este aici. Iar momentul transmisiei... încă nu a sosit."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -873,7 +873,7 @@
       "speaker": "CAPITANUL",
       "direction": "uimire autentică și interiorizată; descoperirea se așază în timp ce vorbește",
       "text": {
-        "ro": "Înțeleg. Cele cinci fragmente nu ne așteptau. Noi le-am adus."
+        "ro": "Înțeleg. N-am urmărit semnalul altcuiva. Noi l-am construit, pas cu pas."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -886,7 +886,7 @@
       "speaker": "AVATAR_AI",
       "direction": "cald și revelator; enumerarea are trei trepte, finalul aparține copiilor",
       "text": {
-        "ro": "Lumina i-a dat culoare. Natura, ritm. Alegerile voastre, o semnătură pe care nicio mașină n-o putea alege pentru voi."
+        "ro": "Lumina i-a dat culoare. Natura i-a dat ritm. Iar voi i-ați dat ceva ce nicio mașină nu poate inventa: propriile alegeri."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -899,7 +899,7 @@
       "speaker": "LUMINA",
       "direction": "primul ecou; foarte scurt, îndepărtat și recognoscibil",
       "text": {
-        "ro": "Vă recunoaștem lumina."
+        "ro": "V-am recunoscut după lumină."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -912,7 +912,7 @@
       "speaker": "NATURA",
       "direction": "al doilea ecou; blând, apropiat, ca o amintire",
       "text": {
-        "ro": "Vă recunoaștem legătura."
+        "ro": "V-am recunoscut după ritm."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -925,7 +925,7 @@
       "speaker": "TEHNOLOGIC",
       "direction": "al treilea ecou; precis, dar cu uimire nouă și discretă",
       "text": {
-        "ro": "Nu încăpeți într-un singur răspuns."
+        "ro": "V-am recunoscut după alegeri."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -938,7 +938,7 @@
       "speaker": "CAPITANUL",
       "direction": "cald, limpede, cu greutate pe «noi»; replica-titlu, fără ton de slogan",
       "text": {
-        "ro": "Corectez jurnalul: a patra lume nu era necunoscută. Noi încă nu învățaserăm s-o vedem."
+        "ro": "Corectez jurnalul. A patra lume nu era ascunsă. Noi nu știam încă s-o vedem."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -951,7 +951,7 @@
       "speaker": "AVATAR_AI",
       "direction": "confirmare calmă și decisivă; mesajul citat este perfect articulat",
       "text": {
-        "ro": "Posturile confirmă. Mesaj: „Găsiți a patra lume.”"
+        "ro": "Mesaj complet: „Găsiți a patra lume.”"
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -964,7 +964,7 @@
       "speaker": "CAPITANUL",
       "direction": "foarte simplu și definitiv; fără triumf",
       "text": {
-        "ro": "Trimite."
+        "ro": "Trimite-l."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -1017,7 +1017,7 @@
       "speaker": "AVATAR_AI",
       "direction": "foarte apropiat, cald și liniștitor; ritm respirabil, fără comandă corporală",
       "text": {
-        "ro": "Suntem aici cu voi. Respirați în ritmul vostru. Pentru pauză, spuneți „pauză” sau faceți semn."
+        "ro": "Suntem aici, cu voi. Nu mai aveți nimic de rezolvat. De aici, drumul ne duce acasă."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -1030,7 +1030,7 @@
       "speaker": "AVATAR_AI",
       "direction": "mărturisire simplă; prima propoziție e sistem, a doua devine personală",
       "text": {
-        "ro": "Eu cunoșteam coordonatele Pământului. Voi m-ați învățat de ce un drum devine întoarcere."
+        "ro": "Știam unde este Pământul. Nu știam de ce îi spuneți „acasă”. Asta am învățat de la voi."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -1043,7 +1043,7 @@
       "speaker": "CAPITANUL",
       "direction": "jurnal devenit mărturie; calm și mulțumit, fără emfază",
       "text": {
-        "ro": "Jurnal de bord: semnal trimis. Bucla este completă."
+        "ro": "Jurnal de bord: semnalul a fost trimis. Bucla s-a închis."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -1054,9 +1054,9 @@
       "at": 45,
       "kind": "voice",
       "speaker": "AVATAR_AI",
-      "direction": "cald și contemplativ; aterizează ușor pe «cunoșteați»",
+      "direction": "cald și contemplativ; lasă o pauză înainte de «iar acum» și încheie fără emfază",
       "text": {
-        "ro": "Ați plecat căutând o lume necunoscută. Vă întoarceți purtând-o altfel pe cea pe care o cunoșteați."
+        "ro": "Ați plecat să găsiți o lume necunoscută. V-ați întors la lumea pe care o știați deja — iar acum o priviți altfel."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
@@ -1069,7 +1069,7 @@
       "speaker": "CAPITANUL",
       "direction": "complet cald, protector și clar; încheiere, apoi instrucțiunea de siguranță",
       "text": {
-        "ro": "Protocolul Acasă: încheiat. Bun venit acasă, echipaj. Rămâneți pe loc până se aprind luminile și vă spune facilitatorul."
+        "ro": "Protocolul Acasă s-a încheiat. Bun venit acasă, echipaj. Rămâneți la posturi. Ghidul vă va spune când vă puteți ridica."
       },
       "fallback": "silent",
       "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."

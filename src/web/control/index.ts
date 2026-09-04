@@ -50,6 +50,7 @@ const dom = {
   playButton: byId<HTMLButtonElement>("play-button"),
   pauseButton: byId<HTMLButtonElement>("pause-button"),
   startExperience: byId<HTMLButtonElement>("start-experience"),
+  focusPlayer: byId<HTMLButtonElement>("focus-player"),
 };
 
 let socket: WebSocket | null = null;
@@ -199,6 +200,20 @@ async function dispatch(cmd: Command): Promise<void> {
   }
 }
 
+async function focusPlayer(): Promise<void> {
+  dom.focusPlayer.disabled = true;
+  try {
+    const response = await fetch("/api/player/focus", { method: "POST" });
+    const result = (await response.json()) as { ok?: boolean; reason?: string };
+    if (!response.ok || !result.ok) throw new Error(result.reason ?? "Playerul nu a putut fi adus în față.");
+    setCommandNote("Playerul a fost adus în față");
+  } catch (error) {
+    notify(error instanceof Error ? error.message : String(error), true);
+  } finally {
+    dom.focusPlayer.disabled = false;
+  }
+}
+
 function commandLabel(action: Command["action"]): string {
   const labels: Record<Command["action"], string> = {
     preshow: "Pre-show", start: "Start", play: "Redare", pause: "Pauză", seek: "Salt pe timeline",
@@ -249,6 +264,28 @@ function renderClock(): void {
   dom.mainClock.dateTime = `PT${Math.max(0, t)}S`;
   dom.timelineCurrent.textContent = formatTime(t, true);
   if (!timelineDragging) dom.timeline.value = String(Math.min(range.max, Math.max(range.min, t)));
+  renderVideoStatus(t);
+}
+
+function renderVideoStatus(currentPhaseTime: number): void {
+  if (!state?.videoReady) {
+    dom.videoStatus.textContent = "NEÎNCĂRCAT";
+    dom.videoStatus.style.color = "var(--amber)";
+    return;
+  }
+  if (state.state === "playing" && currentPhaseTime < 0) {
+    dom.videoStatus.textContent = "T−10 · ÎNCĂRCAT";
+    dom.videoStatus.style.color = "var(--cyan)";
+    return;
+  }
+  const liveRate = clock?.state === state.state ? clock.rate : state.rate;
+  if (state.state === "playing" && currentPhaseTime >= 0) {
+    dom.videoStatus.textContent = liveRate > 0 ? "RULEAZĂ" : "BLOCAT";
+    dom.videoStatus.style.color = liveRate > 0 ? "var(--green)" : "var(--red)";
+    return;
+  }
+  dom.videoStatus.textContent = "ÎNCĂRCAT";
+  dom.videoStatus.style.color = "var(--cyan)";
 }
 
 function renderShow(): void {
@@ -280,8 +317,6 @@ function renderState(): void {
   dom.sceneLabel.textContent = currentScene?.label ?? (state.state === "idle" ? "În așteptare" : "Fără scenă activă");
   dom.screensCount.textContent = String(state.screensConnected);
   dom.tabletsCount.textContent = String(state.tabletsConnected);
-  dom.videoStatus.textContent = state.videoReady ? "PREGĂTIT" : "NECONFIRMAT";
-  dom.videoStatus.style.color = state.videoReady ? "var(--green)" : "var(--amber)";
   dom.themeLabel.textContent = state.theme.toUpperCase();
   dom.language.value = state.lang;
 
@@ -489,11 +524,16 @@ document.querySelectorAll<HTMLButtonElement>("[data-command]").forEach((button) 
   button.addEventListener("click", () => {
     const action = button.dataset.command as Command["action"] | undefined;
     if (!action) return;
-    void dispatch({ action } as Command);
+    const sent = dispatch({ action } as Command);
+    if (action === "preshow" || action === "start") void sent.then(focusPlayer);
+    else void sent;
   });
 });
 
-dom.startExperience.addEventListener("click", () => void dispatch({ action: "start" }));
+dom.startExperience.addEventListener("click", () => {
+  void dispatch({ action: "start" }).then(focusPlayer);
+});
+dom.focusPlayer.addEventListener("click", () => void focusPlayer());
 
 dom.timeline.addEventListener("pointerdown", () => (timelineDragging = true));
 dom.timeline.addEventListener("input", () => {
@@ -550,7 +590,7 @@ window.addEventListener("keydown", (event) => {
   if (target?.matches("input, select, textarea, button")) return;
   if (event.code === "Space" || event.code === "Enter") {
     event.preventDefault();
-    if (state?.state === "idle" || state?.state === "preshow") void dispatch({ action: "start" });
+    if (state?.state === "idle" || state?.state === "preshow") void dispatch({ action: "start" }).then(focusPlayer);
     else if (state?.state === "playing") void dispatch({ action: "pause" });
     else if (state?.state === "paused") void dispatch({ action: "play" });
   }

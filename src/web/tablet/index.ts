@@ -309,10 +309,10 @@ function renderWaiting(showRule = false): void {
   wrap.className = "waiting";
   wrap.append(createHead(
     "◇",
-    showRule ? "Două perspective, același post" : "Priviți semnalul",
+    showRule ? "Un singur echipaj · cinci posturi" : "Priviți ecranele",
     showRule
-      ? "Fiecare folosește propria jumătate. Puteți răspunde la fel sau diferit."
-      : "Tableta păstrează ambele urme până la următoarea instrucțiune.",
+      ? "Fiecare folosește jumătatea din fața sa. Puteți alege la fel, diferit sau doar să priviți."
+      : "Povestea continuă. Tableta vă va anunța când puteți alege din nou.",
   ));
   const bars = document.createElement("div");
   bars.className = "waiting-bars";
@@ -354,7 +354,7 @@ function renderPairedChoice(interaction: Extract<NonNullable<TabletViewMsg["inte
   dom.interaction.append(createHead(
     interaction.mode === "color" ? "◈" : interaction.mode === "pulse" ? "◉" : "◇",
     interaction.prompt,
-    "Fiecare alege în jumătatea sa. Răspunsurile pot fi la fel sau diferite.",
+    "Fiecare răspunde în jumătatea din fața sa. Puteți alege la fel, diferit sau doar să priviți.",
   ));
   const zones = document.createElement("div");
   zones.className = "pair-zones";
@@ -379,7 +379,8 @@ function renderZone(
   seal.textContent = zone;
   const title = document.createElement("h3");
   title.id = `zone-${zone}-title`;
-  title.textContent = `PERSPECTIVA ${zone}`;
+  const perspectiveIndex = zone === "A" ? 0 : 1;
+  title.textContent = selectedPost ? TABLET_POSTS[selectedPost].perspectives[perspectiveIndex] : `JUMĂTATEA ${zone}`;
   head.append(seal, title);
   panel.append(head);
 
@@ -387,10 +388,11 @@ function renderZone(
   if (selected) {
     const result = document.createElement("div");
     result.className = "zone-result";
-    const label = selected === TABLET_OBSERVE_VALUE
-      ? "DOAR OBSERV"
+    const observed = selected === TABLET_OBSERVE_VALUE;
+    const label = observed
+      ? "RĂMÂN SĂ PRIVESC"
       : interaction.options.map(optionData).find((option) => option.value === selected)?.label ?? selected;
-    result.innerHTML = `<strong>✓</strong><span>${escapeHtml(label)}</span><small>A intrat în semnal.</small>`;
+    result.innerHTML = `<strong>✓</strong><span>${escapeHtml(label)}</span><small>${observed ? "E în regulă." : "Alegere înregistrată."}</small>`;
     panel.append(result);
     return panel;
   }
@@ -420,7 +422,7 @@ function renderZone(
     const observe = document.createElement("button");
     observe.type = "button";
     observe.className = "choice-button observe-button";
-    observe.textContent = "DOAR OBSERV";
+    observe.textContent = "DOAR PRIVESC";
     observe.disabled = !cueId;
     observe.addEventListener("click", () => choose(cueId, zone, TABLET_OBSERVE_VALUE));
     grid.append(observe);
@@ -451,9 +453,9 @@ function renderThanks(): void {
   earth.className = "earth";
   earth.setAttribute("aria-hidden", "true");
   const title = document.createElement("h2");
-  title.textContent = "Misiune încheiată, echipaj.";
+  title.textContent = "Misiunea s-a încheiat.";
   const copy = document.createElement("p");
-  copy.textContent = "Cele două perspective ale postului vostru au rămas în semnal.";
+  copy.textContent = "Postul vostru a făcut parte din semnal până la capăt.";
   wrap.append(earth, title, copy);
   dom.interaction.append(wrap);
 }

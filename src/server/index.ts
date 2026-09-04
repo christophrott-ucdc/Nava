@@ -55,6 +55,8 @@ export interface StartServerOptions {
   /** runs/ (JSONL journals). */
   runsDir: string;
   log: LogFn;
+  /** Bring the local audience/player window to the foreground (master only). */
+  focusPlayer?: () => boolean;
 }
 
 interface Client {
@@ -476,6 +478,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     }),
   );
   app.get("/api/state", (c) => c.json(director.getState()));
+  app.post("/api/player/focus", (c) => {
+    const ok = opts.focusPlayer?.() ?? false;
+    log(ok ? "info" : "warn", ok ? "player window focused from operator console" : "player focus requested but no local window is available");
+    return c.json(ok ? { ok: true } : { ok: false, reason: "Fereastra playerului nu este disponibilă pe acest master." }, ok ? 200 : 503);
+  });
   app.get("/api/show", (c) => c.json(director.getShow()));
   app.post("/api/show/reload", async (c) => {
     const r = await handleCommand({ action: "reloadShow" }, "http");
