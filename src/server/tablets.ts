@@ -5,19 +5,56 @@
 
 import type { WebSocket } from "ws";
 import {
+  SPEAKERS,
   TABLET_OBSERVE_VALUE,
   TABLET_POSTS,
+  type EntityParams,
   type SceneTheme,
   type TabletCue,
   type TabletOption,
   type TabletPost,
   type TabletZone,
 } from "../shared/types";
-import type { TabletEventMsg, TabletViewMsg, TabletsMsg } from "../shared/protocol";
+import type { EntityParamsMsg, TabletEventMsg, TabletViewMsg, TabletsMsg } from "../shared/protocol";
 import type { Subtitle } from "./cues";
 
 type PairedInteraction = Extract<TabletCue["interaction"], { type: "paired-choice" }>;
+type PairedMode = PairedInteraction["mode"];
 export type PerspectiveBranch = "diverse" | "same" | "observe";
+
+/**
+ * R4 (D-09) — pseudo-cue id used by the post-1 tablet to ask for the mission start in autoRun mode
+ * (`{kind:"choice", cueId:"__start__", zone:"A", value:"start"}`). Never stored as an answer.
+ */
+export const START_REQUEST_CUE_ID = "__start__";
+
+/** R4 — which procedural entity reacts to which paired-choice mode. */
+export const MODE_ENTITY: Record<PairedMode, EntityParamsMsg["entity"]> = {
+  color: "LUMINA",
+  pulse: "NATURA",
+  perspective: "TEHNOLOGIC",
+};
+
+/** Colour keywords in option labels/values → hex (used when an option has no explicit `color`). */
+const COLOR_KEYWORDS: Array<{ match: RegExp; hex: string }> = [
+  { match: /AURIU|GALBEN|GOLD/i, hex: "#ffd166" },
+  { match: /ALBASTRU|BLUE/i, hex: "#64c8ff" },
+  { match: /VERDE|GREEN/i, hex: "#72df9a" },
+  { match: /VIOLET|MOV|PURPLE/i, hex: "#bd92ff" },
+  { match: /RO[SȘ]U|RED/i, hex: "#ff6b6b" },
+  { match: /PORTOCALIU|ORANGE/i, hex: "#ffa94d" },
+  { match: /ALB|WHITE/i, hex: "#f8fafc" },
+  { match: /ROZ|PINK/i, hex: "#f9a8d4" },
+];
+const PULSE_KEYWORDS: Array<{ match: RegExp; bpm: number }> = [
+  { match: /LENT|SLOW|RAR/i, bpm: 40 },
+  { match: /MEDIU|NORMAL|MEDIUM/i, bpm: 60 },
+  { match: /RAPID|FAST|ALERT/i, bpm: 90 },
+];
+const PULSE_MIN_BPM = 40;
+const PULSE_MAX_BPM = 100;
+/** intensity = votes / 5 (five posts), clamped to 1. */
+const INTENSITY_VOTES_FULL = 5;
 
 export interface TabletRecord {
   id: string;
@@ -48,6 +85,10 @@ export interface TabletEventResult {
   changed: boolean;
   logKind: string | null;
   error?: string;
+  /** R4 — the tablet asked to start the mission (autoRun, startTrigger "tablet"); call director.requestStart(). */
+  startRequest?: boolean;
+  /** R4 — the aggregate for the entity of this interaction changed; broadcast to screens. */
+  entityParams?: EntityParamsMsg;
 }
 
 const MAX_TABLETS = 64;
@@ -68,12 +109,77 @@ function isZone(value: unknown): value is TabletZone {
   return typeof value === "string" && VALID_ZONES.has(value);
 }
 
-function normalizeOption(option: TabletOption): { value: string; label: string } {
+function normalizeOption(option: TabletOption): { value: string; label: string; color?: string } {
   if (typeof option === "string") {
     const value = cleanText(option, 80);
     return { value, label: value };
   }
-  return { value: cleanText(option.value, 80), label: cleanText(option.label, 120) };
+  const out: { value: string; label: string; color?: string } = { value: cleanText(option.value, 80), label: cleanText(option.label, 120) };
+  if (typeof option.color === "string" && /^#[0-9a-f]{3,8}$/i.test(option.color.trim())) out.color = option.color.trim();
+  return out;
+}
+
+/** Hex colour for a colour option: explicit `color`, else a keyword in label/value, else LUMINA's colour. */
+export function optionColor(option: { value: string; label: string; color?: string }): string {
+  if (option.color) return option.color;
+  const hay = `${option.label} ${option.value}`;
+  return COLOR_KEYWORDS.find((k) => k.match.test(hay))?.hex ?? SPEAKERS.LUMINA.color;
+}
+
+/**
+ * BPM for a pulse option: keyword (lent 40 / mediu 60 / rapid 90) or, for custom options, an even spread
+ * over 40..100 by position (a single option maps to the middle, 70).
+ */
+export function optionBpm(index: number, options: ReadonlyArray<{ value: string; label: string }>): number {
+  const option = options[index];
+  if (!option) return 60;
+  const kw = PULSE_KEYWORDS.find((k) => k.match.test(`${option.label} ${option.value}`));
+  if (kw) return kw.bpm;
+  const n = options.length;
+  if (n <= 1) return Math.round((PULSE_MIN_BPM + PULSE_MAX_BPM) / 2);
+  return Math.round(PULSE_MIN_BPM + ((PULSE_MAX_BPM - PULSE_MIN_BPM) * index) / (n - 1));
+}
+
+/**
+ * Aggregate the expressed answers of one paired-choice cue into EntityParams (D-02):
+ *  color → most-voted colour, pulse → BPM of the most-voted option, perspective → most-voted value;
+ *  intensity = votes/5 (clamped), votes = number of expressed (non-observe) answers.
+ * Ties are resolved by option order. Returns null when nobody has expressed a choice yet.
+ */
+export function aggregateEntityParams(
+  interaction: PairedInteraction,
+  values: readonly string[],
+): EntityParams | null {
+  const options = interaction.options.map(normalizeOption).filter((o) => o.value);
+  const expressed = values.filter((v) => v !== TABLET_OBSERVE_VALUE);
+  if (!expressed.length) return null;
+  const counts = new Map<string, number>();
+  for (const v of expressed) counts.set(v, (counts.get(v) ?? 0) + 1);
+  let bestIndex = -1;
+  let bestCount = 0;
+  options.forEach((o, i) => {
+    const c = counts.get(o.value) ?? 0;
+    if (c > bestCount) {
+      bestCount = c;
+      bestIndex = i;
+    }
+  });
+  if (bestIndex < 0) return null;
+  const winner = options[bestIndex];
+  const votes = expressed.length;
+  const params: EntityParams = { intensity: Math.min(1, votes / INTENSITY_VOTES_FULL), votes };
+  switch (interaction.mode) {
+    case "color":
+      params.color = optionColor(winner);
+      break;
+    case "pulse":
+      params.pulseBpm = optionBpm(bestIndex, options);
+      break;
+    case "perspective":
+      params.perspective = winner.value;
+      break;
+  }
+  return params;
 }
 
 function defaultPostLabels(): string[] {
@@ -87,6 +193,10 @@ export class TabletRegistry {
   private lastView: TabletViewMsg | null = null;
   private lastViewKey = "";
   private postLabels = defaultPostLabels();
+  /** R4 — last aggregate per interaction mode (re-sent to screens that connect late). */
+  private entityParamsByMode = new Map<PairedMode, EntityParamsMsg>();
+  /** R4 — set by index.ts: `tablets.onEntityParams = (msg) => broadcast(["screen"], msg)`. */
+  onEntityParams: ((msg: EntityParamsMsg) => void) | null = null;
 
   // ---------------------------------------------------------------------------
   // Connections
@@ -182,6 +292,10 @@ export class TabletRegistry {
     if (rec.post === undefined) return { changed: false, logKind: null, error: "alege mai întâi postul tabletei" };
     const cueId = cleanText(event.cueId, 80);
     if (!cueId || !isZone(event.zone)) return { changed: false, logKind: null, error: "zonă sau cue invalid" };
+    if (cueId === START_REQUEST_CUE_ID) {
+      // D-09: the "PORNEȘTE MISIUNEA" button (post 1 tablet, autoRun/tablet trigger). Not an answer.
+      return { changed: false, logKind: "tablet.start-request", startRequest: true };
+    }
     if (!current || current.id !== cueId || current.interaction.type !== "paired-choice") {
       return { changed: false, logKind: null, error: "interacțiunea în pereche nu mai este activă" };
     }
@@ -211,7 +325,28 @@ export class TabletRegistry {
       atMs: Date.now(),
     });
     if (this.answers.length > MAX_ANSWERS) this.answers.splice(0, this.answers.length - MAX_ANSWERS);
-    return { changed: true, logKind: "tablet.choice" };
+    const result: TabletEventResult = { changed: true, logKind: "tablet.choice" };
+    const entityParams = this.refreshEntityParams(current.id, current.interaction);
+    if (entityParams) result.entityParams = entityParams;
+    return result;
+  }
+
+  /** Recompute the entity aggregate of a paired-choice cue; emits `onEntityParams` when it changed. */
+  private refreshEntityParams(cueId: string, interaction: PairedInteraction): EntityParamsMsg | null {
+    const values = this.answers.filter((a) => a.cueId === cueId).map((a) => a.value);
+    const params = aggregateEntityParams(interaction, values);
+    if (!params) return null;
+    const msg: EntityParamsMsg = { type: "entityParams", entity: MODE_ENTITY[interaction.mode], params };
+    const prev = this.entityParamsByMode.get(interaction.mode);
+    if (prev && JSON.stringify(prev.params) === JSON.stringify(params)) return null;
+    this.entityParamsByMode.set(interaction.mode, msg);
+    this.onEntityParams?.(msg);
+    return msg;
+  }
+
+  /** R4 — current entity aggregates (one per mode), e.g. to re-send to a screen that just connected. */
+  entityParams(): EntityParamsMsg[] {
+    return [...this.entityParamsByMode.values()];
   }
 
   private claimPost(rec: TabletRecord, post: TabletPost): string | null {
@@ -230,6 +365,7 @@ export class TabletRegistry {
 
   clearAnswers(): void {
     this.answers = [];
+    this.entityParamsByMode.clear();
   }
 
   /** Postul este o proprietate fizică persistentă; restartul resetează doar răspunsurile. */

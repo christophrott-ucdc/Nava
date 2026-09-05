@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NavaPlayer · Depanare</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div>
+      <div class="eyebrow">EXODUS-7 · NAVAPLAYER</div>
+      <h1>PAGINA DE DEPANARE</h1>
+    </div>
+    <div class="top-right">
+      <span id="conn" class="badge">…</span>
+      <span id="who" class="badge dim">…</span>
+      <label class="auto"><input type="checkbox" id="auto" checked /> auto-refresh 2 s</label>
+      <button id="refresh" class="btn">REÎNCARCĂ</button>
+      <a class="btn ghost" href="/control/">CONSOLĂ</a>
+      <a class="btn ghost" href="/analytics/">ANALITICĂ</a>
+      <a class="btn ghost" id="logout" href="#">IEȘI</a>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="panel span2" id="p-status">
+      <h2>STARE SHOW</h2>
+      <div class="kv" id="state-kv"></div>
+      <div class="readiness" id="readiness"></div>
+    </section>
+
+    <section class="panel" id="p-health">
+      <h2>SĂNĂTATE SERVER</h2>
+      <div class="kv" id="health-kv"></div>
+    </section>
+
+    <section class="panel" id="p-preflight">
+      <h2>PREFLIGHT ACTIVE <button class="btn small" id="run-preflight">RULEAZĂ</button></h2>
+      <div id="preflight"></div>
+    </section>
+
+    <section class="panel span2" id="p-perf">
+      <h2>PERFORMANȚĂ ECRANE</h2>
+      <table class="tbl" id="perf-tbl">
+        <thead><tr><th>Ecran</th><th>Cadre pierdute</th><th>FPS video</th><th>FPS avatar</th><th>Latență lip-sync</th><th>Drift max</th><th>Zgomot sală</th><th>Heap</th><th>Ieșire audio</th><th>Văzut</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="panel" id="p-clients">
+      <h2>CLIENȚI CONECTAȚI</h2>
+      <table class="tbl" id="clients-tbl">
+        <thead><tr><th>Tip</th><th>ID</th><th>Nume</th><th>IP</th><th>De</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="panel" id="p-cues">
+      <h2>CUE-URI</h2>
+      <div id="cues"></div>
+    </section>
+
+    <section class="panel" id="p-tts">
+      <h2>TTS LIVE (CACHE)</h2>
+      <div class="kv" id="tts-kv"></div>
+    </section>
+
+    <section class="panel" id="p-env">
+      <h2>MEDIU · VERSIUNI · CĂI</h2>
+      <div class="kv" id="env-kv"></div>
+    </section>
+
+    <section class="panel span2" id="p-config">
+      <h2>CONFIG (SECRETE MASCATE)</h2>
+      <pre id="config"></pre>
+    </section>
+
+    <section class="panel span2" id="p-users">
+      <h2>UTILIZATORI <span class="dim">(doar admin)</span></h2>
+      <div id="users"></div>
+      <form id="user-form" class="row">
+        <input id="u-name" placeholder="nume" maxlength="32" />
+        <select id="u-role"><option value="operator">operator</option><option value="viewer">viewer</option><option value="admin">admin</option></select>
+        <input id="u-pin" placeholder="PIN 4–8 cifre" inputmode="numeric" maxlength="8" />
+        <button class="btn" type="submit">CREEAZĂ</button>
+        <span id="user-msg" class="dim"></span>
+      </form>
+    </section>
+
+    <section class="panel span2" id="p-logs">
+      <h2>JURNAL (ultimele evenimente) <button class="btn small" id="rotate">ROTEȘTE JURNALELE</button> <span id="runlog-path" class="dim"></span></h2>
+      <pre id="logs"></pre>
+    </section>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -265,6 +265,7 @@ async function main(): Promise<void> {
     wsUrl: boot.wsUrl,
     screenId: screen.id,
     screenName: screen.roleLabel,
+    screenToken: boot.screenToken,
     isClockSource,
     clockHz: config.sync.clockHz,
     seekThresholdSec: config.sync.seekThresholdSec,

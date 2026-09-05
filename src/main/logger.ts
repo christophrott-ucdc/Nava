@@ -1,6 +1,10 @@
 /**
  * JSONL logger for the main process: runs/app-<YYYYMMDD-HHmmss>.jsonl (under appRoot/runs) + console.
  * One line per entry: {"ts","level","src","msg","data"?}. Lines logged before initLogger() are buffered.
+ *
+ * Rotation (rotateRunLogs): only the newest KEEP_APP_LOGS `app-*.jsonl` files directly in runs/ are kept; older
+ * ones are deleted at startup. `show-*.jsonl` (written by the server), PNGs and anything under runs/debug/ are
+ * never touched (the server rotates its own files — P-05).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -15,6 +19,10 @@ interface LogEntry {
   msg: string;
   data?: unknown;
 }
+
+export const KEEP_APP_LOGS = 20;
+/** app-20260904-183601.jsonl (an optional "-N" suffix is tolerated). */
+const APP_LOG_RE = /^app-\d{8}-\d{6}(?:-\d+)?\.jsonl$/;
 
 let stream: fs.WriteStream | null = null;
 let filePath: string | null = null;
@@ -55,6 +63,12 @@ function safeStringify(value: unknown): string {
 export function initLogger(runsDir: string): string {
   fs.mkdirSync(runsDir, { recursive: true });
   filePath = path.join(runsDir, `app-${stamp()}.jsonl`);
+  // createWriteStream opens the file asynchronously; create it now so rotateRunLogs() (called right after) sees it.
+  try {
+    fs.closeSync(fs.openSync(filePath, "a"));
+  } catch {
+    /* the stream's own error handler reports unwritable paths */
+  }
   stream = fs.createWriteStream(filePath, { flags: "a" });
   stream.on("error", (err) => {
     console.error(`[logger] cannot write ${filePath}: ${err.message}`);
@@ -63,6 +77,46 @@ export function initLogger(runsDir: string): string {
   for (const line of pending) stream.write(line);
   pending.length = 0;
   return filePath;
+}
+
+export interface RotationResult {
+  /** app-*.jsonl files still present after rotation (the current run included). */
+  kept: number;
+  /** Absolute paths deleted. */
+  deleted: string[];
+  /** Files that could not be deleted (path -> error message). */
+  failed: Array<{ file: string; error: string }>;
+}
+
+/**
+ * Deletes the oldest `app-*.jsonl` files in `runsDir` so that at most `keep` remain (newest by file name, which
+ * embeds the timestamp; the current run's file counts as one of them). Non-recursive; nothing else is touched.
+ */
+export function rotateRunLogs(runsDir: string, keep = KEEP_APP_LOGS): RotationResult {
+  const result: RotationResult = { kept: 0, deleted: [], failed: [] };
+  let entries: fs.Dirent[];
+  try {
+    entries = fs.readdirSync(runsDir, { withFileTypes: true });
+  } catch (err) {
+    result.failed.push({ file: runsDir, error: err instanceof Error ? err.message : String(err) });
+    return result;
+  }
+  const current = filePath ? path.basename(filePath) : null;
+  const names = new Set(entries.filter((e) => e.isFile() && APP_LOG_RE.test(e.name)).map((e) => e.name));
+  if (current) names.add(current); // the current run counts as one of the `keep` files even if not flushed yet
+  const appLogs = [...names].sort((a, b) => (a < b ? 1 : a > b ? -1 : 0)); // newest first (timestamps sort lexicographically)
+  const victims = appLogs.slice(Math.max(0, keep)).filter((name) => name !== current);
+  for (const name of victims) {
+    const file = path.join(runsDir, name);
+    try {
+      fs.unlinkSync(file);
+      result.deleted.push(file);
+    } catch (err) {
+      result.failed.push({ file, error: err instanceof Error ? err.message : String(err) });
+    }
+  }
+  result.kept = appLogs.length - result.deleted.length;
+  return result;
 }
 
 export function getLogFilePath(): string | null {

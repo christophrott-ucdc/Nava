@@ -16,6 +16,8 @@ export interface SyncOptions {
   wsUrl: string;
   screenId: string;
   screenName?: string;
+  /** R4 — `security.screenToken` from boot; sent in `hello` (server closes 4401 without it when configured). */
+  screenToken?: string;
   isClockSource: boolean;
   clockHz: number;
   seekThresholdSec: number;
@@ -73,7 +75,14 @@ export class SyncClient {
       if (ws !== this.ws) return;
       this.attempts = 0;
       this.opts.log("info", `ws connected ${this.opts.wsUrl}`);
-      this.send({ type: "hello", client: "screen", id: this.opts.screenId, name: this.opts.screenName, isClockSource: this.opts.isClockSource });
+      this.send({
+        type: "hello",
+        client: "screen",
+        id: this.opts.screenId,
+        name: this.opts.screenName,
+        isClockSource: this.opts.isClockSource,
+        ...(this.opts.screenToken ? { token: this.opts.screenToken } : {}),
+      });
       this.startReporting();
       this.emitStatus();
     });

@@ -112,6 +112,16 @@ declare module "@met4citizen/talkinghead" {
     visemeNames: string[];
     nodeAvatar: HTMLElement | null;
     renderer: { domElement: HTMLCanvasElement } | null;
+    /** Root object of the loaded GLB (opt.modelRoot, "Armature"); null before showAvatar(). */
+    armature: { traverse(cb: (obj: { name?: string; type?: string }) => void): void } | null;
+    /** Skinned meshes with morph targets (populated by showAvatar). */
+    morphs: Array<{ name?: string; morphTargetDictionary?: Record<string, number> }>;
+    /** Last rAF timestamp accepted by the modelFPS throttle. */
+    animTimeLast: number;
+    /** Wall-clock ms per rendered frame (1000 / opt.modelFPS). */
+    animFrameDur: number;
+    /** Draws the current frame (called by the library's own rAF loop; instance-overridable). */
+    render(): void;
 
     showAvatar(avatar: TalkingHeadAvatar, onprogress?: ((ev: ProgressEvent) => void) | null): Promise<void>;
     speakAudio(

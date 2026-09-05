@@ -9,7 +9,21 @@
  * Clientul se identifica imediat dupa conectare cu un mesaj `hello`.
  */
 
-import type { Lang, PlaybackState, SceneTheme, ShowState, Cue, TabletCue, TabletPost, TabletZone } from "./types";
+import type {
+  Lang,
+  PlaybackState,
+  SceneTheme,
+  ShowState,
+  Cue,
+  TabletCue,
+  TabletPost,
+  TabletZone,
+  PerfSample,
+  EntityParams,
+  Speaker,
+  SpanViewport,
+  SecurityConfig,
+} from "./types";
 
 export type ClientKind = "screen" | "control" | "tablet";
 
@@ -27,6 +41,25 @@ export interface HelloMsg {
   post?: TabletPost;
   /** screen: daca acest ecran este ceasul de referinta (ecranul "center" al masterului). */
   isClockSource?: boolean;
+  /**
+   * R4 — autentificare: control -> tokenul de sesiune (cookie `nava_session`, obtinut prin POST /api/auth/login);
+   * screen -> `security.screenToken` din boot. Tabletele nu trimit token. Serverul raspunde `error` + close (4401)
+   * cand tokenul lipseste sau este invalid.
+   */
+  token?: string;
+}
+
+/** R4 — masuratori de performanta, trimise de FIECARE ecran la ~1 Hz. */
+export interface PerfMsg {
+  type: "perf";
+  sample: PerfSample;
+}
+
+/** R4 — fotografia de echipaj capturata de ecranul `center` (JPEG dataURL, max ~1 MB). */
+export interface PhotoCapturedMsg {
+  type: "photoCaptured";
+  cueId: string | null;
+  dataUrl: string;
 }
 
 /** Ecranul-sursa de ceas raporteaza pozitia video (4 Hz). */
@@ -55,7 +88,17 @@ export type Command =
   | { action: "setLang"; lang: Lang }
   | { action: "reloadShow" } // reincarca assets/show/show.json fara restart
   | { action: "testAvatar" } // avatarul spune o replica de test
-  | { action: "identifyScreens" }; // fiecare ecran isi afiseaza id-ul 3 s
+  | { action: "identifyScreens" } // fiecare ecran isi afiseaza id-ul 3 s
+  // R4
+  | { action: "rehearse"; rate: number } // repetitie accelerata: video + voci la `rate` (ex. 4), cue-urile se declanseaza normal
+  | { action: "setRate"; rate: number } // 1 = normal; folosit si pentru a iesi din rehearse
+  | { action: "autoRun"; enabled: boolean } // mod operator absent on/off
+  | { action: "lights"; theme: SceneTheme } // scena de lumina manuala
+  | { action: "ambient"; enabled: boolean } // pat sonor on/off
+  | { action: "say"; speaker: Speaker; text: string } // un personaj rosteste textul acum (TTS live prin /api/tts)
+  | { action: "setVariant"; variant: string | null } // varianta de scenariu (grupa de varsta)
+  | { action: "photo" } // fotografie de echipaj acum
+  | { action: "preflight" }; // reverifica asset-ele vocale
 
 export interface CmdMsg {
   type: "cmd";
@@ -78,7 +121,7 @@ export interface TabletEventMsg {
     | { kind: "ping" };
 }
 
-export type ClientMessage = HelloMsg | ReportMsg | CmdMsg | TabletEventMsg;
+export type ClientMessage = HelloMsg | ReportMsg | CmdMsg | TabletEventMsg | PerfMsg | PhotoCapturedMsg;
 
 // ---------------------------------------------------------------------------
 // server -> client
@@ -163,6 +206,42 @@ export interface TabletsMsg {
 export interface ErrorMsg {
   type: "error";
   reason: string;
+  /** R4 — 4401 = neautentificat, 4403 = rol insuficient. */
+  code?: number;
+}
+
+/** R4 — parametrii vizuali ai unei entitati (derivati din alegerile tabletelor), catre ecrane. */
+export interface EntityParamsMsg {
+  type: "entityParams";
+  entity: Exclude<Speaker, "AVATAR_AI" | "CAPITANUL">;
+  params: EntityParams;
+}
+
+/** R4 — text compus la runtime pe care ecranele il rostesc prin /api/tts (cue `dynamic-voice` sau comanda `say`). */
+export interface DynamicVoiceMsg {
+  type: "dynamicVoice";
+  /** id stabil pentru cache (ex. "dyn-<cueId>-<hash>") */
+  cueId: string;
+  speaker: Speaker;
+  text: string;
+  lang: Lang;
+  /** Daca true, subtitrarea se afiseaza; implicit true. */
+  subtitle?: boolean;
+}
+
+/** R4 — fotografia de echipaj, retransmisa ecranelor si tabletelor. */
+export interface PhotoMsg {
+  type: "photo";
+  action: "countdown" | "capture" | "show" | "hide";
+  countdownSec?: number;
+  dataUrl?: string;
+  showSec?: number;
+}
+
+/** R4 — agregat de performanta pentru consola/debug (toate ecranele). */
+export interface PerfSummaryMsg {
+  type: "perfSummary";
+  samples: PerfSample[];
 }
 
 export type ServerMessage =
@@ -173,7 +252,11 @@ export type ServerMessage =
   | CueFiredMsg
   | TabletViewMsg
   | TabletsMsg
-  | ErrorMsg;
+  | ErrorMsg
+  | EntityParamsMsg
+  | DynamicVoiceMsg
+  | PhotoMsg
+  | PerfSummaryMsg;
 
 // ---------------------------------------------------------------------------
 // IPC Electron (preload -> renderer), expus ca window.nava
@@ -192,6 +275,17 @@ export interface NavaBridge {
     showUrl: string; // file:///.../assets/show/show.json
     isDev: boolean;
     appVersion: string;
+    // R4 (optionale pana la integrarea completa a main-ului)
+    /** http://host:port al serverului master (pentru /api/tts, /api/dialog); null la follower fara acces. */
+    serverHttpUrl?: string | null;
+    /** security.screenToken — trimis in `hello` de fiecare ecran. */
+    screenToken?: string;
+    security?: Pick<SecurityConfig, "publicState">;
+    /** "windows" (implicit) sau "span"; in span, `viewports` descrie fiecare ecran in fereastra unica. */
+    displayMode?: "windows" | "span";
+    viewports?: SpanViewport[];
+    /** Varianta de scenariu activa. */
+    variant?: string | null;
   }>;
   /** Log catre procesul main (scris in runs/<run>.jsonl). */
   log(level: "info" | "warn" | "error", msg: string, data?: unknown): void;

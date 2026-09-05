@@ -54,12 +54,28 @@ export interface VoiceEngine {
 
 export interface AvatarControllerOptions {
   container: HTMLElement;
+  /** GLB-ul de incarcat; apelantul il poate alege per vorbitor (config.avatar.glbBySpeaker). */
   glbUrl: string;
   lang: Lang;
   /** Latimea dorita in px (inaltimea se deduce din aspect). */
   widthPx: number;
+  /**
+   * R4 — sexul corpului pentru animatiile idle TalkingHead. Daca lipseste, modulul avatar citeste
+   * `boot.config.avatar.body` (implicit "M": Capitanul are voce grava, masculina).
+   */
+  body?: "M" | "F";
   onReady?: () => void;
   onError?: (err: unknown) => void;
+}
+
+/** R4 — raportul de casting al avatarului (GLB vs. corp vs. vocea care face lip-sync). */
+export interface AvatarCastingReport {
+  glb: string;
+  body: "M" | "F";
+  /** Vorbitorul al carui audio anima gura (SPEAKERS[x].lipsyncAvatar). */
+  speakerWithLipsync: Speaker;
+  /** null daca GLB-ul si corpul se potrivesc cu vocea; altfel un mesaj clar pentru consola/debug. */
+  mismatchWarning: string | null;
 }
 
 export interface AvatarController {
@@ -81,6 +97,12 @@ export interface AvatarController {
   resize(widthPx: number): void;
   isSpeaking(): boolean;
   dispose(): void;
+  // R4 — diagnostice optionale (implementate de src/renderer/avatar; lipsesc pe avatarul nul).
+  /** Intarzierea (ms) intre momentul programat al primului visem si aplicarea lui pe model; null = nemasurat. */
+  getLastLipsyncLatencyMs?(): number | null;
+  /** Cadre/s ale buclei de randare TalkingHead (null daca modelul nu e incarcat). */
+  getFps?(): number | null;
+  getCastingReport?(): AvatarCastingReport;
 }
 
 /** Fabrici exportate de fiecare modul (semnaturi fixe). */

@@ -36,11 +36,14 @@ export interface ThemeController {
   /** Force the white overlay independently of the theme (e.g. epilogue entered manually). */
   setWhiteFade(on: boolean, opts?: { fast?: boolean }): void;
   palette(theme?: SceneTheme): ThemePalette;
+  /** R4 — notified on every theme CHANGE (ambient bed auto-follow, lights preview...). Returns an unsubscribe. */
+  onChange(listener: (theme: SceneTheme, previous: SceneTheme | null) => void): () => void;
 }
 
 export function createTheme(root: HTMLElement, whiteFade: HTMLElement | null, initial: SceneTheme = "prologue"): ThemeController {
   let cur: SceneTheme | null = null;
   const style = document.documentElement.style;
+  const listeners = new Set<(theme: SceneTheme, previous: SceneTheme | null) => void>();
 
   const setWhite = (on: boolean, fast: boolean) => {
     if (!whiteFade) return;
@@ -56,7 +59,17 @@ export function createTheme(root: HTMLElement, whiteFade: HTMLElement | null, in
     style.setProperty("--theme-vignette-strength", String(p.vignetteStrength));
     root.dataset.theme = theme;
     setWhite(theme === "white", !!opts?.fast);
+    const previous = cur;
     cur = theme;
+    if (previous !== theme) {
+      for (const fn of listeners) {
+        try {
+          fn(theme, previous);
+        } catch {
+          /* listeners must never break theming */
+        }
+      }
+    }
   };
 
   apply(initial, { fast: true });
@@ -66,5 +79,11 @@ export function createTheme(root: HTMLElement, whiteFade: HTMLElement | null, in
     current: () => cur ?? initial,
     setWhiteFade: (on, opts) => setWhite(on, !!opts?.fast),
     palette: (theme) => THEME_PALETTES[theme ?? cur ?? initial],
+    onChange(listener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
   };
 }

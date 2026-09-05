@@ -127,6 +127,15 @@ const TARGETS = [
     outfile: abs("dist/web/tablet/app.js"),
     options: { platform: "browser", format: "iife", target: WEB_TARGETS, define: NODE_ENV_DEFINE, sourcemap: WATCH ? "linked" : false },
   },
+  // R4 web apps (orchestrator: login + debug; Agent D: analytics). Missing entries are skipped.
+  ...["login", "debug", "analytics"].map((name) => ({
+    name: `web/${name}`,
+    entry: abs(`src/web/${name}/index.ts`),
+    outfile: abs(`dist/web/${name}/app.js`),
+    // optional: a missing entry is skipped (not a build failure) — analytics lands with package D-05.
+    optional: true,
+    options: { platform: "browser", format: "iife", target: WEB_TARGETS, define: NODE_ENV_DEFINE, sourcemap: WATCH ? "linked" : false },
+  })),
 ];
 
 /** Static (non-TS) files copied verbatim. */
@@ -134,6 +143,9 @@ const STATIC_DIRS = [
   { from: abs("src/renderer"), to: abs("dist/renderer") },
   { from: abs("src/web/control"), to: abs("dist/web/control") },
   { from: abs("src/web/tablet"), to: abs("dist/web/tablet") },
+  { from: abs("src/web/login"), to: abs("dist/web/login") },
+  { from: abs("src/web/debug"), to: abs("dist/web/debug") },
+  { from: abs("src/web/analytics"), to: abs("dist/web/analytics") },
 ];
 const STATIC_FILES = [
   {
@@ -185,6 +197,7 @@ function buildOptions(t) {
 
 async function buildOnce(t) {
   if (!fs.existsSync(t.entry)) {
+    if (t.optional) return { t, status: "skip" };
     state.failed = true;
     return { t, status: "fail", error: new Error(`required entry missing: ${rel(t.entry)}`) };
   }

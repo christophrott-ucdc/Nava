@@ -1,0 +1,32 @@
+:root {
+  --bg: oklch(0.14 0.03 250);
+  --panel: oklch(0.18 0.04 250 / 0.75);
+  --hud: oklch(0.78 0.16 215);
+  --glow: oklch(0.85 0.18 200);
+  --dim: oklch(0.6 0.08 230);
+  --danger: oklch(0.65 0.25 25);
+  --ok: oklch(0.78 0.18 155);
+  --text: oklch(0.93 0.03 220);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: radial-gradient(ellipse at top, oklch(0.22 0.06 260), oklch(0.08 0.03 250) 70%); color: var(--text); font-family: Bahnschrift, "Segoe UI", system-ui, sans-serif; }
+body { display: grid; place-items: center; min-height: 100vh; padding: 24px; }
+.card { width: min(420px, 100%); background: var(--panel); border: 1px solid oklch(0.5 0.12 215 / 0.4); border-radius: 12px; padding: 28px 24px; backdrop-filter: blur(10px); box-shadow: 0 20px 60px oklch(0 0 0 / 0.5), 0 0 24px oklch(0.78 0.16 215 / 0.15); }
+header { text-align: center; }
+.eyebrow { font-family: "JetBrains Mono", Consolas, monospace; font-size: 0.7rem; letter-spacing: 0.35em; color: var(--dim); }
+h1 { margin: 6px 0 4px; font-size: 1.4rem; letter-spacing: 0.25em; color: var(--hud); text-shadow: 0 0 12px oklch(0.78 0.16 215 / 0.6); }
+.hint { margin: 0 0 18px; color: var(--dim); font-size: 0.9rem; }
+.pin { display: flex; justify-content: center; gap: 14px; margin: 8px 0 18px; min-height: 22px; }
+.dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--dim); transition: all 120ms; }
+.dot.on { background: var(--glow); border-color: var(--glow); box-shadow: 0 0 10px var(--glow); }
+.pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pad button { font: inherit; font-size: 1.5rem; padding: 16px 0; border-radius: 10px; border: 1px solid oklch(0.5 0.12 215 / 0.35); background: oklch(0.22 0.04 250 / 0.8); color: var(--text); cursor: pointer; touch-action: manipulation; transition: background 100ms, transform 60ms; }
+.pad button:active { transform: scale(0.97); background: oklch(0.3 0.08 220 / 0.9); }
+.pad button.alt { color: var(--dim); }
+.pad button.ok { background: oklch(0.32 0.1 215 / 0.9); color: var(--glow); border-color: var(--hud); }
+.msg { min-height: 1.4em; margin: 14px 0 0; text-align: center; font-size: 0.9rem; color: var(--danger); }
+.msg.ok { color: var(--ok); }
+footer { margin-top: 18px; text-align: center; font-size: 0.8rem; color: var(--dim); }
+footer a { color: var(--hud); text-decoration: none; }
+.tiny { margin-top: 6px; font-size: 0.7rem; }
+.sr-only { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

@@ -286,8 +286,9 @@ export class Player {
           this.deps.osd.identify(3000);
           break;
         default: {
-          const never: never = cmd;
-          this.deps.log("warn", "comandă necunoscută", never);
+          // R4 commands (rehearse/setRate/autoRun/lights/ambient/say/setVariant/photo/preflight) land in
+          // the renderer with the B-06/B-08/B-09 packages; until then they are logged and ignored here.
+          this.deps.log("info", `comandă R4 fără handler pe acest ecran: ${(cmd as { action: string }).action}`);
         }
       }
     } catch (err) {

@@ -11,8 +11,25 @@ import {
   metaFromServer,
   requestServerTts,
 } from "./manifest";
-import { VoicePlayer } from "./playback";
+import { MAX_VOICE_RATE, VoicePlayer } from "./playback";
 import { playSfx as synthesizeSfx, type SfxHandle } from "./sfx";
+
+export { setTtsAuthToken } from "./manifest";
+
+/**
+ * R4 / B-06 — rehearse support is NOT part of the shared VoiceEngine contract (src/shared is frozen
+ * for agents); the real engine implements it and callers probe for it with `setVoicePlaybackRate`.
+ * Proposed contract addition: `setPlaybackRate?(rate: number): void`.
+ */
+export interface RateAwareVoiceEngine extends VoiceEngine {
+  /** Voices play at min(rate, MAX_VOICE_RATE) with pitch preserved (HTMLAudioElement path when rate != 1). */
+  setPlaybackRate(rate: number): void;
+}
+
+export function setVoicePlaybackRate(voice: VoiceEngine, rate: number): void {
+  const maybe = voice as Partial<RateAwareVoiceEngine>;
+  if (typeof maybe.setPlaybackRate === "function") maybe.setPlaybackRate(rate);
+}
 
 function clipKey(clip: VoiceClip): string {
   return `${clip.lang}|${clip.cueId}|${clip.provider}|${clip.generatedAt}|${clip.file}`;
@@ -44,7 +61,7 @@ function validClipMeta(meta: VoiceManifest["clips"][string], cueId: string, spea
   );
 }
 
-class VoiceEngineImpl implements VoiceEngine {
+class VoiceEngineImpl implements RateAwareVoiceEngine {
   private readonly player: VoicePlayer;
   private readonly manifests = new Map<Lang, VoiceManifest | null>();
   private readonly preparing = new Map<Lang, Promise<void>>();
@@ -54,6 +71,7 @@ class VoiceEngineImpl implements VoiceEngine {
   private readonly inflight = new Map<string, Promise<VoiceClip | null>>();
   private readonly sfx = new Set<SfxHandle>();
   private volume: number;
+  private rate = 1;
 
   constructor(private readonly opts: Parameters<CreateVoiceEngine>[0]) {
     this.volume = Math.max(0, Math.min(2, opts.initialVolume));
@@ -179,12 +197,18 @@ class VoiceEngineImpl implements VoiceEngine {
     cancelBrowserSpeech();
     const key = clipKey(clip);
     const decoded = this.player.getDecoded(key) ?? this.player.decode(clip.audio, key);
-    return this.player.play(decoded, SPEAKERS[speaker].fx, clip.durationMs);
+    return this.player.play(decoded, SPEAKERS[speaker].fx, clip.durationMs, { bytes: clip.audio, mime: clip.mime });
   }
 
   speakFallback(text: string, speaker: Speaker, lang: Lang): PlaybackHandle {
     this.player.stop();
-    return speakWithBrowser(text, speaker, lang, { volume: this.opts.audible ? Math.min(1, this.volume) : 0 });
+    return speakWithBrowser(text, speaker, lang, { volume: this.opts.audible ? Math.min(1, this.volume) : 0, rate: this.rate });
+  }
+
+  /** R4 / B-06 — rehearse: voices at min(rate, MAX_VOICE_RATE), pitch preserved. */
+  setPlaybackRate(rate: number): void {
+    this.rate = Number.isFinite(rate) && rate > 0 ? Math.min(MAX_VOICE_RATE, Math.max(0.25, rate)) : 1;
+    this.player.setPlaybackRate(this.rate);
   }
 
   stopAll(): void {

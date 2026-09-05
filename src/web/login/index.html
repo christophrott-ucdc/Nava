@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>NavaPlayer · Autentificare</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="card" role="main">
+    <header>
+      <div class="eyebrow">EXODUS-7 · A PATRA LUME</div>
+      <h1>ACCES ECHIPAJ</h1>
+      <p class="hint">Introdu PIN-ul de operator ca să intri în consolă.</p>
+    </header>
+
+    <form id="form" autocomplete="off">
+      <div class="pin" id="pin-display" aria-live="polite" aria-label="PIN introdus">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+      <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" minlength="4" class="sr-only" aria-label="PIN" />
+      <div class="pad" id="pad">
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
+        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
+        <button type="button" data-k="del" class="alt" aria-label="Șterge">⌫</button><button type="button" data-k="0">0</button><button type="submit" class="ok" aria-label="Intră">➜</button>
+      </div>
+      <p id="msg" class="msg" role="alert"></p>
+    </form>
+
+    <footer>
+      <a href="/tablet/">Tabletă</a> · <a href="/control/">Consolă</a> · <a href="/debug/">Depanare</a>
+      <div class="tiny" id="who"></div>
+    </footer>
+  </main>
+  <script src="./app.js"></script>
+</body>
+</html>

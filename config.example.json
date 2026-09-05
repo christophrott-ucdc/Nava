@@ -1,5 +1,5 @@
 {
-  "$comment": "Copiaza in config.json (langa executabil sau in radacina proiectului). Toate caile relative sunt fata de folderul executabilului / proiectului.",
+  "$comment": "Copiaza in config.json (langa executabil sau in radacina proiectului). Toate caile relative sunt fata de folderul executabilului / proiectului. Cheile care incep cu $ sunt doar documentatie si sunt ignorate la incarcare. Un config.json vechi (fara sectiunile R4 de mai jos) se incarca in continuare: fiecare camp lipsa primeste valoarea implicita.",
   "role": "master",
   "masterUrl": "ws://192.168.1.10:4321/ws",
   "server": {
@@ -17,13 +17,19 @@
     "glb": "assets/avatar/avatar-ai.glb",
     "corner": "bottom-left",
     "widthPercent": 22,
-    "marginPx": 40
+    "marginPx": 40,
+    "$comment_body": "R4 optional: \"M\" sau \"F\" - sexul corpului pentru animatiile idle TalkingHead; trebuie sa se potriveasca cu vocea. Lipsa = implicitul TalkingHead.",
+    "$comment_glbBySpeaker": "R4 optional: GLB diferit per vorbitor, ex. { \"CAPITANUL\": \"assets/avatar/capitan.glb\" }. Vorbitorii fara cheie folosesc avatar.glb."
   },
   "audio": {
     "voiceVolume": 1.0,
     "sfxVolume": 0.8,
     "outputDeviceId": "default"
   },
+  "displayMode": "windows",
+  "$comment_displayMode": "windows = o fereastra kiosk per ecran (implicit). span = O SINGURA fereastra peste toate ecranele din screens[] (un singur <video> decodat, desenat pe cate un canvas per ecran - economie GPU). Atentie: in span, scale-uri DPI diferite intre TV-uri fac impartirea imprecisa; seteaza 100% pe toate TV-urile in Windows > Display.",
+  "autostart": false,
+  "$comment_autostart": "true = executabilul impachetat se inregistreaza la logon (setLoginItemSettings, cu --kiosk). Alternativa robusta: scripts/install-autostart.ps1 (Task Scheduler, task \"NavaPlayer\").",
   "screens": [
     {
       "id": "center",
@@ -33,7 +39,9 @@
       "showSubtitles": true,
       "showEntities": true,
       "playAudio": true,
-      "kiosk": true
+      "kiosk": true,
+      "yawOffsetDeg": 0,
+      "$comment_yawOffsetDeg": "R4: unghiul ecranului fata de axa frontala (grade). 0 = central; -30 babord exterior, -15 babord interior, +15 tribord interior, +30 tribord exterior. Ecranele laterale primesc un decupaj/shift orizontal al filmului."
     }
   ],
   "sync": {
@@ -44,5 +52,32 @@
   "dev": {
     "openDevTools": false,
     "windowed": false
-  }
+  },
+  "security": {
+    "$comment": "operatorPin = PIN-ul admin-ului implicit, folosit la crearea data/users.json. screenToken = tokenul comun pe care ecranele il trimit in `hello`; lasa \"\" pe master: se genereaza la prima pornire si se scrie inapoi AICI - copiaza apoi aceeasi valoare in config.json al fiecarui follower. sessionTtlMin = durata sesiunii consolei. publicState = false inchide /api/state pentru tablete.",
+    "operatorPin": "4078",
+    "screenToken": "",
+    "sessionTtlMin": 720,
+    "usersFile": "data/users.json",
+    "publicState": true
+  },
+  "ambient": {
+    "$comment": "Pat sonor procedural per tema (Web Audio). volume relativ la audio.sfxVolume; duck = cat ramane sub voce (0.25 ~ -12 dB).",
+    "enabled": true,
+    "volume": 0.5,
+    "duck": 0.25
+  },
+  "lights": {
+    "$comment": "driver: none | artnet (host = IP nod Art-Net, universe 0..32767) | hue (host = IP bridge, hueUser, groupId).",
+    "driver": "none"
+  },
+  "autoRun": {
+    "$comment": "Mod operator absent. requireScreens = id-urile ecranelor (de aici si de pe followeri) care trebuie conectate; requireTablets = cate tablete (0 = indiferent); startTrigger: operator | tablet | immediate; resetAfterSec = revenire in idle dupa epilog (0 = ramane).",
+    "enabled": false,
+    "requireScreens": ["center"],
+    "requireTablets": 0,
+    "startTrigger": "operator",
+    "resetAfterSec": 0
+  },
+  "$comment_variant": "R4 optional: \"variant\": \"7-9\" alege varianta de scenariu (cheie din show.json > variants). Lipsa = textul de baza."
 }

@@ -59,7 +59,12 @@ export type CueKind =
   | "entity" // arata/ascunde entitatea unei civilizatii (LUMINA/NATURA/TEHNOLOGIC)
   | "tablet" // trimite tabletelor o interactiune (intrebare, vot, rol)
   | "theme" // schimba tema de culoare (sala/tablete/subtitrari)
-  | "marker"; // doar informativ (afisat in consola operatorului)
+  | "marker" // doar informativ (afisat in consola operatorului)
+  // R4 (runda 4) — vezi HANDOFF-LIVE.md §2
+  | "dynamic-voice" // text compus la runtime de server (mesajele copiilor, rezumatul alegerilor, dialog live) -> /api/tts
+  | "ambient" // pat sonor procedural per tema (start/stop/crossfade) cu ducking sub voce
+  | "lights" // scena de lumina a salii (adaptor Art-Net / Hue; no-op daca lights.driver = none)
+  | "photo"; // fotografie de echipaj cu webcam (numaratoare + captura + afisare)
 
 export interface CueBase {
   /** Identificator unic, stabil (folosit ca nume de fisier audio: assets/voice/<lang>/<id>.mp3). */
@@ -85,6 +90,51 @@ export interface VoiceCue extends CueBase {
   subtitleHoldMs?: number;
   /** `silent` interzice vocea Windows/browser când asset-ul de producție lipsește. */
   fallback?: "browser" | "silent";
+  /**
+   * R4 — variante de text pe grupe de varsta (cheile din ShowFile.variants, ex. "7-9", "10-12", "13+").
+   * Fisierul audio al unei variante: assets/voice/<lang>/<id>.<variant>.mp3 (manifest: clips["<id>.<variant>"]).
+   * Daca varianta activa lipseste, se foloseste textul/clipul de baza.
+   */
+  variants?: Record<string, Partial<Record<Lang, string>>>;
+}
+
+/** R4 — replica al carei text este compus de server la runtime (nu exista audio pre-generat). */
+export interface DynamicVoiceCue extends CueBase {
+  kind: "dynamic-voice";
+  speaker: Speaker;
+  /** De unde vine textul: mesajele trimise de pe tablete, rezumatul alegerilor, sau dialogul live. */
+  source: "tablet-messages" | "tablet-choices-summary" | "live-dialog";
+  /** Sablon cu {{items}} / {{count}} / {{posts}}; ex. "Am primit mesajele voastre pentru Pamant: {{items}}." */
+  template?: { ro: string };
+  /** Cate elemente maxim intra in text (mesaje). */
+  maxItems?: number;
+  /** Textul rostit daca nu exista date (ex. nimeni nu a scris). */
+  fallbackText?: { ro: string };
+}
+
+/** R4 — pat sonor procedural (Web Audio) legat de tema scenei. */
+export interface AmbientCue extends CueBase {
+  kind: "ambient";
+  action: "start" | "stop" | "crossfade";
+  /** Tema al carei pat sonor se porneste (implicit tema curenta). */
+  bed?: SceneTheme;
+  gain?: number;
+  fadeSec?: number;
+}
+
+/** R4 — schimbare de lumina in sala (adaptor in src/server/features/lights.ts). */
+export interface LightsCue extends CueBase {
+  kind: "lights";
+  theme: SceneTheme;
+  fadeSec?: number;
+}
+
+/** R4 — fotografie de echipaj cu webcam-ul ecranului `center` (schelet). */
+export interface PhotoCue extends CueBase {
+  kind: "photo";
+  countdownSec?: number;
+  /** Afiseaza fotografia pe ecrane/tablete N secunde dupa captura. */
+  showSec?: number;
 }
 
 export interface CountdownCue extends CueBase {
@@ -168,7 +218,18 @@ export interface MarkerCue extends CueBase {
   label: string;
 }
 
-export type Cue = VoiceCue | CountdownCue | SfxCue | EntityCue | TabletCue | ThemeCue | MarkerCue;
+export type Cue =
+  | VoiceCue
+  | CountdownCue
+  | SfxCue
+  | EntityCue
+  | TabletCue
+  | ThemeCue
+  | MarkerCue
+  | DynamicVoiceCue
+  | AmbientCue
+  | LightsCue
+  | PhotoCue;
 
 export type SceneTheme =
   | "prologue" // albastru adanc, stea pulsand
@@ -215,6 +276,8 @@ export interface ShowFile {
   launchLeadInSec: number;
   /** Daca true, la `ended` al video-ului se intra automat in faza `epilogue`; altfel se asteapta operatorul. */
   epilogueOnVideoEnd: boolean;
+  /** R4 — variante ale show-ului pe grupe de varsta; `default` este textul de baza din cue-uri. */
+  variants?: Record<string, { label: string; ageRange: string; description?: string }>;
   scenes: Scene[];
   cues: Cue[];
 }
@@ -232,6 +295,61 @@ export interface ScreenConfig {
   showEntities: boolean;
   playAudio: boolean;
   kiosk: boolean;
+  /**
+   * R4 — unghiul (grade) al ecranului fata de axa frontala a cockpitului; 0 = ecranul central.
+   * Ecranele laterale primesc un decupaj/shift orizontal al filmului proportional cu unghiul (hublou).
+   * Ex.: -30 babord exterior, -15 babord interior, +15 tribord interior, +30 tribord exterior.
+   */
+  yawOffsetDeg?: number;
+}
+
+// ---------------------------------------------------------------------------
+// R4 — sectiuni noi de configurare (toate optionale; valorile implicite sunt in CONFIG_DEFAULTS_R4)
+// ---------------------------------------------------------------------------
+
+export interface SecurityConfig {
+  /** PIN-ul administratorului implicit, folosit la crearea data/users.json daca lipseste. */
+  operatorPin: string;
+  /** Token partajat pe care ecranele (renderer-e) il trimit in `hello`; generat la prima pornire daca lipseste. */
+  screenToken: string;
+  /** Durata unei sesiuni de consola (minute). */
+  sessionTtlMin: number;
+  /** Cale relativa la appRoot pentru utilizatori (JSON, PIN-uri hash-uite cu scrypt). */
+  usersFile: string;
+  /** Daca false, tabletele au acces si la /api/state; altfel doar la WS-ul lor. */
+  publicState: boolean;
+}
+
+export interface AmbientConfig {
+  enabled: boolean;
+  /** 0..1, relativ la audio.sfxVolume. */
+  volume: number;
+  /** Cat de mult scade patul sonor sub voce (0..1, 0.25 = -12 dB aprox.). */
+  duck: number;
+}
+
+export interface LightsConfig {
+  driver: "none" | "artnet" | "hue";
+  /** Art-Net: IP-ul nodului; Hue: IP-ul bridge-ului. */
+  host?: string;
+  /** Art-Net: universul (0..32767). */
+  universe?: number;
+  /** Hue: username-ul aplicatiei pe bridge; groupId: grupul de lumini. */
+  hueUser?: string;
+  groupId?: string;
+}
+
+export interface AutoRunConfig {
+  /** Mod operator absent: show-ul ruleaza singur cand conditiile de readiness sunt indeplinite. */
+  enabled: boolean;
+  /** Ecranele care trebuie conectate (id-uri din screens[] si de pe follower-e) inainte de pornire. */
+  requireScreens: string[];
+  /** Cate tablete trebuie conectate (0 = nu conteaza). */
+  requireTablets: number;
+  /** Ce declanseaza pornirea: operatorul, o tableta (butonul mare de la intrare) sau imediat cand e gata. */
+  startTrigger: "operator" | "tablet" | "immediate";
+  /** Dupa terminarea epilogului, revine automat in idle dupa N secunde (0 = ramane). */
+  resetAfterSec: number;
 }
 
 export interface AppConfig {
@@ -242,11 +360,143 @@ export interface AppConfig {
   lang: Lang;
   show: string;
   video: { path: string; fit: "cover" | "contain"; preloadPoster: boolean };
-  avatar: { glb: string; corner: "bottom-left" | "bottom-right"; widthPercent: number; marginPx: number };
+  avatar: {
+    glb: string;
+    corner: "bottom-left" | "bottom-right";
+    widthPercent: number;
+    marginPx: number;
+    /** R4 — sexul corpului pentru TalkingHead (animatii idle); trebuie sa se potriveasca cu vocea personajului. */
+    body?: "M" | "F";
+    /** R4 — GLB diferit per vorbitor (ex. Capitan barbat); cheia lipsa cade pe `glb`. */
+    glbBySpeaker?: Partial<Record<Speaker, string>>;
+  };
   audio: { voiceVolume: number; sfxVolume: number; outputDeviceId: string };
   screens: ScreenConfig[];
   sync: { clockHz: number; seekThresholdSec: number; rateNudge: number };
   dev: { openDevTools: boolean; windowed: boolean };
+  /**
+   * R4 — "windows": o fereastra kiosk per ecran (implicit); "span": o singura fereastra peste toate
+   * ecranele, un singur <video> decodat si desenat pe cate un canvas per viewport (economie GPU).
+   */
+  displayMode?: "windows" | "span";
+  /** R4 — porneste aplicatia la logon (Task Scheduler / setLoginItemSettings). */
+  autostart?: boolean;
+  security?: SecurityConfig;
+  ambient?: AmbientConfig;
+  lights?: LightsConfig;
+  autoRun?: AutoRunConfig;
+  /** R4 — varianta de scenariu activa (cheie din ShowFile.variants); lipsa = textul de baza. */
+  variant?: string;
+}
+
+export const CONFIG_DEFAULTS_R4 = {
+  displayMode: "windows" as const,
+  autostart: false,
+  security: {
+    operatorPin: "4078",
+    screenToken: "",
+    sessionTtlMin: 720,
+    usersFile: "data/users.json",
+    publicState: true,
+  } satisfies SecurityConfig,
+  ambient: { enabled: true, volume: 0.5, duck: 0.25 } satisfies AmbientConfig,
+  lights: { driver: "none" } satisfies LightsConfig,
+  autoRun: {
+    enabled: false,
+    requireScreens: ["center"],
+    requireTablets: 0,
+    startTrigger: "operator",
+    resetAfterSec: 0,
+  } satisfies AutoRunConfig,
+} as const;
+
+/** Viewport-ul unui ecran in modul `span` (coordonate in fereastra unica). */
+export interface SpanViewport {
+  screenId: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  scaleFactor: number;
+}
+
+// ---------------------------------------------------------------------------
+// R4 — utilizatori / sesiuni (server)
+// ---------------------------------------------------------------------------
+
+export type UserRole = "admin" | "operator" | "viewer";
+
+export interface UserRecord {
+  id: string;
+  name: string;
+  role: UserRole;
+  /** scrypt(pin, salt) hex. PIN-ul nu se stocheaza niciodata in clar. */
+  pinHash: string;
+  salt: string;
+  createdAt: string;
+  lastLoginAt?: string;
+  disabled?: boolean;
+}
+
+export interface UsersFile {
+  version: 1;
+  users: UserRecord[];
+}
+
+export interface SessionInfo {
+  token: string;
+  userId: string;
+  name: string;
+  role: UserRole;
+  createdAt: string;
+  expiresAt: string;
+}
+
+// ---------------------------------------------------------------------------
+// R4 — masuratori de performanta raportate de fiecare ecran (1 Hz)
+// ---------------------------------------------------------------------------
+
+export interface PerfSample {
+  screenId: string;
+  atMs: number;
+  videoDropped: number;
+  videoTotal: number;
+  videoFps: number | null;
+  avatarFps: number | null;
+  /** Intarzierea intre pornirea audio-ului si primul visem (ms); null daca nu s-a masurat. */
+  lipsyncLatencyMs: number | null;
+  driftSec: number | null;
+  /** Nivelul de zgomot al salii 0..1 (microfon), null daca dezactivat. */
+  roomLevel: number | null;
+  heapMb: number | null;
+  audioOutput: string | null;
+}
+
+/** R4 — parametrii vizuali ai unei entitati, derivati din alegerile tabletelor. */
+export interface EntityParams {
+  /** Culoarea dominanta (hex) — LUMINA. */
+  color?: string;
+  /** Batai pe minut pentru pulsatie — NATURA. */
+  pulseBpm?: number;
+  /** Cheia perspectivei alese — TEHNOLOGIC. */
+  perspective?: string;
+  /** Intensitate generala 0..1. */
+  intensity?: number;
+  /** Cate perechi au ales (pentru cresterea densitatii). */
+  votes?: number;
+}
+
+/** R4 — poarta de pregatire inainte de pornirea automata. */
+export interface Readiness {
+  ready: boolean;
+  screensConnected: string[];
+  screensMissing: string[];
+  tabletsConnected: number;
+  tabletsRequired: number;
+  videoReady: boolean;
+  /** null = preflight nerulat; true/false = rezultatul verificarii asset-elor vocale. */
+  assetsOk: boolean | null;
+  reasons: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -272,6 +522,12 @@ export interface ShowState {
   tabletsConnected: number;
   videoPath: string;
   videoReady: boolean;
+  /** R4 — optionale pana la integrarea completa. */
+  readiness?: Readiness;
+  autoRun?: boolean;
+  variant?: string | null;
+  ambientEnabled?: boolean;
+  lightsDriver?: LightsConfig["driver"];
 }
 
 // ---------------------------------------------------------------------------

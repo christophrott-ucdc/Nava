@@ -50,7 +50,8 @@ function tone(ctx: AudioContext, dest: AudioNode, freq: number, type: Oscillator
 
 const noiseCache = new WeakMap<AudioContext, Map<string, AudioBuffer>>();
 
-function noiseBuffer(ctx: AudioContext, durSec: number, color: "white" | "pink" | "brown" = "white"): AudioBuffer {
+/** Looping-friendly noise buffer, cached per context (also used by voice/ambient.ts). */
+export function noiseBuffer(ctx: AudioContext, durSec: number, color: "white" | "pink" | "brown" = "white"): AudioBuffer {
   const key = `${color}|${Math.round(durSec * 10)}`;
   let per = noiseCache.get(ctx);
   if (!per) {

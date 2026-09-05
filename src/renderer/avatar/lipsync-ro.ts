@@ -177,7 +177,11 @@ export function romanianNumberToWords(x: string): string {
   const thousands = Math.floor(v / 1000);
   const remainder = v % 1000;
   if (thousands === 1) words.push("o mie");
-  else if (thousands > 1) words.push(`${under1000(thousands)} mii`);
+  else if (thousands > 1) {
+    // "mii" is feminine: două mii, douăzeci și două de mii; from 20 upwards Romanian inserts "de".
+    const fem = under1000(thousands).replace(/\bdoi$/, "două").replace(/\bunu$/, "una");
+    words.push(thousands >= 20 ? `${fem} de mii` : `${fem} mii`);
+  }
   if (remainder > 0 || words.length === 0 || (n < 0 && words.length === 1)) words.push(under1000(remainder));
   const dec = cleaned.split(".")[1];
   if (dec && /^\d+$/.test(dec) && Number(dec) > 0) {
@@ -426,6 +430,103 @@ export function wordsToVisemeTrack(
       visemes.push(seq.visemes[j]);
       vtimes.push((wtimes[i] ?? 0) + (seq.times[j] / dTotal) * duration);
       vdurations.push((seq.durations[j] / dTotal) * duration);
+    }
+  }
+  return { visemes, vtimes, vdurations };
+}
+
+// ---------------------------------------------------------------------------
+// Precomputed viseme tracks (scripts/precompute-visemes.mjs) — R4 / C-02
+// ---------------------------------------------------------------------------
+
+/** Mouth-open (vowel) visemes; everything else counts as a consonant shape. */
+export const VOWEL_VISEMES: ReadonlySet<OculusViseme> = new Set<OculusViseme>(["aa", "E", "I", "O", "U"]);
+
+export function isVowelViseme(v: string): boolean {
+  return VOWEL_VISEMES.has(v as OculusViseme);
+}
+
+export interface VisemeDistributionOptions {
+  /** Weight of a vowel viseme when a word's duration is shared out (default 1.6). */
+  vowelWeight?: number;
+  /** Weight of a consonant viseme (default 1.0). */
+  consonantWeight?: number;
+  /** A `sil` viseme is inserted between two words when the gap exceeds this (default 80 ms). */
+  silGapMs?: number;
+}
+
+export const VISEME_DISTRIBUTION_DEFAULTS: Required<VisemeDistributionOptions> = {
+  vowelWeight: 1.6,
+  consonantWeight: 1.0,
+  silGapMs: 80,
+};
+
+export interface VisemeTrack {
+  visemes: OculusViseme[];
+  /** Absolute start times in ms (same clock as `wtimes`). */
+  vtimes: number[];
+  /** Durations in ms. */
+  vdurations: number[];
+}
+
+/**
+ * Word timings (ms, e.g. ElevenLabs alignment) -> absolute viseme track.
+ *
+ * Unlike {@link wordsToVisemeTrack} (which mirrors TalkingHead's runtime scaling), this is the
+ * OFFLINE rule used by `scripts/precompute-visemes.mjs`: each word's duration is distributed over
+ * its visemes proportionally to a class weight (vowels 1.6, consonants 1.0) and an explicit `sil`
+ * fills any inter-word gap longer than `silGapMs`. Times/durations are rounded to whole ms.
+ * Words without letters (or with a non-positive duration) contribute nothing.
+ */
+export function distributeWordVisemes(
+  words: readonly string[],
+  wtimes: readonly number[],
+  wdurations: readonly number[],
+  opts: VisemeDistributionOptions = {},
+): VisemeTrack {
+  const o = { ...VISEME_DISTRIBUTION_DEFAULTS, ...opts };
+  const visemes: OculusViseme[] = [];
+  const vtimes: number[] = [];
+  const vdurations: number[] = [];
+  const n = Math.min(words.length, wtimes.length, wdurations.length);
+  // A word "counts" only when it has a positive duration and yields at least one viseme; gaps and
+  // trailing silences are measured against the next COUNTING word, so skipped tokens ("—", zero-length
+  // words) never create a `sil` on their own.
+  const valid: boolean[] = [];
+  for (let i = 0; i < n; i++) {
+    const ok = Number.isFinite(wtimes[i]) && Number.isFinite(wdurations[i]) && wdurations[i] > 0;
+    valid.push(ok && romanianToVisemes(words[i], { includeSilence: false }).visemes.length > 0);
+  }
+
+  for (let i = 0; i < n; i++) {
+    const start = wtimes[i];
+    const duration = wdurations[i];
+    if (!valid[i]) continue;
+    const seq = romanianToVisemes(words[i], { includeSilence: false });
+    if (seq.visemes.length) {
+      const weights = seq.visemes.map((v) => (VOWEL_VISEMES.has(v) ? o.vowelWeight : o.consonantWeight));
+      const total = weights.reduce((a, b) => a + b, 0);
+      let cursor = start;
+      for (let j = 0; j < seq.visemes.length; j++) {
+        const share = (duration * weights[j]) / total;
+        const t0 = Math.round(cursor);
+        // Last viseme absorbs the rounding so the word's visemes end exactly at start+duration.
+        const t1 = j === seq.visemes.length - 1 ? Math.round(start + duration) : Math.round(cursor + share);
+        visemes.push(seq.visemes[j]);
+        vtimes.push(t0);
+        vdurations.push(Math.max(1, t1 - t0));
+        cursor += share;
+      }
+    }
+    // Explicit silence in a long gap before the next counting word.
+    let nextIdx = i + 1;
+    while (nextIdx < n && !valid[nextIdx]) nextIdx += 1;
+    const next = nextIdx < n ? wtimes[nextIdx] : NaN;
+    const end = start + duration;
+    if (Number.isFinite(next) && next - end > o.silGapMs) {
+      visemes.push("sil");
+      vtimes.push(Math.round(end));
+      vdurations.push(Math.round(next - end));
     }
   }
   return { visemes, vtimes, vdurations };

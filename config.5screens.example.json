@@ -1,0 +1,117 @@
+{
+  "$comment": "Un singur PC cu 5 iesiri video (cockpit: 2 babord, central, 2 tribord). Copiaza in config.json. Ecranele sunt indexate dupa pozitia lor in Windows > Display, sortate de la stanga la dreapta (displayIndex 0 = cel mai din stanga). Aranjeaza cele 5 TV-uri in Windows in ordinea fizica si seteaza scale 100% pe toate (obligatoriu pentru displayMode span). Cheile care incep cu $ sunt ignorate.",
+  "role": "master",
+  "server": {
+    "port": 4321,
+    "bindHost": "0.0.0.0"
+  },
+  "lang": "ro",
+  "show": "assets/show/show.json",
+  "video": {
+    "path": "media/cinema_4k_h264.mp4",
+    "fit": "cover",
+    "preloadPoster": true
+  },
+  "avatar": {
+    "glb": "assets/avatar/avatar-ai.glb",
+    "corner": "bottom-left",
+    "widthPercent": 22,
+    "marginPx": 40
+  },
+  "audio": {
+    "voiceVolume": 1.0,
+    "sfxVolume": 0.8,
+    "outputDeviceId": "default"
+  },
+  "displayMode": "windows",
+  "$comment_displayMode": "windows = 5 ferestre kiosk, cate una per TV (5 decodari video; sigur, testat). span = o singura fereastra peste cele 5 TV-uri, un singur <video> decodat si desenat pe 5 canvas-uri (economie GPU pentru 4K). Span cere scale DPI identic (100%) pe toate TV-urile, altfel decupajul per ecran este imprecis.",
+  "autostart": false,
+  "screens": [
+    {
+      "id": "port-outer",
+      "displayIndex": 0,
+      "roleLabel": "BABORD EXTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": true,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": -30
+    },
+    {
+      "id": "port-inner",
+      "displayIndex": 1,
+      "roleLabel": "BABORD INTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": true,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": -15
+    },
+    {
+      "id": "center",
+      "displayIndex": 2,
+      "roleLabel": "FEREASTRA FRONTALA",
+      "showAvatar": true,
+      "showSubtitles": true,
+      "showEntities": true,
+      "playAudio": true,
+      "kiosk": true,
+      "yawOffsetDeg": 0
+    },
+    {
+      "id": "starboard-inner",
+      "displayIndex": 3,
+      "roleLabel": "TRIBORD INTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": true,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": 15
+    },
+    {
+      "id": "starboard-outer",
+      "displayIndex": 4,
+      "roleLabel": "TRIBORD EXTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": true,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": 30
+    }
+  ],
+  "sync": {
+    "clockHz": 4,
+    "seekThresholdSec": 0.25,
+    "rateNudge": 0.03
+  },
+  "dev": {
+    "openDevTools": false,
+    "windowed": false
+  },
+  "security": {
+    "operatorPin": "4078",
+    "screenToken": "",
+    "sessionTtlMin": 720,
+    "usersFile": "data/users.json",
+    "publicState": true
+  },
+  "ambient": {
+    "enabled": true,
+    "volume": 0.5,
+    "duck": 0.25
+  },
+  "lights": {
+    "driver": "none"
+  },
+  "autoRun": {
+    "enabled": false,
+    "requireScreens": ["port-outer", "port-inner", "center", "starboard-inner", "starboard-outer"],
+    "requireTablets": 0,
+    "startTrigger": "operator",
+    "resetAfterSec": 0
+  }
+}

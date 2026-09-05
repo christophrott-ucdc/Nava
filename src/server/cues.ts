@@ -13,7 +13,7 @@
  *  - one voice at a time: a new voice cue replaces the current subtitle.
  */
 
-import type { Cue, Phase, SceneTheme, ShowFile, TabletCue, VoiceCue, Lang } from "../shared/types";
+import type { Cue, DynamicVoiceCue, Phase, SceneTheme, ShowFile, Speaker, TabletCue, VoiceCue, Lang } from "../shared/types";
 import { SPEAKERS } from "../shared/types";
 
 export type CueStatus = "pending" | "fired" | "skipped";
@@ -37,6 +37,15 @@ export function estimateSpeechMs(text: string): number {
 
 /** Subtitles stay visible this long after the (estimated) end of the audio (BRIEF §7). */
 const SUBTITLE_HOLD_MS = 800;
+
+/** Current spoken line: a pre-generated voice cue, or a dynamic one whose text the director fills in (R4). */
+export interface CurrentVoice {
+  cue: VoiceCue | DynamicVoiceCue;
+  firedAtMs: number;
+  untilMs: number;
+  /** Text spoken for `dynamic-voice` / `say` (built at runtime); undefined for pre-generated voices. */
+  dynamicText?: string;
+}
 /** A jump in the clock larger than this (seconds) without a command is treated as a seek. */
 export const JUMP_AS_SEEK_SEC = 3;
 
@@ -49,11 +58,16 @@ export class CueTracker {
   /** Last theme cue applied in the current phase (null -> use the scene theme). */
   theme: SceneTheme | null = null;
   /** Current voice cue (subtitle) with its expiry. */
-  voice: { cue: VoiceCue; firedAtMs: number; untilMs: number } | null = null;
+  voice: CurrentVoice | null = null;
   /** Current tablet interaction cue (null -> tablets show the waiting view). */
   tablet: TabletCue | null = null;
 
-  constructor(show: ShowFile, private readonly hooks: CueTrackerHooks) {
+  constructor(
+    show: ShowFile,
+    private readonly hooks: CueTrackerHooks,
+    /** Injectable clock (ms epoch) so the tracker can run under a virtual clock in tests. */
+    private readonly now: () => number = () => Date.now(),
+  ) {
     this.show = show;
   }
 
@@ -174,13 +188,32 @@ export class CueTracker {
     if (!v) return null;
     if (nowMs > v.untilMs) return null;
     const prof = SPEAKERS[v.cue.speaker];
-    const text = v.cue.text[lang] ?? v.cue.text.ro;
+    const text = v.cue.kind === "voice" ? (v.cue.text[lang] ?? v.cue.text.ro) : (v.dynamicText ?? "");
+    if (!text) return null;
     return { speaker: prof?.label ?? v.cue.speaker, text, color: prof?.color ?? "#e2e8f0" };
   }
 
   /** `stopVoice` or a new voice replaces the current one. */
   clearVoice(): void {
     this.voice = null;
+  }
+
+  /**
+   * R4 — the director built the text of a `dynamic-voice` cue that just fired: attach it to the current
+   * subtitle and re-estimate its expiry. No-op if another voice took over meanwhile.
+   */
+  setDynamicVoiceText(cueId: string, text: string): void {
+    const v = this.voice;
+    if (!v || v.cue.id !== cueId || v.cue.kind !== "dynamic-voice") return;
+    v.dynamicText = text;
+    v.untilMs = this.now() + estimateSpeechMs(text) + SUBTITLE_HOLD_MS;
+  }
+
+  /** R4 — command `say` / live dialog: a synthetic dynamic voice replaces the current subtitle. */
+  setLiveVoice(cueId: string, speaker: Speaker, text: string, phase: Phase): void {
+    const nowMs = this.now();
+    const cue: DynamicVoiceCue = { id: cueId, phase, at: 0, kind: "dynamic-voice", speaker, source: "live-dialog" };
+    this.voice = { cue, firedAtMs: nowMs, untilMs: nowMs + estimateSpeechMs(text) + SUBTITLE_HOLD_MS, dynamicText: text };
   }
 
   // ---------------------------------------------------------------------------
@@ -206,18 +239,29 @@ export class CueTracker {
   }
 
   private applyEffects(cue: Cue): void {
-    const nowMs = Date.now();
+    const nowMs = this.now();
     switch (cue.kind) {
       case "voice": {
         const holdMs = cue.subtitleHoldMs ?? SUBTITLE_HOLD_MS;
         this.voice = { cue, firedAtMs: nowMs, untilMs: nowMs + estimateSpeechMs(cue.text.ro) + holdMs };
         break;
       }
+      case "dynamic-voice":
+        // The director fills in the text right after `onFired` (setDynamicVoiceText); until then the
+        // subtitle is empty (hidden). The expiry is provisional.
+        this.voice = { cue, firedAtMs: nowMs, untilMs: nowMs + 4000 + SUBTITLE_HOLD_MS, dynamicText: "" };
+        break;
       case "theme":
         this.theme = cue.theme;
         break;
       case "tablet":
         this.tablet = cue;
+        break;
+      case "ambient":
+      case "lights":
+      case "photo":
+        // Side effects live in the director (lights adapter, photo scheduling); the renderer's own
+        // timeline fires `ambient`. Nothing state-like to mirror here.
         break;
       default:
         break;

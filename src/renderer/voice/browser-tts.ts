@@ -105,6 +105,8 @@ export function cancelBrowserSpeech(): void {
 export interface BrowserSpeakOptions {
   /** 0..1; 0 mutes (follower screens still get the timing). */
   volume: number;
+  /** R4 — rehearse multiplier on the speaker's prosody rate (1 = normal; SpeechSynthesis caps at 10). */
+  rate?: number;
 }
 
 /**
@@ -112,7 +114,8 @@ export interface BrowserSpeakOptions {
  * duration; `done` resolves at the utterance's `end` (or a safety timer).
  */
 export function speakWithBrowser(text: string, speaker: Speaker, lang: Lang, opts: BrowserSpeakOptions): PlaybackHandle {
-  const estimated = estimateSpeechMs(text);
+  const rateMul = Number.isFinite(opts.rate) && (opts.rate as number) > 0 ? (opts.rate as number) : 1;
+  const estimated = Math.round(estimateSpeechMs(text) / rateMul);
   const s = synth();
   let resolveDone: () => void = () => undefined;
   const done = new Promise<void>((r) => {
@@ -160,7 +163,7 @@ export function speakWithBrowser(text: string, speaker: Speaker, lang: Lang, opt
       u.lang = LANG_TAG[lang];
     }
     const pros = SPEAKER_PROSODY[speaker];
-    u.rate = pros.rate;
+    u.rate = Math.min(10, Math.max(0.1, pros.rate * rateMul));
     u.pitch = pros.pitch;
     u.volume = Math.max(0, Math.min(1, opts.volume));
     u.onend = finish;

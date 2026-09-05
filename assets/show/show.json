@@ -7,6 +7,23 @@
   "launchLeadInSec": 10,
   "epilogueOnVideoEnd": true,
   "$comment": "Adaptarea scenică românească V3.3 este sincronizată din assets/show/voice-script-v3.json. Flux public: preshow 0–50 s, countdown 50–60 s, video 0–465 s, epilog 0–75 s; total 600 s. Video-ul sursă are 741,78 s, dar playerul îl oprește determinist la timpul configurat de 465 s.",
+  "variants": {
+    "7-9": {
+      "label": "Copii 7–9 ani",
+      "ageRange": "7-9",
+      "description": "Aceleași replici, cuvinte mai scurte și propoziții mai simple; audio în assets/voice/<lang>/<cueId>.7-9.mp3."
+    },
+    "10-12": {
+      "label": "Copii 10–12 ani",
+      "ageRange": "10-12",
+      "description": "Textul de bază al scenariului (implicit)."
+    },
+    "13+": {
+      "label": "13 ani și peste",
+      "ageRange": "13+",
+      "description": "Textul de bază; rezervat pentru replici cu vocabular extins (fișier: <cueId>.13plus.mp3)."
+    }
+  },
   "scenes": [
     {
       "id": "intro",
@@ -117,7 +134,12 @@
         "ro": "Exodus Șapte a interceptat un semnal fără coordonate. E împărțit în cinci fragmente — câte unul pentru fiecare post. În fiecare fragment apar două amprente."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește.",
+      "variants": {
+        "7-9": {
+          "ro": "Nava Exodus Șapte a prins un semnal. Nu știm de unde vine. E rupt în cinci bucăți — una pentru fiecare post. În fiecare bucată sunt două urme."
+        }
+      }
     },
     {
       "id": "v3-ai-0015",
@@ -272,7 +294,12 @@
         "ro": "Siwarha. Aici, emoțiile pe care alegeți să le arătați devin lumină."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește.",
+      "variants": {
+        "7-9": {
+          "ro": "Siwarha. Aici, ce simțiți și arătați se transformă în lumină."
+        }
+      }
     },
     {
       "id": "light-entity-show",
@@ -593,7 +620,12 @@
         "ro": "Modelele noastre acceptă un singur răspuns. Spuneți-mi: ce ține o lume în viață?"
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește.",
+      "variants": {
+        "7-9": {
+          "ro": "Mașinile noastre vor un singur răspuns. Spuneți-mi: ce ține o lume în viață?"
+        }
+      }
     },
     {
       "id": "tech-tablet-perspectives",

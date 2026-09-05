@@ -97,17 +97,53 @@ function setCommandNote(message: string, error = false): void {
   dom.commandNote.classList.toggle("error", error);
 }
 
+/** R4 — session token for the WS hello (the cookie is HttpOnly, so /api/auth/me hands it back). */
+let sessionToken: string | null = null;
+let sessionUser: { name: string; role: string } | null = null;
+
+function goToLogin(): void {
+  location.assign(`/login/?next=${encodeURIComponent(location.pathname + location.search)}`);
+}
+
+async function ensureSession(): Promise<boolean> {
+  try {
+    const res = await fetch("/api/auth/me", { credentials: "same-origin", cache: "no-store" });
+    if (res.status === 401) {
+      goToLogin();
+      return false;
+    }
+    if (!res.ok) return true; // auth endpoint unavailable (older server) — try connecting anyway
+    const data = (await res.json()) as { authenticated?: boolean; token?: string; user?: { name: string; role: string } };
+    if (!data.authenticated) {
+      goToLogin();
+      return false;
+    }
+    sessionToken = data.token ?? null;
+    sessionUser = data.user ?? null;
+    return true;
+  } catch {
+    return true;
+  }
+}
+
 function connect(): void {
   if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
   setConnection("connecting", reconnectAttempt ? "Reconectare…" : "Conectare…");
-  const ws = new WebSocket(wsUrl());
-  socket = ws;
+  void ensureSession().then((ok) => {
+    if (!ok) return;
+    const ws = new WebSocket(wsUrl());
+    socket = ws;
 
-  ws.addEventListener("open", () => {
-    reconnectAttempt = 0;
-    setConnection("online", "Conectat");
-    ws.send(JSON.stringify({ type: "hello", client: "control", id: "control" }));
+    ws.addEventListener("open", () => {
+      reconnectAttempt = 0;
+      setConnection("online", sessionUser ? `Conectat · ${sessionUser.name} (${sessionUser.role})` : "Conectat");
+      ws.send(JSON.stringify({ type: "hello", client: "control", id: "control", ...(sessionToken ? { token: sessionToken } : {}) }));
+    });
+    attachSocketHandlers(ws);
   });
+}
+
+function attachSocketHandlers(ws: WebSocket): void {
   ws.addEventListener("message", (event) => {
     try {
       onMessage(JSON.parse(String(event.data)) as ServerMessage);
@@ -115,8 +151,15 @@ function connect(): void {
       notify("Serverul a trimis un mesaj invalid.", true);
     }
   });
-  ws.addEventListener("close", () => {
+  ws.addEventListener("close", (ev) => {
     if (socket === ws) socket = null;
+    if (ev.code === 4401 || ev.code === 4403) {
+      setConnection("offline", ev.code === 4401 ? "Sesiune expirată · autentificare…" : "Rol insuficient");
+      if (ev.code === 4401) {
+        goToLogin();
+        return;
+      }
+    }
     reconnectAttempt += 1;
     const delay = Math.min(10_000, 700 * 1.7 ** Math.min(reconnectAttempt, 7));
     setConnection("offline", `Deconectat · reîncerc în ${Math.ceil(delay / 1000)}s`);
@@ -220,6 +263,9 @@ function commandLabel(action: Command["action"]): string {
     skipToScene: "Salt la scenă", restart: "Restart", epilogue: "Epilog", fireCue: "Cue manual",
     stopVoice: "Voce oprită", setVolume: "Volum", setLang: "Limbă", reloadShow: "Scenariu reîncărcat",
     testAvatar: "Test avatar", identifyScreens: "Identificare ecrane",
+    // R4
+    rehearse: "Repetiție accelerată", setRate: "Viteză", autoRun: "Mod operator absent", lights: "Lumini",
+    ambient: "Ambianță", say: "Spune", setVariant: "Variantă scenariu", photo: "Fotografie echipaj", preflight: "Preflight",
   };
   return labels[action];
 }
@@ -347,6 +393,12 @@ function cueDescription(cue: Cue): { title: string; detail: string } {
     case "sfx": return { title: `SFX: ${cue.sfx}`, detail: cue.note ?? `${cue.durationSec ?? 0}s` };
     case "countdown": return { title: `Numărătoare ${cue.from} → ${cue.to}`, detail: cue.note ?? `${cue.durationSec ?? cue.from - cue.to}s` };
     case "marker": return { title: cue.label, detail: cue.note ?? "Reper regie" };
+    // R4
+    case "dynamic-voice": return { title: `Replică dinamică (${cue.source})`, detail: `${SPEAKERS[cue.speaker].label} · text compus de server` };
+    case "ambient": return { title: `Ambianță: ${cue.action}${cue.bed ? ` · ${cue.bed}` : ""}`, detail: cue.note ?? "Pat sonor procedural" };
+    case "lights": return { title: `Lumini: ${cue.theme}`, detail: cue.note ?? `fade ${cue.fadeSec ?? 0}s` };
+    case "photo": return { title: "Fotografie de echipaj", detail: cue.note ?? `numărătoare ${cue.countdownSec ?? 3}s` };
+    default: return { title: (cue as { id: string }).id, detail: (cue as { kind: string }).kind };
   }
 }
 

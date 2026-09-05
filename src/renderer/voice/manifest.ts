@@ -1,8 +1,16 @@
 /**
  * Pre-generated voice manifest (assets/voice/<lang>/manifest.json, file://)
  * and the optional live TTS endpoint on the master server.
+ *
+ * R4 (Agent C):
+ *  - C-03 language availability: getAvailableLangs(), createLangGuard() — a language is usable
+ *    only when its manifest has at least one clip; otherwise the previous language is kept.
+ *  - C-06 age variants: resolveClipMeta() looks up `<cueId>.<variant>` before `<cueId>`;
+ *    variantText() picks the cue text for the active variant; getBootVariant() reads boot.variant.
  */
-import type { Lang, Speaker, VoiceClipMeta, VoiceManifest } from "../../shared/types";
+import type { Lang, Speaker, VoiceClipMeta, VoiceCue, VoiceManifest } from "../../shared/types";
+
+export const ALL_LANGS: readonly Lang[] = ["ro", "en", "fr"];
 
 export function normalizeBaseUrl(url: string): string {
   return url.endsWith("/") ? url : url + "/";
@@ -40,6 +48,134 @@ export async function loadManifest(voiceBaseUrl: string, lang: Lang): Promise<Vo
   }
 }
 
+// ---------------------------------------------------------------------------
+// C-03 — which languages actually have voices
+// ---------------------------------------------------------------------------
+
+export function manifestClipCount(manifest: VoiceManifest | null | undefined): number {
+  return manifest?.clips ? Object.keys(manifest.clips).length : 0;
+}
+
+/** Languages whose manifest exists and contains at least one clip (order of `langs`). */
+export async function getAvailableLangs(voiceBaseUrl: string, langs: readonly Lang[] = ALL_LANGS): Promise<Lang[]> {
+  const counts = await Promise.all(langs.map(async (lang) => ({ lang, n: manifestClipCount(await loadManifest(voiceBaseUrl, lang)) })));
+  return counts.filter((c) => c.n > 0).map((c) => c.lang);
+}
+
+export interface LangGuard {
+  /** Current (last accepted) language. */
+  current(): Lang;
+  /**
+   * Accept `requested` only if its manifest has clips; otherwise warn and keep the current one.
+   * The player calls this before VoiceEngine.prepare()/setLang().
+   */
+  resolve(requested: Lang): Promise<Lang>;
+  /** Cached availability (first call loads every manifest once). */
+  available(): Promise<Lang[]>;
+  /** Re-read the manifests (after `npm run tts -- --lang en`). */
+  refresh(): Promise<Lang[]>;
+}
+
+export function createLangGuard(
+  voiceBaseUrl: string,
+  initial: Lang,
+  log: (level: "info" | "warn", msg: string) => void = (level, msg) => (level === "warn" ? console.warn(msg) : console.info(msg)),
+): LangGuard {
+  let current = initial;
+  let cache: Promise<Lang[]> | null = null;
+  const refresh = (): Promise<Lang[]> => {
+    cache = getAvailableLangs(voiceBaseUrl).then((langs) => {
+      const missing = ALL_LANGS.filter((l) => !langs.includes(l));
+      if (missing.length) log("info", `[voice] limbi fără voci pre-generate: ${missing.join(", ")} (generați cu: node scripts/tts-generate.mjs --lang <en|fr>)`);
+      return langs;
+    });
+    return cache;
+  };
+  return {
+    current: () => current,
+    available: () => cache ?? refresh(),
+    refresh,
+    async resolve(requested: Lang): Promise<Lang> {
+      const langs = await (cache ?? refresh());
+      if (langs.includes(requested)) {
+        current = requested;
+        return requested;
+      }
+      log("warn", `[voice] limba "${requested}" nu are niciun clip în assets/voice/${requested}/manifest.json — rămân pe "${current}"`);
+      return current;
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// C-06 — age variants
+// ---------------------------------------------------------------------------
+
+/** Manifest key of a variant clip: "<cueId>.<variant>" (or the base id when no variant). */
+export function variantClipKey(cueId: string, variant: string | null | undefined): string {
+  return variant ? `${cueId}.${variant}` : cueId;
+}
+
+/** File-name-safe token for a variant key ("13+" -> "13plus"); mirrors scripts/tts-generate.mjs. */
+export function variantFileToken(variant: string): string {
+  return variant.replace(/\+/g, "plus").replace(/[^A-Za-z0-9._-]/g, "-");
+}
+
+/** Text to speak/subtitle for a cue under `variant` (falls back to the base text). */
+export function variantText(
+  cue: Pick<VoiceCue, "text" | "variants">,
+  variant: string | null | undefined,
+  lang: Lang,
+): { text: string; variant: string | null } {
+  const specific = variant ? cue.variants?.[variant]?.[lang] : undefined;
+  if (typeof specific === "string" && specific.trim()) return { text: specific, variant: variant ?? null };
+  return { text: cue.text[lang] ?? cue.text.ro, variant: null };
+}
+
+/**
+ * getClip lookup order: clips["<cueId>.<variant>"] (when a variant is active), then clips[cueId].
+ * Returns the key that matched so the caller validates `meta.cueId === key` and `meta.text` against
+ * the matching (variant or base) text.
+ */
+export function resolveClipMeta(
+  manifest: VoiceManifest | null | undefined,
+  cueId: string,
+  variant: string | null | undefined,
+): { key: string; meta: VoiceClipMeta; variant: string | null } | null {
+  if (!manifest?.clips) return null;
+  if (variant) {
+    const key = variantClipKey(cueId, variant);
+    const meta = manifest.clips[key];
+    if (meta) return { key, meta, variant };
+  }
+  const base = manifest.clips[cueId];
+  return base ? { key: cueId, meta: base, variant: null } : null;
+}
+
+let bootVariantPromise: Promise<string | null> | null = null;
+
+/** Active scenario variant from boot (boot.variant, else config.variant); cached; null outside Electron. */
+export function getBootVariant(): Promise<string | null> {
+  if (bootVariantPromise) return bootVariantPromise;
+  bootVariantPromise = (async () => {
+    try {
+      const bridge = (window as unknown as { nava?: { getBoot?: () => Promise<{ variant?: string | null; config?: { variant?: string } }> } }).nava;
+      if (!bridge?.getBoot) return null;
+      const boot = await bridge.getBoot();
+      const v = boot.variant ?? boot.config?.variant ?? null;
+      return typeof v === "string" && v.trim() ? v : null;
+    } catch {
+      return null;
+    }
+  })();
+  return bootVariantPromise;
+}
+
+/** Test/setVariant hook: forget the cached boot variant (next getBootVariant() re-reads). */
+export function resetBootVariantCache(): void {
+  bootVariantPromise = null;
+}
+
 export async function fetchClipBytes(url: string): Promise<ArrayBuffer> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
@@ -68,6 +204,22 @@ export type ServerTtsResponse =
     }
   | { ok: false; reason: string };
 
+let ttsAuthToken: string | null = null;
+
+/**
+ * R4 — screens authenticate to the master's /api/tts with `Authorization: Bearer <security.screenToken>`
+ * (the same token they send in `hello`). null/empty = no header (unauthenticated server).
+ */
+export function setTtsAuthToken(token: string | null | undefined): void {
+  ttsAuthToken = token && token.trim() ? token.trim() : null;
+}
+
+export function ttsHeaders(): Record<string, string> {
+  const h: Record<string, string> = { "Content-Type": "application/json" };
+  if (ttsAuthToken) h.Authorization = `Bearer ${ttsAuthToken}`;
+  return h;
+}
+
 export async function requestServerTts(
   serverHttpUrl: string,
   body: { cueId: string; speaker: Speaker; text: string; lang: Lang },
@@ -79,7 +231,7 @@ export async function requestServerTts(
   try {
     const res = await fetch(`${base}/api/tts`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: ttsHeaders(),
       body: JSON.stringify(body),
       signal: ctrl.signal,
     });

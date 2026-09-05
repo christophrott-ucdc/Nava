@@ -1,0 +1,54 @@
+{
+  "$comment": "PC secundar (follower) care conduce un singur TV lateral si se sincronizeaza cu masterul prin WebSocket. Copiaza in config.json pe acel PC. Pune IP-ul masterului in masterUrl si copiaza security.screenToken din config.json al masterului (se genereaza acolo la prima pornire) - fara el masterul refuza ecranul (4401). Filmul (media/) trebuie sa existe local si pe acest PC. Cheile care incep cu $ sunt ignorate.",
+  "role": "follower",
+  "masterUrl": "ws://192.168.1.10:4321/ws",
+  "server": {
+    "port": 4321,
+    "bindHost": "0.0.0.0"
+  },
+  "lang": "ro",
+  "show": "assets/show/show.json",
+  "video": {
+    "path": "media/cinema_4k_h264.mp4",
+    "fit": "cover",
+    "preloadPoster": true
+  },
+  "avatar": {
+    "glb": "assets/avatar/avatar-ai.glb",
+    "corner": "bottom-left",
+    "widthPercent": 22,
+    "marginPx": 40
+  },
+  "audio": {
+    "voiceVolume": 1.0,
+    "sfxVolume": 0.8,
+    "outputDeviceId": "default"
+  },
+  "displayMode": "windows",
+  "autostart": false,
+  "screens": [
+    {
+      "id": "port-outer",
+      "displayIndex": 0,
+      "roleLabel": "BABORD EXTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": true,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": -30
+    }
+  ],
+  "sync": {
+    "clockHz": 4,
+    "seekThresholdSec": 0.25,
+    "rateNudge": 0.03
+  },
+  "dev": {
+    "openDevTools": false,
+    "windowed": false
+  },
+  "security": {
+    "screenToken": "<copiaza din config.json al masterului>"
+  }
+}

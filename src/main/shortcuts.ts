@@ -9,12 +9,14 @@
  * The main process handles only two escape hatches, per window, via `before-input-event` — deliberately NOT
  * `globalShortcut`, which would steal the keys system-wide (e.g. from the operator console on the same PC):
  *   Ctrl+Q / Cmd+Q  -> quit the whole app
- *   F11             -> toggle fullscreen of the focused window (useful in --windowed / dev)
+ *   F11             -> toggle fullscreen of the focused window (useful in --windowed / dev). Disabled for the
+ *                      kiosk span window: fullscreen would collapse it onto a single display.
  */
 import { app, type BrowserWindow } from "electron";
 import type { LogFn } from "./logger";
 
-export function installWindowShortcuts(win: BrowserWindow, opts: { log: LogFn }): void {
+export function installWindowShortcuts(win: BrowserWindow, opts: { log: LogFn; fullscreenToggle?: boolean }): void {
+  const fullscreenToggle = opts.fullscreenToggle ?? true;
   win.webContents.on("before-input-event", (event, input) => {
     if (input.type !== "keyDown") return;
     const mod = input.control || input.meta;
@@ -29,6 +31,10 @@ export function installWindowShortcuts(win: BrowserWindow, opts: { log: LogFn })
     if (input.key === "F11" && !mod && !input.alt) {
       event.preventDefault();
       if (win.isDestroyed()) return;
+      if (!fullscreenToggle) {
+        opts.log("info", "shortcut: F11 ignored (span window keeps its multi-display bounds)");
+        return;
+      }
       const next = !win.isFullScreen();
       win.setFullScreen(next);
       opts.log("info", `shortcut: F11 -> fullscreen ${next ? "on" : "off"}`);

@@ -33,6 +33,20 @@ import { TabletRegistry } from "./tablets";
 import { RunLog, type LogFn } from "./runlog";
 import { createStaticHandler } from "./static";
 import { createTtsRouter } from "./tts";
+import { createAuth, type AuthEnv, type Principal } from "./auth";
+import { PerfStore, createDebugRouter, createFrameExtractor, createFrameRouter } from "./debug";
+import { runPreflight, type PreflightResult } from "./preflight";
+import { rotateRuns } from "./maintenance";
+import type { PerfSample } from "../shared/types";
+import { TABLET_POSTS } from "../shared/types";
+import { createDynamicVoiceBuilder } from "./features/dynamic-voice";
+import { createLightsAdapter } from "./features/lights";
+import { createShowEditor } from "./features/show-editor";
+import { createCertificatesRouter } from "./features/certificates";
+import { createDialogRouter } from "./features/dialog";
+
+const RUNS_KEEP = 20;
+const MAX_PHOTO_BYTES = 1_500_000;
 
 export interface ServerHandle {
   port: number;
@@ -68,6 +82,41 @@ interface Client {
   alive: boolean;
   connectedAt: number;
   remote: string;
+  /** R4 — user session (control) or screen token principal; null for tablets. */
+  principal: Principal | null;
+}
+
+/** Resolve a config-relative asset path: appRoot first (user override), then the packaged resources dir. */
+async function resolveAssetPath(appRoot: string, rel: string): Promise<string> {
+  const candidates = [path.resolve(appRoot, rel)];
+  if (typeof process.resourcesPath === "string") candidates.push(path.resolve(process.resourcesPath, rel));
+  for (const p of candidates) {
+    try {
+      await fs.access(p);
+      return p;
+    } catch {
+      /* next */
+    }
+  }
+  return candidates[0];
+}
+
+function isPerfSample(x: unknown): x is Omit<PerfSample, "screenId"> & { screenId?: string } {
+  if (!x || typeof x !== "object") return false;
+  const s = x as Record<string, unknown>;
+  const num = (v: unknown) => typeof v === "number" && Number.isFinite(v);
+  const numOrNull = (v: unknown) => v === null || num(v);
+  return (
+    num(s.videoDropped) &&
+    num(s.videoTotal) &&
+    numOrNull(s.videoFps) &&
+    numOrNull(s.avatarFps) &&
+    numOrNull(s.lipsyncLatencyMs) &&
+    numOrNull(s.driftSec) &&
+    numOrNull(s.roomLevel) &&
+    numOrNull(s.heapMb) &&
+    (s.audioOutput === null || typeof s.audioOutput === "string")
+  );
 }
 
 const HELLO_TIMEOUT_MS = 5000;
@@ -300,6 +349,15 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   // --- run log ---------------------------------------------------------------
   const runlog = new RunLog(opts.runsDir, log);
   runlog.startRun("server start");
+  await rotateRuns(opts.runsDir, RUNS_KEEP, [runlog.currentPath], log).catch((err) => log("warn", "runs rotation failed", { err: String(err) }));
+
+  // --- auth (PIN sessions for the console, shared token for screens) ------------
+  const auth = createAuth({ config, appRoot: opts.appRoot, log });
+  await auth.load();
+
+  // --- perf + preflight -------------------------------------------------------
+  const perf = new PerfStore();
+  let preflight: PreflightResult | null = null;
 
   // --- clients ---------------------------------------------------------------
   const clients = new Set<Client>();
@@ -330,6 +388,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     for (const c of clients) if (c.kind === "screen") n += 1;
     return n;
   };
+  const connectedScreenIds = (): string[] => {
+    const ids: string[] = [];
+    for (const c of clients) if (c.kind === "screen") ids.push(c.id);
+    return ids;
+  };
 
   // --- tablets ---------------------------------------------------------------
   const tablets = new TabletRegistry();
@@ -342,9 +405,19 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     }, 100);
   };
 
+  // --- lights (R4, Art-Net / Hue / none) -----------------------------------------
+  const lights = createLightsAdapter(config.lights, log);
+
   // --- director --------------------------------------------------------------
   const director = new ShowDirector(show, config, {
     onApplyCmd: (cmd) => broadcast(["screen"], { type: "applyCmd", cmd, serverTimeMs: Date.now() }),
+    onDynamicVoice: (msg) => {
+      runlog.write("dynamicVoice", { cueId: msg.cueId, speaker: msg.speaker, chars: msg.text.length });
+      broadcast(["screen", "control"], msg);
+    },
+    onPhoto: (msg) => broadcast(["screen", "tablet", "control"], msg),
+    onLights: (theme, fadeSec, source) => lights.apply(theme, fadeSec, source),
+    onPreflightRequest: () => void runPreflightNow().catch((err) => log("warn", "preflight failed", { err: String(err) })),
     onStateChange: (state) => {
       broadcast(["control", "tablet"], { type: "state", state });
       pushTabletView();
@@ -385,7 +458,17 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const pushTabletView = (force = false): void => {
     tablets.pushView(computeTabletView(), force);
   };
-  const updateCounts = (): void => director.setCounts(countScreens(), tablets.connectedCount());
+  const updateCounts = (): void => director.setCounts(countScreens(), tablets.connectedCount(), connectedScreenIds());
+
+  // R4 wiring: readiness gets the preflight verdict; dynamic-voice cues read the tablets' answers.
+  director.setPreflightProvider(() => (preflight ? preflight.ok : null));
+  director.setDynamicVoiceBuilder(
+    createDynamicVoiceBuilder({
+      getAnswers: () => tablets.toMsg().answers,
+      getShow: () => director.getShow(),
+      getPostLabels: () => ([1, 2, 3, 4, 5] as const).map((p) => TABLET_POSTS[p].lens),
+    }),
+  );
 
   const makeWelcome = (): WelcomeMsg => ({
     type: "welcome",
@@ -394,6 +477,15 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     show: director.getShow(),
     config: { lang: director.language, sync: config.sync },
   });
+
+  // Preflight: verifies voice clips / film / avatar; feeds Readiness.assetsOk when the director supports it (D-01).
+  const runPreflightNow = async (): Promise<PreflightResult> => {
+    preflight = await runPreflight(director.getShow(), director.language, config.variant ?? null, { appRoot: opts.appRoot, config, log });
+    runlog.write("preflight", { ok: preflight.ok, voiceOk: preflight.voice.ok, voiceTotal: preflight.voice.total, reasons: preflight.reasons });
+    director.notifyPreflight();
+    broadcast(["control"], { type: "state", state: director.getState() });
+    return preflight;
+  };
 
   const reloadShow = async (): Promise<DispatchResult> => {
     try {
@@ -405,6 +497,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       const welcome = makeWelcome();
       for (const c of clients) if (c.kind) send(c, welcome);
       pushTabletView(true);
+      void runPreflightNow().catch((err) => log("warn", "preflight after reload failed", { err: String(err) }));
       return { ok: true };
     } catch (err) {
       const reason = String(err instanceof Error ? err.message : err);
@@ -417,6 +510,10 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   /** Single entry point for commands from console / keyboard / HTTP. */
   const handleCommand = async (cmd: Command, source: string): Promise<DispatchResult> => {
     if (stopped) return { ok: false, reason: "Serverul se oprește." };
+    if (cmd.action === "preflight") {
+      const r = await runPreflightNow();
+      return r.ok ? { ok: true } : { ok: false, reason: `Preflight cu probleme: ${r.reasons.join("; ")}` };
+    }
     if (cmd.action === "reloadShow") {
       const r = await reloadShow();
       if (!r.ok) return r;
@@ -432,8 +529,9 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   };
 
   // --- HTTP -------------------------------------------------------------------
-  const app = new Hono();
-  app.use("*", cors({ origin: "*", allowMethods: ["GET", "POST", "OPTIONS"], allowHeaders: ["Content-Type"] }));
+  const app = new Hono<AuthEnv>();
+  app.use("*", cors({ origin: "*", allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], allowHeaders: ["Content-Type", "Authorization"] }));
+  app.use("*", auth.identify);
   app.use("/api/*", async (c, next) => {
     const t0 = Date.now();
     await next();
@@ -458,10 +556,30 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   };
 
   app.get("/", (c) => c.redirect("/control/"));
-  app.get("/control", (c) => c.redirect("/control/"));
-  app.get("/tablet", (c) => c.redirect("/tablet/"));
-  app.get("/control/*", createStaticHandler({ prefix: "/control", dir: path.join(opts.webDir, "control") }));
-  app.get("/tablet/*", createStaticHandler({ prefix: "/tablet", dir: path.join(opts.webDir, "tablet") }));
+  for (const name of ["control", "tablet", "login", "debug", "analytics"] as const) {
+    app.get(`/${name}`, (c) => c.redirect(`/${name}/`));
+    app.get(`/${name}/*`, createStaticHandler({ prefix: `/${name}`, dir: path.join(opts.webDir, name) }));
+  }
+
+  // --- auth guards (R4) --------------------------------------------------------
+  // public: /api/health, /api/urls, /api/qr, /api/auth/login|me, tablet WS, (/api/state when security.publicState)
+  const viewer = auth.requireRole("viewer");
+  const operator = auth.requireRole("operator");
+  if (!auth.security.publicState) app.use("/api/state", viewer);
+  for (const p of ["/api/show", "/api/cues", "/api/config", "/api/tablets", "/api/run", "/api/analytics", "/api/analytics/*", "/api/debug", "/api/debug/*"]) {
+    app.use(p, viewer);
+  }
+  for (const p of ["/api/cmd", "/api/show/reload", "/api/show/*", "/api/player/focus", "/api/tablets/clear", "/api/certificates", "/api/certificates/*"]) {
+    app.use(p, operator);
+  }
+  // writes on the show file (editor) need an operator even on the base path
+  app.on(["PUT", "POST", "PATCH", "DELETE"], ["/api/show", "/api/show/*"], operator);
+  app.use("/api/tts", auth.requireScreenOrRole("operator"));
+  app.use("/api/tts/*", auth.requireScreenOrRole("operator"));
+  app.use("/api/dialog", auth.requireScreenOrRole("operator"));
+  app.use("/api/dialog/*", auth.requireScreenOrRole("operator"));
+  app.route("/api/auth", auth.router);
+  app.route("/api/users", auth.usersRouter);
 
   app.get("/api/health", (c) =>
     c.json({
@@ -507,9 +625,16 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       return c.json({ ok: false, reason: "Corp JSON invalid" }, 400);
     }
     const raw = body && typeof body === "object" && "cmd" in (body as object) ? (body as { cmd: unknown }).cmd : body;
+    const who = auth.principalOf(c);
+    const source = who?.kind === "user" ? `http:${who.name}` : "http";
+    // `preflight` is handled here so it works even before state.ts learns the R4 commands.
+    if (raw && typeof raw === "object" && (raw as { action?: unknown }).action === "preflight") {
+      const r = await handleCommand({ action: "preflight" }, source);
+      return c.json({ ...r, preflight, state: director.getState() }, r.ok ? 200 : 409);
+    }
     const cmd = validateCommand(raw);
     if (!cmd) return c.json({ ok: false, reason: "Comandă invalidă" }, 400);
-    const r = await handleCommand(cmd, "http");
+    const r = await handleCommand(cmd, source);
     return c.json({ ...r, state: director.getState() }, r.ok ? 200 : 409);
   });
   app.get("/api/urls", (c) => c.json(urls));
@@ -541,6 +666,81 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
 
   const tts = createTtsRouter({ cacheDir: opts.cacheDir, log });
   app.route("/api/tts", tts.router);
+
+  // --- R4 features (Agent D / C) -------------------------------------------------
+  const showEditor = createShowEditor({ showPath: opts.showPath, getShow: () => director.getShow(), reload: reloadShow, log });
+  app.route("/api/show", showEditor.router); // PUT|POST / , PATCH /cue/:id, GET /backups, POST /restore/:file (GET / already served above)
+  app.route(
+    "/api/certificates",
+    createCertificatesRouter({
+      runsDir: opts.runsDir,
+      currentRunId: () => (runlog.currentPath ? path.basename(runlog.currentPath, ".jsonl") : null),
+      log,
+    }),
+  );
+  app.route("/api/dialog", createDialogRouter({ log, cacheDir: opts.cacheDir }));
+  app.get("/api/lights", viewer, (c) => c.json(lights.status()));
+
+  // --- debug / frames (R4) -----------------------------------------------------
+  const videoAbsPath = await resolveAssetPath(opts.appRoot, config.video.path);
+  const frames = createFrameExtractor(videoAbsPath, opts.cacheDir, log);
+  const clientById = (id: string): Client | undefined => {
+    for (const c of clients) if (c.id === id) return c;
+    return undefined;
+  };
+  app.route(
+    "/api/debug",
+    createDebugRouter({
+      auth,
+      config,
+      appRoot: opts.appRoot,
+      runsDir: opts.runsDir,
+      cacheDir: opts.cacheDir,
+      version,
+      startedAt,
+      log,
+      perf,
+      frames,
+      getState: () => director.getState(),
+      getHealth: () => ({
+        ok: true,
+        version,
+        role: config.role,
+        uptime: Math.round((Date.now() - startedAt) / 1000),
+        screens: countScreens(),
+        screenIds: connectedScreenIds(),
+        tablets: tablets.connectedCount(),
+        videoReady: director.isVideoReady,
+        clockSource: clockSource ? clockSource.id : null,
+        state: director.playbackState,
+        port,
+        urls,
+        lights: lights.status(),
+        readiness: director.readiness(),
+      }),
+      getClients: () =>
+        [...clients].map((c) => ({ kind: c.kind, id: c.id, name: c.name, remote: c.remote, connectedAt: c.connectedAt, isClockSource: c.isClockSource })),
+      getCueStatuses: () => ({ statuses: director.cues.statuses(), lastVoiceCueId: director.cues.voice?.cue.id ?? null }),
+      getPreflight: () => preflight,
+      runPreflight: runPreflightNow,
+      rotateRuns: () => rotateRuns(opts.runsDir, RUNS_KEEP, [runlog.currentPath], log),
+      ttsStats: () => tts.stats(),
+      runlogPath: () => runlog.currentPath,
+      runlogTail: (n) => runlog.tail(n),
+      closeClient: (id) => {
+        const c = clientById(id);
+        if (!c) return false;
+        try {
+          c.ws.close(1000, "closed by operator");
+        } catch {
+          c.ws.terminate();
+        }
+        return true;
+      },
+      showError: () => showError,
+    }),
+  );
+  app.route("/api/frame", createFrameRouter({ auth, frames, durationSec: () => director.getShow().videoDurationSec }));
 
   // --- listen ------------------------------------------------------------------
   const server = createAdaptorServer({ fetch: app.fetch, createServer: createHttpServer }) as Server;
@@ -596,6 +796,14 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       client.ws.close(1008, "bad hello");
       return;
     }
+    const authResult = auth.authenticateHello(msg);
+    if (!authResult.ok) {
+      log("warn", `ws hello rejected (${authResult.code}) for ${msg.client}`, { id: msg.id, remote: client.remote, reason: authResult.reason });
+      send(client, { type: "error", reason: authResult.reason, code: authResult.code });
+      client.ws.close(authResult.code, authResult.reason.slice(0, 120));
+      return;
+    }
+    client.principal = authResult.principal;
     client.kind = msg.client;
     const rawId = typeof msg.id === "string" ? msg.id.replace(/[\x00-\x1f\x7f]/g, "").trim().slice(0, 64) : "";
     client.id = rawId || `${msg.client}-${Math.random().toString(36).slice(2, 8)}`;
@@ -631,6 +839,15 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     const res = tablets.handleEvent(fixed, director.cues.tablet);
     if (res.error) send(client, { type: "error", reason: res.error });
     if (res.logKind) runlog.write(res.logKind, { tabletId: client.id, post: tablets.tablets.get(client.id)?.post, event: fixed.event });
+    if (res.entityParams) {
+      runlog.write("entityParams", { entity: res.entityParams.entity, params: res.entityParams.params });
+      broadcast(["screen", "control"], res.entityParams);
+    }
+    if (res.startRequest) {
+      const r = director.requestStart(`tablet:${client.id}`);
+      runlog.write("tablet.startRequest", { tabletId: client.id, ok: r.ok, reason: r.ok ? undefined : r.reason });
+      if (!r.ok) send(client, { type: "error", reason: r.reason ?? "pornirea nu este permisă acum" });
+    }
     if (res.changed) {
       broadcastTablets();
       // Postul și răspunsurile A/B sunt personalizate; baza cue-ului poate rămâne identică.
@@ -651,6 +868,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       alive: true,
       connectedAt: Date.now(),
       remote: req.socket.remoteAddress ?? "?",
+      principal: null,
     };
     clients.add(client);
     const helloTimer = setTimeout(() => {
@@ -698,7 +916,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
             typeof msg.rate === "number" &&
             Number.isFinite(msg.rate) &&
             msg.rate >= 0 &&
-            msg.rate <= 2
+            msg.rate <= 8 // rehearse mode runs up to 8x
           ) {
             director.onReport(msg);
           }
@@ -709,12 +927,24 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
             send(client, { type: "error", reason: "doar consola trimite comenzi WebSocket" });
             break;
           }
+          if (client.principal?.kind === "user" && client.principal.role === "viewer") {
+            send(client, { type: "error", reason: "rolul viewer nu poate trimite comenzi", code: 4403 });
+            break;
+          }
+          const rawCmd = msg.cmd as { action?: unknown } | undefined;
+          if (rawCmd && rawCmd.action === "preflight") {
+            void handleCommand({ action: "preflight" }, `${client.kind}:${client.id}`).then((r) => {
+              if (!r.ok) send(client, { type: "error", reason: r.reason ?? "preflight cu probleme" });
+            });
+            break;
+          }
           const cmd = validateCommand(msg.cmd);
           if (!cmd) {
             send(client, { type: "error", reason: "comandă invalidă" });
             break;
           }
-          void handleCommand(cmd, `${client.kind}:${client.id}`).then((r) => {
+          const who = client.principal?.kind === "user" ? client.principal.name : client.id;
+          void handleCommand(cmd, `${client.kind}:${who}`).then((r) => {
             if (!r.ok) send(client, { type: "error", reason: r.reason ?? "comandă respinsă" });
           });
           break;
@@ -722,6 +952,31 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
         case "tablet":
           onTabletEvent(client, msg);
           break;
+        case "perf": {
+          if (client.kind !== "screen") break;
+          const s = (msg as { sample?: unknown }).sample;
+          if (!isPerfSample(s)) break;
+          perf.record({ ...s, screenId: client.id, atMs: typeof s.atMs === "number" ? s.atMs : Date.now() });
+          break;
+        }
+        case "photoCaptured": {
+          if (client.kind !== "screen") break;
+          const dataUrl = (msg as { dataUrl?: unknown }).dataUrl;
+          if (typeof dataUrl !== "string" || !/^data:image\/(jpeg|png);base64,/.test(dataUrl) || dataUrl.length > MAX_PHOTO_BYTES * 1.4) {
+            send(client, { type: "error", reason: "fotografie invalidă sau prea mare" });
+            break;
+          }
+          const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+          const ext = dataUrl.startsWith("data:image/png") ? "png" : "jpg";
+          const photosDir = path.join(opts.runsDir, "photos");
+          void fs
+            .mkdir(photosDir, { recursive: true })
+            .then(() => fs.writeFile(path.join(photosDir, `photo-${stamp}.${ext}`), Buffer.from(dataUrl.split(",")[1] ?? "", "base64")))
+            .then(() => runlog.write("photo.saved", { file: `photo-${stamp}.${ext}` }))
+            .catch((err) => log("warn", "photo save failed", { err: String(err) }));
+          broadcast(["screen", "tablet", "control"], { type: "photo", action: "show", dataUrl, showSec: 12 });
+          break;
+        }
         default:
           send(client, { type: "error", reason: `tip necunoscut: ${String((msg as { type: unknown }).type)}` });
       }
@@ -734,6 +989,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
         broadcastTablets();
       }
       if (client === clockSource) setClockSource(null);
+      if (client.kind === "screen") perf.forget(client.id);
       if (client.kind) {
         runlog.write("ws.close", { kind: client.kind, id: client.id });
         log("info", `ws close ${client.kind} ${client.id}`);
@@ -752,6 +1008,8 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   }, Math.round(1000 / clockHz));
   const stateTimer = setInterval(() => {
     broadcast(["control", "tablet"], { type: "state", state: director.getState() });
+    const samples = perf.snapshot();
+    if (samples.length) broadcast(["control"], { type: "perfSummary", samples });
   }, 1000);
   const heartbeatTimer = setInterval(() => {
     for (const c of clients) {
@@ -770,7 +1028,9 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   }, HEARTBEAT_MS);
 
   log("info", `server listening on http://${config.server.bindHost || "0.0.0.0"}:${port} (LAN ${lanIp})`, urls);
+  log("info", `auth: PIN login at http://${lanIp}:${port}/login/ · debug at /debug/ · users file ${auth.users.path}`);
   runlog.write("server.start", { version, urls, showError });
+  void runPreflightNow().catch((err) => log("warn", "startup preflight failed", { err: String(err) }));
 
   // --- handle --------------------------------------------------------------------
   return {
@@ -822,6 +1082,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       }
       server.closeAllConnections?.();
       await Promise.race([httpClosed, new Promise<void>((resolve) => setTimeout(resolve, WS_SHUTDOWN_GRACE_MS))]);
+      lights.close();
       runlog.write("server.stop");
       await runlog.close();
       log("info", "server stopped");
