@@ -224,6 +224,30 @@ Ghid complet: [TUTORIAL-FINAL.md](TUTORIAL-FINAL.md). Selectează profilul, desc
 
 În ultimele 15 secunde ale epilogului apar alegerile finale; invitația naratorului se aude numai după terminarea show-ului. Jurnalul trimis operatorului include alegerile finale ale locurilor active; descărcarea locală este disponibilă și înainte. „Prefer să privesc” este un răspuns valid. Înainte de public: audiție la volum de sală și probă completă pe cele șase tablete și cinci TV-uri.
 
+Logo-ul EXODUS7 apare automat la pornire, în tutorial și în finalul interactiv, folosind același asset ca tabletele. În panorama `span` rămâne încadrat pe ecranul central; nu necesită o comandă nouă. Verifică în sală lizibilitatea logo-ului și a subtitrărilor de la 4–5 metri. Referință vizuală și distribuția pe ferestre: [EXODUS7-LOGO.md](EXODUS7-LOGO.md).
+
+Pachetul de ilustrații pentru copii se aplică automat profilurilor 5–10 și 10–15; cele trei daruri ilustrate apar în finalul 5–10. Setările de stimuli reduși și ghidaj vizual controlează decorul, iar gesturile și comenzile rămân aceleași. Fișierele sunt locale, fără servicii externe în timpul show-ului. Integrarea curentă este în surse, fără build sau testare la cererea utilizatorului. Detalii: [ILUSTRATII-EXODUS7.md](ILUSTRATII-EXODUS7.md).
+
 ## Muzica originală
 
 Pachetul `assets/music` este încărcat și verificat la pornirea aplicației. Comanda **ambient** controlează și muzica; nivelul moștenește ambient.volume și sfxVolume. Vocea atenuează automat muzica cu9dB. La232–246s dispar muzica și ambientul, dar replicile programate rămân. După înlocuirea pachetului, repornește aplicația pentru revalidare. Ghid și audiții: [MUZICA.md](MUZICA.md), `runs/debug/music/index.html`. Ascultă buclele și toate replicile în sală înainte de aprobarea artistică finală.
+
+## Diagramele educative 3D
+
+Diagramele Three.js apar în tutorial și final. Glisarea în aceste modele și săgețile stânga/dreapta le rotesc local; Home revine frontal. „Ce arată modelul” explică datele și limitele. În jocurile curente, gesturile pe instrumente trimit direct acțiunea la eliberare; vezi secțiunea următoare.
+
+Confortul postului și preferința OS de mișcare redusă se aplică și modelului. Oprirea ghidajului vizual păstrează instrucțiunile și butoanele. Pierderea WebGL activează automat SVG; pentru diagnostic poți deschide `/tablet/?post=1&graphics=2d`, cu postul corect. Nu schimbă rularea sau bugetul. Verificați pe mini-PC-ul ales maparea fiecărui touchscreen, A/B simultan și încărcarea împreună cu TV-urile. Procedură, dovezi și limite: [EDUCATIE-3D.md](EDUCATIE-3D.md).
+
+### Română și activități revizuite (2026-09-05)
+
+Vezi [REVIZIE-ROMANA-JOCURI.md](REVIZIE-ROMANA-JOCURI.md) pentru iterația anterioară. Aceasta rămâne accesibilă numai cu `interaction=classic`, pentru regresie. Jocurile implicite sunt acum cele descrise în [JOCURI-EXPLORARE.md](JOCURI-EXPLORARE.md).
+
+### Jocurile curente: instrumente care răspund gesturilor
+
+Selectează profilul în consolă ca înainte. Nu este necesară altă activare sau migrare SQLite. Copiii trag și rotesc piese, apoi închid circuitul felinarului. Grupa 10–15 reglează antena, reordonează intervale și duce o înregistrare lângă explicație. Grupa 15–18 schimbă manetele A/B și pornește probe; ultimul joc compară vizual cele două reguli. Adulții mută fereastra de scanare, cheltuiesc cel mult două credite și văd efectul asupra datelor; documentul se trage în capsulă.
+
+Gesturile au alternative prin atingere și tastatură. Confirmarea nu închide instrumentul; participantul poate continua să încerce până la finalul etapei. Alegerile plătite ale adulților rămân definitive, iar repetarea animației nu consumă energie. „Doar privesc” permite revenirea la joc. „Ce descoperim” deschide explicația, fără să fie obligatoriu pentru acțiune.
+
+Oprirea ghidajului decorativ nu ascunde instrumentele jocului. Mișcarea redusă păstrează rezultatul și temporizarea obturatorului; pauza oprește și această temporizare locală. Sunetele și confetti apar la prima contribuție confirmată, nu la fiecare încercare. Controlul operatorului `tabletSfx` rămâne autoritativ.
+
+Galerie și raport noi: `runs/debug/play-experience/index.html` și `review.json`. Capturile verifică încadrarea la 1920×1080, inclusiv text mărit, dar nu înlocuiesc proba cu două persoane la fiecare ecran. Validează în sală atingerea simultană, lizibilitatea, volumul, performanța mini-PC-ului și dacă publicul înțelege și reia spontan activitatea.

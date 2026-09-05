@@ -6,6 +6,34 @@
 
 import type { SceneTheme, TabletPost } from "@shared/types";
 import { TABLET_POSTS } from "@shared/types";
+import { illustrationPath } from "../shared/illustrations";
+
+export interface CertificateArtwork { logo: HTMLImageElement | null; emblem: HTMLImageElement | null }
+let artworkReady: Promise<CertificateArtwork> | undefined;
+
+/** Local art is loaded once, before any exported canvas is serialized. Missing art has a text/vector fallback. */
+export function preloadCertificateArtwork(): Promise<CertificateArtwork> {
+  if (!artworkReady) {
+    const load = (src: string) => new Promise<HTMLImageElement | null>(resolve => {
+      const image = new Image(); let settled = false;
+      const finish = (result: HTMLImageElement | null) => {
+        if (settled) return; settled = true; window.clearTimeout(timeout); image.onload = null; image.onerror = null; resolve(result);
+      };
+      const timeout = window.setTimeout(() => finish(null), 5000);
+      image.onload = () => finish(image.naturalWidth > 0 ? image : null);
+      image.onerror = () => finish(null); image.src = src;
+    });
+    artworkReady = Promise.all([load('/shared/brand/exodus7-v1.png'), load(illustrationPath('expedition-emblem-v1'))])
+      .then(([logo, emblem]) => ({ logo, emblem }));
+  }
+  return artworkReady;
+}
+
+export function drawCertificateImage(ctx: CanvasRenderingContext2D, image: HTMLImageElement, x: number, y: number, width: number, height: number): void {
+  const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+  const w = image.naturalWidth * scale, h = image.naturalHeight * scale;
+  ctx.drawImage(image, x + (width - w) / 2, y + (height - h) / 2, w, h);
+}
 
 export interface CertificateChoice {
   cueId: string;
@@ -67,7 +95,7 @@ function rnd(seed: number): number {
   return x - Math.floor(x);
 }
 
-export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInput): void {
+export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInput, artwork?: CertificateArtwork): void {
   canvas.width = CERT_W;
   canvas.height = CERT_H;
   const ctx = canvas.getContext("2d");
@@ -110,7 +138,9 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
     ctx.restore();
   }
 
-  // Ship seal.
+  // Decorative expedition seal; it does not imply a rank or a successful result.
+  if (artwork?.emblem) drawCertificateImage(ctx, artwork.emblem, W / 2 - 105, 145, 210, 210);
+  else {
   ctx.save();
   ctx.translate(W / 2, 250);
   ctx.strokeStyle = ink;
@@ -142,6 +172,7 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   ctx.lineWidth = 2;
   ctx.stroke();
   ctx.restore();
+  }
 
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
@@ -153,7 +184,8 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   ctx.fillText("CERTIFICAT DE MISIUNE", W / 2, 470);
   ctx.fillStyle = ink;
   ctx.font = "700 40px 'Segoe UI', Inter, system-ui, sans-serif";
-  ctx.fillText("· EXODUS-7 ·", W / 2, 525);
+  if (artwork?.logo) drawCertificateImage(ctx, artwork.logo, W / 2 - 155, 488, 310, 104);
+  else ctx.fillText("· EXODUS-7 ·", W / 2, 525);
 
   ctx.fillStyle = "#5b6182";
   ctx.font = "500 24px 'Segoe UI', Inter, system-ui, sans-serif";
@@ -163,10 +195,10 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   ctx.fillText(TABLET_POSTS[input.post].label, W / 2, 695);
   ctx.fillStyle = ink;
   ctx.font = "700 34px 'Segoe UI', Inter, system-ui, sans-serif";
-  ctx.fillText(`LENTILA: ${input.lens.toUpperCase()}`, W / 2, 745);
+  ctx.fillText(`ROLUL POSTULUI: ${input.lens.toUpperCase()}`, W / 2, 745);
   ctx.fillStyle = "#5b6182";
   ctx.font = "500 24px 'Segoe UI', Inter, system-ui, sans-serif";
-  ctx.fillText("a ținut semnalul navei până la capăt și a ales, în pereche, ce ia cu sine.", W / 2, 800);
+  ctx.fillText("a luat parte la călătoria navei EXODUS-7.", W / 2, 800);
 
   // Choices.
   const [pA, pB] = TABLET_POSTS[input.post].perspectives;

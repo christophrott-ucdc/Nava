@@ -1,4 +1,8 @@
 /** Deterministic, JSON-only expedition mechanics. The host owns authorization and cue windows. */
+import { educationFacts } from './education-facts';
+import type { EducationForm, EducationVisual } from './education-visual';
+import { adultDocument, adultSubject, autopilotTasks, type ExpeditionDocument } from './game-content';
+import { applyPlayAction, pilotDecision, playView, playDocuments, type PlayProgress, type PlayView } from './play-engine';
 export type ScenarioId = 'legacy-v3' | 'age-5-10' | 'age-10-15' | 'age-15-18' | 'adults';
 export type Post = 1 | 2 | 3 | 4 | 5;
 export type Zone = 'A' | 'B';
@@ -10,12 +14,22 @@ export interface ZoneProgress {
   constructing: boolean;
   pendingVerdict?: string;
   attachment?: string;
+  game?: { rotation?: number; tests?: Array<'agree' | 'conflict'> };
+  play?: PlayProgress;
 }
 export interface ScenarioProgress { version: 1; profile: ScenarioId; zones: Record<string, ZoneProgress>; probes: string[] }
 export interface ZoneView {
   heading: string; instruction: string; detail: string;
-  options: Array<{ value: string; label: string; disabled?: boolean }>;
+  options: Array<{ value: string; label: string; disabled?: boolean; hint?: string; route?: 'continuous' | 'dead-end' | 'loop' }>;
   completed: boolean; kind?: string; items?: Array<{ id: string; label: string }>;
+  visual?: EducationVisual;
+  goal?: string;
+  feedback?: string;
+  guidance?: string[];
+  documents?: ExpeditionDocument[];
+  comparison?: Array<{ label: string; before: string; after?: string }>;
+  resourceLabel?: string;
+  play?: PlayView;
 }
 const titles: Record<ScenarioId, string> = { 'legacy-v3': 'A Patra Lume', 'age-5-10': 'Bucățile de acasă', 'age-10-15': 'Semnalul fără semnătură', 'age-15-18': 'Dreptul de a schimba cursul', adults: 'Ce lăsăm deschis' };
 const posts = ['Navigație', 'Propulsie', 'Comunicații', 'Biosemnale', 'Memorie'];
@@ -50,11 +64,11 @@ const option = (value: string, label: string, disabled = false) => ({ value, lab
 const observe = () => option('observe', 'Doar privesc');
 const substantive = (v?: string) => !!v && v !== 'observe' && v !== 'abstain';
 const labels: Record<string, string> = {
-  far: 'far independent', relay: 'releu', uncertain: 'încă nu aleg', insufficient: 'date insuficiente',
-  observe: 'observare', abstain: 'abținere', wide: 'largă', fine: 'fină', protect: 'sondă protejată; pauză 3 s; zgomot redus',
-  passive: 'citire continuă; zgomot ridicat', observation: 'observația', probe: 'raportul sondei',
-  propose: 'doar propune', execute: 'poate executa', always: 'confirmare mereu', conflict: 'la conflict', agree: 'acord',
-  'attach:repeated': 'K + R copiate', 'attach:single': 'o singură probă', 'attach:none': 'fără probe noi', 'attach:identity': 'identitate necunoscută',
+  far: 'își păstrează ritmul', relay: 'repetă ce trimitem', uncertain: 'nu știm încă', insufficient: 'nu avem suficiente dovezi',
+  observe: 'am ales să privesc', abstain: 'am ales să nu folosesc această opțiune', wide: 'trei zone cercetate', fine: 'o zonă cercetată în detaliu', protect: 'raport verificat',
+  passive: 'raport nefiltrat', observation: 'harta observațiilor', probe: 'raportul sondei',
+  propose: 'propune echipajului', execute: 'poate acționa singur', always: 'cere acordul de fiecare dată', conflict: 'cere acordul când senzorii diferă', agree: 'senzorii indică același lucru',
+  'attach:repeated': 'două ritmuri diferite, ambele repetate', 'attach:single': 'un singur ritm testat', 'attach:none': 'nu am trimis un ritm nou', 'attach:identity': 'nu știm cine trimite semnalul',
 };
 const display = (value: string | undefined, fallback: string) => value ? labels[value] || value : fallback;
 export function createProgress(profile: ScenarioId): ScenarioProgress {
@@ -67,21 +81,27 @@ function rule(z: ZoneProgress, revised: boolean): string | undefined {
   const amended = z.choices['3'];
   return revised && substantive(amended) && amended !== 'keep' ? amended : substantive(z.choices['1']) ? z.choices['1'] : undefined;
 }
-function mandate(p: ScenarioProgress, post: number, test: string, revised: boolean): string {
+function mandate(p: ScenarioProgress, post: number, test: string, revised: boolean, compact = false): string {
   const a = rule(p.zones[key(post, 'A')], revised), b = rule(p.zones[key(post, 'B')], revised);
-  if (!a || !b) return 'MANDAT INCOMPLET — lipsește o regulă';
-  if (a === 'propose') return 'PROPUNERE — autoritate: doar propune';
-  if (b === 'always') return 'AȘTEAPTĂ CONFIRMARE — confirmare cerută pentru orice caz';
-  if (test === 'conflict') return 'AȘTEAPTĂ CONFIRMARE — senzorii diferă';
-  return 'EXECUTAT ÎN SIMULARE — senzorii sunt de acord';
+  const decision = pilotDecision(a, b, test);
+  if (decision === 'incomplete') return compact ? 'Regulă incompletă' : 'Pilotul așteaptă: mai avem de ales o regulă.';
+  if (decision === 'propose') return compact ? 'Propune; echipajul decide' : 'Pilotul propune o acțiune. Echipajul decide dacă o execută.';
+  if (decision === 'confirm' && b === 'always') return compact ? 'Cere acordul echipajului' : 'Pilotul cere acordul echipajului, așa cum i-ați cerut.';
+  if (decision === 'confirm') return compact ? 'Cere acordul echipajului' : 'Pilotul cere acordul echipajului: senzorii indică lucruri diferite.';
+  return compact ? 'Execută în simulare' : 'Pilotul execută acțiunea în simulare: senzorii indică același lucru.';
+}
+export function mandateCases(p: ScenarioProgress, post: Post, zone: Zone, revised = false): Array<{ test: 'agree' | 'conflict'; result: string }> {
+  const z = p.zones[key(post, zone)];
+  const tests = z.game?.tests || (['agree', 'conflict'].includes(z.choices['2']) ? [z.choices['2'] as 'agree' | 'conflict'] : []);
+  return tests.map(test => ({ test, result: mandate(p, post, test, revised) }));
 }
 function localMeasure(p: ScenarioProgress, post: number, zone: Zone): string | undefined {
   const choice = p.zones[key(post, zone)].choices['2'];
   return choice?.startsWith('measure:') ? measures[index(post, zone)][Number(choice.slice(8))]?.[1] : undefined;
 }
-function evidence(p: ScenarioProgress): string { return p.probes.length ? p.probes.slice(0, 2).map((v, i) => `${i === 0 ? 'K' : 'R'}: ${v} → ${v} (+2 s)`).join(' · ') + (p.probes.length > 2 ? ` · ${p.probes.length - 2} probe suplimentare în dosar.` : '') : 'Fără probe noi trimise.'; }
+function evidence(p: ScenarioProgress): string { return p.probes.length ? p.probes.slice(0, 2).map((v, i) => `Testul ${i + 1}: trimis ${v} · primit ${v}`).join(' | ') : 'Încă nu am trimis un ritm nou.'; }
 function attachmentOptions(p: ScenarioProgress, post: number) {
-  const result = [option(p.probes.length >= 2 ? 'attach:repeated' : p.probes.length === 1 ? 'attach:single' : 'attach:none', p.probes.length >= 2 ? 'K + R copiate' : p.probes.length === 1 ? 'O singură probă' : 'Fără probe noi'), option('attach:identity', 'Identitate necunoscută')];
+  const result = [option(p.probes.length >= 2 ? 'attach:repeated' : p.probes.length === 1 ? 'attach:single' : 'attach:none', p.probes.length >= 2 ? 'A repetat două ritmuri diferite' : p.probes.length === 1 ? 'Am testat un singur ritm' : 'Nu avem un test nou'), option('attach:identity', 'Nu știm cine emite semnalul')];
   for (const zone of ['A', 'B'] as const) { const m = localMeasure(p, post, zone); if (m) result.push(option(`attach:local:${zone}`, `${zone}: ${m}`)); }
   return result;
 }
@@ -89,49 +109,89 @@ function zoneView(p: ScenarioProgress, stage: number, post: Post, zone: Zone): Z
   const z = p.zones[key(post, zone)], i = index(post, zone), choice = z.choices[String(stage)];
   const v: ZoneView = { heading: `${posts[post - 1]} · ${zone}`, instruction: '', detail: '', options: [], completed: !!choice };
   if (p.profile === 'legacy-v3' || ![1, 2, 3].includes(stage)) return v;
+  v.play = playView(p, stage, post, zone);
+  const test = z.choices['2'], sensorOffset = zone === 'A' ? 0 : 2;
+  v.visual = educationFacts(p, stage, post, zone, {
+    shapes: shapes[post - 1] as [EducationForm, EducationForm], observation: observations[i],
+    measurement: localMeasure(p, post, zone),
+    attachmentMeasurement: z.attachment?.startsWith('attach:local:') ? localMeasure(p, post, z.attachment.slice(-1) as Zone) : undefined,
+    ruleA: rule(p.zones[key(post, 'A')], stage === 3), ruleB: rule(p.zones[key(post, 'B')], stage === 3),
+    before: ['agree', 'conflict'].includes(test) ? mandate(p, post, test, false) : undefined,
+    after: ['agree', 'conflict'].includes(test) ? mandate(p, post, test, true) : undefined,
+    sensors: ['agree', 'conflict'].includes(test) ? [sensorCases[post - 1][sensorOffset], sensorCases[post - 1][sensorOffset + (test === 'conflict' ? 1 : 0)]] : undefined,
+    domain: domains[post - 1], subject: p.profile === 'adults' ? adultSubject(post) : objects[post - 1][zone === 'A' ? 0 : 1], budget: energy(z), coverageUnit: p.profile === 'adults' ? 'zone' : units[post - 1],
+  });
   if (p.profile === 'age-5-10') {
     const shape = shapes[post - 1][zone === 'A' ? 0 : 1];
     v.kind = ['visual-match', 'paired-fit', 'latched-pair'][stage - 1];
-    v.instruction = ['Găsește forma de sus', 'Pune piesa în contur', 'Atinge capătul tău de fir'][stage - 1];
+    v.goal = 'Construim împreună un felinar pentru călătorie.';
+    v.instruction = ['Găsește piesa care are aceeași formă', 'Rotește piesa și așaz-o în felinar', 'Găsește drumul care ajunge la felinar'][stage - 1];
     v.items = [{ id: 'shape', label: shape }];
-    v.detail = stage === 1 ? `Forma de sus: ${shape}` : stage === 2 ? `${shape} · ${z.choices['1'] === 'found' ? 'Piesă găsită pe Siwarha' : 'Piesă primită de la Natură'}` : `${p.zones[key(post, zone === 'A' ? 'B' : 'A')].choices['3'] === 'linked' ? 'Celălalt capăt este prins.' : 'Fiecare capăt rămâne prins independent.'}`;
-    if (!choice) v.options = stage === 1 ? [shape, ...distractors[i]].map(s => option(`shape:${s}`, s)).concat(observe()) : stage === 2 ? z.builder.length ? [option('fit', `Așază ${shape} în contur`), observe()] : [option('select', `Atinge piesa: ${shape}`), observe()] : [option('link', 'Prinde capătul meu'), observe()];
-    if (choice) v.detail += choice === 'observe' ? ' · Poți privi.' : stage === 1 ? ' · Bucată găsită.' : stage === 2 ? ' · Piesa ta este așezată.' : ' · Capătul tău rămâne prins.';
+    v.detail = stage === 1 ? `Uită-te la contur. Cauți piesa „${shape}”.` : stage === 2 ? (z.builder.length ? 'Rotește piesa până când semnul auriu ajunge sus. Apoi așaz-o.' : `${z.choices['1'] === 'found' ? 'Ai găsit piesa.' : 'Natura ți-a dăruit o piesă.'} Atinge-o ca să începi.`) : 'Urmărește fiecare drum de la început până la capăt. Unul ajunge la felinar.';
+    if (stage === 2 && z.builder.length && !choice) v.detail = (z.game?.rotation ?? 0) === 0 ? 'Semnul auriu este sus. Acum poți așeza piesa!' : `Semnul auriu este ${['sus', 'în dreapta', 'jos', 'în stânga'][z.game?.rotation ?? 0]}. Rotește piesa până când semnul ajunge sus.`;
+    v.guidance = stage === 3 ? ['Un drum se oprește prea devreme.', 'Un drum se întoarce de unde a pornit.', 'Alege drumul care ajunge la lumină.'] : undefined;
+    if (!choice) v.options = stage === 1 ? [shape, ...distractors[i]].map(s => option(`shape:${s}`, s)).concat(observe()) : stage === 2 ? z.builder.length ? [option('rotate', 'Rotește piesa'), option('fit', 'Așază piesa'), observe()] : [option('select', 'Ia piesa'), observe()] : [
+      { ...option('dead-end', 'Drumul 1'), route: 'dead-end' }, { ...option('link', 'Drumul 2'), route: 'continuous' }, { ...option('loop', 'Drumul 3'), route: 'loop' }, observe(),
+    ];
+    if (choice) v.feedback = choice === 'observe' ? 'Poți urmări cum se construiește felinarul.' : stage === 1 ? 'Ai găsit piesa! O luăm cu noi.' : stage === 2 ? 'Se potrivește! Felinarul are acum și piesa ta.' : p.zones[key(post, zone === 'A' ? 'B' : 'A')].choices['3'] === 'linked' ? 'Ați găsit amândoi drumul. Felinarul vostru luminează!' : 'Drumul tău ajunge la felinar! Urmează și drumul colegului.';
   } else if (p.profile === 'age-10-15') {
     v.kind = stage === 2 ? 'probe-builder' : stage === 3 ? 'evidence-verdict' : 'hypothesis';
-    v.instruction = stage === 1 ? 'Propune o explicație' : stage === 2 ? 'Măsoară, apoi construiește o probă' : z.pendingVerdict ? 'Leagă o dovadă sau o limită' : 'Alege verdictul';
+    v.goal = 'Află dacă semnalul răspunde la ce îi trimitem.';
+    v.instruction = stage === 1 ? 'Ce crezi că face semnalul?' : stage === 2 ? 'Trimite două ritmuri diferite și compară răspunsurile' : z.pendingVerdict ? 'Ce observație îți susține concluzia?' : 'Ce ai aflat din teste?';
+    v.guidance = ['Modelul 1 păstrează ritmul 2–2–2, indiferent ce trimitem.', 'Modelul 2 repetă ritmul trimis de noi.', 'Testele disting aceste două modele; nu ne spun cine se află la sursă.'];
     v.detail = stage === 1 ? observations[i] : `${evidence(p)}${localMeasure(p, post, zone) ? ` · ${localMeasure(p, post, zone)}` : ''}`;
-    if (stage === 1 && !choice) v.options = [option('far', 'Far independent'), option('relay', 'Releu'), option('uncertain', 'Încă nu aleg'), observe()];
+    if (stage === 1 && !choice) v.options = [option('far', 'Își păstrează ritmul'), option('relay', 'Repetă ce trimitem'), option('uncertain', 'Nu știm încă'), observe()];
     if (stage === 2) {
       v.completed = z.probes.length >= 2;
       if (!choice) v.options.push(...measures[i].map((m, n) => option(`measure:${n}`, m[0])), observe());
-      if (!z.constructing && z.probes.length < 2) v.options.push(option('construct', z.probes.length ? 'Încearcă altă ordine' : 'Construiește proba'));
-      if (z.constructing) v.options.push(...[1, 2, 3].map(n => option(`piece:${n}`, `${n} s`, z.builder.includes(n))), option('undo', 'Șterge ultima', !z.builder.length), option('send', 'Trimite proba', z.builder.length !== 3));
+      if (!z.constructing && z.probes.length < 2) v.options.push(option('construct', z.probes.length ? 'Încearcă altă ordine' : 'Compune un ritm'));
+      if (z.constructing) v.options.push(...[1, 2, 3].map(n => option(`piece:${n}`, `${n} s`, z.builder.includes(n))), option('undo', 'Anulează ultimul interval', !z.builder.length), option('send', 'Trimite ritmul', z.builder.length !== 3));
       v.items = z.builder.map((n, j) => ({ id: String(j), label: `${n} s` }));
-      v.detail += ` · Proba ta: ${z.builder.join(' – ') || 'trei locuri goale'}`;
+      v.detail += ` · Ritmul tău: ${z.builder.join(' – ') || 'alege ordinea celor trei intervale'}`;
+      v.feedback = z.probes.length >= 2 ? 'Două ritmuri diferite, două răspunsuri identice cu ce ai trimis. Care model explică rezultatul?' : z.probes.length ? 'A repetat primul ritm. Schimbă ordinea și verifică încă o dată.' : undefined;
     }
-    if (stage === 3 && !choice) v.options = z.pendingVerdict ? attachmentOptions(p, post) : [option('relay', 'Releu verificat'), option('far', 'Far verificat'), option('insufficient', 'Date insuficiente'), observe()];
-    if (choice && stage !== 2) v.detail += ` · ${choice === 'observe' ? 'Privești; nu adăugăm un răspuns.' : stage === 3 ? `Verdict: ${display(choice, '')}; fișă: ${display(z.attachment, '')}` : `Ipoteză: ${display(choice, '')}`}`;
+    if (stage === 3 && !choice) v.options = z.pendingVerdict ? [...attachmentOptions(p, post), option('reconsider', 'Schimb concluzia')] : [option('relay', 'Repetă ce trimitem'), option('far', 'Își păstrează ritmul'), option('insufficient', 'Nu avem suficiente dovezi'), observe()];
+    if (choice && stage !== 2) {
+      const attachment = z.attachment?.startsWith('attach:local:') ? localMeasure(p, post, z.attachment.slice(-1) as Zone) : display(z.attachment, '');
+      v.feedback = choice === 'observe' ? 'Poți urmări rezultatele echipajului.' : stage === 3 ? `Concluzia ta: ${display(choice, '')}. Observația aleasă: ${attachment}.` : `Presupunerea ta: ${display(choice, '')}. În etapa următoare o verificăm.`;
+    }
   } else if (p.profile === 'age-15-18') {
     v.kind = stage === 2 ? 'mandate-test' : 'mandate-rule';
-    v.instruction = stage === 2 ? 'Încearcă un caz de test' : zone === 'A' ? 'Stabilește autoritatea' : 'Stabilește confirmarea';
+    v.goal = autopilotTasks[post - 1];
+    v.instruction = stage === 2 ? 'Testează pilotul în ambele situații' : stage === 3 ? 'După teste, păstrezi sau schimbi regula?' : zone === 'A' ? 'Câtă libertate îi dai pilotului automat?' : 'Când trebuie să ceară acordul echipajului?';
     const a = rule(p.zones[key(post, 'A')], stage === 3), b = rule(p.zones[key(post, 'B')], stage === 3);
-    const label = (s?: string) => s === 'propose' ? 'doar propune' : s === 'execute' ? 'poate executa' : s === 'always' ? 'mereu' : s === 'conflict' ? 'la conflict' : 'regulă absentă';
-    v.detail = `${domains[post - 1]} · A: ${label(a)} · B: ${label(b)}`;
-    if (!choice) {
-      if (stage === 2) { const s = sensorCases[post - 1], n = zone === 'A' ? 0 : 2; v.options = [option('agree', `Acord: ${s[n]} / ${s[n]}`), option('conflict', `Conflict: ${s[n]} / ${s[n + 1]}`), observe()]; }
-      else { v.options = zone === 'A' ? [option('propose', 'Doar propune'), option('execute', 'Poate executa')] : [option('always', 'Confirmare mereu'), option('conflict', 'Confirmare la conflict')]; if (stage === 3 && substantive(z.choices['1'])) v.options.push(option('keep', 'Păstrez regula')); v.options.push(observe()); }
+    v.detail = `A: ${display(a, 'alege libertatea pilotului')} · B: ${display(b, 'alege când cere acordul')}`;
+    v.guidance = ['O decizie rapidă înseamnă mai multă autonomie. Confirmarea păstrează echipajul în decizie.', 'Doi senzori pot indica același lucru și totuși să greșească. Testăm regula, nu siguranța unei nave reale.'];
+    const cases = mandateCases(p, post, zone);
+    if (stage >= 2 && cases.length) v.comparison = cases.map(c => ({ label: c.test === 'agree' ? 'Senzorii sunt de acord' : 'Senzorii se contrazic', before: mandate(p, post, c.test, false, true), ...(stage === 3 ? { after: mandate(p, post, c.test, true, true) } : {}) }));
+    if (stage === 2) {
+      const s = sensorCases[post - 1], n = zone === 'A' ? 0 : 2;
+      v.completed = cases.length === 2;
+      if (choice !== 'observe') v.options = [option('agree', `Aceeași indicație: ${s[n]} / ${s[n]}`, cases.some(c => c.test === 'agree')), option('conflict', `Indicații diferite: ${s[n]} / ${s[n + 1]}`, cases.some(c => c.test === 'conflict'))];
+      if (!choice) v.options.push(observe());
+      v.feedback = cases.map(c => `${c.test === 'agree' ? 'Aceeași indicație' : 'Indicații diferite'}: ${c.result}`).join(' ');
+    } else if (!choice) {
+      v.options = zone === 'A' ? [option('propose', 'Propune; echipajul decide'), option('execute', 'Poate acționa singur')] : [option('always', 'Cere acordul de fiecare dată'), option('conflict', 'Cere acordul când senzorii diferă')];
+      if (stage === 3 && substantive(z.choices['1'])) v.options.push(option('keep', 'Păstrez regula')); v.options.push(observe());
     }
-    const test = z.choices['2'];
-    if (substantive(test)) v.detail += ` · ${mandate(p, post, test, false)}${stage === 3 ? ` → ${mandate(p, post, test, true)}` : ''}`;
+    if (stage === 3) v.feedback = cases.length ? cases.map(c => `${c.test === 'agree' ? 'Aceeași indicație' : 'Indicații diferite'} — înainte: ${c.result} Acum: ${mandate(p, post, c.test, true)}`).join(' ') : 'Nu ai rulat un test. Poți compara regulile, dar nu avem încă un rezultat de test.';
   } else {
     v.kind = ['observation', 'probe-protection', 'archive'][stage - 1];
-    v.instruction = ['Alege întinderea observației', 'Protejează sonda sau observă pasiv', 'Transmite un singur document'][stage - 1];
-    v.detail = `Model de expediție · ${objects[post - 1][zone === 'A' ? 0 : 1]} · Rezervă: ${energy(z)} / 2`;
-    if (!choice) v.options = stage === 1 ? [option('wide', `Largă · 3 ${units[post - 1]}, precizie redusă · cost 1`), option('fine', 'Fină · 1 segment, precizie ridicată · cost 2'), option('abstain', 'Mă abțin')] : stage === 2 ? [option('protect', 'Protejez · pauză 3 s, zgomot redus · cost 1', energy(z) < 1), option('passive', 'Observ pasiv · citire continuă, zgomot ridicat · cost 0'), option('abstain', 'Mă abțin')] : [option('observation', `Transmit observația ${z.choices['1'] === 'fine' ? 'fină' : 'largă'}`, !['wide', 'fine'].includes(z.choices['1'])), option('probe', `Transmit raportul ${z.choices['2'] === 'protect' ? 'protecției' : 'observării pasive'}`, !['protect', 'passive'].includes(z.choices['2'])), option('abstain', 'Mă abțin')];
-    if (stage === 2 && energy(z) === 0 && !choice) v.detail += ' · Rezerva a fost folosită pentru măsurarea fină.';
+    v.goal = 'Lasă următorului echipaj informația de care va avea nevoie.';
+    v.instruction = ['Cercetezi trei zone sau una în detaliu?', 'Investești în verificare sau păstrezi rezerva?', 'Ce trimiți următorului echipaj?'][stage - 1];
+    if (stage === 2 && energy(z) === 0) v.instruction = 'Primești datele nefiltrate ale sondei?';
+    v.resourceLabel = `Rezervă: ${energy(z)} din 2 credite`;
+    v.detail = `${adultSubject(post)} · ${v.resourceLabel}`;
+    v.guidance = ['Ai două credite pentru cercetare și verificare.', 'La final poți trimite un singur document. Restul rămâne în arhiva locală.', 'Datele sunt pregătite pentru acest exercițiu; nu sunt măsurători din film.'];
+    if (!choice) v.options = stage === 1 ? [option('wide', 'Cercetez trei zone · 1 credit'), option('fine', 'Cercetez una în detaliu · 2 credite'), option('abstain', 'Păstrez rezerva')] : stage === 2 ? [option('protect', 'Verific citirile · 1 credit', energy(z) < 1), option('passive', 'Accept datele nefiltrate · gratuit'), option('abstain', 'Nu cer un raport')] : [option('observation', 'Trimit harta observațiilor', !['wide', 'fine'].includes(z.choices['1'])), option('probe', 'Trimit raportul sondei', !['protect', 'passive'].includes(z.choices['2'])), option('abstain', 'Nu transmit un document')];
+    v.documents = [];
+    if (['wide', 'fine'].includes(z.choices['1'])) v.documents.push(adultDocument(post, zone, z.choices['1'] as 'wide' | 'fine'));
+    if (['protect', 'passive'].includes(z.choices['2']) && stage >= 2) v.documents.push(adultDocument(post, zone, z.choices['2'] as 'protect' | 'passive'));
+    v.feedback = stage === 3 && substantive(choice) ? `${choice === 'observation' ? 'Harta observațiilor' : 'Raportul sondei'} a fost trimis. Echipajul următor va primi și limitele cercetării tale.` : v.documents.at(-1)?.summary;
+    if (stage === 3 && !choice) v.feedback = 'Compară documentele. Poți trimite unul singur.';
+    if (stage === 2 && energy(z) === 0 && !choice) v.detail += ' · Ai folosit ambele credite pentru cercetarea în detaliu.';
     if (stage === 3) v.detail += ' · Documentele nealese rămân local. Un document absent nu poate fi transmis.';
-    if (choice) v.detail += ` · ${choice === 'abstain' ? 'Abținere înregistrată.' : `Alegere înregistrată: ${display(choice, '')}`}`;
+    if (choice === 'abstain') v.feedback = stage === 1 ? 'Ai păstrat ambele credite pentru etapa următoare.' : stage === 2 ? 'Nu ai cerut un raport de la sondă.' : 'Documentele tale rămân în arhiva locală.';
   }
   return v;
 }
@@ -141,13 +201,18 @@ export function scenarioView(progress: ScenarioProgress, stage: number, post: Po
 export function applyScenarioAction(progress: ScenarioProgress, action: ScenarioAction): { ok: boolean; reason?: string; progress: ScenarioProgress } {
   const fail = (reason: string) => ({ ok: false, reason, progress });
   if (!Number.isInteger(action.post) || action.post < 1 || action.post > 5 || !['A', 'B'].includes(action.zone) || ![1, 2, 3].includes(action.stage) || action.action !== 'choose' || typeof action.value !== 'string') return fail('invalid-action');
+  if (action.value.startsWith('play:')) return applyPlayAction(progress, action);
   const offered = zoneView(progress, action.stage, action.post, action.zone).options.find(o => o.value === action.value);
   if (!offered || offered.disabled) return fail('unavailable-action');
   const p: ScenarioProgress = JSON.parse(JSON.stringify(progress));
   const z = p.zones[key(action.post, action.zone)], value = action.value, stage = String(action.stage);
   if (p.profile === 'age-5-10') {
     if (value.startsWith('shape:')) { if (value.slice(6) !== shapes[action.post - 1][action.zone === 'A' ? 0 : 1]) return fail('try-matching-shape'); z.choices[stage] = 'found'; }
-    else if (value === 'select') z.builder = [1];
+    else if (value === 'select') { z.builder = [1]; z.game = { ...z.game, rotation: 1 + action.post % 3 }; }
+    else if (value === 'rotate') z.game = { ...z.game, rotation: ((z.game?.rotation || 0) + 1) % 4 };
+    else if (value === 'fit' && (z.game?.rotation || 0) !== 0) return fail('piece-not-aligned');
+    else if (value === 'dead-end') return fail('route-stops-early');
+    else if (value === 'loop') return fail('route-returns-to-start');
     else z.choices[stage] = value === 'fit' ? 'fitted' : value === 'link' ? 'linked' : value;
   } else if (p.profile === 'age-10-15' && action.stage === 2) {
     if (value === 'construct') { z.constructing = true; z.builder = []; }
@@ -159,8 +224,12 @@ export function applyScenarioAction(progress: ScenarioProgress, action: Scenario
       z.probes.push(permutation); if (!p.probes.includes(permutation)) p.probes.push(permutation); z.constructing = false;
     } else { z.choices[stage] = value; z.constructing = true; }
   } else if (p.profile === 'age-10-15' && action.stage === 3 && value !== 'observe') {
-    if (value.startsWith('attach:')) { z.choices[stage] = z.pendingVerdict!; z.attachment = value; delete z.pendingVerdict; }
+    if (value === 'reconsider') delete z.pendingVerdict;
+    else if (value.startsWith('attach:')) { z.choices[stage] = z.pendingVerdict!; z.attachment = value; delete z.pendingVerdict; }
     else z.pendingVerdict = value;
+  } else if (p.profile === 'age-15-18' && action.stage === 2 && ['agree', 'conflict'].includes(value)) {
+    const previous = mandateCases(progress, action.post, action.zone).map(c => c.test);
+    z.game = { ...z.game, tests: [...previous, value as 'agree' | 'conflict'] }; z.choices[stage] = value;
   } else z.choices[stage] = value;
   return { ok: true, progress: p };
 }
@@ -188,16 +257,22 @@ export function scenarioConditions(p: ScenarioProgress): Set<string> {
 export function summarizeScenario(p: ScenarioProgress): { title: string; lines: string[]; posts: Array<{ post: number; lines: string[] }> } {
   const result = { title: titles[p.profile], lines: [] as string[], posts: [] as Array<{ post: number; lines: string[] }> };
   const conditions = scenarioConditions(p);
-  if (p.profile === 'age-5-10') { if (conditions.has('find_none')) result.lines.push('Dar de la Lumină: cercul de lumină.'); if (conditions.has('fit_none')) result.lines.push('Dar de la Natură: frunza de grădină.'); if (!conditions.has('link_complete')) result.lines.push('Dar de la Tehnologic: mânerul de călătorie.'); }
+  if (p.profile === 'age-5-10') { if (conditions.has('find_none')) result.lines.push('Lumina v-a dăruit cercul luminos.'); if (conditions.has('fit_none')) result.lines.push('Natura v-a dăruit frunza de grădină.'); if (!conditions.has('link_complete')) result.lines.push('Lumea tehnologiei v-a dăruit mânerul de călătorie.'); }
   if (p.profile === 'age-10-15') result.lines.push(evidence(p), 'Identitatea expeditorului rămâne necunoscută.');
   for (let post = 1; post <= 5; post++) {
     const lines: string[] = [];
     for (const zone of ['A', 'B'] as const) {
       const z = p.zones[key(post, zone)], c = z.choices;
-      if (p.profile === 'age-5-10') { const shape = shapes[post - 1][zone === 'A' ? 0 : 1]; lines.push(`${zone}: ${shape} · ${c['1'] === 'found' ? 'găsită pe Siwarha' : c['2'] === 'fitted' ? 'primită de la Natură' : 'fără piesă păstrată'} · ${c['2'] === 'fitted' ? 'montată' : 'nemontată'} · ${c['3'] === 'linked' ? 'capăt prins' : 'capăt liber'}`); }
-      else if (p.profile === 'age-10-15') { const support = c['3'] === 'relay' && z.attachment === 'attach:repeated' ? 'sprijin direct' : c['3'] === 'insufficient' && ['attach:single', 'attach:none'].includes(z.attachment || '') ? 'limită relevantă' : 'legătură neconcludentă'; const attachment = z.attachment?.startsWith('attach:local:') ? localMeasure(p, post, z.attachment.slice(-1) as Zone) : display(z.attachment, ''); lines.push(`${zone}: ipoteză ${display(c['1'], 'neînregistrată')} · ${localMeasure(p, post, zone) || 'fără măsurătoare'} · probe trimise: ${z.probes.join(', ') || 'niciuna'} · verdict ${display(c['3'], z.pendingVerdict ? 'netrimis; lipsește fișa' : 'neînregistrat')}${z.attachment ? ` · ${attachment} · ${support}` : ''}`); }
-      else if (p.profile === 'age-15-18') lines.push(`${zone}: ${display(rule(z, false), 'regulă absentă')} → ${display(rule(z, true), 'regulă absentă')} · ${substantive(c['2']) ? `${display(c['2'], '')}: ${mandate(p, post, c['2'], false)} → ${mandate(p, post, c['2'], true)}` : c['2'] === 'observe' ? 'observare; fără test' : 'test neînregistrat'}`);
-      else if (p.profile === 'adults') lines.push(`${zone}: ${objects[post - 1][zone === 'A' ? 0 : 1]} · observație: ${display(c['1'], 'neînregistrată')} · sondă: ${display(c['2'], 'comandă neînregistrată')} · rezervă ${energy(z)} · arhivă: ${display(c['3'], 'selecție neînregistrată')}${['wide', 'fine'].includes(c['1']) && c['3'] !== 'observation' ? ' · observație păstrată local; netransmisă' : ''}${['protect', 'passive'].includes(c['2']) && c['3'] !== 'probe' ? ' · raport păstrat local; netransmis' : ''}`);
+      if (p.profile === 'age-5-10') { const shape = shapes[post - 1][zone === 'A' ? 0 : 1]; lines.push(`${zone}: piesa „${shape}” · ${c['1'] === 'found' ? 'găsită pe Siwarha' : c['2'] === 'fitted' ? 'primită de la Natură' : 'încă negăsită'} · ${c['2'] === 'fitted' ? 'așezată în felinar' : 'încă neașezată'} · ${c['3'] === 'linked' ? 'drum găsit' : 'drum încă neales'}`); }
+      else if (p.profile === 'age-10-15') { const support = c['3'] === 'relay' && z.attachment === 'attach:repeated' ? 'testele susțin această explicație' : c['3'] === 'insufficient' && ['attach:single', 'attach:none'].includes(z.attachment || '') ? 'ai arătat ce ne lipsește' : 'această observație nu susține încă explicația'; const attachment = z.attachment?.startsWith('attach:local:') ? localMeasure(p, post, z.attachment.slice(-1) as Zone) : display(z.attachment, ''); const reception = z.play ? `teste fără răspuns clar: ${z.play.stages['2']?.records?.filter(r => r.received === null).length || 0}` : localMeasure(p, post, zone) || 'nu ai cerut o măsurătoare'; lines.push(`${zone}: presupunere: ${display(c['1'], 'încă nealeasă')} · ${reception} · ritmuri testate: ${z.probes.join(', ') || 'niciunul'} · concluzie: ${display(c['3'], z.pendingVerdict ? 'mai ai de ales dovada' : 'încă nealeasă')}${z.attachment ? ` · ${attachment} · ${support}` : ''}`); }
+      else if (p.profile === 'age-15-18') { const cases = mandateCases(p, post as Post, zone); lines.push(`${zone}: ${display(rule(z, false), 'regulă încă nealeasă')} → ${display(rule(z, true), 'regulă încă nealeasă')} · ${cases.length ? cases.map(t => `${display(t.test, '')}: ${t.result} → ${mandate(p, post, t.test, true)}`).join(' | ') : c['2'] === 'observe' ? 'ai ales să urmărești testele' : 'niciun test rulat'}`); }
+      else if (p.profile === 'adults') {
+        const documents = z.play ? playDocuments(p, post as Post, zone) : [];
+        const observation = documents.find(d => d.id === 'observation'), probe = documents.find(d => d.id === 'probe');
+        const research = observation ? `${observation.title}: ${observation.caption}` : display(c['1'], 'încă nealeasă');
+        const reading = probe ? probe.caption : display(c['2'], 'niciun raport cerut');
+        lines.push(`${zone}: ${z.play ? 'Date simulate ale postului' : adultSubject(post as Post)} · cercetare: ${research} · sondă: ${reading} · rezervă ${energy(z)} · arhivă: ${display(c['3'], 'niciun document ales')}${['wide', 'fine'].includes(c['1']) && c['3'] !== 'observation' ? ' · observație păstrată local; netransmisă' : ''}${['protect', 'passive'].includes(c['2']) && c['3'] !== 'probe' ? ' · raport păstrat local; netransmis' : ''}`);
+      }
     }
     result.posts.push({ post, lines });
   }

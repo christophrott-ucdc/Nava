@@ -4,3 +4,9 @@
 .experience-final{z-index:35;padding-bottom:16cqh}.experience-final .experience-narration{display:none}
 .experience-constellation{height:12cqh;width:70%;flex-shrink:0}.experience-constellation[hidden]{display:none}.experience-constellation svg{width:100%;height:100%;overflow:visible}.experience-final .experience-sky{margin:0}.experience-final{gap:1.3cqh}.experience-final h1{font-size:3.5cqw}
 body:has(#avatar .nava-transporter.is-shown) .experience-final .experience-sky{width:75%;align-self:flex-end}body:has(#avatar.right .nava-transporter.is-shown) .experience-final .experience-sky{align-self:flex-start}
+
+/* Brand uses the central TV's container units, including a panoramic wall. */
+.experience-tv{padding-top:14cqh}
+.experience-brand{position:absolute;top:2cqh;left:50%;transform:translateX(-50%);width:17cqw;padding:.8cqh 1cqw;border:1px solid #ffffffd9;border-radius:1.4cqw;background:linear-gradient(135deg,#fffdf6,#e4f3f5);box-shadow:inset 0 1px #fff,0 .6cqh 2cqh #12263c14}
+.experience-final .experience-brand{box-shadow:inset 0 1px #fff,0 .8cqh 3cqh #050d222b}
+.experience-homecoming{position:absolute;right:3cqw;top:2cqh;width:14cqw;height:16cqh;object-fit:contain;pointer-events:none;user-select:none}

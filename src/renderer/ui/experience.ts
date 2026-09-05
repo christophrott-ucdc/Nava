@@ -1,9 +1,14 @@
 import type {MissionSnapshot} from '../../shared/mission';
 import {EXPERIENCE_PRACTICE,FINALE_CHOICES,type NarratorManifest} from '../../shared/experience';
+import {createExodusBrand} from './brand';
+import {hasChildIllustrations,illustrationPath} from '../../web/shared/illustrations';
 
 /** Narration uses the server instance and clock; only the configured audio owner plays it. */
 export function createExperienceOverlay(parent:HTMLElement,options:{audio:boolean;visual:boolean;baseUrl:string;volume:number;outputDeviceId?:string;clockOffset:()=>number;onNarration:(instance:string,status:'ended'|'error')=>void;onAudioActive?:(active:boolean)=>void}){
   const box=document.createElement('section');box.className='experience-tv';box.hidden=true;parent.append(box);
+  const brand=document.createElement('div');brand.className='experience-brand';brand.append(createExodusBrand());box.append(brand);
+  const homecoming=document.createElement('img');homecoming.className='experience-homecoming';homecoming.alt='';homecoming.decoding='async';homecoming.draggable=false;homecoming.hidden=true;homecoming.setAttribute('aria-hidden','true');
+  homecoming.addEventListener('error',()=>{homecoming.style.display='none';},{once:true});box.append(homecoming);
   const kicker=document.createElement('p'),title=document.createElement('h1'),copy=document.createElement('p'),sky=document.createElement('div'),foot=document.createElement('p'),subtitle=document.createElement('p'),constellation=document.createElement('div');
   kicker.className='experience-kicker';copy.className='experience-copy';sky.className='experience-sky';foot.className='experience-foot';subtitle.className='experience-narration';constellation.className='experience-constellation';subtitle.setAttribute('aria-live','polite');box.append(kicker,title,copy,constellation,sky,foot,subtitle);
   const audio=new Audio();audio.preload='auto';audio.volume=Math.max(0,Math.min(1,options.volume));
@@ -34,6 +39,9 @@ export function createExperienceOverlay(parent:HTMLElement,options:{audio:boolea
   function update(s:MissionSnapshot){
     last=s;syncAudio(s);const e=s.experience,final=!!e?.finaleActive;
     box.hidden=!options.visual||(!e?.active&&!final);if(box.hidden)return;
+    const showHomecoming=final&&hasChildIllustrations(s.scenarioId)&&!s.accessibility.reducedStimuli&&s.accessibility.showVisualGuidance!==false;
+    homecoming.hidden=!showHomecoming;
+    if(showHomecoming&&!homecoming.getAttribute('src'))homecoming.src=illustrationPath('homecoming-v1','renderer');
     const next=JSON.stringify([s.runId,e,s.scenarioId]);if(next===key)return;key=next;
     box.classList.toggle('experience-final',final);box.classList.toggle('experience-paused',!!e?.paused);
     kicker.textContent=final?'A PATRA LUME · AM FOST AICI':'BUN VENIT LA BORD · NAVA VĂ RECUNOAȘTE';

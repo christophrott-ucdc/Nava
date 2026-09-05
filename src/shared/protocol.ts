@@ -255,7 +255,7 @@ export interface PerfSummaryMsg {
 
 export type ServerMessage =
   | {type:'mission'; snapshot:import('./mission').MissionSnapshot}
-  | {type:'missionAck';eventId:string;ok:boolean;status:string}
+  | {type:'missionAck';eventId:string;ok:boolean;status:string;reason?:string}
   | WelcomeMsg
   | ClockMsg
   | ApplyCmdMsg

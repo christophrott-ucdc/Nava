@@ -6,10 +6,9 @@ button,a { -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
 button:focus-visible,a:focus-visible { outline:3px solid var(--ink); outline-offset:5px; }
 button:disabled { opacity:.55; cursor:default; }
 .topbar { display:flex; align-items:center; justify-content:space-between; gap:32px; padding:16px 48px; background:rgba(255,255,255,.54); border-bottom:1px solid rgba(255,255,255,.85); }
-.brand { display:flex; align-items:center; gap:16px; font-size:28px; font-weight:750; letter-spacing:.04em; }
-.brand small { display:block; color:var(--ink-soft); font-size:16px; letter-spacing:.16em; margin-top:4px; }
-.brand-glyph { display:grid; place-items:center; width:64px; height:64px; border-radius:20px; background:var(--coral); }
-.brand-glyph .icon { width:36px; height:36px; }
+.brand { display:flex; align-items:center; min-width:0; }
+.brand-logo { display:block; width:266px; max-width:100%; height:72px; overflow:hidden; }
+@media(max-height:850px) and (orientation:landscape) { .brand-logo { width:222px; height:60px; } }
 .connection { display:flex; align-items:center; gap:12px; padding:12px 20px; background:#fff0cc; border-radius:999px; font-size:20px; }
 .connection span { width:12px; height:12px; border-radius:50%; background:#987022; }
 .connection[data-status=online] { background:#dcf6e9; }
@@ -76,6 +75,10 @@ p { line-height:1.4; }
 .zone-result small { font-size:22px; margin-top:16px; color:var(--ink-soft); }
 .waiting { height:100%; display:flex; align-items:center; justify-content:center; gap:32px; }
 .waiting>.post-mascot { width:240px; height:240px; animation:levitate 4s ease-in-out infinite; }
+.waiting-expedition-art { position:relative; flex:none; width:240px; height:240px; }
+.waiting-expedition-ship { width:100%; height:100%; object-fit:contain; pointer-events:none; }
+.waiting-expedition-art .waiting-post-identity { position:absolute; right:0; bottom:0; width:64px; height:64px; object-fit:contain; animation:none; }
+.waiting-expedition-art.illustration-unavailable .waiting-post-identity { inset:0; width:100%; height:100%; }
 .waiting .interaction-head { text-align:left; max-width:720px; margin:0; }
 .waiting .head-icon { display:none; }
 .waiting h2 { font-size:40px; line-height:44px; }
@@ -106,6 +109,8 @@ p { line-height:1.4; }
 .inst-list .what,.inst-list li.dim { font-size:20px; }
 .experience:has(.inst-list) .waiting { gap:24px; }
 .experience:has(.inst-list) .waiting>.post-mascot { width:104px;height:104px;max-height:100%;animation:none; }
+.experience:has(.inst-list) .waiting-expedition-art { width:104px; height:104px; max-height:100%; }
+.experience:has(.inst-list) .waiting-expedition-art .waiting-post-identity { width:36px; height:36px; }
 .experience:has(.inst-list) .waiting h2 { font-size:28px;line-height:32px; }
 .experience:has(.inst-list) .waiting p { font-size:20px;line-height:28px;margin:8px 0 0; }
 .experience:has(.inst-list) .interaction { min-height:112px; }
@@ -210,6 +215,15 @@ body[data-mission] .subtitle p { font-size:24px; line-height:1.25; }
 .mission-zone[data-kind=latched-pair] .mission-option:first-child { min-height:140px; border-radius:70px; background:linear-gradient(145deg,#d9f3e4,#bfe8da); }
 .mission-wait { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:20px; text-align:center; max-width:1000px; margin:auto; }
 .mission-wait h2 { font-size:46px; }.mission-wait p { margin:0; font-size:28px; line-height:1.4; }.mission-wait .eyebrow { font-size:21px; }.mission-wait-mascot { width:160px; height:160px; object-fit:contain; }
+.mission-wait-art { position:relative; flex:none; width:160px; height:160px; }
+.mission-wait-ship { width:100%; height:100%; object-fit:contain; pointer-events:none; }
+.mission-wait-art.has-expedition-ship .mission-wait-mascot { position:absolute; right:0; bottom:0; width:48px; height:48px; }
+body[data-mission-guidance=false] .mission-wait-ship,body[data-mission-quiet=true] .mission-wait-ship,
+body[data-mission-guidance=false] .waiting-expedition-ship,body[data-mission-quiet=true] .waiting-expedition-ship { visibility:hidden; }
+body[data-mission-guidance=false] .mission-wait-art.has-expedition-ship .mission-wait-mascot,
+body[data-mission-quiet=true] .mission-wait-art.has-expedition-ship .mission-wait-mascot { inset:28px; width:104px; height:104px; }
+body[data-mission-guidance=false] .waiting-expedition-art .waiting-post-identity,
+body[data-mission-quiet=true] .waiting-expedition-art .waiting-post-identity { inset:0; width:100%; height:100%; }
 .mission-finale-head { text-align:center; }.mission-finale-head h2 { font-size:30px; }.mission-summary-pair { flex:1; }
 .mission-summary-text { margin:0; color:#334d64; font-size:calc(21px * var(--mission-text-scale,1)); line-height:1.4; overflow-wrap:anywhere; }
 .mission-summary-pair .mission-zone { justify-content:center; }.mission-summary-pair h3 { margin:0; font-size:25px; }
@@ -222,3 +236,4 @@ body[data-mission-quiet=true] .mission-zone { box-shadow:none; background:#fff; 
 body[data-mission-motion=true] *,body[data-mission-quiet=true] * { animation:none!important; transition:none!important; }
 body[data-mission-simple=true] .brand small,body[data-mission-simple=true] .mission-footer { visibility:hidden; }
 @media(max-height:850px) and (orientation:landscape) { .mission-zone { padding:14px 18px; gap:8px; }.mission-option { min-height:60px; padding:10px; font-size:calc(17px * var(--mission-text-scale,1)); }.mission-instruction { font-size:calc(23px * var(--mission-text-scale,1)); }.mission-detail { font-size:calc(16px * var(--mission-text-scale,1)); }.mission-items { min-height:40px; }.mission-shape { width:40px; height:40px; }.mission-zone[data-kind=visual-match] .mission-item .mission-shape { width:54px;height:54px; }.mission-seat { width:32px;height:32px; }.mission-zone-head { font-size:16px; }.mission-delivery { font-size:15px; }.mission-summary-text { font-size:17px; }.mission-wait h2 { font-size:34px; }.mission-wait p { font-size:22px; } }
+@media(max-height:850px) and (orientation:landscape) { .waiting-expedition-art { width:160px; height:160px; }.waiting-expedition-art .waiting-post-identity { width:48px; height:48px; } }

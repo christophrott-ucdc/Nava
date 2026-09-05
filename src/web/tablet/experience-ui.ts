@@ -1,5 +1,6 @@
 import type { MissionSnapshot } from '@shared/mission';
 import { EXPERIENCE_PRACTICE, FINALE_CHOICES } from '@shared/experience';
+import { hasChildIllustrations, illustrationPath, type ExodusIllustration } from '../shared/illustrations';
 
 type Zone = 'A' | 'B';
 const el = <K extends keyof HTMLElementTagNameMap>(tag:K, cls:string, text?:string) => { const e=document.createElement(tag); e.className=cls; if(text!==undefined)e.textContent=text; return e; };
@@ -12,12 +13,23 @@ const icons:Record<string,string> = {
   check:'<path d="m23 51 18 18 36-39" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>',
 };
 function art(name:string) { const e=el('span','experience-art'); e.innerHTML=`<svg viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">${icons[name]||icons.orbit}</svg>`; return e; }
+function illustration(name:ExodusIllustration, cls:string) {
+  const image=el('img',cls);image.src=illustrationPath(name);image.alt='';image.draggable=false;image.decoding='async';
+  image.setAttribute('aria-hidden','true');image.addEventListener('error',()=>image.remove(),{once:true});return image;
+}
+const showIllustrations=(snapshot:MissionSnapshot)=>snapshot.accessibility.showVisualGuidance!==false&&!snapshot.accessibility.reducedStimuli;
+const keepsakeIllustrations:Record<string,ExodusIllustration>={light:'keepsake-light-v1',care:'keepsake-care-v1',courage:'keepsake-compass-v1'};
 export function experienceHeader(snapshot:MissionSnapshot, finale:boolean) {
   const head=el('header','experience-intro');
-  head.append(el('p','eyebrow',finale?'ULTIMUL GEST · O AMINTIRE COMUNĂ':'ÎNAINTE DE DECOLARE · PROBĂ FĂRĂ PUNCTAJ'),el('h2','',finale?'Povestea merge cu voi':'Nava vă recunoaște'));
+  const heading=el('h2','',finale?'Ce ducem mai departe':'Pregătim decolarea');
+  if(!finale&&hasChildIllustrations(snapshot.scenarioId)) {
+    heading.classList.add('experience-illustrated-heading');
+    heading.prepend(illustration('tutorial-pair-v1','experience-tutorial-pair'));
+  }
+  head.append(el('p','eyebrow',finale?'JURNALUL ECHIPAJULUI':'BUN VENIT LA BORD'),heading);
   if(!finale) {
     const steps=el('ol','experience-steps'); const current=['touch','practice','cooperate','ready'].indexOf(snapshot.experience!.step);
-    ['Salută nava','Încearcă','Conectează','Echipaj pregătit'].forEach((label,i)=>{const item=el('li',i===current?'current':i<current?'done':'',label); if(i===current)item.setAttribute('aria-current','step'); steps.append(item);}); head.append(steps);
+    ['Salută nava','Încearcă','Împreună','Echipaj pregătit'].forEach((label,i)=>{const item=el('li',i===current?'current':i<current?'done':'',label); if(i===current)item.setAttribute('aria-current','step'); steps.append(item);}); head.append(steps);
   }
   return head;
 }
@@ -31,33 +43,40 @@ export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boole
   const button=(label:string,value:string,cls='',disabled=false,icon?:string)=>{const b=el('button',`mission-option ${cls}`);b.type='button';b.dataset.value=value;b.disabled=blocked||disabled;if(icon)b.append(art(icon));b.append(el('span','',label));b.addEventListener('click',()=>send(zone,value));options.append(b);return b;};
   let status='';
   if(!included) {
-    title.textContent='Un loc pentru mai târziu';panel.append(art('orbit'));detail.textContent='Acest loc nu este inclus în echipajul curent. Operatorul te poate adăuga la pregătirea grupului.';status='Poți urmări povestea pe ecrane.';
+    title.textContent='Vrei să te alături?';panel.append(art('orbit'));detail.textContent='Spune-i ghidului că vrei să participi de aici. Până atunci, urmărește călătoria pe ecrane.';status='Poți urmări povestea pe ecrane.';
   } else if(finale) {
     const config=FINALE_CHOICES[snapshot.scenarioId], chosen=exp.finale[key];title.textContent=config.title;
     const contribution=snapshot.summary.posts.find(p=>p.post===snapshot.post)?.lines[zone==='A'?0:1];
-    if(contribution)panel.append(el('p','experience-contribution',contribution.replace(/^[AB]: /,'')));
-    detail.textContent='Un ultim gest pe tabletă. Privește cum ajunge pe ecranul central.';
-    for(const choice of config.options){const b=button(choice.label,`finale:${choice.value}`,chosen===choice.value?'experience-selected':'',!!chosen);b.setAttribute('aria-pressed',String(chosen===choice.value));}
+    if(contribution){const journal=el('details','experience-journal');journal.append(el('summary','','Alegerile tale din călătorie'),el('p','experience-contribution',contribution.replace(/^[AB]: /,'')));panel.append(journal);}
+    detail.textContent='Alege ce vrei să duci mai departe. Răspunsul tău va apărea pe ecranul central.';
+    for(const choice of config.options.filter(choice=>!chosen||choice.value===chosen)){
+      const b=button(choice.label,`finale:${choice.value}`,chosen===choice.value?'experience-selected':'',!!chosen);b.setAttribute('aria-pressed',String(chosen===choice.value));
+      const keepsake=keepsakeIllustrations[choice.value];
+      if(snapshot.scenarioId==='age-5-10'&&showIllustrations(snapshot)&&keepsake){
+        b.classList.add('experience-keepsake-option');b.prepend(illustration(keepsake,'experience-keepsake-image'));
+      }
+    }
+    if(chosen==='observe')button('Prefer să privesc','finale:observe','mission-observe',true);
     if(!chosen)button('Prefer să privesc','finale:observe','mission-observe');
-    status=chosen==='observe'?'Poți păstra momentul pentru tine.':chosen?'Gestul tău face parte din amintirea echipajului.':'Alege o singură dată. Nu există răspuns greșit.';
+    status=chosen==='observe'?'Poți păstra momentul pentru tine.':chosen?'Răspunsul tău a ajuns în jurnalul echipajului.':'Alege ce contează pentru tine. După trimitere, răspunsul rămâne în jurnal.';
     panel.dataset.complete=String(!!chosen);
   } else if(observer) {
-    title.textContent='Poți privi în ritmul tău';panel.append(art('orbit'));detail.textContent=exp.step==='ready'?'Proba s-a încheiat. Privește începutul călătoriei.':'Povestea este și pentru tine. Te poți alătura probei.';if(exp.step!=='ready')button('Vreau să particip','tutorial:touch','experience-primary');status='Fără grabă. Fără punctaj.';
+    title.textContent='Urmărește călătoria';panel.append(art('orbit'));detail.textContent=exp.step==='ready'?'Proba s-a încheiat. Privește începutul călătoriei.':'Poți privi sau poți încerca împreună cu noi.';if(exp.step!=='ready')button('Vreau să particip','tutorial:touch','experience-primary');status=exp.step==='ready'?'Pornim împreună.':'Te poți alătura când ești gata.';
   } else if(exp.step==='touch') {
-    const done=exp.touched.includes(key);title.textContent=done?'Nava te-a recunoscut':'Atinge lumina din fața ta';
+    const done=exp.touched.includes(key);title.textContent=done?'Bun venit în echipaj!':'Salută nava';
     detail.textContent=done?'Lumina ta a ajuns pe ecran. Privește cum se adună echipajul.':'Această jumătate a tabletei este a ta.';
-    button(done?'Salut primit':'Salut, navă!','tutorial:touch','experience-beacon',done,done?'check':'orbit');status=done?'Atingerea ta este confirmată.':'O singură atingere este suficientă.';panel.dataset.complete=String(done);
+    button(done?'Salut primit':'Salut, navă!','tutorial:touch','experience-beacon',done,done?'check':'orbit');status=done?'Privește ecranul central: lumina aceea este a ta.':'O singură atingere este suficientă.';panel.dataset.complete=String(done);
   } else if(exp.step==='practice') {
-    const config=EXPERIENCE_PRACTICE[snapshot.scenarioId], chosen=exp.practice[key], done=exp.practiced.includes(key);title.textContent=done?'Ai prins ideea':config.title;detail.textContent=done?'Proba este confirmată. Urmează legătura cu echipajul.':config.instruction;
+    const config=EXPERIENCE_PRACTICE[snapshot.scenarioId], chosen=exp.practice[key], done=exp.practiced.includes(key);title.textContent=done?'Ai încheiat proba':config.title;detail.textContent=done?'Comanda ta a ajuns la navă. Mai avem un pas înainte de decolare.':config.instruction;
     if(!done){for(const choice of config.options){const b=button(choice.label,`tutorial:pick:${choice.value}`,chosen===choice.value?'experience-selected':'',false,icons[choice.value]?choice.value:undefined);b.setAttribute('aria-pressed',String(chosen===choice.value));}button('Confirmă','tutorial:confirm','experience-primary',!chosen);}
     else panel.append(art('check'));
-    status=done?'Proba nu consumă resurse din misiune.':config.detail;panel.dataset.complete=String(done);
+    status=done?'Acum știi: alegi, apoi confirmi.':config.detail;panel.dataset.complete=String(done);
   } else {
-    const done=exp.linked.includes(key), ready=exp.step==='ready';title.textContent=ready?'Echipajul este pregătit':done?'Legătura ta este aprinsă':'Aprinde legătura cu echipajul';
-    detail.textContent=ready?'Privește ecranul central. Căpitanul preia călătoria.':'Fiecare confirmă în jumătatea sa. Gesturile voastre se întâlnesc pe TV.';
-    button(ready?'Pregătit de călătorie':done?'Legătură confirmată':'Conectează lumina mea','tutorial:link','experience-beacon',done||ready,done||ready?'check':'link');status=ready?'Rămâi la postul tău. Pornim împreună.':done?'Contribuția ta este păstrată.':'Nu trebuie să apăsați exact în același timp.';panel.dataset.complete=String(done);
+    const done=exp.linked.includes(key), ready=exp.step==='ready';title.textContent=ready?'Echipajul este pregătit':done?'Lumina ta este aprinsă':'Aprindem luminile împreună';
+    detail.textContent=ready?'Privește ecranul central. Căpitanul preia călătoria.':'Atinge butonul din jumătatea ta. Când sunteți gata amândoi, luminile voastre se unesc pe ecran.';
+    button(ready?'Pregătit de călătorie':done?'Lumina este aprinsă':'Aprinde lumina mea','tutorial:link','experience-beacon',done||ready,done||ready?'check':'link');status=ready?'Rămâi la postul tău. Pornim împreună.':done?'Lumina ta rămâne aprinsă. Privește ecranul central.':'Nu trebuie să apăsați exact în același timp.';panel.dataset.complete=String(done);
   }
   panel.append(detail,options);
   if(!finale&&included&&!observer&&exp.step!=='ready') { const b=el('button','mission-option mission-observe experience-observe','Prefer să privesc');b.dataset.value='tutorial:observe';b.disabled=blocked;b.addEventListener('click',()=>send(zone,'tutorial:observe'));panel.append(b); }
-  const delivery=el('p','mission-delivery',!online?'Reconectare. Așteaptă revenirea legăturii.':snapshot.suspended||exp.paused?'O pauză de bord. Continuăm împreună.':pending?'Trimitem gestul tău…':status);delivery.setAttribute('role','status');panel.append(delivery);return panel;
+  const delivery=el('p','mission-delivery',!online?'Refacem legătura cu nava. Așteaptă puțin.':snapshot.suspended||exp.paused?'Facem o pauză. Continuăm împreună.':pending?'Trimitem răspunsul…':status);delivery.setAttribute('role','status');panel.append(delivery);return panel;
 }

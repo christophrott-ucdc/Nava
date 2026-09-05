@@ -150,3 +150,54 @@ Executat docs/PROMPT-CODEX-MUZICA.md: zece generări reale music_v2, M08 primul 
 AmbientCue extins cu sursăfile; WebAudio în magistrala ambientală existentă, duck−9dB/300ms/800ms inclusiv narator, seek/pauză/rate și oprire la limite. playAudio:false nu construiește graful. La232–246 muzica+ambientul sunt zero; replicile originale la233 și241 rămân, deci nu se pretinde tăcere pe întregul mix. M10 urmează exclusiv interacțiunea thanks existentă. Fără modificarea show/voci/film/SFX/state machine, fără dependențe noi.
 
 PASS: npm run check162teste+smoke-uri, smoke:scenarios4profiluri, smoke:renderer film/GLBreal, QAreal zecebuffer-e/cinci mixuri voce+muzică/duck/pauză/mute/seek/tăcere/final. Audio decode/hash/LUFS/truepeakPASS. Galerie și mixuri: runs/debug/music/index.html; ghid complet cu prompturi: docs/MUZICA.md. needsReview:true păstrat pentru audiție artistică, motiv și bucle; inteligibilitatea tuturor51replicilor la nivelul sălii rămâne de ascultat. Transcrieri mixuri:3replici fără diferențe, numeleSiwarha și scriereaKepler186d marcate în raport. Fără commit/push/deploy.
+
+### 2026-09-05 — Plan educativ pentru interacțiuni 3D
+
+Adăugat docs/PLAN-3D-EDUCATIV.md: matrice pentru patru categorii de vârstă × trei etape, legată de mecanicile existente, cu obiective, reprezentări propuse și verificarea înțelegerii separată de acțiunile acceptate. Revizie independentă făcută de agent AI din perspectiva fizicii spațiale și ingineriei, cu surse NASA/ESA; nu consultanță umană acreditată.
+
+Clarificate limitele: +2 s este decalaj al modelului, fără distanțe astronomice calculate; acordul senzorilor nu dovedește adevărul; bugetul adulților și reducerea zgomotului sunt abstracte; Kepler-186 d nu are biosferă confirmată. Planul păstrează ficțiunea distinctă de observații și nu dezvăluie Pământul anticipat. Mini-PC-ul și topologia hardware rămân de validat; A/B landscape și fallback accesibil sunt cerințe.
+
+Livrare de proiectare, fără modificări de cod, gameplay, show, voci sau timing. Implementarea 3D și pilotul educativ/hardware rămân lucrări viitoare. Verificare documentară și git diff --check; nu au fost rulate din nou testele runtime pentru această modificare exclusiv de documentație. Fără commit/push/deploy.
+
+### 2026-09-05 — Interacțiuni educative 3D implementate
+
+Implementate cele 12 activități din PLAN-3D-EDUCATIV.md pe toate cele cinci posturi: forme/potrivire/cooperare 5–10, explicații/probe K-R/verdict 10–15, autoritate/test/revizuire 15–18, buget/sondă/arhivă adulți. ZoneView.visual este extensie opțională read-only, calculată prin contextul motorului existent; nicio schimbare a acțiunilor sau regulilor. Intervalele sunt segmente proporționale, offsetul +2 s rămâne global, fără distanțe astronomice inventate. Tutorialul și finalul disting locurile neincluse, observarea, răspunsul lipsă și confirmarea.
+
+Un singur renderer Three.js per tabletă, două viewporturi A/B, forme extrudate, rotire locală fără comenzi, confirmare după server, SVG echivalent, context-loss/recovery, cache/dispose, randare la schimbare și DPR adaptiv. Texte/controale HTML păstrate, toate țintele verificate ≥64 px. Corectate winding-ul geometriei, oprirea randării la broadcast-uri neschimbate și layouturile dense/finale. Capturile finale folosesc compositor Electron nativ, nu ferestre offscreen care omiteau stratul GPU; pixeli colorați verificați efectiv.
+
+PASS: npm run check 173/173 teste și smoke-uri; smoke:scenarios toate patru profilurile, 10 zone×3 etape, retry/stale-run/SQLite/certificate; education-review 205 stări reale cu 32 audituri tematice, text1,3×/contrast, input/focus A/B, constructor dens, fără overflow sau etichete peste caption, fallback și reduced-motion; tutorial-review 26 capturi pe toate cele patru profiluri. ACK-urile audio din QA tabletelor sunt sintetice, marcate explicit. Separat experience-renderer-review a verificat naratorul real, filmul/GLB-ul și finalurile 4K/windowed și a rulat npm run smoke:renderer cu succes; final-only a verificat o singură redare naturală după ended. Contrast text nou minimum conservator5,85:1.
+
+Dovezi: runs/debug/education-3d/index.html (62 capturi curente +26 tutorial +before), education-review.json, tutorial/review.json, contrast.json, check.log, scenarios.log; TV în runs/debug/tutorial-final și runs/renderer-smoke-avatar.png. Ghid docs/EDUCATIE-3D.md; README, OPERARE și planul actualizate. Cele două modificări handoff și planul existente înaintea implementării au fost păstrate.
+
+Hardware/public rămase: alegerea și proba mini-PC-ului/topologiei, maparea multitouch, două persoane simultan la post, încărcarea cumulată și pilotul educativ pe patru grupe. Nu se pretinde validare pedagogică umană. Extensiile distincte din plan (predicție salvată, justificare, ecosistem/zgomot fizic nou) nu sunt strecurate în upgrade-ul vizual. Filmul, show.json, vocile, muzica și timingul nu au fost modificate. Fără commit/push/merge/release/deploy.
+
+## 2026-09-05 — Română firească și jocuri cu rezultate concrete
+
+Cererea curentă: revizie completă a limbii române pe tablete și refacerea jocurilor astfel încât participanții să înțeleagă scopul, acțiunea și consecința. Implementat direct, păstrând toate modificările existente și fără commit/push/deploy.
+
+- Rescrise instrucțiunile, tutorialul, finalul, indiciile, mesajele de rezultat și explicațiile. Instrumentele fictive sunt etichetate vizibil, iar busola folosește V pentru vest.
+- 5–10: orientare cu semn auriu, montare validată, trei trasee și reîncercare explicată. 10–15: două ritmuri, comparație și reconsiderarea concluziei. 15–18: două cazuri de senzori per participant și tabel înainte/acum. Adulți: două credite, documente cu citiri concrete, limite și transmiterea unui document.
+- Contracte aditive: game.rotation/game.tests, goal/feedback/guidance/documents/resourceLabel/comparison și ACK reason opțional. SQLite existent, fără migrare. Filmul, GLB-ul, vocile, muzica și ferestrele show-ului sunt păstrate.
+- Rezolvat overflow-ul la text mărit, suprapunerea ajutorului peste comenzi, mesajele de greșeală rămase după corectare și tăierea jurnalelor PNG lungi. Datele și tabelele înlocuiesc diagrama unde rezultatul trebuie citit.
+- Corectat și testul smoke-auth care căuta cifrele PIN-ului ca subșir în întregul JSON, inclusiv hash-uri/UUID-uri aleatoare. Acum verifică formatul hash-ului și absența câmpului/valorii PIN în clar; autentificarea nu a fost schimbată.
+
+Verificare: npm run check — 179/179 teste și verificările core/auth/platform/media trecute. QA vizuală reală — 205 stări, 32 verificări de teme, 108 capturi curente plus 26 capturi/stări de tutorial; cinci posturi A/B la 1920×1080, text 1,3, contrast, ținte ≥64px, fără scroll/ocluzii, fallback 2D și WebGL restaurat. Server smoke verifică regulile noi, deduplicarea, recuperarea SQLite și certificatele. Rapoartele tutorialului folosesc ACK-uri audio sintetice declarate; audiția este verificată separat în rendererul real.
+
+Dovezi: runs/debug/romanian-games/index.html; education-review.json; tutorial/review.json; server/server-smoke.json; check-final.log; renderer-final.log. Capturile FAIL-* sunt iterații corectate și sunt excluse din galerie. Comparația anterioară rămâne în runs/debug/education-3d/. Ghid actual: docs/REVIZIE-ROMANA-JOCURI.md; README și OPERARE actualizate.
+
+Rămân pentru instalație: mini-PC-ul final, maparea Windows a ecranelor tactile, atingere simultană A/B, performanța împreună cu TV-urile, volume/lizibilitate în sală și pilot cu participanți reali din toate grupele. Revizia agenților AI și testele nu înlocuiesc validarea pedagogică umană.
+Verificarea finală a rendererului a trecut: tutorial cu narator real, finalurile celor patru categorii la 4K/windowed și npm run smoke:renderer cu filmul în redare (1,06 → 2,36 s, 69 → 147 cadre) și GLB vizibil fără context pierdut. Log: runs/debug/romanian-games/renderer-final.log.
+
+### 2026-09-05 — Jocuri prin explorare, după feedbackul utilizatorului
+
+Înlocuite formularele implicite din cele trei etape cu instrumente interactive: forme/montaj/circuit pentru copii; antenă și ritmuri pentru 10–15; pilot cu manete A/B și probe vizibile pentru 15–18; scanare, obturator și capsulă pentru adulți. Încercările pot fi repetate; contribuțiile sunt păstrate separat de starea vizuală curentă. Agenții au lucrat exclusiv pe shared, young toys și older toys; Astra a integrat panoul, protocolul, jurnalele și documentația.
+
+Prima verificare npm run check: 191/191 teste și smoke-urile trecute. Prima QA integrată: 120 stări tabletă și gesturi native, fără overflow. Corecții vizuale ulterioare: contrastul intervalelor, alinierea SVG/drag, etichete și rezervă la adulți, circuit închis, poziția piesei după remontare. Proba reală renderer a trecut cu narator, patru finaluri 4K/windowed, npm run smoke:renderer: film 1,022 → 2,350 s, 68 → 148 cadre, GLB vizibil/context intact. Smoke:scenarios a trecut. Verificarea finală a surselor corectate și testele suplimentare de recuperare/efecte sunt în desfășurare; rezultatul final se adaugă mai jos.
+
+Ghid actual docs/JOCURI-EXPLORARE.md; capturi și loguri runs/debug/play-experience/. Interfața anterioară rămâne numai pentru regresie cu interaction=classic. Niciun commit/push/deploy; filmul, show.json și fișierele vocale nu au fost modificate. Mini-PC-ul, touch-ul simultan și pilotul cu publicul rămân de verificat.
+
+- [Logo EXODUS7] PNG transparent generat și integrat în antetul tabletelor; typecheck/build trecute, capturi reale 1920×1080 și 1280×800 în runs/debug/exodus-logo/. Prompt/proveniență: docs/EXODUS7-LOGO.md. Doar logo; jocurile oprite anterior nu sunt declarate finalizate. Fără commit/push/deploy.
+
+- [2026-09-05 · Ilustrații EXODUS7] Inventariate locuri concrete pentru imagini noi pe tabletele copiilor și la încheierea TV: docs/PLAN-ILUSTRATII-EXODUS7.md. Propus un pachet inițial de 10 asseturi, păstrând mascotele existente și geometria educativă în cod. Etapă de planificare; fără generare, integrare, teste, builduri sau capturi noi. Interdicția utilizatorului privind testarea rămâne activă.
+
+- [2026-09-05 · Ilustrații EXODUS7 implementate] Generat pachetul de 10 ilustrații cu imagegen integrat, PNG-uri și prompturi/proveniență în src/web/shared/illustrations/exodus7/. Integrare în primire/așteptare, tutorialul copiilor, carcasele felinarului și receptorului, cele trei daruri finale, jurnal/certificat și încheierea TV. Helper comun pentru căi și profilurile copiilor; controlul decorului urmează confortul. Documentație: docs/ILUSTRATII-EXODUS7.md; galerie de asseturi în index.html din folderul imaginilor. Fără teste, builduri, rularea aplicației sau capturi noi, conform interdicției utilizatorului. Livrare în surse, fără afirmație de validare runtime/hardware și fără commit/push/deploy.

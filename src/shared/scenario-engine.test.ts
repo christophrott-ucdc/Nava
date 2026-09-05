@@ -8,6 +8,10 @@ function choose(p: ScenarioProgress, stage: number, post: Post, zone: Zone, valu
   return result.progress;
 }
 const rejected = (p: ScenarioProgress, stage: number, post: Post, zone: Zone, value: string) => assert.equal(applyScenarioAction(p, { stage, post, zone, action: 'choose', value }).ok, false);
+function align(p: ScenarioProgress, post: Post, zone: Zone): ScenarioProgress {
+  while (p.zones[`${post}${zone}`].game?.rotation) p = choose(p, 2, post, zone, 'rotate');
+  return p;
+}
 function probe(p: ScenarioProgress, post: Post, zone: Zone, values: number[]): ScenarioProgress {
   p = choose(p, 2, post, zone, 'construct');
   for (const n of values) p = choose(p, 2, post, zone, `piece:${n}`);
@@ -28,7 +32,7 @@ test('children retain shape provenance, allow retries and count B-only latches i
   let p = choose(empty, 3, 5, 'B', 'link');
   assert(scenarioConditions(p).has('link_partial'));
   rejected(p, 3, 5, 'B', 'link');
-  p = choose(p, 2, 2, 'A', 'select'); p = choose(p, 2, 2, 'A', 'fit');
+  p = choose(p, 2, 2, 'A', 'select'); p = align(p, 2, 'A'); p = choose(p, 2, 2, 'A', 'fit');
   assert.match(summarizeScenario(p).posts[1].lines[0], /primită de la Natură/);
   assert(scenarioConditions(p).has('find_none'));
   assert.equal(Object.keys(empty.zones['5B'].choices).length, 0, 'input is immutable');
@@ -38,7 +42,7 @@ test('children can complete every post and retain ten identities through all thr
   for (let post = 1; post <= 5; post++) for (const zone of ['A', 'B'] as const) {
     const shape = scenarioView(p, 1, post as Post).zones[zone].items![0].label;
     p = choose(p, 1, post as Post, zone, `shape:${shape}`);
-    p = choose(p, 2, post as Post, zone, 'select'); p = choose(p, 2, post as Post, zone, 'fit');
+    p = choose(p, 2, post as Post, zone, 'select'); p = align(p, post as Post, zone); p = choose(p, 2, post as Post, zone, 'fit');
     p = choose(p, 3, post as Post, zone, 'link');
   }
   for (const condition of ['find_complete', 'fit_complete', 'link_complete', 'final_complete']) assert(scenarioConditions(p).has(condition));
@@ -75,15 +79,15 @@ test('every station can measure, observe or skip the local measurement and const
   for (let post = 1; post <= 5; post++) for (const zone of ['A', 'B'] as const) {
     let p = choose(createProgress('age-10-15'), 2, post as Post, zone, 'measure:0');
     assert.equal(p.zones[`${post}${zone}`].constructing, true);
-    assert.match(scenarioView(p, 2, post as Post).zones[zone].detail, /Fără probe noi/);
+    assert.match(scenarioView(p, 2, post as Post).zones[zone].detail, /Încă nu am trimis/);
     rejected(p, 2, post as Post, zone, 'measure:1');
   }
 });
 test('mandate truth table preserves all authority and confirmation combinations', () => {
   for (const a of ['propose', 'execute']) for (const b of ['always', 'conflict']) for (const t of ['agree', 'conflict']) {
     let p = choose(createProgress('age-15-18'), 1, 1, 'A', a); p = choose(p, 1, 1, 'B', b); p = choose(p, 2, 1, 'A', t);
-    const detail = scenarioView(p, 2, 1).zones.A.detail;
-    assert(detail.includes(a === 'propose' ? 'PROPUNERE' : b === 'always' || t === 'conflict' ? 'AȘTEAPTĂ CONFIRMARE' : 'EXECUTAT ÎN SIMULARE'));
+    const detail = scenarioView(p, 2, 1).zones.A.feedback!;
+    assert(detail.includes(a === 'propose' ? 'Pilotul propune' : b === 'always' || t === 'conflict' ? 'Pilotul cere acordul' : 'Pilotul execută acțiunea în simulare'));
   }
 });
 test('mandate amendments compare against the original and preserve observation, missing tests and late completion', () => {
@@ -91,8 +95,8 @@ test('mandate amendments compare against the original and preserve observation, 
   p = choose(p, 2, 1, 'B', 'agree');
   p = choose(p, 3, 1, 'B', 'conflict'); p = choose(p, 3, 1, 'A', 'observe');
   const summary = summarizeScenario(p).posts[0].lines;
-  assert.match(summary[1], /MANDAT INCOMPLET.*→ EXECUTAT ÎN SIMULARE/);
-  assert.match(summary[0], /test neînregistrat/);
+  assert.match(summary[1], /Pilotul așteaptă.*→ Pilotul execută acțiunea în simulare/);
+  assert.match(summary[0], /niciun test rulat/);
   assert(scenarioConditions(p).has('PARTIAL'));
   rejected(createProgress('age-15-18'), 3, 1, 'B', 'keep');
 });
@@ -133,4 +137,66 @@ test('legacy and malformed actions cannot mutate the engine', () => {
   const p = createProgress('legacy-v3');
   rejected(p, 1, 1, 'A', 'observe');
   assert.equal(applyScenarioAction(p, { post: 9 as Post, zone: 'A', stage: 1, action: 'choose', value: 'x' }).ok, false);
+});
+test('keyed pieces need alignment; wrong routes do not mutate progress', () => {
+  let p = choose(createProgress('age-5-10'), 2, 1, 'A', 'select');
+  const before = JSON.stringify(p);
+  assert.equal(applyScenarioAction(p, { stage: 2, post: 1, zone: 'A', action: 'choose', value: 'fit' }).reason, 'piece-not-aligned');
+  assert.equal(JSON.stringify(p), before);
+  p = align(p, 1, 'A'); p = choose(p, 2, 1, 'A', 'fit');
+  for (const [value, reason] of [['dead-end', 'route-stops-early'], ['loop', 'route-returns-to-start']]) {
+    const result = applyScenarioAction(p, { stage: 3, post: 1, zone: 'A', action: 'choose', value });
+    assert.equal(result.reason, reason); assert.equal(result.progress, p);
+  }
+  p = choose(p, 3, 1, 'A', 'link');
+  assert.equal(p.zones['1B'].choices['3'], undefined);
+});
+test('each pilot can test both sensor cases and compare both after revision', () => {
+  let p = choose(createProgress('age-15-18'), 1, 1, 'A', 'execute');
+  p = choose(p, 1, 1, 'B', 'conflict');
+  p = choose(p, 2, 1, 'A', 'agree');
+  assert.equal(scenarioView(p, 2, 1).zones.A.completed, false);
+  p = choose(p, 2, 1, 'A', 'conflict');
+  assert.equal(scenarioView(p, 2, 1).zones.A.completed, true);
+  assert.deepEqual(p.zones['1A'].game?.tests, ['agree', 'conflict']);
+  rejected(p, 2, 1, 'A', 'agree');
+  p = choose(p, 3, 1, 'A', 'propose');
+  const feedback = scenarioView(p, 3, 1).zones.A.feedback!;
+  assert.match(feedback, /Aceeași indicație/); assert.match(feedback, /Indicații diferite/);
+  assert.match(feedback, /execută acțiunea/); assert.match(feedback, /Pilotul propune/);
+});
+test('signal conclusion can be reconsidered before evidence is committed', () => {
+  let p = choose(createProgress('age-10-15'), 3, 1, 'A', 'far');
+  p = choose(p, 3, 1, 'A', 'reconsider');
+  assert.equal(p.zones['1A'].pendingVerdict, undefined);
+  assert.equal(p.zones['1A'].choices['3'], undefined);
+  p = choose(p, 3, 1, 'A', 'insufficient');
+  p = choose(p, 3, 1, 'A', 'attach:none');
+  assert.equal(p.zones['1A'].choices['3'], 'insufficient');
+});
+test('adult documents expose consequences only after the corresponding choice', () => {
+  let p = createProgress('adults');
+  assert.deepEqual(scenarioView(p, 1, 1).zones.A.documents, []);
+  p = choose(p, 1, 1, 'A', 'wide');
+  assert.equal(scenarioView(p, 1, 1).zones.A.documents?.length, 1);
+  p = choose(p, 2, 1, 'A', 'protect');
+  const docs = scenarioView(p, 3, 1).zones.A.documents!;
+  assert.equal(docs.length, 2); assert.equal(docs[1].samples.length, 3);
+  assert.equal(new Set(docs[1].samples.map(s => s.value)).size, 1);
+  p = choose(p, 3, 1, 'A', 'probe');
+  assert.match(scenarioView(p, 3, 1).zones.A.feedback!, /limitele cercetării/);
+});
+test('adult resource label stays accurate after every choice and topics match documents', () => {
+  for (let post = 1; post <= 5; post++) for (const zone of ['A', 'B'] as const) {
+    let p = createProgress('adults');
+    assert.equal(scenarioView(p, 1, post as Post).zones[zone].resourceLabel, 'Rezervă: 2 din 2 credite');
+    p = choose(p, 1, post as Post, zone, 'fine');
+    p = choose(p, 2, post as Post, zone, 'passive');
+    const view = scenarioView(p, 2, post as Post).zones[zone];
+    assert.equal(view.resourceLabel, 'Rezervă: 0 din 2 credite');
+    const title = view.documents![0].title.split(' · ')[0];
+    assert(view.detail.startsWith(title));
+    assert.equal(view.visual?.facts[0], title);
+    assert.doesNotMatch(view.feedback!, /Ai păstrat rezerva/);
+  }
 });

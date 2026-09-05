@@ -63,18 +63,46 @@ export async function act(tablet, zone, value, duplicate = false) {
   if (duplicate) { const revision = tablet.snapshot.revision; tablet.send(event); const again = await tablet.next(m => m.type === 'missionAck' && m.eventId === event.eventId, 'duplicate ACK'); assert.equal(again.status, 'duplicate'); assert.equal(tablet.snapshot.revision, revision); }
   return event;
 }
+export async function rejectAction(tablet, zone, value, expectedStatus) {
+  const before = tablet.snapshot;
+  const event = { type: 'missionAction', runId: before.runId, cueInstanceId: before.cueInstanceId, eventId: randomUUID(), zone, value };
+  tablet.send(event);
+  const ack = await tablet.next(m => m.type === 'missionAck' && m.eventId === event.eventId, 'recoverable mistake ACK');
+  assert.equal(ack.ok, false, value + ' must not count as success');
+  if (expectedStatus) assert.equal(ack.status, expectedStatus);
+  const reasons={fit:'piece-not-aligned','dead-end':'route-stops-early',loop:'route-returns-to-start'};
+  assert.equal(ack.reason,reasons[value] || (value.startsWith('shape:')?'try-matching-shape':'unavailable-action'),'specific recoverable reason reaches tablet');
+  assert.equal(tablet.snapshot.revision, before.revision, 'mistake must not commit progress');
+  assert.deepEqual(tablet.snapshot.view, before.view, 'mistake leaves the activity available to retry');
+}
 export async function completeStage(h, profile, stage) {
   for (const tablet of h.tablets) for (const zone of ['A', 'B']) {
     const view = () => tablet.snapshot.view.zones[zone];
     if (profile === 'age-5-10') {
-      if (stage === 1) await act(tablet, zone, `shape:${view().items[0].label}`, true);
-      if (stage === 2) { await act(tablet, zone, 'select'); await act(tablet, zone, 'fit'); }
-      if (stage === 3) await act(tablet, zone, 'link');
+      if (stage === 1) { const target = `shape:${view().items[0].label}`; await rejectAction(tablet, zone, view().options.find(o => o.value.startsWith('shape:') && o.value !== target).value); await act(tablet, zone, target, true); }
+      if (stage === 2) {
+        await act(tablet, zone, 'select');
+        await rejectAction(tablet, zone, 'fit', 'invalid');
+        for (let turn = 0; turn < 3 - (tablet.snapshot.post % 3); turn++) await act(tablet, zone, 'rotate');
+        await act(tablet, zone, 'fit');
+      }
+      if (stage === 3) {
+        await rejectAction(tablet, zone, 'dead-end');
+        await rejectAction(tablet, zone, 'loop');
+        await act(tablet, zone, 'link');
+      }
     } else if (profile === 'age-10-15') {
       if (stage === 1) await act(tablet, zone, 'far');
       if (stage === 2) { await act(tablet, zone, 'measure:0'); for (const piece of zone === 'A' ? [1, 3, 2] : [3, 1, 2]) await act(tablet, zone, `piece:${piece}`); await act(tablet, zone, 'send'); }
-      if (stage === 3) { await act(tablet, zone, 'relay'); await act(tablet, zone, 'attach:repeated'); }
-    } else if (profile === 'age-15-18') await act(tablet, zone, stage === 1 ? zone === 'A' ? 'execute' : 'conflict' : stage === 2 ? zone === 'A' ? 'agree' : 'conflict' : zone === 'A' ? 'propose' : 'keep');
+      if (stage === 3) { await act(tablet, zone, 'far'); await act(tablet, zone, 'reconsider'); await act(tablet, zone, 'relay'); await act(tablet, zone, 'attach:repeated'); }
+    } else if (profile === 'age-15-18') {
+      if (stage === 2) {
+        await act(tablet, zone, 'agree');
+        assert(view().options.some(o => o.value === 'conflict' && !o.disabled), 'contradictory sensors remain testable after agreement');
+        await act(tablet, zone, 'conflict');
+        await rejectAction(tablet, zone, 'agree');
+      } else await act(tablet, zone, stage === 1 ? zone === 'A' ? 'execute' : 'conflict' : zone === 'A' ? 'propose' : 'keep');
+    }
     else await act(tablet, zone, stage === 1 ? zone === 'A' ? 'wide' : 'fine' : stage === 2 ? zone === 'A' ? 'protect' : 'passive' : zone === 'A' ? 'observation' : 'probe');
   }
 }
@@ -93,6 +121,24 @@ export async function runSmoke() {
         await completeStage(h, profile, stage);
       }
       const done = h.tablets[0].snapshot;
+      const committedProgress = (await h.api('/api/runs/' + done.runId + '/summary')).body.progress;
+      for (const [seat, progress] of Object.entries(committedProgress.zones)) {
+        if (profile === 'age-5-10') {
+          assert.equal(progress.game.rotation, 0, seat + ' piece aligned before mounting');
+          assert.equal(progress.choices['2'], 'fitted'); assert.equal(progress.choices['3'], 'linked');
+        } else if (profile === 'age-10-15') {
+          assert(progress.probes.length >= 1, seat + ' actual probe stored');
+          assert.equal(progress.pendingVerdict, undefined, 'reconsidered verdict committed cleanly');
+          assert.equal(progress.choices['3'], 'relay'); assert.equal(progress.attachment, 'attach:repeated');
+        } else if (profile === 'age-15-18') assert.deepEqual(progress.game.tests, ['agree','conflict'], seat + ' both sensor cases persisted');
+      }
+      if(profile === 'adults') for(const tablet of h.tablets) {
+        const a=tablet.snapshot.view.zones.A.documents, b=tablet.snapshot.view.zones.B.documents;
+        assert.equal(a.length,2); assert.equal(b.length,2);
+        assert.notDeepEqual(a[0].samples.map(s=>s.value),b[0].samples.map(s=>s.value),'wide and fine produce different authored evidence');
+        assert.notDeepEqual(a[1].samples.map(s=>s.value),b[1].samples.map(s=>s.value),'protected and passive reports reveal different certainty');
+        assert(a.every(d=>d.limitation.length>10) && b.every(d=>d.limitation.length>10),'each report states its information gap');
+      }
       oldEvent = { type: 'missionAction', runId: done.runId, cueInstanceId: done.cueInstanceId, eventId: randomUUID(), zone: 'A', value: 'observe' };
       await h.command({ action: 'epilogue' });
       const final = await waitFor(() => h.tablets[0].snapshot, s => s?.state.state === 'epilogue' && s.certificateToken, 'final snapshot and certificate token');
@@ -129,7 +175,7 @@ export async function runSmoke() {
     assert.equal(restored.body.progress.zones['1B'].choices['1'], undefined);
     await h.command({ action: 'restart' });
     assert.deepEqual(h.logs, [], 'no server errors');
-    const out = path.join(ROOT, 'runs/debug/scenarios-new'); await mkdir(out, { recursive: true });
+    const out = path.join(ROOT, 'runs/debug/romanian-games/server'); await mkdir(out, { recursive: true });
     await writeFile(path.join(out, 'server-smoke.json'), JSON.stringify({ checkedAt: new Date().toISOString(), kind: 'real-server-assets-no-renderer', recovery: { sameRun: true, suspendedUntilExplicitResume: true, preservedProgress: true, persistedEventDedup: true }, results }, null, 2));
     console.log(`Scenario integration passed: ${results.length} profiles, 10 zones × 3 stages, retries, stale runs, SQLite cold recovery and certificates.`);
   } finally { await h.close(); }

@@ -2,6 +2,8 @@
 .experience-intro{display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;flex:none}
 .experience-intro .eyebrow{width:100%;margin:0;font-size:15px;letter-spacing:.13em}
 .experience-intro h2{font-size:32px;letter-spacing:-.035em}
+.experience-intro .experience-illustrated-heading{display:flex;align-items:center;gap:14px}
+.experience-tutorial-pair{display:block;flex:none;width:84px;height:56px;object-fit:contain;margin-block:-10px;pointer-events:none;user-select:none}
 .experience-steps{display:flex;list-style:none;gap:10px;margin:0;padding:0;counter-reset:step}
 .experience-steps li{display:flex;align-items:center;gap:9px;font-size:17px;color:#465b70;padding:8px 13px;border-radius:24px;background:#ffffff70}
 .experience-steps li:before{counter-increment:step;content:counter(step);display:grid;place-items:center;width:25px;height:25px;border:1px solid #65819c;border-radius:50%;font-weight:700}
@@ -22,6 +24,9 @@
 .experience-zone[data-kind=experience-finale] .experience-options{grid-template-columns:repeat(2,minmax(0,1fr))}
 .experience-zone[data-kind=experience-finale]{gap:8px;padding-block:18px}
 .experience-zone[data-kind=experience-finale] .experience-options .mission-option{min-height:80px}
+.experience-keepsake-option{gap:12px}
+.experience-keepsake-option>span{min-width:0}
+.experience-keepsake-image{display:block;flex:none;width:56px;height:56px;object-fit:contain;pointer-events:none;user-select:none}
 .experience-art{display:flex;align-items:center;justify-content:center;color:#326285;flex:none;width:68px;height:68px}
 .experience-art svg{width:100%;height:100%}
 .experience-zone>.experience-art{margin:auto;min-height:80px;width:120px;height:120px;color:#317959}
@@ -36,6 +41,7 @@
 .experience-confirmed:after{content:'';position:absolute;inset:8px;border:3px solid #2f8462;border-radius:25px;pointer-events:none;animation:experience-confirm 700ms ease-out forwards}
 @keyframes experience-confirm{from{opacity:.8;transform:scale(.97)}to{opacity:0;transform:scale(1)}}
 body[data-mission-quiet=true] .experience-zone{background:#fff;box-shadow:none}
+body[data-mission-quiet=true] .experience-tutorial-pair,body[data-mission-quiet=true] .experience-keepsake-image,body[data-mission-guidance=false] .experience-tutorial-pair,body[data-mission-guidance=false] .experience-keepsake-image{display:none}
 body[data-mission-contrast=true] .experience-options .experience-selected{background:#d8f0df;border:3px solid #164c32;color:#102338}
 body[data-mission-contrast=true] .experience-options .experience-primary{background:#173249;color:#fff}
 body[data-mission-motion=true] .experience-confirmed:after,body[data-mission-quiet=true] .experience-confirmed:after{display:none}

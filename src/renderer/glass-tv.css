@@ -55,7 +55,8 @@ body:has(#subtitles.on[data-speaker="CAPITANUL"]) #avatar:has(.nava-transporter.
 #launch-controls{background:radial-gradient(ellipse at 50% 45%,#d4ddff40,transparent 66%),linear-gradient(0deg,#09102350,transparent)}
 .launch-card,.veil-box{position:relative;background:var(--tv-glass);color:var(--ink);border:1px solid #ffffffe6;border-radius:28px;box-shadow:var(--tv-shadow);padding:clamp(24px,3.5cqh,72px);width:min(1100px,84cqw)}
 .launch-card::after,.veil-box::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.03;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' d='M0 0h180v180H0z'/%3E%3C/svg%3E")}
-.launch-mark{width:clamp(56px,6cqh,128px);height:clamp(56px,6cqh,128px);padding:12px;border-radius:24px;color:#655593;background:linear-gradient(145deg,#fff,#e3d5ff);box-shadow:inset 0 1px #fff,0 8px 24px #c2a8ff44}
+.exodus-brand{display:block;aspect-ratio:2070/562;width:100%;height:auto;overflow:hidden;flex-shrink:0}
+.launch-brand{width:min(560px,50cqw);margin-inline:auto}
 .launch-kicker{margin-top:16px;color:var(--ink-soft);font-family:var(--font);font-size:clamp(12px,1.1cqh,24px);letter-spacing:.12em}
 .launch-title{font-size:clamp(40px,5cqh,108px);font-weight:650;letter-spacing:-.04em;text-indent:0;text-shadow:none;margin-top:16px}
 .launch-text{color:var(--ink-soft);font-size:clamp(18px,1.5cqh,32px);margin-top:16px}
@@ -74,7 +75,7 @@ kbd{color:var(--ink);background:#fff8;border:1px solid #fff;border-radius:8px;bo
 #photo .photo-img{border:8px solid #ffffffbd;border-radius:28px;box-shadow:0 20px 64px #1f244066;background:var(--paper)}
 body[data-theme="white"] #subtitles{background:linear-gradient(145deg,#ffffffef,#fff8eaf0);border-color:#fff;color:var(--ink)}
 body[data-theme="white"] #subtitles .text{color:var(--ink);text-shadow:none}
-@media(max-height:700px){.launch-card{padding:24px}.launch-mark{width:48px;height:48px;padding:8px}.launch-help{margin-top:16px}.launch-actions{margin-top:20px}.launch-title{margin-top:8px}.launch-kicker{margin-top:8px}}
+@media(max-height:700px){.launch-card{padding:24px}.launch-brand{width:min(400px,42cqw)}.launch-help{margin-top:16px}.launch-actions{margin-top:20px}.launch-title{margin-top:8px}.launch-kicker{margin-top:8px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.nava-transporter-body.is-in{opacity:1!important;filter:none!important}.nava-transporter-fx{display:none!important}}
 /* Panel-relative units keep every overlay at its real TV scale in a five-panel window. */
 #stage { container-type:size; }

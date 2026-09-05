@@ -93,7 +93,7 @@ export function createTelemetry(container: HTMLElement): Telemetry {
     canvases = {};
     container.replaceChildren();
     const head = el("div", "telemetry-head");
-    head.append(el("span", "eyebrow", `CONSOLĂ DE POST · ${TABLET_POSTS[post].lens}`));
+    head.append(el("span", "eyebrow", `INSTRUMENTE DIN POVESTE · ${TABLET_POSTS[post].lens}`));
     nodes.clock = el("strong", "telemetry-clock", "T+00:00");
     head.append(nodes.clock);
     container.append(head);
@@ -116,7 +116,7 @@ export function createTelemetry(container: HTMLElement): Telemetry {
         case "dial": {
           const dial = el("div", "inst-dial");
           const needle = el("i", "needle");
-          dial.append(el("span", "n", "N"), el("span", "e", "E"), el("span", "s", "S"), el("span", "w", "W"), needle);
+          dial.append(el("span", "n", "N"), el("span", "e", "E"), el("span", "s", "S"), el("span", "w", "V"), needle);
           inst.body.append(dial);
           nodes[key] = needle;
           break;
@@ -174,9 +174,9 @@ export function createTelemetry(container: HTMLElement): Telemetry {
         add("CUVINTE RECEPȚIONATE", "words", "meter");
         break;
       case 4:
-        add("PULS ECHIPAJ", "ecg", "canvas");
+        add("PULS SIMULAT", "ecg", "canvas");
         add("BĂTĂI / MINUT", "bpm", "text");
-        add("OXIGEN", "oxygen", "meter");
+        add("OXIGEN SIMULAT", "oxygen", "meter");
         add("LEGĂTURĂ CU NAVA", "link", "bars");
         break;
       case 5:

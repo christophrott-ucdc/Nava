@@ -9,15 +9,16 @@ import {
 } from "@shared/types";
 import type { ServerMessage, TabletEventMsg, TabletViewMsg } from "@shared/protocol";
 import { createTelemetry } from "./telemetry";
-import { CERT_H, CERT_W, drawCertificate, type CertificateChoice } from "./certificate";
+import { CERT_H, CERT_W, drawCertificate, preloadCertificateArtwork, type CertificateChoice } from "./certificate";
 import { applyTheme, icon, mascotPath, EffectGate, confetti, createTabletAudio } from "../shared/glass";
 import { rememberChoice, reconcileChoices, type PendingChoices } from "./choice-delivery";
 import type { MissionSnapshot } from "@shared/mission";
 import { createMissionUI } from "./mission-ui";
+import { hasChildIllustrations, illustrationPath } from "../shared/illustrations";
 
 const effects = new EffectGate();
 const audio = createTabletAudio();
-document.getElementById("brand-glyph")!.innerHTML = icon("rocket");
+void preloadCertificateArtwork();
 document.getElementById("rotate-icon")!.innerHTML = icon("tablet");
 
 const STORAGE = {
@@ -154,6 +155,7 @@ function setConnection(status: "connecting" | "online" | "offline", label: strin
 }
 
 function showNotice(message: string): void {
+  if (!message) { dom.notice.textContent = ''; dom.notice.classList.remove('show'); if (noticeTimer !== null) window.clearTimeout(noticeTimer); noticeTimer = null; return; }
   if (dom.notice.classList.contains("show") && dom.notice.textContent === message) return;
   dom.notice.textContent = message;
   dom.notice.classList.add("show");
@@ -248,7 +250,7 @@ function onMessage(message: ServerMessage): void {
       renderMission();
       break;
     case "missionAck":
-      missionUI.ack(message.eventId, message.ok, message.status);
+      missionUI.ack(message.eventId, message.ok, message.reason || message.status);
       break;
     case "welcome":
       if (message.state.state === "idle") resetRun();
@@ -595,7 +597,12 @@ function renderStartButton(): void {
 function renderWaiting(showRule = false): void {
   const wrap = document.createElement("div");
   wrap.className = "waiting";
-  wrap.append(createMascot(selectedPost ?? 1));
+  const art = document.createElement('div'); art.className = 'waiting-expedition-art';
+  const ship = document.createElement('img'); ship.className = 'waiting-expedition-ship'; ship.alt = ''; ship.draggable = false;
+  ship.src = illustrationPath(!state || state.state === 'idle' || state.state === 'preshow' || showRule ? 'ship-boarding-v1' : 'ship-cruise-v1');
+  ship.addEventListener('error', () => { ship.remove(); art.classList.add('illustration-unavailable'); }, { once: true });
+  const mascot = createMascot(selectedPost ?? 1); mascot.classList.add('waiting-post-identity');
+  art.append(ship, mascot); wrap.append(art);
   wrap.append(createHead(
     "star",
     showRule ? "Un singur echipaj · cinci posturi" : state?.state === "paused" ? "O mică pauză…" : state?.state === "idle" || state?.state === "preshow" ? "Așteptăm decolarea…" : "Priviți ecranele",
@@ -721,7 +728,7 @@ function renderZone(zone: TabletZone, cueId: string | null | undefined, interact
     const text = document.createElement("span");
     text.textContent = label;
     const small = document.createElement("small");
-    small.textContent = confirmed ? (observed ? "Mulțumim! E în regulă să privești." : "Mulțumim! Alegere înregistrată.") : connectionStatus === "online" ? "Trimitem alegerea…" : "Păstrată aici. O trimitem când revine legătura.";
+    small.textContent = confirmed ? (observed ? "Mulțumim! E în regulă să privești." : "Alegerea ta a ajuns la navă.") : connectionStatus === "online" ? "Trimitem alegerea…" : "Păstrată aici. O trimitem când revine legătura.";
     result.setAttribute("role", "status");
     result.append(check, text, small);
     panel.append(result);
@@ -794,7 +801,7 @@ function renderThanks(): void {
   const title = document.createElement("h2");
   title.textContent = "Misiunea s-a încheiat.";
   const copy = document.createElement("p");
-  copy.textContent = "Postul vostru a făcut parte din semnal până la capăt. Acesta este certificatul echipajului.";
+  copy.textContent = "Ați călătorit împreună. Păstrați o amintire a misiunii.";
   wrap.append(earth, title, copy);
 
   const canvas = document.createElement("canvas");
@@ -804,12 +811,21 @@ function renderThanks(): void {
   canvas.setAttribute("role", "img");
   canvas.setAttribute("aria-label", "Certificat de misiune EXODUS-7");
   const post = selectedPost ?? 1;
-  drawCertificate(canvas, {
+  const generation = runGeneration;
+  const input = {
     post,
     lens: view?.lens || TABLET_POSTS[post].lens,
     choices: certificateChoices(),
     date: new Date(),
     theme: currentTheme(),
+  };
+  drawCertificate(canvas, input);
+  const journalScenario = missionSnapshot?.scenarioId ?? 'legacy-v3';
+  const illustratedJournal = journalScenario === 'legacy-v3' || hasChildIllustrations(journalScenario);
+  const artworkReady = preloadCertificateArtwork().then(artwork => {
+    if (generation !== runGeneration) return false;
+    drawCertificate(canvas, input, { ...artwork, emblem: illustratedJournal ? artwork.emblem : null });
+    return true;
   });
   wrap.append(canvas);
 
@@ -820,14 +836,16 @@ function renderThanks(): void {
   save.innerHTML = `${icon("download")} SALVEAZĂ`;
   save.download = `certificat-exodus7-postul-${post}.png`;
   save.href = "#";
-  save.addEventListener("click", (event) => {
+  let saving = false;
+  save.addEventListener("click", async (event) => {
+    event.preventDefault(); if (saving) return; saving = true;
     try {
-      save.href = canvas.toDataURL("image/png");
+      if (!await artworkReady || generation !== runGeneration || !canvas.isConnected) return;
+      const link = document.createElement('a'); link.download = save.download; link.href = canvas.toDataURL("image/png"); link.click();
       audio.play("tap");
     } catch {
-      event.preventDefault();
       showNotice("Tableta nu permite salvarea imaginii.");
-    }
+    } finally { saving = false; }
   });
   const status = document.createElement("span");
   status.className = "certificate-status";
@@ -837,9 +855,10 @@ function renderThanks(): void {
   retry.type = "button";
   retry.className = `certificate-retry${certificatePending || certificateStatusOk ? " hidden" : ""}`;
   retry.textContent = "REÎNCEARCĂ TRIMITEREA";
-  retry.addEventListener("click", () => {
+  retry.addEventListener("click", async () => {
     retry.classList.add("hidden");
     status.textContent = "se trimite operatorului…";
+    if (!await artworkReady || generation !== runGeneration || !canvas.isConnected) return;
     void uploadCertificate(canvas, post, status);
   });
   actions.append(save, status, retry);
@@ -849,8 +868,11 @@ function renderThanks(): void {
   const key = `${view?.cueId ?? "thanks"}:${post}`;
   if (effects.once(`thanks:${key}`)) { audio.play("thanks"); confetti(wrap); }
   if (certificateFor !== key) {
-    certificateFor = key;
-    void uploadCertificate(canvas, post, status);
+    void artworkReady.then(ready => {
+      if (!ready || generation !== runGeneration || !canvas.isConnected || certificateFor === key) return;
+      certificateFor = key;
+      void uploadCertificate(canvas, post, status);
+    });
   }
 }
 

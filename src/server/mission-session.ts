@@ -42,6 +42,7 @@ export class MissionSession {
       for(const zone of ['A','B'] as const)if(!r.progress.zones[`${post}${zone}`]?.choices['2']?.startsWith('measure:')){
         view.zones[zone].options=view.zones[zone].options.map(o=>o.value==='construct'||o.value.startsWith('piece:')||['send','undo'].includes(o.value)?{...o,disabled:true}:o);
         view.zones[zone].detail+=' · Poți construi după măsurare sau când se încheie scurta fereastră de observație.';
+        const play=view.zones[zone].play;if(play?.kind==='signal')play.canTransmit=false;
       }
     }
     const experience=r.experience??{...freshExperience(),status:'skipped' as const};
@@ -51,7 +52,7 @@ export class MissionSession {
       suspended:!!state.suspended,state,post,view,
       summary:summarizeScenario(r.progress),accessibility:r.accessibility[String(post)]??DEFAULT_ACCESSIBILITY};
   }
-  accept(event:MissionEvent,post:TabletPost,state:ShowState):{ok:boolean;status:string;eventId:string} {
+  accept(event:MissionEvent,post:TabletPost,state:ShowState):{ok:boolean;status:string;eventId:string;reason?:string} {
     const result=(status:string)=>({ok:status==='accepted'||status==='duplicate',status,eventId:event.eventId});
     if(typeof event.eventId!=='string'||! /^[\w-]{8,100}$/.test(event.eventId)||typeof event.value!=='string'||event.value.length>200||!['A','B'].includes(event.zone))return result('invalid');
     if(event.runId!==this.record.runId)return result('stale-run');
@@ -67,9 +68,9 @@ export class MissionSession {
     }
     const stage=this.stage(state);
     if(!stage||event.cueInstanceId!==this.instance(state)||state.suspended||state.state!=='playing')return result('expired');
-    if(this.record.scenarioId==='age-10-15'&&stage===2&&(event.value==='construct'||event.value.startsWith('piece:')||['send','undo'].includes(event.value))&&state.phaseTime<199&&!this.record.progress.zones[`${post}${event.zone}`]?.choices['2']?.startsWith('measure:'))return result('expired');
+    if(this.record.scenarioId==='age-10-15'&&stage===2&&(event.value==='construct'||event.value.startsWith('piece:')||event.value.startsWith('play:signal:')||['send','undo'].includes(event.value))&&state.phaseTime<199&&!this.record.progress.zones[`${post}${event.zone}`]?.choices['2']?.startsWith('measure:'))return result('expired');
     const changed=applyScenarioAction(this.record.progress,{stage,post,zone:event.zone,action:'choose',value:event.value});
-    if(!changed.ok)return result('invalid');
+    if(!changed.ok)return {...result('invalid'),reason:changed.reason};
     const next={...this.record,progress:changed.progress,revision:this.record.revision+1,checkpoint:state};
     const response=result('accepted');this.store.accept(next,event.eventId,payload,response);this.record=next;return response;
   }

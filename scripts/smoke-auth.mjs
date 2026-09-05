@@ -183,7 +183,13 @@ try {
   // --- persistence
   const usersFile = JSON.parse(fs.readFileSync(path.join(appRoot, "data/users.json"), "utf8"));
   assert.equal(usersFile.users.length, 2);
-  assert.ok(!JSON.stringify(usersFile).includes("4078"), "PIN never stored in clear");
+  // Random UUIDs, salts or hashes can legitimately contain these four digits.
+  // Check stored credential fields and whole values, not a random substring.
+  for (const stored of usersFile.users) {
+    assert.match(stored.pinHash, /^[a-f0-9]{64}$/);
+    assert.ok(!Object.hasOwn(stored, 'pin'), 'no clear-text PIN field');
+    assert.ok(!Object.values(stored).includes('4078'), 'PIN never stored as a clear-text value');
+  }
   step("data/users.json persisted, no clear-text PIN");
 
   // --- WebSocket hello auth

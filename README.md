@@ -75,6 +75,10 @@ Toate suprafețele folosesc sistemul luminos Nava Glass: cinci tablete de post �
 
 Cele opt teme urmăresc show-ul; loginul rămâne în prologue. Cele șase mascote PNG au alpha real și variante 1024/256. Rendererul TV folosește materiale statice fără backdrop blur, subtitrări la 48 px în 4K și spațiu rezervat GLB-ului existent. Căpitanul apare numai pe TV-ul configurat; integrarea Unitree H2 nu face parte din R5.
 
+Logo-ul EXODUS7 este comun tabletelor și TV-ului: antet pe tablete, pornire/tutorial/final interactiv pe TV, cu încadrare pe ecranul central în panorama `span`. Asset, comportament și dovezi: [docs/EXODUS7-LOGO.md](docs/EXODUS7-LOGO.md).
+
+Cele zece ilustrații EXODUS7 pentru copii adaugă nava la primire și între etape, exploratori în tutorial, carcase pentru felinar și receptor, daruri ilustrate și emblema jurnalului. Întoarcerea acasă apare și în finalul TV. [Livrare și limite](docs/ILUSTRATII-EXODUS7.md), [galeria asseturilor](src/web/shared/illustrations/exodus7/index.html). Această integrare în surse nu a fost testată sau construită, conform cererii utilizatorului.
+
 Cele cinci SFX locale ale tabletelor se activează după primul gest, la volum 35%. Câmpul opțional `tabletSfx` din config este implicit `true`; **Regie → Sunete tablete** permite operatorului să-l schimbe pentru sesiunea curentă. Schimbarea este difuzată prin starea existentă, fără rescrierea configurației. Reduced-motion oprește animațiile decorative și confetti.
 
 Rezultatele software, capturile înainte/după și repetiția fizică rămasă sunt în [docs/DESIGN-REVIEW.md](docs/DESIGN-REVIEW.md). Filmul, GLB-ul, vocile, scenariul și timpii au fost păstrați.
@@ -102,3 +106,17 @@ Tutorialul vocal „Nava vă recunoaște” și finalul colectiv sunt implementa
 ## Coloana sonoră
 
 Zece piese originale Eleven Music sunt integrate în magistrala ambientală, cu ducking sub voce și tăcere muzicală la232–246s. Detalii, limite și regenerare: [docs/MUZICA.md](docs/MUZICA.md). Audiții: `runs/debug/music/index.html`. Piesele sunt marcate pentru audiție artistică și verificare în sală; filmul și replicile existente sunt păstrate.
+
+## Interacțiuni educative 3D
+
+Tutorialul și finalul folosesc diagrame Three.js legate de contribuțiile confirmate, cu fallback SVG și reduced-motion. Jocurile din cele trei etape folosesc acum instrumentele interactive descrise mai jos. Ghidul și capturile implementării 3D anterioare: [docs/EDUCATIE-3D.md](docs/EDUCATIE-3D.md), `runs/debug/education-3d/`. Numerele de verificări din acel ghid se referă la acea revizie.
+
+## Revizie română și jocuri — 2026-09-05
+
+Revizia inițială a textelor și formularelor este documentată în [docs/REVIZIE-ROMANA-JOCURI.md](docs/REVIZIE-ROMANA-JOCURI.md), cu galerie în `runs/debug/romanian-games/`. Jocurile au fost apoi înlocuite cu interacțiunile de mai jos.
+
+## Jocuri prin explorare — interfața curentă
+
+Copiii construiesc și aprind felinarul prin gesturi; grupa 10–15 reglează antena și compune ritmuri; adolescenții văd pilotul executând regulile A/B, cu comparație înainte/acum; adulții mută instrumentul, văd pierderea sau incertitudinea datelor și trimit documentul în capsulă. Jocurile rămân interactive după prima contribuție. Starea este validată pe server și păstrată în SQLite; filmul, vocile și timpii sunt păstrați.
+
+Ghid actual: [docs/JOCURI-EXPLORARE.md](docs/JOCURI-EXPLORARE.md). Galerie: [runs/debug/play-experience/index.html](runs/debug/play-experience/index.html). Verificare: `node scripts/play-review.mjs`. Parametrul `interaction=classic` păstrează numai interfața anterioară pentru regresie. Proba pe mini-PC/touch și pilotul cu publicul rămân necesare.
