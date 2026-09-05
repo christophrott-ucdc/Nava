@@ -44,6 +44,8 @@ import { createLightsAdapter } from "./features/lights";
 import { createShowEditor } from "./features/show-editor";
 import { createCertificatesRouter } from "./features/certificates";
 import { createDialogRouter } from "./features/dialog";
+import { validateShowFile } from "./features/show-validate";
+import { createAnalyticsRouter } from "./features/analytics";
 
 const RUNS_KEEP = 20;
 const MAX_PHOTO_BYTES = 1_500_000;
@@ -155,7 +157,21 @@ export function detectLanIp(): string {
   return candidates[0]?.ip ?? "127.0.0.1";
 }
 
+/**
+ * Load + validate show.json through the single validator shared with the editor
+ * (features/show-validate.ts) so every cue kind the editor can save is also accepted at startup.
+ */
 async function loadShowFile(showPath: string): Promise<ShowFile> {
+  const raw = await fs.readFile(showPath, "utf8");
+  const parsed: unknown = JSON.parse(raw);
+  const v = validateShowFile(parsed);
+  if (!v.ok || !v.show) throw new Error(`show.json invalid: ${v.errors.slice(0, 5).join("; ")}`);
+  return v.show;
+}
+
+/** Previous hand-written validator (kept for reference / diffing; superseded by show-validate.ts). */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function loadShowFileLegacy(showPath: string): Promise<ShowFile> {
   const raw = await fs.readFile(showPath, "utf8");
   const parsed: unknown = JSON.parse(raw);
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("show.json trebuie să fie un obiect");
@@ -569,9 +585,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   for (const p of ["/api/show", "/api/cues", "/api/config", "/api/tablets", "/api/run", "/api/analytics", "/api/analytics/*", "/api/debug", "/api/debug/*"]) {
     app.use(p, viewer);
   }
-  for (const p of ["/api/cmd", "/api/show/reload", "/api/show/*", "/api/player/focus", "/api/tablets/clear", "/api/certificates", "/api/certificates/*"]) {
+  for (const p of ["/api/cmd", "/api/show/reload", "/api/show/*", "/api/player/focus", "/api/tablets/clear"]) {
     app.use(p, operator);
   }
+  // Certificates: tablets (anonymous) POST their PNG; listing/downloading needs a logged-in viewer.
+  app.on("GET", ["/api/certificates", "/api/certificates/*"], viewer);
   // writes on the show file (editor) need an operator even on the base path
   app.on(["PUT", "POST", "PATCH", "DELETE"], ["/api/show", "/api/show/*"], operator);
   app.use("/api/tts", auth.requireScreenOrRole("operator"));
@@ -680,6 +698,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   );
   app.route("/api/dialog", createDialogRouter({ log, cacheDir: opts.cacheDir }));
   app.get("/api/lights", viewer, (c) => c.json(lights.status()));
+  app.route("/api/analytics", createAnalyticsRouter({ runsDir: opts.runsDir, log })); // guarded viewer above
 
   // --- debug / frames (R4) -----------------------------------------------------
   const videoAbsPath = await resolveAssetPath(opts.appRoot, config.video.path);

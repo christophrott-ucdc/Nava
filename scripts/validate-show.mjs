@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const showPath = path.resolve(root, process.argv[2] ?? "assets/show/show.json");
 const phases = new Set(["preshow", "play", "epilogue"]);
-const kinds = new Set(["voice", "countdown", "sfx", "entity", "tablet", "theme", "marker"]);
+const kinds = new Set(["voice", "countdown", "sfx", "entity", "tablet", "theme", "marker", "dynamic-voice", "ambient", "lights", "photo"]);
 const themes = new Set(["prologue", "launch", "light", "nature", "tech", "void", "home", "white"]);
 const speakers = new Set(["AVATAR_AI", "CAPITANUL", "LUMINA", "NATURA", "TEHNOLOGIC"]);
 

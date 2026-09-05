@@ -74,6 +74,8 @@ export class Timeline {
   private current: { handle: PlaybackHandle; id: string } | null = null;
   private lastCue: string | null = null;
   private lastVoice: string | null = null;
+  /** R4 / C-06 — active script variant (age group); null = base text. */
+  private variant: string | null = null;
 
   constructor(
     private readonly deps: TimelineDeps,
@@ -99,6 +101,14 @@ export class Timeline {
   }
   isCueFired(id: string): boolean {
     return this.fired.has(id);
+  }
+  /** R4 — `setVariant` command: voice cues with `variants[variant]` use that text and the clip `<id>.<variant>`. */
+  setVariant(variant: string | null): void {
+    this.variant = variant && variant.trim() ? variant.trim() : null;
+    this.deps.log("info", `variantă de scenariu: ${this.variant ?? "de bază"}`);
+  }
+  getVariant(): string | null {
+    return this.variant;
   }
 
   /** Replace the show without retro-firing: cues already in the past become "fired". */
@@ -185,17 +195,19 @@ export class Timeline {
     this.lastCue = cue.id;
     try {
       switch (cue.kind) {
-        case "voice":
+        case "voice": {
           this.lastVoice = cue.id;
+          const line = this.lineOf(cue);
           void this.speak({
-            id: cue.id,
+            id: line.id,
             speaker: cue.speaker,
-            text: this.textOf(cue),
+            text: line.text,
             subtitle: true,
             holdMs: cue.subtitleHoldMs ?? SUBTITLE_HOLD_MS,
             fallback: cue.fallback,
           });
           break;
+        }
         case "countdown":
           this.runCountdown(cue, mode);
           break;
@@ -252,9 +264,19 @@ export class Timeline {
     this.deps.onCueFired?.(cue, mode);
   }
 
-  private textOf(cue: VoiceCue): string {
+  /** Text + clip id of a voice cue in the current language and variant (variant clip: `<id>.<variant>`). */
+  private lineOf(cue: VoiceCue): { id: string; text: string } {
     const lang = this.deps.getLang();
-    return cue.text[lang] ?? cue.text.ro;
+    const v = this.variant ? cue.variants?.[this.variant] : undefined;
+    const vt = v ? (v[lang] ?? v.ro) : undefined;
+    if (this.variant && vt) return { id: `${cue.id}.${this.variant}`, text: vt };
+    return { id: cue.id, text: cue.text[lang] ?? cue.text.ro };
+  }
+
+  /** R4 / B-08 — runtime-composed line (`dynamicVoice` message, `say`, live dialog). Preempts the current voice. */
+  speakDynamic(msg: { cueId: string; speaker: Speaker; text: string; lang?: Lang; subtitle?: boolean }): void {
+    this.lastVoice = msg.cueId;
+    void this.speak({ id: msg.cueId, speaker: msg.speaker, text: msg.text, subtitle: msg.subtitle !== false, lang: msg.lang });
   }
 
   private runCountdown(cue: CountdownCue, mode: FireMode): void {

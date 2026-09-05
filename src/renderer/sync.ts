@@ -8,7 +8,8 @@
  *   - auto-reconnect with capped exponential backoff.
  */
 
-import type { ClientMessage, ServerMessage, WelcomeMsg } from "../shared/protocol";
+import type { ClientMessage, PhotoMsg, ServerMessage, WelcomeMsg } from "../shared/protocol";
+import type { PerfSample } from "../shared/types";
 import { describeError, type Logger } from "./log";
 import type { Player } from "./player";
 
@@ -26,6 +27,8 @@ export interface SyncOptions {
   log: Logger;
   onWelcome?: (msg: WelcomeMsg) => void;
   onStatus?: (status: SyncStatus) => void;
+  /** R4 / B-09 — `photo` messages (countdown / capture / show / hide) go to photo.ts. */
+  onPhoto?: (msg: PhotoMsg) => void;
 }
 
 export interface SyncStatus {
@@ -148,6 +151,16 @@ export class SyncClient {
     return Date.now() + this.offsetMs;
   }
 
+  /** R4 / B-02 — 1 Hz performance sample from EVERY screen (dropped silently while disconnected). */
+  sendPerf(sample: PerfSample): void {
+    this.send({ type: "perf", sample });
+  }
+
+  /** R4 — any client->server message (photoCaptured...). Dropped silently while disconnected. */
+  sendRaw(msg: ClientMessage): void {
+    this.send(msg);
+  }
+
   // ---------------------------------------------------------------- internals
 
   private send(msg: ClientMessage): void {
@@ -198,9 +211,20 @@ export class SyncClient {
       case "cueFired":
       case "tabletView":
       case "tablets":
+      case "perfSummary":
         break; // informational (console / tablets); every screen fires its own cues
+      // ---- R4
+      case "dynamicVoice":
+        this.opts.player.speakDynamic(msg);
+        break;
+      case "entityParams":
+        this.opts.player.setEntityParams(msg.entity, msg.params);
+        break;
+      case "photo":
+        this.opts.onPhoto?.(msg);
+        break;
       case "error":
-        this.opts.log("warn", `server error: ${msg.reason}`);
+        this.opts.log("warn", `server error: ${msg.reason}${msg.code ? ` (${msg.code})` : ""}`);
         break;
       default:
         break;

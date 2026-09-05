@@ -108,7 +108,7 @@ De aici: Electron (player + ferestre kiosk) + server Node încorporat (Hono + We
 | Teste | validatoare show/voci, smoke core/platform/media/renderer, teste unitare `src/**/*.test.ts` | `scripts/smoke-*.mjs`, `scripts/test.mjs` |
 | **R4 (în lucru)** | autentificare PIN + utilizatori, `/debug`, preflight, span-mode, autostart, perf 1 Hz, ambianță, entități reactive, rehearse, readiness, editor cue, analitică, certificat, lumini, dialog live, foto, variante | `HANDOFF-LIVE.md` §2 |
 
-Scripturi npm (`package.json`): `build`, `build:watch`, `start`, `dev`, `dist`, `typecheck`, `validate:show`, `validate:voices`, `smoke:core|platform|renderer|media`, `check` (= typecheck + validate:show + validate:voices + build + test + smoke core/platform/media), `tts`, `sync:voices`, `voice:reels`, `qa:voices`, `docs:cues`, `media:transcode`, `media:sheet`, `test`, `heartbeat`, `heartbeat:stop`.
+Scripturi npm (`package.json`): `build`, `build:watch`, `start`, `dev`, `dist`, `typecheck`, `validate:show`, `validate:voices`, `smoke:core|auth|platform|renderer|media`, `check` (= typecheck + validate:show + validate:voices + build + test + smoke core/auth/platform/media), `tts`, `sync:voices`, `voice:reels`, `qa:voices`, `docs:cues`, `media:transcode`, `media:sheet`, `test`, `heartbeat`, `heartbeat:stop`.
 
 ---
 
@@ -380,8 +380,8 @@ Nava/
 
 - **Fișier:** `assets/avatar/avatar-ai.glb` (14 302 780 B), același GLB ca `avatars/avatar.glb` („BiologV2.glb", **Avaturn**) din proiectul-sursă Exodus; are cele 15 viseme Oculus, blendshape-uri ARKit și rig Mixamo (`docs/BRIEF.md` §1). Bibliotecă: `@met4citizen/talkinghead` ^1.7.0 peste `three` ^0.184 (`package.json`); `lipsyncModules: []`, `modelFPS: 30`, `cameraView: "upper"` (`src/renderer/avatar/talkinghead-setup.ts`).
 - **Comportament:** canvas transparent peste video, colț `bottom-left`, lățime 22 %, margine 40 px (`config.avatar`); transporter (beam-in) la **prima replică a Căpitanului** (`ensureAvatarVisible`, `src/renderer/timeline.ts`); apoi permanent vizibil; `setAttention("idle")` când vorbesc alții; recuperare la pierderea contextului WebGL; afișat doar pe ecranele cu `showAvatar: true` (în V3 numai `center`).
-- **Casting — nepotrivire cunoscută:** GLB-ul este un corp **feminin** (Avaturn) și `src/renderer/avatar/index.ts` apelează `createHead({ body: "F" })` hardcodat, în timp ce vocea Căpitanului este masculină („Paul Bogorin"). **R4, C-01** introduce `config.avatar.body` și `config.avatar.glbBySpeaker` (`AppConfig`, `types.ts`), un mesaj clar în `/debug` când corpul și vocea nu se potrivesc, și ghidul `docs/AVATAR.md` pentru obținerea unui GLB de Căpitan (Avaturn / Ready Player Me, cu viseme Oculus + ARKit).
-- **lipsync-ro** (`src/renderer/avatar/lipsync-ro.ts`): mapare proprie română → viseme Oculus din `words/wtimes/wdurations`. **R4, C-02:** `scripts/precompute-visemes.mjs` scrie `visemes/vtimes/vdurations` în manifest (câmpurile există în `VoiceClipMeta`; astăzi **0 din 51** clipuri le au); rendererul preferă visemele precalculate. **R4, C-04:** latența lip-sync (audio start → primul visem) intră în `PerfSample.lipsyncLatencyMs`.
+- **Casting — nepotrivire cunoscută:** GLB-ul este un corp **feminin** (Avaturn), în timp ce vocea Căpitanului este masculină („Paul Bogorin"). **R4, C-01** (livrat în cod la 2026-09-05): `config.avatar.body` și `config.avatar.glbBySpeaker` (`AppConfig`, `types.ts`; validate în `src/main/config.ts`), `resolveBody` (opțiune → `config.avatar.body` → `"M"`), `buildCastingReport()` cu avertisment explicit în log-ul rendererului când GLB-ul livrat este castat ca Căpitan (`src/renderer/avatar/casting.ts`; raportul **nu** apare încă în `/debug`), și ghidul `docs/AVATAR.md` pentru obținerea unui GLB de Căpitan (Avaturn / Ready Player Me, cu viseme Oculus + ARKit).
+- **lipsync-ro** (`src/renderer/avatar/lipsync-ro.ts`, teste în `lipsync-ro.test.ts`): mapare proprie română → viseme Oculus din `words/wtimes/wdurations`. **R4, C-02:** `scripts/precompute-visemes.mjs` scrie `visemes/vtimes/vdurations` în manifest; la 2026-09-05 **51 din 51** clipuri RO le au (`generatedAt 2026-09-04T19:45Z`); rendererul preferă visemele precalculate. **R4, C-04:** latența lip-sync (audio start → primul visem) intră în `PerfSample.lipsyncLatencyMs` (`perf-probe.ts`).
 
 ---
 
@@ -513,28 +513,23 @@ Tabletele și consola trebuie să fie în aceeași rețea cu PC-ul master (port 
 
 ## 14. STATUS
 
-> **`HANDOFF-LIVE.md` §2/§3 este autoritativ pentru starea live.** Tabelul de mai jos este o **fotografie la 2026-09-04, ora rescrierii acestui document**, făcută pentru context. Nu îl actualiza în locul `HANDOFF-LIVE.md`.
+> **`HANDOFF-LIVE.md` §2/§3 este autoritativ pentru starea live.** Tabelul de mai jos este o **fotografie la 2026-09-05, 10:30** (agentul E, la închiderea E-02/E-03), oglindind `HANDOFF-LIVE.md` §2 din acel moment și fișierele prezente în checkout (necomise; HEAD = `cbd2929`). Nu îl actualiza în locul `HANDOFF-LIVE.md`.
 
-### 14.1 Ce este gata și verificat (commit `5af8383`, `npm run check` verde)
+### 14.1 Ce este gata și verificat
 
-- [x] Show V3.3 `0.5.0-ro-stage`: 8 scene, 87 cue-uri, 51 voci cu `fallback: silent`, ramură adaptivă, 5 posturi × 2 zone.
-- [x] 51 MP3 ElevenLabs + manifest cu timpi de cuvinte; 3 montaje de audiție; QA Scribe sub prag.
-- [x] Player: lead-in negativ, tăietură deterministă la 465 s, epilog 75 s, faza păstrată prin `ended`, `[hidden]` global, watchdog video (`VIDEO BLOCAT` după 2,5 s fără progres ≥ 0,35 s), panou de lansare în idle.
-- [x] Server: state machine, ceas, cue tracker cu protecție la jitter, tablete 5×2, `/api/*` din §6.4, run-log JSONL, QR, `POST /api/player/focus`.
-- [x] Consolă cu **START EXPERIENCE** / **ARATĂ PLAYERUL**; tabletă 5×2 cu **DOAR PRIVESC**.
-- [x] `RUN.bat`; `dist-app/*.exe` (nesemnate); smoke core/platform/media/renderer.
-- [x] Contracte R4 în `types.ts`/`protocol.ts`; `scripts/test.mjs`; `HANDOFF-LIVE.md`; `scripts/heartbeat.ps1`.
+- [x] **Commit `5af8383`** (`npm run check` verde): show V3.3 `0.5.0-ro-stage` (8 scene, 87 cue-uri, 51 voci `fallback: silent`, ramură adaptivă, 5 posturi × 2 zone); 51 MP3 ElevenLabs + manifest; 3 montaje; QA Scribe sub prag; player (lead-in negativ, tăietură la 465 s, epilog 75 s, `[hidden]` global, watchdog video, panou de lansare); server (state machine, ceas, cue tracker, tablete 5×2, run-log, QR, `POST /api/player/focus`); consolă **START EXPERIENCE** / **ARATĂ PLAYERUL**; tabletă cu **DOAR PRIVESC**; `RUN.bat`; `dist-app/*.exe`; smoke core/platform/media/renderer.
+- [x] **Commit `cbd2929`** („R4 checkpoint", 2026-09-05 ~10:17, `tsc` curat, 54 teste, `smoke-auth` + `smoke-core` OK, Electron verificat live: `screen:center` autentificat, preflight 51/51 cu 51 viseme, readiness `ready`, login 4078, `/api/debug` OK): P-01…P-05 (auth PIN, utilizatori scrypt, `/debug`, preflight, rotație `runs/`), contracte R4, integrarea în `index.ts` a show-editor/certificates/dialog/lights + hooks director, `sync.ts` cu `screenToken`, consolă cu `/api/auth/me` → token în `hello`, `HANDOFF-LIVE.md`, `scripts/heartbeat.ps1`, `scripts/smoke-auth.mjs` (30 verificări).
 
-### 14.2 Pachetele R4 (oglinda `HANDOFF-LIVE.md` §2; `[ ]` = neînceput la momentul fotografiei)
+### 14.2 Pachetele R4 (oglinda `HANDOFF-LIVE.md` §2 la 2026-09-05 10:30; `[x]` gata · `[~]` în lucru · `[s]` schelet · `[ ]` nebifat)
 
-| Owner | Pachete | Fișiere existente la fotografie |
+| Owner | Stare per pachet (din `HANDOFF-LIVE.md` §2) | Ce există în checkout (observat de E) |
 |---|---|---|
-| Orchestrator | P-01 auth (PIN 4078, sesiuni, middleware, WS token) · P-02 utilizatori (`data/users.json`, scrypt, roluri) · P-03 `/debug` · P-04 preflight voci · P-05 rotație `runs/` · P-06 integrare `index.ts` + commit | `src/server/{auth,users,debug,preflight}.ts`, `src/web/{login,debug}` **lipsesc încă** |
-| A (main) | A-01 powerSaveBlocker/watchdog/autostart · A-02 span · A-03 boot R4 · A-04 config loader R4 + exemple 5screens/follower · A-05 rotație `app-*.jsonl` | `scripts/install-autostart.ps1`, `config.5screens.example.json`, `config.follower.example.json` **lipsesc încă** |
-| B (renderer) | B-01 setSinkId · B-02 perf 1 Hz · B-03 ambianță · B-04 entități reactive · B-05 yaw · B-06 rehearse · B-07 span · B-08 dynamic-voice · B-09 schelet foto/mic · B-10 teste timeline | `perf.ts`, `span.ts`, `photo.ts`, `room-mic.ts`, `voice/ambient.ts` **lipsesc încă** |
-| C (avatar/voce) | C-01 casting `body`/`glbBySpeaker` + `docs/AVATAR.md` · C-02 viseme precalculate · C-03 limbi · C-04 latență lip-sync · C-05 schelet dialog live · C-06 variante vârstă · C-07 teste lipsync-ro | `scripts/precompute-visemes.mjs`, `docs/AVATAR.md`, `voice/live-dialog.ts` **lipsesc încă**; manifestul are 0 clipuri cu viseme |
-| D (server/web) | D-01 readiness · D-02 comenzi noi + `entityParams` · D-03 mesajele copiilor → `dynamicVoice` · D-04 editor cue · D-05 analitică · D-06 certificat · D-07 telemetrie · D-08 schelet lumini · D-09 autoRun · D-10 consolă login/butoane · D-11 teste `state.ts` | `src/server/features/**`, `src/web/analytics` **lipsesc încă** |
-| E (docs) | E-01 acest document + `docs/history/HANDOFF-ISTORIC.md` · E-02 OPERARE/SPEC-SHEET/DECIZII/README/CUE-SHEET · E-03 `docs/SECURITATE.md` | E-01 livrat odată cu acest fișier |
+| Orchestrator | `[x]` P-01 auth · `[x]` P-02 utilizatori · `[x]` P-03 `/debug` · `[x]` P-04 preflight · `[x]` P-05 rotație `runs/` · `[~]` P-06 integrare `index.ts` / `npm run check` / commit | `src/server/{auth,users,debug,preflight,maintenance}.ts`, `src/web/{login,debug}`; **nemontat încă:** `features/analytics.ts` la `/api/analytics`; **neacceptate încă** de `loadShowFile`/`validate-show.mjs` cele 4 tipuri noi de cue |
+| A (main) | `[ ]` A-01 · `[x]` A-02 span · `[x]` A-03 boot R4 · `[x]` A-04 config loader R4 · `[ ]` A-05 | **codul A-01 și A-05 există** deși nebifate: `powerSaveBlocker`, watchdog + `app.relaunch()`, `applyAutostart` (`src/main/main.ts`), `scripts/{install,uninstall}-autostart.ps1`, `rotateRunLogs` (`src/main/logger.ts`); `config.5screens.example.json`, `config.follower.example.json` |
+| B (renderer) | `[x]` B-01 setSinkId · `[x]` B-02 perf 1 Hz · `[x]` B-03 ambianță · `[x]` B-04 entități reactive · `[x]` B-05 yaw · `[x]` B-06 rehearse · `[s]` B-07 span · `[x]` B-08 dynamic-voice · `[s]` B-09 foto/mic · `[x]` B-10 teste | `perf.ts`, `span.ts`, `photo.ts`, `room-mic.ts`, `perspective.ts`, `cue-scheduler.ts`, `voice/ambient.ts`, teste `perf/perspective/cue-scheduler/ui/entities`; `player.ts` tratează `rehearse/setRate/ambient/say/setVariant/photo` |
+| C (avatar/voce) | `[ ]` C-01…C-07 (agentul C s-a oprit fără să bifeze) | **codul există pentru C-01, C-02, C-03 (guard), C-04, C-05, C-07:** `avatar/casting.ts`, `perf-probe.ts`, `lipsync-ro.test.ts`, `scripts/precompute-visemes.mjs` (manifest RO **51/51** cu viseme), `createLangGuard` în `voice/manifest.ts` (nefolosit încă de player — de verificat), `voice/live-dialog.ts`, `server/features/dialog.ts`; **C-06 parțial:** `variants` în `show.json` (3 replici `7-9`), fără audio și **fără `--variant` în `tts-generate.mjs`**; `docs/AVATAR.md` livrat de E |
+| D (server/web) | `[ ]` D-01 · `[ ]` D-02 · `[ ]` D-03 · `[x]` D-04 editor · `[ ]` D-05 · `[ ]` D-06 · `[ ]` D-07 · `[ ]` D-08 · `[ ]` D-09 · `[x]` D-10 consolă · `[ ]` D-11 | **codul există pentru D-01/D-02/D-03/D-08/D-09** deși nebifate: `readiness()`, comenzile R4, `requestStart` în `state.ts`; `features/{dynamic-voice,lights,show-editor,show-validate,certificates,analytics}.ts`; `src/web/analytics/**`; consola cu login, readiness, butoane R4, editor; **lipsesc:** `src/server/state.test.ts` (D-11), certificat/telemetrie/buton start pe tabletă (D-06/D-07/D-09 partea web); `POST /api/certificates` cere `operator`, deci tabletele nu pot posta |
+| E (docs) | `[x]` E-01 · `[x]` E-02 · `[x]` E-03 | `HANDOFF.md`, `docs/history/HANDOFF-ISTORIC.md`, `docs/{OPERARE,SPEC-SHEET,DECIZII,SECURITATE,AVATAR}.md`, `README.md`; `docs/CUE-SHEET.md` regenerat identic; `docs/BRIEF.md` **neatins** (proprietar: orchestrator) |
 
 ### 14.3 Verificări care nu pot fi făcute pe PC-ul de dezvoltare
 

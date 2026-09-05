@@ -7,7 +7,7 @@
  * capped (cheap at 4K), rAF only while something is visible.
  */
 
-import type { Speaker } from "../../shared/types";
+import type { EntityParams, Speaker } from "../../shared/types";
 
 export type EntityId = Exclude<Speaker, "AVATAR_AI" | "CAPITANUL">;
 export const ENTITY_IDS: readonly EntityId[] = ["LUMINA", "NATURA", "TEHNOLOGIC"];
@@ -22,6 +22,13 @@ export interface Entities {
   hideAll(immediate?: boolean): void;
   /** Which entity is currently speaking (gets the full amplitude; others breathe softly). */
   setSpeaking(id: EntityId | null): void;
+  /**
+   * R4 / B-04 — parameters derived from the tablets' choices (`entityParams` message):
+   * LUMINA colour tint, NATURA pulseBpm, TEHNOLOGIC perspective (rotation/skew per key),
+   * intensity/votes -> density. Merged into the current params; kept until `hide`.
+   */
+  setParams(id: EntityId, params: EntityParams): void;
+  getParams(id: EntityId): EntityParams | null;
   visible(): EntityId[];
   setEnabled(enabled: boolean): void;
   dispose(): void;
@@ -43,6 +50,70 @@ interface Frame {
 interface EntityRenderer {
   reset(): void;
   draw(f: Frame): void;
+  /** R4 / B-04 — null resets to the default look. */
+  setParams(p: EntityParams | null): void;
+}
+
+// ---------------------------------------------------------------------------
+// R4 / B-04 — pure helpers (unit-tested in entities.test.ts)
+// ---------------------------------------------------------------------------
+
+/** Density multiplier 0.5..1.4 from intensity (0..1) or votes (pairs, saturating at 5). 1 when neither is given. */
+export function entityDensity(p: EntityParams | null | undefined): number {
+  if (!p) return 1;
+  const votes = typeof p.votes === "number" && Number.isFinite(p.votes) ? Math.min(1, Math.max(0, p.votes) / 5) : null;
+  const intensity = typeof p.intensity === "number" && Number.isFinite(p.intensity) ? Math.min(1, Math.max(0, p.intensity)) : null;
+  const k = intensity ?? votes;
+  if (k === null) return 1;
+  return Math.min(1.4, Math.max(0.5, 0.6 + 0.8 * k));
+}
+
+/** "#rgb" / "#rrggbb" -> [r,g,b]; null when invalid. */
+export function hexToRgb(hex: string | undefined): [number, number, number] | null {
+  if (typeof hex !== "string") return null;
+  const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return null;
+  let h = m[1];
+  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  const n = parseInt(h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function mix(c: [number, number, number], to: [number, number, number], k: number): [number, number, number] {
+  return [Math.round(c[0] + (to[0] - c[0]) * k), Math.round(c[1] + (to[1] - c[1]) * k), Math.round(c[2] + (to[2] - c[2]) * k)];
+}
+
+export function rgbCss(c: [number, number, number]): string {
+  return `#${c.map((v) => Math.max(0, Math.min(255, v)).toString(16).padStart(2, "0")).join("")}`;
+}
+
+/** LUMINA palette from a base tint: [base, lighter, white, darker]. Falls back to the default gold. */
+export function tintPalette(hex: string | undefined): string[] {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return LUMINA_COLORS;
+  return [rgbCss(rgb), rgbCss(mix(rgb, [255, 255, 255], 0.45)), "#ffffff", rgbCss(mix(rgb, [0, 0, 0], 0.25))];
+}
+
+/** Deterministic rotation (rad, +/-0.6) and skew (+/-0.22) for a TEHNOLOGIC perspective key. */
+export function perspectivePose(key: string | undefined): { rotation: number; skew: number } {
+  if (!key) return { rotation: 0, skew: 0 };
+  let h = 2166136261;
+  for (let i = 0; i < key.length; i++) {
+    h ^= key.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  const a = ((h & 0xffff) / 0xffff) * 2 - 1;
+  const b = (((h >>> 16) & 0xffff) / 0xffff) * 2 - 1;
+  return { rotation: a * 0.6, skew: b * 0.22 };
+}
+
+/** NATURA heartbeat 0..1 at `bpm` (0 when no bpm). */
+export function pulseAt(t: number, bpm: number | undefined): number {
+  if (!(typeof bpm === "number" && Number.isFinite(bpm) && bpm > 0)) return 0;
+  const phase = (t * bpm) / 60;
+  const x = phase - Math.floor(phase);
+  // sharp attack, exponential decay: a heartbeat rather than a sine
+  return x < 0.08 ? x / 0.08 : Math.exp(-(x - 0.08) * 6);
 }
 
 /** Deterministic PRNG (mulberry32). */
@@ -87,10 +158,50 @@ const LUMINA_COLORS = ["#fcd34d", "#fde68a", "#ffffff", "#f59e0b"];
 class LuminaRenderer implements EntityRenderer {
   private particles: Particle[] = [];
   private seed = 1;
+  private palette = LUMINA_COLORS;
+  private core: [number, number, number] = [252, 211, 77];
+  private density = 1;
+
+  setParams(p: EntityParams | null): void {
+    this.palette = tintPalette(p?.color);
+    this.core = hexToRgb(p?.color) ?? [252, 211, 77];
+    const d = entityDensity(p);
+    if (Math.abs(d - this.density) > 0.05) {
+      this.density = d;
+      this.resize();
+    }
+  }
+
+  /** Add/remove particles to match the density without re-seeding the existing ones. */
+  private resize(): void {
+    const want = Math.round(520 * this.density);
+    if (this.particles.length > want) this.particles.length = want;
+    else if (this.particles.length && this.particles.length < want) {
+      const r = rng(this.seed++ * 7919 + 17);
+      while (this.particles.length < want) this.particles.push(this.spawn(r));
+    }
+  }
+
+  private spawn(r: () => number): Particle {
+    const s1 = r();
+    return {
+      x: (r() - 0.5) * 1.4,
+      y: (r() - 0.5) * 1.4,
+      vx: 0,
+      vy: 0,
+      s1,
+      s2: r(),
+      s3: r(),
+      phase: r() * TAU,
+      speed: 2 + r() * 5,
+      size: 0.006 + r() * 0.012 * (1 - s1 * 0.5),
+      color: r() < 0.55 ? 0 : r() < 0.6 ? 1 : r() < 0.85 ? 2 : 3,
+    };
+  }
 
   reset(): void {
     const r = rng(this.seed++ * 7919 + 13);
-    const n = 520;
+    const n = Math.round(520 * this.density);
     this.particles = [];
     for (let i = 0; i < n; i++) {
       const s1 = r();
@@ -135,9 +246,10 @@ class LuminaRenderer implements EntityRenderer {
     // Core glow
     const coreR = 0.42 + amp * 0.18;
     const g = ctx.createRadialGradient(0, 0.05, 0, 0, 0.05, coreR);
+    const [cr, cg, cb] = this.core;
     g.addColorStop(0, `rgba(255, 244, 200, ${0.55 * alpha * (0.6 + 0.4 * cohesion)})`);
-    g.addColorStop(0.35, `rgba(252, 211, 77, ${0.28 * alpha * cohesion})`);
-    g.addColorStop(1, "rgba(245, 158, 11, 0)");
+    g.addColorStop(0.35, `rgba(${cr}, ${cg}, ${cb}, ${0.28 * alpha * cohesion})`);
+    g.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, 0)`);
     ctx.fillStyle = g;
     ctx.beginPath();
     ctx.arc(0, 0.05, coreR, 0, TAU);
@@ -162,7 +274,7 @@ class LuminaRenderer implements EntityRenderer {
       const a = alpha * tw * (0.35 + 0.65 * cohesion) * (0.75 + 0.25 * amp);
       if (a < 0.02) continue;
       ctx.globalAlpha = Math.min(1, a);
-      ctx.fillStyle = LUMINA_COLORS[p.color];
+      ctx.fillStyle = this.palette[p.color];
       const rad = p.size * (1 + amp * 0.6) * (0.6 + 0.4 * cohesion);
       ctx.beginPath();
       ctx.arc(p.x, p.y, rad, 0, TAU);
@@ -209,13 +321,30 @@ class NaturaRenderer implements EntityRenderer {
   private static readonly GROW = 11;
   private static readonly HOLD = 9;
   private static readonly FADE = 2.2;
+  private pulseBpm: number | undefined;
+  private density = 1;
+
+  setParams(p: EntityParams | null): void {
+    this.pulseBpm = p?.pulseBpm && Number.isFinite(p.pulseBpm) && p.pulseBpm > 0 ? Math.min(200, p.pulseBpm) : undefined;
+    const d = entityDensity(p);
+    if (Math.abs(d - this.density) > 0.05) {
+      this.density = d;
+      // rain density follows immediately; the tree picks it up on its next growth cycle
+      const r = rng(199 + this.seed);
+      const want = Math.round(150 * this.density);
+      if (this.drops.length > want) this.drops.length = want;
+      while (this.drops.length && this.drops.length < want) {
+        this.drops.push({ x: (r() - 0.5) * 2.2, y: (r() - 0.5) * 2.2, len: 0.05 + r() * 0.12, v: 1.2 + r() * 1.4, a: 0.15 + r() * 0.35 });
+      }
+    }
+  }
 
   reset(): void {
     this.started = false;
     this.build();
     const r = rng(99 + this.seed);
     this.drops = [];
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < Math.round(150 * this.density); i++) {
       this.drops.push({ x: (r() - 0.5) * 2.2, y: (r() - 0.5) * 2.2, len: 0.05 + r() * 0.12, v: 1.2 + r() * 1.4, a: 0.15 + r() * 0.35 });
     }
   }
@@ -224,8 +353,9 @@ class NaturaRenderer implements EntityRenderer {
     const r = rng(this.seed++ * 104729 + 7);
     const segs: Segment[] = [];
     const maxDepth = 7;
+    const maxSegs = Math.round(520 * this.density);
     const grow = (x: number, y: number, ang: number, len: number, depth: number, b0: number, width: number) => {
-      if (depth > maxDepth || segs.length > 520) return;
+      if (depth > maxDepth || segs.length > maxSegs) return;
       const x1 = x + Math.cos(ang) * len;
       const y1 = y + Math.sin(ang) * len;
       const b1 = b0 + len * 1.15;
@@ -253,7 +383,9 @@ class NaturaRenderer implements EntityRenderer {
   }
 
   draw(f: Frame): void {
-    const { ctx, t, dt, amp, alpha, px } = f;
+    const { ctx, t, dt, alpha, px } = f;
+    // Heartbeat from the tablets (pulseBpm) rides on top of the voice amplitude.
+    const amp = Math.min(1, Math.max(f.amp, pulseAt(t, this.pulseBpm) * 0.55));
     if (!this.started) {
       this.started = true;
       this.cycleStart = t;
@@ -390,20 +522,37 @@ interface Ring {
   phase: number;
 }
 
+const TEHNOLOGIC_RINGS: readonly Ring[] = [
+  { r: 0.14, n: 6, w: 0.5, phase: 0 },
+  { r: 0.27, n: 6, w: -0.32, phase: Math.PI / 6 },
+  { r: 0.42, n: 8, w: 0.22, phase: 0 },
+  { r: 0.58, n: 12, w: -0.16, phase: 0 },
+  { r: 0.76, n: 6, w: 0.11, phase: Math.PI / 6 },
+  { r: 0.92, n: 24, w: -0.06, phase: 0 },
+  // extra ring only at high density
+  { r: 1.04, n: 32, w: 0.04, phase: 0 },
+];
+
 class TehnologicRenderer implements EntityRenderer {
   private rings: Ring[] = [];
   private glitchAt = 0;
   private nextGlitch = 1.5;
+  private pose = { rotation: 0, skew: 0 };
+  private density = 1;
+
+  setParams(p: EntityParams | null): void {
+    this.pose = perspectivePose(p?.perspective);
+    this.density = entityDensity(p);
+    this.buildRings();
+  }
+
+  private buildRings(): void {
+    const count = Math.max(3, Math.min(TEHNOLOGIC_RINGS.length, Math.round(6 * this.density)));
+    this.rings = TEHNOLOGIC_RINGS.slice(0, count).map((r) => ({ ...r }));
+  }
 
   reset(): void {
-    this.rings = [
-      { r: 0.14, n: 6, w: 0.5, phase: 0 },
-      { r: 0.27, n: 6, w: -0.32, phase: Math.PI / 6 },
-      { r: 0.42, n: 8, w: 0.22, phase: 0 },
-      { r: 0.58, n: 12, w: -0.16, phase: 0 },
-      { r: 0.76, n: 6, w: 0.11, phase: Math.PI / 6 },
-      { r: 0.92, n: 24, w: -0.06, phase: 0 },
-    ];
+    this.buildRings();
     this.glitchAt = -1;
     this.nextGlitch = 1.5;
   }
@@ -437,6 +586,11 @@ class TehnologicRenderer implements EntityRenderer {
 
     ctx.save();
     ctx.scale(scale, scale);
+    // R4 / B-04 — perspective chosen on the tablets: a tilt + skew of the whole lattice.
+    if (this.pose.rotation || this.pose.skew) {
+      ctx.rotate(this.pose.rotation);
+      ctx.transform(1, 0, this.pose.skew, 1, 0, 0);
+    }
     // Mirror symmetry: the horizontal glitch offset is applied mirrored on both halves.
     const gx = glitch ? (Math.random() - 0.5) * 0.05 : 0;
 
@@ -552,6 +706,8 @@ interface Slot {
   alpha: number;
   target: number;
   amp: number;
+  /** R4 / B-04 — tablet-derived parameters (null = default look). */
+  params: EntityParams | null;
 }
 
 const FADE_IN_S = 0.9;
@@ -562,9 +718,14 @@ export function createEntities(canvas: HTMLCanvasElement, opts: { enabled: boole
   const ctx = canvas.getContext("2d", { alpha: true });
   let enabled = opts.enabled && !!ctx;
   const slots: Record<EntityId, Slot> = {
-    LUMINA: { id: "LUMINA", renderer: new LuminaRenderer(), alpha: 0, target: 0, amp: 0 },
-    NATURA: { id: "NATURA", renderer: new NaturaRenderer(), alpha: 0, target: 0, amp: 0 },
-    TEHNOLOGIC: { id: "TEHNOLOGIC", renderer: new TehnologicRenderer(), alpha: 0, target: 0, amp: 0 },
+    LUMINA: { id: "LUMINA", renderer: new LuminaRenderer(), alpha: 0, target: 0, amp: 0, params: null },
+    NATURA: { id: "NATURA", renderer: new NaturaRenderer(), alpha: 0, target: 0, amp: 0, params: null },
+    TEHNOLOGIC: { id: "TEHNOLOGIC", renderer: new TehnologicRenderer(), alpha: 0, target: 0, amp: 0, params: null },
+  };
+  const clearParams = (s: Slot) => {
+    if (s.params === null) return;
+    s.params = null;
+    s.renderer.setParams(null);
   };
   let speaking: EntityId | null = null;
   let raf = 0;
@@ -641,11 +802,13 @@ export function createEntities(canvas: HTMLCanvasElement, opts: { enabled: boole
       const s = slots[id];
       if (!s) return;
       s.target = 0;
+      clearParams(s);
       if (speaking === id) speaking = null;
     },
     hideAll(immediate) {
       for (const s of Object.values(slots)) {
         s.target = 0;
+        clearParams(s);
         if (immediate) s.alpha = 0;
       }
       speaking = null;
@@ -658,6 +821,14 @@ export function createEntities(canvas: HTMLCanvasElement, opts: { enabled: boole
     setSpeaking(id) {
       speaking = id;
     },
+    setParams(id, params) {
+      const s = slots[id];
+      if (!s) return;
+      s.params = { ...(s.params ?? {}), ...params };
+      s.renderer.setParams(s.params);
+      if (s.target > 0) ensureLoop();
+    },
+    getParams: (id) => slots[id]?.params ?? null,
     visible: () => Object.values(slots).filter((s) => s.target > 0).map((s) => s.id),
     setEnabled(v) {
       enabled = v && !!ctx;

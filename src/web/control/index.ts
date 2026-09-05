@@ -1,5 +1,6 @@
-import { SPEAKERS, type Cue, type Phase, type PlaybackState, type ShowFile, type ShowState } from "@shared/types";
+import { SPEAKERS, type Cue, type PerfSample, type Phase, type PlaybackState, type Readiness, type SceneTheme, type ShowFile, type ShowState, type Speaker } from "@shared/types";
 import type { ClockMsg, Command, ServerMessage, TabletsMsg } from "@shared/protocol";
+import { createTimelineEditor } from "./editor";
 
 type CueStatus = "pending" | "fired" | "skipped";
 
@@ -12,6 +13,7 @@ const byId = <T extends HTMLElement>(id: string): T => {
 const dom = {
   connection: byId<HTMLDivElement>("connection"),
   connectionLabel: byId<HTMLSpanElement>("connection-label"),
+  logout: byId<HTMLButtonElement>("logout"),
   showTitle: byId<HTMLHeadingElement>("show-title"),
   showVersion: byId<HTMLParagraphElement>("show-version"),
   sceneLabel: byId<HTMLParagraphElement>("scene-label"),
@@ -22,7 +24,22 @@ const dom = {
   tabletsCount: byId<HTMLElement>("tablets-count"),
   videoStatus: byId<HTMLElement>("video-status"),
   themeLabel: byId<HTMLElement>("theme-label"),
+  variantLabel: byId<HTMLElement>("variant-label"),
+  autorunLabel: byId<HTMLElement>("autorun-label"),
+  ambientLabel: byId<HTMLElement>("ambient-label"),
+  lightsLabel: byId<HTMLElement>("lights-label"),
   commandNote: byId<HTMLSpanElement>("command-note"),
+  // readiness (D-10)
+  readiness: byId<HTMLDivElement>("readiness"),
+  readinessBadge: byId<HTMLSpanElement>("readiness-badge"),
+  readinessSummary: byId<HTMLSpanElement>("readiness-summary"),
+  readinessScreens: byId<HTMLElement>("readiness-screens"),
+  readinessMissing: byId<HTMLElement>("readiness-missing"),
+  readinessTablets: byId<HTMLElement>("readiness-tablets"),
+  readinessVideo: byId<HTMLElement>("readiness-video"),
+  readinessAssets: byId<HTMLElement>("readiness-assets"),
+  readinessReasons: byId<HTMLUListElement>("readiness-reasons"),
+  startHint: byId<HTMLElement>("start-hint"),
   timeline: byId<HTMLInputElement>("timeline"),
   timelineStart: byId<HTMLSpanElement>("timeline-start"),
   timelineCurrent: byId<HTMLElement>("timeline-current"),
@@ -34,10 +51,28 @@ const dom = {
   voiceOutput: byId<HTMLOutputElement>("voice-output"),
   sfxVolume: byId<HTMLInputElement>("sfx-volume"),
   sfxOutput: byId<HTMLOutputElement>("sfx-output"),
+  // R4 controls (D-10)
+  rehearseX4: byId<HTMLButtonElement>("rehearse-x4"),
+  rateNormal: byId<HTMLButtonElement>("rate-normal"),
+  rateNote: byId<HTMLSpanElement>("rate-note"),
+  ambientToggle: byId<HTMLButtonElement>("ambient-toggle"),
+  autorunToggle: byId<HTMLButtonElement>("autorun-toggle"),
+  lightsTheme: byId<HTMLSelectElement>("lights-theme"),
+  lightsApply: byId<HTMLButtonElement>("lights-apply"),
+  variantSelect: byId<HTMLSelectElement>("variant-select"),
+  variantApply: byId<HTMLButtonElement>("variant-apply"),
+  saySpeaker: byId<HTMLSelectElement>("say-speaker"),
+  sayText: byId<HTMLInputElement>("say-text"),
+  saySend: byId<HTMLButtonElement>("say-send"),
+  photoButton: byId<HTMLButtonElement>("photo-button"),
+  preflightButton: byId<HTMLButtonElement>("preflight-button"),
+  // cues / tablets
   cueSearch: byId<HTMLInputElement>("cue-search"),
   cuePhase: byId<HTMLSelectElement>("cue-phase"),
   cueCount: byId<HTMLSpanElement>("cue-count"),
   cueList: byId<HTMLDivElement>("cue-list"),
+  perfCount: byId<HTMLElement>("perf-count"),
+  perfTable: byId<HTMLTableElement>("perf-table"),
   tabletLiveCount: byId<HTMLElement>("tablet-live-count"),
   tabletQr: byId<HTMLImageElement>("tablet-qr"),
   tabletUrl: byId<HTMLAnchorElement>("tablet-url"),
@@ -46,6 +81,14 @@ const dom = {
   answerCount: byId<HTMLSpanElement>("answer-count"),
   answerList: byId<HTMLDivElement>("answer-list"),
   clearAnswers: byId<HTMLButtonElement>("clear-answers"),
+  // users (admin)
+  usersPanel: byId<HTMLElement>("users-panel"),
+  usersNote: byId<HTMLSpanElement>("users-note"),
+  usersList: byId<HTMLDivElement>("users-list"),
+  usersForm: byId<HTMLFormElement>("users-form"),
+  userName: byId<HTMLInputElement>("user-name"),
+  userRole: byId<HTMLSelectElement>("user-role"),
+  userPin: byId<HTMLInputElement>("user-pin"),
   toast: byId<HTMLDivElement>("toast"),
   playButton: byId<HTMLButtonElement>("play-button"),
   pauseButton: byId<HTMLButtonElement>("pause-button"),
@@ -65,6 +108,8 @@ let lastFiredCueId: string | null = null;
 let timelineDragging = false;
 let toastTimer: number | null = null;
 let volumeTimer: number | null = null;
+let perfSamples: PerfSample[] = [];
+let perfSeenAt = 0;
 
 const stateLabels: Record<PlaybackState, string> = {
   idle: "IDLE",
@@ -120,10 +165,19 @@ async function ensureSession(): Promise<boolean> {
     }
     sessionToken = data.token ?? null;
     sessionUser = data.user ?? null;
+    applyRole();
     return true;
   } catch {
     return true;
   }
+}
+
+function applyRole(): void {
+  const admin = sessionUser?.role === "admin";
+  dom.usersPanel.hidden = !admin;
+  if (admin) void loadUsers();
+  const viewer = sessionUser?.role === "viewer";
+  document.body.classList.toggle("is-viewer", viewer);
 }
 
 function connect(): void {
@@ -177,6 +231,7 @@ function onMessage(message: ServerMessage): void {
       dom.language.value = message.config.lang;
       renderShow();
       renderState();
+      editor.setShow(show);
       void refreshCueStatuses();
       break;
     case "state":
@@ -201,12 +256,25 @@ function onMessage(message: ServerMessage): void {
       tablets = message;
       renderTablets();
       break;
+    case "perfSummary":
+      perfSamples = message.samples;
+      perfSeenAt = Date.now();
+      renderPerf();
+      break;
+    case "dynamicVoice":
+      setCommandNote(`${SPEAKERS[message.speaker]?.label ?? message.speaker}: „${message.text.slice(0, 80)}${message.text.length > 80 ? "…" : ""}”`);
+      break;
+    case "photo":
+      if (message.action === "countdown") setCommandNote(`Fotografie de echipaj în ${message.countdownSec ?? 3} s…`);
+      else if (message.action === "show") setCommandNote("Fotografia de echipaj a fost capturată");
+      break;
     case "error":
       setCommandNote(message.reason, true);
       notify(message.reason, true);
       break;
     case "applyCmd":
     case "tabletView":
+    case "entityParams":
       break;
   }
 }
@@ -226,9 +294,14 @@ async function dispatch(cmd: Command): Promise<void> {
   try {
     const response = await fetch("/api/cmd", {
       method: "POST",
+      credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ cmd }),
     });
+    if (response.status === 401) {
+      goToLogin();
+      return;
+    }
     const result = (await response.json()) as { ok?: boolean; reason?: string; state?: ShowState };
     if (!response.ok || !result.ok) throw new Error(result.reason ?? "Comanda a fost respinsă.");
     if (result.state) {
@@ -246,7 +319,7 @@ async function dispatch(cmd: Command): Promise<void> {
 async function focusPlayer(): Promise<void> {
   dom.focusPlayer.disabled = true;
   try {
-    const response = await fetch("/api/player/focus", { method: "POST" });
+    const response = await fetch("/api/player/focus", { method: "POST", credentials: "same-origin" });
     const result = (await response.json()) as { ok?: boolean; reason?: string };
     if (!response.ok || !result.ok) throw new Error(result.reason ?? "Playerul nu a putut fi adus în față.");
     setCommandNote("Playerul a fost adus în față");
@@ -292,7 +365,7 @@ function phaseTime(): number {
   return state?.phaseTime ?? 0;
 }
 
-function formatTime(seconds: number, showTenths = false): string {
+export function formatTime(seconds: number, showTenths = false): string {
   const negative = seconds < 0;
   const absolute = Math.max(0, Math.abs(seconds));
   const minutes = Math.floor(absolute / 60);
@@ -311,6 +384,7 @@ function renderClock(): void {
   dom.timelineCurrent.textContent = formatTime(t, true);
   if (!timelineDragging) dom.timeline.value = String(Math.min(range.max, Math.max(range.min, t)));
   renderVideoStatus(t);
+  editor.setPlayhead(phase, t);
 }
 
 function renderVideoStatus(currentPhaseTime: number): void {
@@ -339,6 +413,7 @@ function renderShow(): void {
   dom.showTitle.textContent = show.title;
   dom.showVersion.textContent = `SHOW ${show.version} · ${show.timingStatus === "aligned" ? "TIMPI ALINIAȚI" : "TIMPI PROVIZORII"}`;
   renderScenes();
+  renderVariants();
   renderCues();
 }
 
@@ -353,6 +428,99 @@ function renderScenes(): void {
     dom.sceneSelect.append(option);
   }
   if (show.scenes.some((scene) => scene.id === selected)) dom.sceneSelect.value = selected;
+}
+
+function renderVariants(): void {
+  const current = state?.variant ?? "";
+  dom.variantSelect.replaceChildren();
+  const base = document.createElement("option");
+  base.value = "";
+  base.textContent = "Text de bază";
+  dom.variantSelect.append(base);
+  for (const [key, meta] of Object.entries(show?.variants ?? {})) {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = `${meta.label} (${meta.ageRange})`;
+    dom.variantSelect.append(option);
+  }
+  dom.variantSelect.value = current && show?.variants && current in show.variants ? current : "";
+  dom.variantApply.disabled = !show?.variants || Object.keys(show.variants).length === 0;
+}
+
+function renderSpeakers(): void {
+  dom.saySpeaker.replaceChildren();
+  for (const profile of Object.values(SPEAKERS)) {
+    const option = document.createElement("option");
+    option.value = profile.id;
+    option.textContent = profile.label;
+    dom.saySpeaker.append(option);
+  }
+  dom.saySpeaker.value = "CAPITANUL";
+}
+
+function renderReadiness(readiness: Readiness | undefined, idle: boolean): void {
+  if (!readiness) {
+    dom.readiness.dataset.ready = "unknown";
+    dom.readinessBadge.textContent = "PREGĂTIRE NECUNOSCUTĂ";
+    dom.readinessSummary.textContent = "Serverul nu raportează încă starea de pregătire.";
+    dom.readinessReasons.replaceChildren();
+    dom.startExperience.classList.remove("not-ready");
+    return;
+  }
+  dom.readiness.dataset.ready = readiness.ready ? "yes" : "no";
+  dom.readinessBadge.textContent = readiness.ready ? "NAVA ESTE PREGĂTITĂ" : "NAVA NU ESTE PREGĂTITĂ";
+  dom.readinessSummary.textContent = readiness.ready
+    ? "Toate ecranele cerute sunt conectate, filmul este încărcat și vocile au trecut verificarea."
+    : `${readiness.reasons.length} ${readiness.reasons.length === 1 ? "problemă" : "probleme"} · pornirea manuală rămâne permisă.`;
+  dom.readinessScreens.textContent = readiness.screensConnected.length ? readiness.screensConnected.join(", ") : "—";
+  dom.readinessMissing.textContent = readiness.screensMissing.length ? readiness.screensMissing.join(", ") : "niciunul";
+  dom.readinessMissing.className = readiness.screensMissing.length ? "bad" : "ok";
+  dom.readinessTablets.textContent = `${readiness.tabletsConnected}${readiness.tabletsRequired ? ` / ${readiness.tabletsRequired}` : ""}`;
+  dom.readinessTablets.className = readiness.tabletsConnected < readiness.tabletsRequired ? "bad" : "ok";
+  dom.readinessVideo.textContent = readiness.videoReady ? "ÎNCĂRCAT" : "NEÎNCĂRCAT";
+  dom.readinessVideo.className = readiness.videoReady ? "ok" : "bad";
+  dom.readinessAssets.textContent = readiness.assetsOk === null ? "NEVERIFICATE" : readiness.assetsOk ? "OK" : "PROBLEME";
+  dom.readinessAssets.className = readiness.assetsOk === null ? "warn" : readiness.assetsOk ? "ok" : "bad";
+  dom.readinessReasons.replaceChildren();
+  for (const reason of readiness.reasons) {
+    const li = document.createElement("li");
+    li.textContent = reason;
+    dom.readinessReasons.append(li);
+  }
+  const warn = !readiness.ready && idle;
+  dom.startExperience.classList.toggle("not-ready", warn);
+  dom.startHint.textContent = warn
+    ? `Atenție: ${readiness.reasons[0] ?? "nava nu este pregătită"} — START pornește oricum.`
+    : "Test: T−10 acum · film la zero · Căpitanul la aproximativ 19 secunde";
+}
+
+function renderR4Header(): void {
+  if (!state) return;
+  const variantMeta = state.variant && show?.variants ? show.variants[state.variant] : undefined;
+  dom.variantLabel.textContent = state.variant ? (variantMeta?.label ?? state.variant).toUpperCase() : "BAZĂ";
+  dom.autorunLabel.textContent = state.autoRun === undefined ? "—" : state.autoRun ? "ON" : "OFF";
+  dom.autorunLabel.style.color = state.autoRun ? "var(--green)" : "";
+  dom.ambientLabel.textContent = state.ambientEnabled === undefined ? "—" : state.ambientEnabled ? "ON" : "OFF";
+  dom.ambientLabel.style.color = state.ambientEnabled ? "var(--green)" : "";
+  dom.lightsLabel.textContent = (state.lightsDriver ?? "—").toUpperCase();
+
+  dom.ambientToggle.textContent = `AMBIANȚĂ · ${state.ambientEnabled === undefined ? "—" : state.ambientEnabled ? "ON" : "OFF"}`;
+  dom.ambientToggle.setAttribute("aria-pressed", String(!!state.ambientEnabled));
+  dom.ambientToggle.disabled = state.ambientEnabled === undefined;
+  dom.autorunToggle.textContent = `AUTO-RUN · ${state.autoRun === undefined ? "—" : state.autoRun ? "ON" : "OFF"}`;
+  dom.autorunToggle.setAttribute("aria-pressed", String(!!state.autoRun));
+  dom.autorunToggle.disabled = state.autoRun === undefined;
+  dom.lightsApply.disabled = state.lightsDriver === "none";
+  dom.lightsApply.title = state.lightsDriver === "none" ? "lights.driver = none în config.json — adaptorul de lumini este dezactivat" : "";
+  dom.lightsTheme.value = state.theme;
+
+  const liveRate = clock?.state === state.state ? clock.rate : state.rate;
+  const advancing = state.state === "playing" || state.state === "preshow" || state.state === "epilogue";
+  dom.rateNote.textContent = advancing ? `rată ${liveRate}×` : "rată 1× (la pornire)";
+  dom.rateNote.classList.toggle("warn", advancing && liveRate > 1);
+  if (show?.variants && dom.variantSelect.value !== (state.variant ?? "") && document.activeElement !== dom.variantSelect) {
+    dom.variantSelect.value = state.variant && state.variant in show.variants ? state.variant : "";
+  }
 }
 
 function renderState(): void {
@@ -380,13 +548,15 @@ function renderState(): void {
   const restart = document.querySelector<HTMLButtonElement>('[data-command="restart"]');
   if (restart) restart.disabled = state.state === "idle";
   if (currentScene) dom.sceneSelect.value = currentScene.id;
+  renderReadiness(state.readiness, state.state === "idle" || state.state === "preshow");
+  renderR4Header();
   renderClock();
 }
 
-function cueDescription(cue: Cue): { title: string; detail: string } {
+export function cueDescription(cue: Cue, lang: string = state?.lang ?? "ro"): { title: string; detail: string } {
   switch (cue.kind) {
     case "voice":
-      return { title: cue.text[state?.lang ?? "ro"] ?? cue.text.ro, detail: SPEAKERS[cue.speaker].label };
+      return { title: cue.text[lang as "ro"] ?? cue.text.ro, detail: SPEAKERS[cue.speaker].label };
     case "theme": return { title: `Temă: ${cue.theme}`, detail: cue.note ?? "Schimbare atmosferă" };
     case "tablet": return { title: `Tabletă: ${cue.interaction.type}`, detail: "prompt" in cue.interaction ? cue.interaction.prompt : cue.note ?? "Interacțiune echipaj" };
     case "entity": return { title: `${cue.action === "show" ? "Afișează" : "Ascunde"} ${cue.entity}`, detail: cue.note ?? "Entitate vizuală" };
@@ -459,6 +629,46 @@ function renderCues(): void {
   dom.cueList.append(fragment);
 }
 
+function renderPerf(): void {
+  const body = dom.perfTable.tBodies[0];
+  if (!body) return;
+  const stale = Date.now() - perfSeenAt > 5000;
+  dom.perfCount.textContent = perfSamples.length && !stale ? `${perfSamples.length} raportează` : "0 raportează";
+  dom.perfCount.style.color = perfSamples.length && !stale ? "" : "var(--muted)";
+  body.replaceChildren();
+  if (!perfSamples.length) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 6;
+    cell.className = "empty";
+    cell.textContent = "Niciun ecran nu a trimis încă măsurători.";
+    row.append(cell);
+    body.append(row);
+    return;
+  }
+  const cell = (text: string, cls?: string): HTMLTableCellElement => {
+    const td = document.createElement("td");
+    td.textContent = text;
+    if (cls) td.className = cls;
+    return td;
+  };
+  for (const s of [...perfSamples].sort((a, b) => a.screenId.localeCompare(b.screenId))) {
+    const row = document.createElement("tr");
+    const droppedPct = s.videoTotal > 0 ? (100 * s.videoDropped) / s.videoTotal : null;
+    const drift = s.driftSec;
+    row.append(
+      cell(s.screenId, "perf-screen"),
+      cell(droppedPct === null ? "—" : `${droppedPct.toFixed(1)}% (${s.videoDropped})`, droppedPct === null ? "" : droppedPct > 2 ? "bad" : droppedPct > 0.5 ? "warn" : "ok"),
+      cell(`${s.videoFps === null ? "—" : Math.round(s.videoFps)} / ${s.avatarFps === null ? "—" : Math.round(s.avatarFps)}`),
+      cell(drift === null ? "—" : `${(drift * 1000).toFixed(0)} ms`, drift === null ? "" : Math.abs(drift) > 0.25 ? "bad" : Math.abs(drift) > 0.08 ? "warn" : "ok"),
+      cell(s.lipsyncLatencyMs === null ? "—" : `${Math.round(s.lipsyncLatencyMs)} ms`, s.lipsyncLatencyMs === null ? "" : s.lipsyncLatencyMs > 120 ? "warn" : "ok"),
+      cell(s.audioOutput ?? "—", "perf-audio"),
+    );
+    row.title = `heap ${s.heapMb ?? "—"} MB · zgomot sală ${s.roomLevel === null ? "—" : s.roomLevel.toFixed(2)} · ${new Date(s.atMs).toLocaleTimeString("ro-RO")}`;
+    body.append(row);
+  }
+}
+
 function renderTablets(): void {
   const connected = tablets.tablets.filter((tablet) => tablet.connected).length;
   dom.tabletLiveCount.textContent = `${connected} online`;
@@ -518,7 +728,7 @@ function renderTablets(): void {
 
 async function refreshCueStatuses(): Promise<void> {
   try {
-    const response = await fetch("/api/cues", { cache: "no-store" });
+    const response = await fetch("/api/cues", { cache: "no-store", credentials: "same-origin" });
     if (!response.ok) return;
     const result = (await response.json()) as { statuses?: Record<string, CueStatus>; lastVoiceCueId?: string | null };
     if (result.statuses) cueStatuses = result.statuses;
@@ -531,9 +741,9 @@ async function refreshCueStatuses(): Promise<void> {
 async function loadAuxiliaryData(): Promise<void> {
   try {
     const [urlsResponse, configResponse, tabletResponse] = await Promise.all([
-      fetch("/api/urls", { cache: "no-store" }),
-      fetch("/api/config", { cache: "no-store" }),
-      fetch("/api/tablets", { cache: "no-store" }),
+      fetch("/api/urls", { cache: "no-store", credentials: "same-origin" }),
+      fetch("/api/config", { cache: "no-store", credentials: "same-origin" }),
+      fetch("/api/tablets", { cache: "no-store", credentials: "same-origin" }),
     ]);
     if (urlsResponse.ok) {
       const urls = (await urlsResponse.json()) as { tablet?: string };
@@ -559,6 +769,134 @@ async function loadAuxiliaryData(): Promise<void> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Users (admin only) — /api/users
+
+interface UserRow {
+  id: string;
+  name: string;
+  role: string;
+  createdAt: string;
+  lastLoginAt?: string;
+  disabled?: boolean;
+}
+
+async function usersApi<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, { credentials: "same-origin", cache: "no-store", ...init });
+  if (res.status === 401) {
+    goToLogin();
+    throw new Error("Sesiune expirată");
+  }
+  const data = (await res.json().catch(() => ({}))) as T & { ok?: boolean; reason?: string };
+  if (!res.ok || data.ok === false) throw new Error(data.reason ?? `Eroare ${res.status}`);
+  return data;
+}
+
+async function loadUsers(): Promise<void> {
+  if (sessionUser?.role !== "admin") return;
+  try {
+    const data = await usersApi<{ users: UserRow[] }>("/api/users");
+    dom.usersList.replaceChildren();
+    for (const user of data.users) {
+      const row = document.createElement("div");
+      row.className = `user-row${user.disabled ? " disabled" : ""}`;
+      const copy = document.createElement("div");
+      const name = document.createElement("strong");
+      name.textContent = user.name;
+      const meta = document.createElement("span");
+      meta.textContent = `${user.role}${user.disabled ? " · dezactivat" : ""}${user.lastLoginAt ? ` · ultimul login ${new Date(user.lastLoginAt).toLocaleString("ro-RO", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}` : ""}`;
+      copy.append(name, meta);
+      const actions = document.createElement("div");
+      actions.className = "user-actions";
+      const pin = document.createElement("button");
+      pin.type = "button";
+      pin.className = "text-button";
+      pin.textContent = "PIN";
+      pin.title = "Schimbă PIN-ul";
+      pin.addEventListener("click", () => void changePin(user));
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "text-button";
+      toggle.textContent = user.disabled ? "Activează" : "Dezactivează";
+      toggle.addEventListener("click", () => void toggleUser(user));
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "text-button danger";
+      del.textContent = "Șterge";
+      del.addEventListener("click", () => void deleteUser(user));
+      actions.append(pin, toggle, del);
+      row.append(copy, actions);
+      dom.usersList.append(row);
+    }
+    dom.usersNote.textContent = `${data.users.length} ${data.users.length === 1 ? "utilizator" : "utilizatori"}`;
+    dom.usersNote.classList.remove("error");
+  } catch (error) {
+    dom.usersNote.textContent = error instanceof Error ? error.message : String(error);
+    dom.usersNote.classList.add("error");
+  }
+}
+
+async function changePin(user: UserRow): Promise<void> {
+  const pin = window.prompt(`PIN nou pentru ${user.name} (4–8 cifre):`);
+  if (!pin) return;
+  try {
+    await usersApi(`/api/users/${encodeURIComponent(user.id)}/pin`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin }) });
+    notify(`PIN schimbat pentru ${user.name}.`);
+    await loadUsers();
+  } catch (error) {
+    notify(error instanceof Error ? error.message : String(error), true);
+  }
+}
+
+async function toggleUser(user: UserRow): Promise<void> {
+  try {
+    await usersApi(`/api/users/${encodeURIComponent(user.id)}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ disabled: !user.disabled }) });
+    await loadUsers();
+  } catch (error) {
+    notify(error instanceof Error ? error.message : String(error), true);
+  }
+}
+
+async function deleteUser(user: UserRow): Promise<void> {
+  if (!window.confirm(`Ștergi utilizatorul „${user.name}”?`)) return;
+  try {
+    await usersApi(`/api/users/${encodeURIComponent(user.id)}`, { method: "DELETE" });
+    notify(`Utilizatorul ${user.name} a fost șters.`);
+    await loadUsers();
+  } catch (error) {
+    notify(error instanceof Error ? error.message : String(error), true);
+  }
+}
+
+dom.usersForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try {
+    await usersApi("/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: dom.userName.value.trim(), role: dom.userRole.value, pin: dom.userPin.value }),
+    });
+    dom.userName.value = "";
+    dom.userPin.value = "";
+    notify("Utilizator creat.");
+    await loadUsers();
+  } catch (error) {
+    notify(error instanceof Error ? error.message : String(error), true);
+  }
+});
+
+dom.logout.addEventListener("click", async () => {
+  try {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+  } catch {
+    /* the redirect below still ends the local session */
+  }
+  location.assign("/login/?next=%2Fcontrol%2F");
+});
+
+// ---------------------------------------------------------------------------
+// Volume / transport wiring
+
 function updateVolumeOutputs(): void {
   dom.voiceOutput.value = `${Math.round(Number(dom.voiceVolume.value) * 100)}%`;
   dom.sfxOutput.value = `${Math.round(Number(dom.sfxVolume.value) * 100)}%`;
@@ -583,6 +921,10 @@ document.querySelectorAll<HTMLButtonElement>("[data-command]").forEach((button) 
 });
 
 dom.startExperience.addEventListener("click", () => {
+  if (dom.startExperience.classList.contains("not-ready")) {
+    const reasons = state?.readiness?.reasons.join("\n") ?? "";
+    if (!window.confirm(`Nava nu este pregătită:\n${reasons}\n\nPornești oricum?`)) return;
+  }
   void dispatch({ action: "start" }).then(focusPlayer);
 });
 dom.focusPlayer.addEventListener("click", () => void focusPlayer());
@@ -606,6 +948,42 @@ dom.sfxVolume.addEventListener("input", scheduleVolume);
 dom.cueSearch.addEventListener("input", renderCues);
 dom.cuePhase.addEventListener("change", renderCues);
 
+// --- R4 controls (D-10) -------------------------------------------------------------
+dom.rehearseX4.addEventListener("click", () => void dispatch({ action: "rehearse", rate: 4 }));
+dom.rateNormal.addEventListener("click", () => void dispatch({ action: "setRate", rate: 1 }));
+dom.ambientToggle.addEventListener("click", () => void dispatch({ action: "ambient", enabled: !state?.ambientEnabled }));
+dom.autorunToggle.addEventListener("click", () => {
+  const next = !state?.autoRun;
+  if (next && !window.confirm("Activezi modul operator absent? Show-ul va porni singur când nava este pregătită (după configurația autoRun).")) return;
+  void dispatch({ action: "autoRun", enabled: next });
+});
+dom.lightsApply.addEventListener("click", () => void dispatch({ action: "lights", theme: dom.lightsTheme.value as SceneTheme }));
+dom.variantApply.addEventListener("click", () => void dispatch({ action: "setVariant", variant: dom.variantSelect.value || null }));
+const sendSay = (): void => {
+  const text = dom.sayText.value.trim();
+  if (!text) {
+    dom.sayText.focus();
+    return;
+  }
+  void dispatch({ action: "say", speaker: dom.saySpeaker.value as Speaker, text }).then(() => {
+    dom.sayText.value = "";
+  });
+};
+dom.saySend.addEventListener("click", sendSay);
+dom.sayText.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendSay();
+  }
+});
+dom.photoButton.addEventListener("click", () => void dispatch({ action: "photo" }));
+dom.preflightButton.addEventListener("click", () => {
+  dom.preflightButton.disabled = true;
+  void dispatch({ action: "preflight" }).finally(() => {
+    window.setTimeout(() => (dom.preflightButton.disabled = false), 1500);
+  });
+});
+
 dom.copyUrl.addEventListener("click", async () => {
   const value = dom.tabletUrl.href;
   try {
@@ -627,7 +1005,7 @@ dom.copyUrl.addEventListener("click", async () => {
 dom.clearAnswers.addEventListener("click", async () => {
   if (!tablets.answers.length || !window.confirm("Ștergi toate răspunsurile și mesajele din consola curentă?")) return;
   try {
-    const response = await fetch("/api/tablets/clear", { method: "POST" });
+    const response = await fetch("/api/tablets/clear", { method: "POST", credentials: "same-origin" });
     if (!response.ok) throw new Error("Răspunsurile nu au putut fi șterse.");
     tablets = { ...tablets, answers: [] };
     renderTablets();
@@ -648,6 +1026,21 @@ window.addEventListener("keydown", (event) => {
   }
 });
 
+// --- D-04 timeline editor -------------------------------------------------------------
+const editor = createTimelineEditor({
+  formatTime,
+  describe: (cue) => cueDescription(cue),
+  notify,
+  onUnauthorized: goToLogin,
+  onSaved: (saved) => {
+    show = saved;
+    renderShow();
+    void refreshCueStatuses();
+  },
+});
+
+renderSpeakers();
 window.setInterval(renderClock, 100);
+window.setInterval(renderPerf, 5000);
 void loadAuxiliaryData();
 connect();

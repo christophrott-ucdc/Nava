@@ -11,15 +11,38 @@
  */
 
 import type { AvatarController, VoiceEngine } from "../shared/contracts";
-import type { Command } from "../shared/protocol";
-import type { AppConfig, Cue, Lang, Phase, PlaybackState, ScreenConfig, ShowFile, ShowState } from "../shared/types";
+import type { Command, DynamicVoiceMsg } from "../shared/protocol";
+import { SPEAKERS, type AppConfig, type Cue, type EntityParams, type Lang, type Phase, type PhotoCue, type PlaybackState, type ScreenConfig, type ShowFile, type ShowState } from "../shared/types";
 import { describeError, type Logger } from "./log";
+import { yawTransform } from "./perspective";
 import { Timeline, type FireMode } from "./timeline";
 import type { Countdown } from "./ui/countdown";
-import type { Entities } from "./ui/entities";
+import { isEntityId, type Entities } from "./ui/entities";
 import type { Osd } from "./ui/osd";
 import type { Subtitles } from "./ui/subtitles";
 import type { ThemeController } from "./ui/theme";
+import type { AmbientEngine } from "./voice/ambient";
+import { setVoicePlaybackRate } from "./voice/index";
+
+/** R4 / B-06 — rehearse rate bounds (the server accepts `report.rate` up to 8). */
+export const MIN_RATE = 0.25;
+export const MAX_RATE = 8;
+
+export function clampRate(rate: unknown): number {
+  const r = typeof rate === "number" && Number.isFinite(rate) ? rate : 1;
+  return Math.min(MAX_RATE, Math.max(MIN_RATE, r));
+}
+
+/** Stable short id for a `say` text (same text -> same TTS cache entry). */
+export function sayCueId(speaker: string, lang: string, text: string): string {
+  let h = 2166136261;
+  const s = `${speaker}|${lang}|${text}`;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return `say-${h.toString(16).padStart(8, "0")}`;
+}
 
 export interface PlayerDeps {
   video: HTMLVideoElement;
@@ -32,8 +55,14 @@ export interface PlayerDeps {
   countdown: Countdown;
   entities: Entities;
   theme: ThemeController;
+  /** R4 / B-03 — procedural ambient bed (optional). */
+  ambient?: AmbientEngine;
   osd: Osd;
   log: Logger;
+  /** R4 / B-05 — apply `screen.yawOffsetDeg` as a CSS transform on the <video> (default true; span mode sets false). */
+  perspective?: boolean;
+  /** R4 / B-09 — a `photo` cue fired on this screen (photo.ts remembers the cue id). */
+  onPhotoCue?: (cue: PhotoCue) => void;
   /** Re-reads show.json (cmd reloadShow). If it rejects, the current show is kept. */
   loadShow?: () => Promise<ShowFile>;
   onCueFired?: (cue: Cue, mode: FireMode) => void;
@@ -44,14 +73,15 @@ export interface PlayerDeps {
   onConfiguredVideoEnd?: () => void;
 }
 
-/** Pausable timer for the preshow / epilogue phases. */
+/** Pausable timer for the preshow / epilogue phases (and the launch lead-in); runs at `rate` (rehearse). */
 class PhaseClock {
   private base = 0;
   private anchor = 0;
   private running = false;
+  private rate = 1;
 
   now(): number {
-    return this.running ? this.base + (performance.now() - this.anchor) / 1000 : this.base;
+    return this.running ? this.base + ((performance.now() - this.anchor) / 1000) * this.rate : this.base;
   }
   set(t: number): void {
     this.base = t;
@@ -68,6 +98,12 @@ class PhaseClock {
   }
   isRunning(): boolean {
     return this.running;
+  }
+  /** Change the speed without a jump in `now()`. */
+  setRate(rate: number): void {
+    this.base = this.now();
+    this.anchor = performance.now();
+    this.rate = rate;
   }
 }
 
@@ -99,6 +135,9 @@ export class Player {
   private remoteCounts = { screens: 0, tablets: 0 };
   private disposed = false;
   private readonly videoUrlLabel: string;
+  /** R4 / B-06 — nominal playback rate (1 = show; rehearse/setRate change it). */
+  private nominal = 1;
+  private perspectiveWarned = false;
 
   constructor(private readonly deps: PlayerDeps) {
     this.video = deps.video;
@@ -113,9 +152,11 @@ export class Player {
         countdown: deps.countdown,
         entities: deps.entities,
         theme: deps.theme,
+        ambient: deps.ambient,
         log: deps.log,
         getLang: () => this.lang,
         getSfxGain: () => this.sfxVolume,
+        getRate: () => this.nominal,
         now: () => this.phaseTime(),
         ensureAvatarVisible: () => this.ensureAvatarVisible(),
         onCueFired: (cue, mode) => {
@@ -123,6 +164,7 @@ export class Player {
           if (cue.kind === "marker" && mode === "auto") deps.osd.note(`▸ ${cue.label}`);
           deps.onCueFired?.(cue, mode);
         },
+        onPhotoCue: (cue) => deps.onPhotoCue?.(cue),
       },
       deps.show,
     );
@@ -140,7 +182,31 @@ export class Player {
     this.video.loop = false;
     this.video.src = videoUrl;
     this.video.load();
+    this.refreshLayout();
     this.deps.log("info", `video src = ${videoUrl}`);
+  }
+
+  /**
+   * R4 / B-05 — side-screen perspective: `screen.yawOffsetDeg` -> translateX + zoom on the <video>
+   * (perspective.yawTransform, shift clamped to +/-40 % of the displayed width). Call on resize.
+   */
+  refreshLayout(): void {
+    if (this.deps.perspective === false) return;
+    const yaw = this.deps.screen.yawOffsetDeg ?? 0;
+    if (Math.abs(yaw) < 1e-6) {
+      if (this.video.style.transform) this.video.style.transform = "";
+      return;
+    }
+    const rect = this.video.getBoundingClientRect();
+    const elW = rect.width || window.innerWidth;
+    const elH = rect.height || window.innerHeight;
+    const t = yawTransform(yaw, elW, elH, this.video.videoWidth, this.video.videoHeight, this.deps.config.video.fit);
+    this.video.style.transformOrigin = "50% 50%";
+    this.video.style.transform = t.css;
+    if (t.clamped && !this.perspectiveWarned) {
+      this.perspectiveWarned = true;
+      this.deps.log("info", `perspectivă: yaw ${yaw}° depășește limita de 40 % — shift limitat la ${Math.round(t.shiftPx)} px`);
+    }
   }
 
   dispose(): void {
@@ -178,13 +244,18 @@ export class Player {
   rate(): number {
     switch (this.state) {
       case "playing":
-        return this.playLeadIn ? (this.clock.isRunning() ? 1 : 0) : this.video.paused ? 0 : this.video.playbackRate;
+        return this.playLeadIn ? (this.clock.isRunning() ? this.nominal : 0) : this.video.paused ? 0 : this.video.playbackRate;
       case "preshow":
       case "epilogue":
-        return this.clock.isRunning() ? 1 : 0;
+        return this.clock.isRunning() ? this.nominal : 0;
       default:
         return 0;
     }
+  }
+
+  /** R4 / B-06 — nominal rate (1 = show, else rehearse). */
+  nominalRate(): number {
+    return this.nominal;
   }
 
   isClockAdvancing(): boolean {
@@ -270,7 +341,10 @@ export class Player {
           break;
         case "setVolume":
           if (typeof cmd.voice === "number") this.deps.voice.setVolume(clamp01(cmd.voice));
-          if (typeof cmd.sfx === "number") this.sfxVolume = clamp01(cmd.sfx);
+          if (typeof cmd.sfx === "number") {
+            this.sfxVolume = clamp01(cmd.sfx);
+            this.deps.ambient?.setSfxVolume(this.sfxVolume);
+          }
           break;
         case "setLang":
           this.setLang(cmd.lang);
@@ -285,10 +359,29 @@ export class Player {
         case "identifyScreens":
           this.deps.osd.identify(3000);
           break;
+        // ---- R4
+        case "rehearse":
+        case "setRate":
+          this.setRate(cmd.rate);
+          break;
+        case "ambient":
+          this.deps.ambient?.setEnabled(!!cmd.enabled);
+          break;
+        case "say":
+          // Normally the server turns `say` into a `dynamicVoice` message; handle a direct arrival the same way.
+          this.speakDynamic({ cueId: sayCueId(cmd.speaker, this.lang, cmd.text), speaker: cmd.speaker, text: cmd.text, lang: this.lang, subtitle: true });
+          break;
+        case "setVariant":
+          this.timeline.setVariant(cmd.variant ?? null);
+          break;
+        case "autoRun":
+        case "lights":
+        case "photo":
+        case "preflight":
+          // Server-side effects (readiness gate, Art-Net/Hue, `photo` messages, asset preflight); nothing to do on a screen.
+          break;
         default: {
-          // R4 commands (rehearse/setRate/autoRun/lights/ambient/say/setVariant/photo/preflight) land in
-          // the renderer with the B-06/B-08/B-09 packages; until then they are logged and ignored here.
-          this.deps.log("info", `comandă R4 fără handler pe acest ecran: ${(cmd as { action: string }).action}`);
+          this.deps.log("info", `comandă necunoscută pe acest ecran: ${(cmd as { action: string }).action}`);
         }
       }
     } catch (err) {
@@ -299,6 +392,48 @@ export class Player {
   setLang(lang: Lang): void {
     this.lang = lang;
     this.deps.voice.prepare(lang).catch((err) => this.deps.log("warn", `voice.prepare(${lang}) failed: ${describeError(err)}`));
+  }
+
+  /**
+   * R4 / B-06 — rehearse: video.playbackRate, the phase clock (lead-in, preshow, epilogue, countdown)
+   * and the voices (pitch-preserving element path, capped at MAX_VOICE_RATE) all follow `rate`.
+   */
+  setRate(rate: number): void {
+    const r = clampRate(rate);
+    if (r === this.nominal) return;
+    this.nominal = r;
+    this.clock.setRate(r);
+    this.applyVideoRate();
+    setVoicePlaybackRate(this.deps.voice, r);
+    this.deps.log("info", r === 1 ? "rată normală (×1)" : `repetiție ×${r}`);
+    this.deps.osd.note(r === 1 ? "rată normală" : `REPETIȚIE ×${r}`, 3000);
+  }
+
+  /** R4 / B-08 — speak a runtime-composed line (`dynamicVoice` message / `say`); preempts the current voice. */
+  speakDynamic(msg: Pick<DynamicVoiceMsg, "cueId" | "speaker" | "text" | "lang" | "subtitle">): void {
+    if (!(msg.speaker in SPEAKERS) || typeof msg.text !== "string" || !msg.text.trim()) {
+      this.deps.log("warn", "dynamicVoice ignorat: vorbitor sau text invalid", msg);
+      return;
+    }
+    this.deps.log("info", `dynamicVoice ${msg.cueId} (${msg.speaker}, ${msg.text.length} car.)`);
+    this.timeline.speakDynamic(msg);
+  }
+
+  /** R4 / B-04 — visual parameters of an entity derived from the tablets' choices (persist until `entity hide`). */
+  setEntityParams(entity: string, params: EntityParams): void {
+    if (!isEntityId(entity)) {
+      this.deps.log("warn", `entityParams: entitate necunoscută "${entity}"`);
+      return;
+    }
+    this.deps.entities.setParams(entity, params ?? {});
+  }
+
+  private applyVideoRate(): void {
+    try {
+      if (this.video.playbackRate !== this.nominal) this.video.playbackRate = this.nominal;
+    } catch (err) {
+      this.deps.log("warn", `playbackRate=${this.nominal} refuzat: ${describeError(err)}`);
+    }
   }
 
   private reloadShow(): void {
@@ -340,7 +475,7 @@ export class Player {
         if (this.playLeadIn) this.clock.pause();
         else {
           this.video.pause();
-          this.video.playbackRate = 1;
+          this.applyVideoRate();
         }
         this.setState("paused");
         break;
@@ -432,7 +567,7 @@ export class Player {
     this.clock.pause();
     this.clock.set(0);
     this.video.pause();
-    this.video.playbackRate = 1;
+    this.applyVideoRate();
     this.seekVideo(0);
     this.setState("idle");
     this.deps.theme.apply(this.defaultTheme(), { fast: true });
@@ -446,7 +581,7 @@ export class Player {
     this.phaseMode = "preshow";
     this.playLeadIn = false;
     this.video.pause();
-    this.video.playbackRate = 1;
+    this.applyVideoRate();
     this.seekVideo(0);
     if (running) this.clock.start(at);
     else {
@@ -483,7 +618,7 @@ export class Player {
     this.phaseMode = "epilogue";
     this.playLeadIn = false;
     this.video.pause();
-    this.video.playbackRate = 1;
+    this.applyVideoRate();
     if (running) this.clock.start(at);
     else {
       this.clock.pause();
@@ -495,7 +630,7 @@ export class Player {
 
   private handleEnded(): void {
     if (this.phase() !== "play") return;
-    this.video.playbackRate = 1;
+    this.applyVideoRate();
     if (this.getShow().epilogueOnVideoEnd) {
       this.deps.log("info", "video cut — intrare locală imediată în epilog");
       this.enterEpilogue(0, true);
@@ -538,7 +673,7 @@ export class Player {
   private setLeadIn(t: number, running: boolean): void {
     this.playLeadIn = true;
     this.video.pause();
-    this.video.playbackRate = 1;
+    this.applyVideoRate();
     this.seekVideo(0);
     if (running) this.clock.start(t);
     else {
@@ -574,6 +709,7 @@ export class Player {
     const probeGeneration = ++this.playProbeGeneration;
     const startedAt = this.video.currentTime;
     const startedFrames = this.presentedFrames();
+    this.applyVideoRate();
     let p: Promise<void> | undefined;
     try {
       p = this.video.play();
@@ -654,6 +790,7 @@ export class Player {
       this.videoError = null;
       this.deps.osd.setError(null);
       this.deps.log("info", `video metadata: ${v.videoWidth}x${v.videoHeight}, ${v.duration.toFixed(2)} s`);
+      this.refreshLayout();
       if (this.pendingSeek !== null) {
         const t = this.pendingSeek;
         this.pendingSeek = null;
@@ -800,7 +937,7 @@ export class Player {
         }
         if (this.phaseMode !== "play") this.enterPlay(expected, false);
         this.video.pause();
-        this.video.playbackRate = 1;
+        this.applyVideoRate();
         // Our video is still short of the end: only jump if clearly behind.
         const d = expected - this.video.currentTime;
         if (Math.abs(d) > Math.max(thr, 1.0)) {
@@ -833,14 +970,15 @@ export class Player {
       const target = this.clampPlayTime(expected);
       if (Math.abs(d) > BIG_JUMP_SEC) this.timeline.seek(target);
       this.seekVideo(target);
-      this.video.playbackRate = 1;
+      this.applyVideoRate();
       return d;
     }
+    // Nudge around the nominal (rehearse) rate.
     if (playing && nudge > 0) {
-      const want = Math.abs(d) < RATE_DEADBAND_SEC ? 1 : d > 0 ? 1 + nudge : 1 - nudge;
+      const want = this.nominal * (Math.abs(d) < RATE_DEADBAND_SEC ? 1 : d > 0 ? 1 + nudge : 1 - nudge);
       if (this.video.playbackRate !== want) this.video.playbackRate = want;
-    } else if (this.video.playbackRate !== 1) {
-      this.video.playbackRate = 1;
+    } else {
+      this.applyVideoRate();
     }
     return d;
   }

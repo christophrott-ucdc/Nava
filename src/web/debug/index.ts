@@ -157,14 +157,20 @@ function render(s: Summary): void {
         .join("")
     : `<tr><td colspan="6" class="dim">niciun client</td></tr>`;
 
-  const cues = s.cues as { statuses?: Array<{ id: string; status: string }>; lastVoiceCueId?: string | null };
+  const cues = s.cues as { statuses?: Array<{ id: string; status: string }> | Record<string, string>; lastVoiceCueId?: string | null };
   const cuesEl = $("cues");
-  if (cues && Array.isArray(cues.statuses)) {
+  // The server returns `statuses` as a map { cueId: status } (or, in older builds, an array of {id,status}).
+  const statusList: Array<{ id: string; status: string }> = Array.isArray(cues?.statuses)
+    ? cues.statuses
+    : cues?.statuses && typeof cues.statuses === "object"
+      ? Object.entries(cues.statuses).map(([id, status]) => ({ id, status: String(status) }))
+      : [];
+  if (statusList.length) {
     const counts: Record<string, number> = {};
-    for (const c of cues.statuses) counts[c.status] = (counts[c.status] ?? 0) + 1;
+    for (const c of statusList) counts[c.status] = (counts[c.status] ?? 0) + 1;
     cuesEl.innerHTML =
       `<div class="dim" style="margin-bottom:6px">${Object.entries(counts).map(([k, v]) => `${k}: ${v}`).join(" · ")} · ultima voce: ${esc(cues.lastVoiceCueId ?? "—")}</div>` +
-      `<div class="cuelist">${cues.statuses.map((c) => `<span class="cue ${esc(c.status)}${c.id === cues.lastVoiceCueId ? " current" : ""}" title="${esc(c.status)}">${esc(c.id)}</span>`).join("")}</div>`;
+      `<div class="cuelist">${statusList.map((c) => `<span class="cue ${esc(c.status)}${c.id === cues.lastVoiceCueId ? " current" : ""}" title="${esc(c.status)}">${esc(c.id)}</span>`).join("")}</div>`;
   } else cuesEl.textContent = JSON.stringify(s.cues).slice(0, 500);
 
   kv($("tts-kv"), Object.entries(s.tts ?? {}).map(([k, v]) => [k, v] as [string, unknown]));

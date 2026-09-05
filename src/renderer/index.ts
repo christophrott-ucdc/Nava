@@ -8,12 +8,18 @@
 
 import type { AvatarController, VoiceEngine } from "../shared/contracts";
 import type { Command, NavaBridge } from "../shared/protocol";
-import type { AppConfig, ScreenConfig, ShowFile } from "../shared/types";
+import { CONFIG_DEFAULTS_R4, type AppConfig, type ScreenConfig, type ShowFile } from "../shared/types";
 import { createAvatarController } from "./avatar/index";
-import { createVoiceEngine } from "./voice/index";
+import { createVoiceEngine, setTtsAuthToken } from "./voice/index";
+import { createAmbient } from "./voice/ambient";
+import { getAudioOutputLabel, routeAudioOutput } from "./voice/context";
 import { createNullAvatar, createNullVoiceEngine } from "./fallbacks";
 import { createLogger, describeError } from "./log";
+import { createPerfMonitor } from "./perf";
+import { createPhoto } from "./photo";
 import { Player } from "./player";
+import { createRoomMic, roomMicRequested } from "./room-mic";
+import { createSpan, type SpanController } from "./span";
 import { SyncClient, type SyncStatus } from "./sync";
 import { createCountdown } from "./ui/countdown";
 import { createEntities } from "./ui/entities";
@@ -146,11 +152,12 @@ async function main(): Promise<void> {
   const isMaster = config.role === "master";
   const isClockSource = isMaster && (config.screens[0]?.id ?? screen.id) === screen.id;
   const showOsd = boot.isDev || config.dev.openDevTools;
-  log("info", `boot: screen=${screen.id} role=${config.role} clockSource=${isClockSource} ws=${boot.wsUrl} v${boot.appVersion}`);
+  const spanMode = boot.displayMode === "span" && Array.isArray(boot.viewports) && boot.viewports.length > 0;
+  log("info", `boot: screen=${screen.id} role=${config.role} clockSource=${isClockSource} ws=${boot.wsUrl} mode=${spanMode ? `span(${boot.viewports!.length})` : "windows"} v${boot.appVersion}`);
 
   // ---- OSD with the real screen
   const osdReal = createOsd(
-    { panel: $("osd"), identify: $("identify"), spinner: $("spinner"), error: $("error-banner") },
+    { panel: $("osd"), identify: $("identify"), spinner: $("spinner"), error: $("error-banner"), rehearse: document.getElementById("rehearse") },
     { screen, alwaysVisible: showOsd },
   );
   if (config.dev.windowed || !hadBridge) document.body.classList.add("show-cursor");
@@ -162,11 +169,14 @@ async function main(): Promise<void> {
   const launchControls = $("launch-controls");
 
   // ---- Voice engine (Agent C) — never audible on screens with playAudio=false
+  // R4: /api/tts (and /api/dialog) require `Authorization: Bearer <screenToken>`.
+  setTtsAuthToken(boot.screenToken);
+  const serverHttpUrl = boot.serverHttpUrl ?? httpFromWs(boot.wsUrl);
   let voice: VoiceEngine;
   try {
     voice = createVoiceEngine({
       voiceBaseUrl: boot.voiceBaseUrl,
-      serverHttpUrl: httpFromWs(boot.wsUrl),
+      serverHttpUrl,
       lang: config.lang,
       audible: screen.playAudio,
       initialVolume: config.audio.voiceVolume,
@@ -175,10 +185,26 @@ async function main(): Promise<void> {
     log("error", `createVoiceEngine failed — folosesc motorul nul: ${describeError(err)}`);
     voice = createNullVoiceEngine();
   }
+  // R4 / B-01 — route the shared AudioContext (voices, SFX, ambient) to config.audio.outputDeviceId
+  // (exact deviceId or label substring); the chosen label lands in PerfSample.audioOutput.
+  void routeAudioOutput(config.audio.outputDeviceId, log);
   // Do not expose the launch controls until every offline production line is fetched and decoded.
   // This removes per-cue I/O/decode latency from the tightly timed performance.
   await voice.prepare(config.lang).catch((err) => log("warn", `voice.prepare failed: ${describeError(err)}`));
   voice.unlock().catch(() => {});
+
+  // R4 / B-03 — procedural ambient bed: follows `theme` cues (unless the show scripts explicit
+  // `ambient` cues for that theme), ducks under the voice (Timeline), obeys the `ambient` command.
+  const ambientCfg = config.ambient ?? CONFIG_DEFAULTS_R4.ambient;
+  const ambient = createAmbient({
+    audible: screen.playAudio,
+    enabled: ambientCfg.enabled,
+    volume: ambientCfg.volume,
+    duck: ambientCfg.duck,
+    sfxVolume: config.audio.sfxVolume,
+    log,
+  });
+  theme.onChange((t) => ambient.followTheme(t));
 
   const entities = createEntities($<HTMLCanvasElement>("entities"), { enabled: screen.showEntities, getAmplitude: () => voice.getAmplitude() });
 
@@ -228,6 +254,16 @@ async function main(): Promise<void> {
     else osdReal.note("show.json local lipsă — aștept copia de la master", 8000);
   }
 
+  // ---- R4 / B-09 — crew photo (server-driven) + room microphone (off unless ?mic=1)
+  const photo = createPhoto({
+    root: $("stage"),
+    canCapture: isClockSource || screen.id === "center",
+    send: (msg) => sync.sendRaw(msg),
+    log,
+  });
+  const roomMic = createRoomMic({ enabled: roomMicRequested(location.search), log });
+  void roomMic.start();
+
   // ---- Player
   const veil = $("veil");
   const player = new Player({
@@ -241,8 +277,11 @@ async function main(): Promise<void> {
     countdown,
     entities,
     theme,
+    ambient,
     osd: osdReal,
     log,
+    perspective: !spanMode,
+    onPhotoCue: (cue) => photo.setCueId(cue.id),
     loadShow: () => fetchShow(boot.showUrl),
     onAutoplayBlocked: () => {
       veil.hidden = false;
@@ -259,9 +298,30 @@ async function main(): Promise<void> {
   player.attach(boot.videoUrl);
   launchControls.hidden = !isClockSource || player.getPlaybackState() !== "idle";
 
+  // ---- R4 / B-07 — span mode: one <video>, one canvas per viewport, overlays in the focus viewport
+  let span: SpanController | null = null;
+  if (spanMode) {
+    try {
+      span = createSpan({
+        stage: $("stage"),
+        video,
+        viewports: boot.viewports!,
+        screens: config.screens,
+        fit: config.video.fit,
+        centerScreenId: screen.id,
+        overlays: [$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl],
+        log,
+      });
+      span.start();
+    } catch (err) {
+      log("error", `span mode failed — revin la o singură fereastră: ${describeError(err)}`);
+      span = null;
+    }
+  }
+
   // ---- Sync (WS)
   let syncStatus: SyncStatus = { connected: false, reconnecting: true, driftSec: null, offsetMs: 0, attempts: 0 };
-  const sync = new SyncClient({
+  const sync: SyncClient = new SyncClient({
     wsUrl: boot.wsUrl,
     screenId: screen.id,
     screenName: screen.roleLabel,
@@ -282,10 +342,32 @@ async function main(): Promise<void> {
         log("info", `show preluat din welcome (${msg.show.cues.length} cues)`);
       }
       if (msg.config?.lang && msg.config.lang !== player.getLang()) player.setLang(msg.config.lang);
+      // A late-joining screen adopts the master's rehearse rate / variant / ambient switch.
+      if (typeof msg.state?.rate === "number" && msg.state.rate > 0 && Math.abs(msg.state.rate - player.nominalRate()) > 1e-3) player.setRate(msg.state.rate);
+      if (msg.state?.variant !== undefined && (msg.state.variant ?? null) !== player.timeline.getVariant()) player.timeline.setVariant(msg.state.variant);
+      if (typeof msg.state?.ambientEnabled === "boolean") ambient.setEnabled(msg.state.ambientEnabled);
     },
+    onPhoto: (msg) => photo.handle(msg),
   });
   if (boot.wsUrl) sync.connect();
   else log("warn", "wsUrl lipsă — fără sincronizare; comenzile de la tastatură se aplică local");
+
+  // ---- R4 / B-02 — 1 Hz perf samples from EVERY screen (+ OSD line)
+  let perfLine: string | null = null;
+  const perf = createPerfMonitor({
+    screenId: screen.id,
+    video,
+    avatar,
+    getDriftSec: () => syncStatus.driftSec,
+    getRoomLevel: () => roomMic.getLevel(),
+    getAudioOutput: () => getAudioOutputLabel(),
+    send: (sample) => sync.sendPerf(sample),
+    onSample: (_s, line) => {
+      perfLine = line;
+    },
+    log,
+  });
+  perf.start();
 
   // ---- OSD refresh
   player.onOsd = () => {
@@ -296,6 +378,8 @@ async function main(): Promise<void> {
       sync: { connected: syncStatus.connected, driftSec: syncStatus.driftSec, isClockSource, reconnecting: syncStatus.reconnecting },
       video: { ready: player.isVideoReady(), rate: player.rate(), readyState: video.readyState, buffering: player.isBuffering() },
       lastCueId: player.timeline.lastCueId(),
+      nominalRate: player.nominalRate(),
+      perf: perfLine,
     });
   };
 
@@ -402,6 +486,8 @@ async function main(): Promise<void> {
     } catch {
       /* ignore */
     }
+    player.refreshLayout();
+    span?.refresh();
   });
 
   window.addEventListener("error", (ev) => log("error", `uncaught: ${ev.message}`, { file: ev.filename, line: ev.lineno }));

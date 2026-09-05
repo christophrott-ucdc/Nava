@@ -13,6 +13,11 @@
         <span class="brand-mark" aria-hidden="true"></span>
         <div><strong>EXODUS-7</strong><span>Consolă operator</span></div>
       </div>
+      <nav class="topnav" aria-label="Pagini">
+        <a class="nav-link" href="/debug/">DEPANARE</a>
+        <a class="nav-link" href="/analytics/">ANALITICĂ</a>
+        <button class="nav-link nav-button" id="logout" type="button">IEȘI</button>
+      </nav>
       <div class="connection" id="connection" data-status="connecting" role="status">
         <span class="connection-dot" aria-hidden="true"></span>
         <span id="connection-label">Conectare…</span>
@@ -36,6 +41,10 @@
           <div><span>Tablete</span><strong id="tablets-count">0</strong></div>
           <div><span>Video</span><strong id="video-status">—</strong></div>
           <div><span>Temă</span><strong id="theme-label">PROLOGUE</strong></div>
+          <div><span>Variantă</span><strong id="variant-label">BAZĂ</strong></div>
+          <div><span>Auto-run</span><strong id="autorun-label">OFF</strong></div>
+          <div><span>Ambianță</span><strong id="ambient-label">—</strong></div>
+          <div><span>Lumini</span><strong id="lights-label">—</strong></div>
         </div>
       </section>
 
@@ -48,9 +57,25 @@
           <div><p class="eyebrow">REGIE</p><h2 id="transport-title">Control show</h2></div>
           <span class="command-note" id="command-note" role="status">Pregătit</span>
         </div>
+
+        <div class="readiness" id="readiness" data-ready="unknown" aria-live="polite">
+          <div class="readiness-head">
+            <span class="readiness-badge" id="readiness-badge">PREGĂTIRE NECUNOSCUTĂ</span>
+            <span class="readiness-summary" id="readiness-summary">Aștept starea serverului…</span>
+          </div>
+          <div class="readiness-grid">
+            <div><span>Ecrane conectate</span><strong id="readiness-screens">—</strong></div>
+            <div><span>Ecrane lipsă</span><strong id="readiness-missing">—</strong></div>
+            <div><span>Tablete</span><strong id="readiness-tablets">—</strong></div>
+            <div><span>Video</span><strong id="readiness-video">—</strong></div>
+            <div><span>Active vocale</span><strong id="readiness-assets">—</strong></div>
+          </div>
+          <ul class="readiness-reasons" id="readiness-reasons"></ul>
+        </div>
+
         <button class="experience-start" id="start-experience" type="button">
           <span class="experience-start-icon" aria-hidden="true">▶</span>
-          <span><strong>START EXPERIENCE</strong><small>Test: T−10 acum · film la zero · Căpitanul la aproximativ 19 secunde</small></span>
+          <span><strong>START EXPERIENCE</strong><small id="start-hint">Test: T−10 acum · film la zero · Căpitanul la aproximativ 19 secunde</small></span>
         </button>
         <div class="primary-actions">
           <button class="button button-preshow" data-command="preshow"><span>01</span> PRE-SHOW</button>
@@ -87,6 +112,87 @@
           <button class="button subtle" data-command="identifyScreens">Identifică ecranele</button>
           <button class="button subtle" data-command="reloadShow">Reîncarcă scenariul</button>
         </div>
+
+        <div class="section-heading r4-heading">
+          <div><p class="eyebrow">RUNDA 4</p><h2>Repetiție · ambianță · lumini · replici live</h2></div>
+        </div>
+        <div class="r4-grid">
+          <div class="r4-group">
+            <span class="r4-label">Repetiție</span>
+            <div class="r4-row">
+              <button class="button" id="rehearse-x4" type="button">REPETIȚIE ×4</button>
+              <button class="button subtle" id="rate-normal" type="button">VITEZĂ NORMALĂ</button>
+              <span class="r4-note" id="rate-note">rată 1×</span>
+            </div>
+          </div>
+          <div class="r4-group">
+            <span class="r4-label">Ambianță și auto-run</span>
+            <div class="r4-row">
+              <button class="button toggle" id="ambient-toggle" type="button" aria-pressed="false">AMBIANȚĂ · —</button>
+              <button class="button toggle" id="autorun-toggle" type="button" aria-pressed="false">AUTO-RUN · —</button>
+            </div>
+          </div>
+          <div class="r4-group">
+            <span class="r4-label">Lumini</span>
+            <div class="r4-row">
+              <select id="lights-theme" aria-label="Tema de lumini">
+                <option value="prologue">prologue</option><option value="launch">launch</option><option value="light">light</option><option value="nature">nature</option>
+                <option value="tech">tech</option><option value="void">void</option><option value="home">home</option><option value="white">white</option>
+              </select>
+              <button class="button" id="lights-apply" type="button">LUMINI</button>
+            </div>
+          </div>
+          <div class="r4-group">
+            <span class="r4-label">Variantă scenariu</span>
+            <div class="r4-row">
+              <select id="variant-select" aria-label="Varianta de scenariu"><option value="">Text de bază</option></select>
+              <button class="button" id="variant-apply" type="button">VARIANTĂ</button>
+            </div>
+          </div>
+          <div class="r4-group r4-say">
+            <span class="r4-label">Spune (TTS live)</span>
+            <div class="r4-row">
+              <select id="say-speaker" aria-label="Vorbitor"></select>
+              <input id="say-text" type="text" maxlength="600" placeholder="Textul rostit acum de personaj…" aria-label="Text de rostit" />
+              <button class="button" id="say-send" type="button">SPUNE</button>
+            </div>
+          </div>
+          <div class="r4-group">
+            <span class="r4-label">Echipaj și verificări</span>
+            <div class="r4-row">
+              <button class="button" id="photo-button" type="button">FOTO</button>
+              <button class="button" id="preflight-button" type="button">PREFLIGHT</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel editor-panel" aria-labelledby="editor-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">TIMELINE EDITOR</p><h2 id="editor-title">Cue-uri pe cronologie <span class="editor-dirty" id="editor-dirty" hidden>· modificări nesalvate</span></h2></div>
+          <div class="editor-actions">
+            <button class="button compact" id="editor-save" type="button" disabled>SALVEAZĂ</button>
+            <button class="button compact subtle" id="editor-cancel" type="button">ANULEAZĂ</button>
+            <button class="button compact subtle" id="editor-backups-toggle" type="button">BACKUP-URI</button>
+          </div>
+        </div>
+        <p class="editor-hint">Trage markerele (pas 0,1 s) sau editează câmpul „la” al cue-ului selectat. Salvarea scrie întregul show.json (cu backup) și reîncarcă scenariul pe toate ecranele.</p>
+        <div class="editor-errors" id="editor-errors" hidden></div>
+        <div class="editor-tracks" id="editor-tracks"></div>
+        <div class="editor-detail" id="editor-detail" hidden>
+          <div class="editor-detail-copy">
+            <strong id="editor-detail-id">—</strong>
+            <span id="editor-detail-desc">—</span>
+          </div>
+          <label class="editor-at">La (s)
+            <input id="editor-at" type="number" step="0.1" aria-label="Momentul cue-ului în secunde" />
+          </label>
+          <img id="editor-frame" class="editor-frame" alt="Cadru din film la momentul selectat" width="240" height="135" hidden />
+        </div>
+        <div class="editor-backups" id="editor-backups" hidden>
+          <div class="section-heading"><h3>Backup-uri show.json</h3><button class="text-button" id="editor-backups-refresh" type="button">Reîncarcă lista</button></div>
+          <div id="editor-backups-list"><p class="empty">Niciun backup încă.</p></div>
+        </div>
       </section>
 
       <div class="workspace-grid">
@@ -102,6 +208,16 @@
         </section>
 
         <aside class="side-column">
+          <section class="panel perf-panel" aria-labelledby="perf-title">
+            <div class="section-heading"><div><p class="eyebrow">PERFORMANȚĂ</p><h2 id="perf-title">Ecrane</h2></div><strong class="live-count" id="perf-count">0 raportează</strong></div>
+            <div class="perf-table-wrap">
+              <table class="perf-table" id="perf-table">
+                <thead><tr><th>Ecran</th><th>Pierdute</th><th>FPS</th><th>Drift</th><th>Lip-sync</th><th>Audio</th></tr></thead>
+                <tbody><tr><td colspan="6" class="empty">Niciun ecran nu a trimis încă măsurători.</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
           <section class="panel access-panel" aria-labelledby="access-title">
             <div class="section-heading"><div><p class="eyebrow">ACCES ECHIPAJ</p><h2 id="access-title">Tablete</h2></div><strong class="live-count" id="tablet-live-count">0 online</strong></div>
             <div class="qr-layout">
@@ -114,6 +230,17 @@
           <section class="panel answers-panel" aria-labelledby="answers-title">
             <div class="section-heading"><div><p class="eyebrow">RĂSPUNSURI LIVE</p><h2 id="answers-title">Mesaje <span id="answer-count"></span></h2></div><button id="clear-answers" class="text-button">Șterge</button></div>
             <div class="answer-list" id="answer-list"><p class="empty">Răspunsurile copiilor vor apărea aici.</p></div>
+          </section>
+
+          <section class="panel users-panel" id="users-panel" aria-labelledby="users-title" hidden>
+            <div class="section-heading"><div><p class="eyebrow">ADMINISTRARE</p><h2 id="users-title">Utilizatori</h2></div><span class="command-note" id="users-note"></span></div>
+            <div class="users-list" id="users-list"></div>
+            <form class="users-form" id="users-form">
+              <input id="user-name" type="text" placeholder="nume" maxlength="32" required aria-label="Nume utilizator" />
+              <select id="user-role" aria-label="Rol"><option value="operator">operator</option><option value="viewer">viewer</option><option value="admin">admin</option></select>
+              <input id="user-pin" type="password" inputmode="numeric" placeholder="PIN 4–8 cifre" minlength="4" maxlength="8" required aria-label="PIN" />
+              <button class="button compact" type="submit">CREEAZĂ</button>
+            </form>
           </section>
         </aside>
       </div>

@@ -212,6 +212,65 @@ body.show-cursor { cursor: default; }
 #osd .v.good { color: #4ade80; }
 #osd .note { margin-top: 0.5vh; color: oklch(0.75 0.1 80); white-space: pre-wrap; }
 #osd .note:empty { display: none; }
+#osd [data-f="perf"] { white-space: normal; max-width: 60ch; font-size: 0.95em; color: oklch(0.8 0.06 220); }
+
+/* R4 / B-06 — rehearse badge (top-right, every screen) */
+#rehearse {
+  z-index: 91;
+  top: 1.4vh;
+  right: 1.4vh;
+  padding: 0.7vh 1.4vh;
+  font-family: var(--font-mono);
+  font-size: 1.6vh;
+  letter-spacing: 0.2em;
+  color: #fbbf24;
+  background: oklch(0.1 0.02 250 / 0.7);
+  border: 1px solid #fbbf24;
+  border-radius: 0.6vh;
+  animation: rehearse-blink 1.6s ease-in-out infinite;
+}
+@keyframes rehearse-blink { 0%, 100% { opacity: 0.95; } 50% { opacity: 0.55; } }
+
+/* R4 / B-09 — crew photo overlay */
+#photo {
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+#photo .photo-digit {
+  position: absolute;
+  font-size: 30vh;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--ink);
+  text-shadow: 0 0 2vh var(--theme-glow), 0 0 8vh var(--theme-accent);
+  opacity: 0;
+}
+#photo .photo-digit.on { animation: cd-pulse 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) both; opacity: 1; }
+#photo .photo-img {
+  position: absolute;
+  max-width: 70vw;
+  max-height: 70vh;
+  border: 0.6vh solid var(--ink);
+  border-radius: 1vh;
+  box-shadow: 0 0 6vh rgba(0, 0, 0, 0.8), 0 0 3vh var(--theme-accent);
+  background: #000;
+}
+#photo .photo-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+}
+#photo .photo-flash.on { animation: photo-flash 0.7s ease-out both; }
+@keyframes photo-flash { 0% { opacity: 0.95; } 100% { opacity: 0; } }
+
+/* R4 / B-07 — span mode: the decoding <video> stays in the layout but invisible (NOT display:none —
+   requestVideoFrameCallback would stop); each viewport gets its own canvas. */
+#video.span-hidden { opacity: 0; pointer-events: none; }
+.span-canvas { z-index: 1; }
+#span-focus { z-index: 5; }
 
 #identify {
   z-index: 95;

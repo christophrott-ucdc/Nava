@@ -14,6 +14,10 @@ export interface OsdInfo {
   video: { ready: boolean; rate: number; readyState: number; buffering: boolean };
   lastCueId: string | null;
   fps?: number;
+  /** R4 / B-06 — nominal rate; != 1 shows the "REPETIȚIE ×N" badge (always, not only in dev). */
+  nominalRate?: number;
+  /** R4 / B-02 — compact perf line (perf.formatPerfLine). */
+  perf?: string | null;
 }
 
 export interface Osd {
@@ -32,6 +36,8 @@ export interface OsdElements {
   identify: HTMLElement;
   spinner: HTMLElement;
   error: HTMLElement;
+  /** R4 / B-06 — rehearse badge (optional). */
+  rehearse?: HTMLElement | null;
 }
 
 export function formatClock(sec: number): string {
@@ -60,6 +66,7 @@ export function createOsd(els: OsdElements, opts: { screen: ScreenConfig; always
   const fSync = field("sync");
   const fVideo = field("video");
   const fCue = field("cue");
+  const fPerf = field("perf");
   const fNote = field("note");
   const idEl = els.identify.querySelector<HTMLElement>(".id");
   const labelEl = els.identify.querySelector<HTMLElement>(".label");
@@ -83,9 +90,18 @@ export function createOsd(els: OsdElements, opts: { screen: ScreenConfig; always
 
   return {
     update(info) {
+      const badge = els.rehearse;
+      if (badge) {
+        const r = info.nominalRate ?? 1;
+        const on = Math.abs(r - 1) > 1e-3;
+        if (on) badge.textContent = `REPETIȚIE ×${Number.isInteger(r) ? r : r.toFixed(2)}`;
+        badge.hidden = !on;
+      }
       if (els.panel.hidden) return;
-      if (fState) fState.textContent = `${STATE_LABEL[info.state] ?? info.state}`;
+      const rehearse = info.nominalRate !== undefined && Math.abs(info.nominalRate - 1) > 1e-3 ? ` · REPETIȚIE ×${info.nominalRate}` : "";
+      if (fState) fState.textContent = `${STATE_LABEL[info.state] ?? info.state}${rehearse}`;
       if (fTime) fTime.textContent = `${formatClock(info.phaseTime)}  ×${info.video.rate.toFixed(3)}`;
+      if (fPerf) fPerf.textContent = info.perf ?? "—";
       if (fScene) fScene.textContent = info.sceneId ?? "—";
       if (fSync) {
         const s = info.sync;

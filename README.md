@@ -1,79 +1,66 @@
-# NavaPlayer — „A Patra Lume”
+# NavaPlayer — „A Patra Lume · Protocolul Acasă"
 
-NavaPlayer este playerul și serverul local al experienței imersive „A Patra Lume” de la UCDC HUB AI. Un singur executabil Windows redă filmul 4K sincronizat pe cinci ecrane, suprapune Căpitanul 3D și subtitrările, rulează scenariul pe cue-uri și servește consola operatorului și cele cinci tablete folosite de zece copii în perechi.
+NavaPlayer este playerul și serverul local al experienței imersive „A Patra Lume" de la UCDC HUB AI: un singur executabil Windows (Electron + Node) redă filmul 4K sincronizat pe cinci ecrane, suprapune Căpitanul 3D cu lip-sync și subtitrările, rulează scenariul V3.3 pe cue-uri (600 s: pre-show 50 s + lead-in 10 s + film 465 s + epilog 75 s) și servește consola operatorului, pagina de depanare și cele cinci tablete ale celor zece copii.
 
-Documentul de intrare pentru dezvoltare și operare este [HANDOFF.md](HANDOFF.md). Arhitectura ratificată este în [docs/BRIEF.md](docs/BRIEF.md).
+**Citiți întâi:** [HANDOFF.md](HANDOFF.md) (imaginea proiectului) și [HANDOFF-LIVE.md](HANDOFF-LIVE.md) (starea live a rundei 4 — ce este gata și ce este schelet). Arhitectura ratificată: [docs/BRIEF.md](docs/BRIEF.md).
 
 ## Pornire în dezvoltare
 
-Cerințe: Windows 11, Node.js 22 sau mai nou, npm și un fișier video H.264 4:2:0 la `media/cinema_4k_h264.mp4`.
-
-Pentru pornirea completă pe Windows, dați dublu-click pe `RUN.bat`. Launcherul verifică mediul și asset-urile, instalează dependențele dacă lipsesc, construiește aplicația, pornește playerul și serverul local, apoi deschide consola operatorului. Implicit pornește în fereastră; pentru instalația fullscreen folosiți `RUN.bat --kiosk`. `RUN.bat --check` rulează toate verificările fără să deschidă playerul.
+Cerințe: Windows 11, Node.js 22+, npm și filmul H.264 4:2:0 la `media/cinema_4k_h264.mp4` (2,5 GB, nu este în Git și nu este în installer).
 
 ```powershell
 npm install
 Copy-Item config.example.json config.json
-npm run check
+npm run check                  # tipuri + show + voci + build + teste + smoke (core, auth, platform, media)
 npm run dev -- --windowed
 ```
 
-În rolul `master`, după pornire:
+Sau dublu-click pe `RUN.bat` (`--kiosk`, `--no-control`, `--check`, `--help`).
 
-- consola operatorului: `http://localhost:4321/control/`;
-- tablete: `http://<ip-ul-PC-ului>:4321/tablet/`;
-- stare: `http://localhost:4321/api/health`.
+După pornire în rolul `master`:
 
-În starea inițială, click oriunde pe ecran, butonul **PORNEȘTE EXPERIENȚA** sau `Space`/`Enter` pornește fluxul complet, de la primirea publicului. După 50 de secunde, lansarea continuă automat. **SARI LA LANSARE** sau `S` omit primirea și pornesc direct numărătoarea T−10. `P` pornește explicit primirea publicului. În timpul filmului, `Space` pune pauză/reia; săgețile fac salt ±5 secunde, `E` intră în epilog, `R` revine în idle și `I` identifică ecranele. `Esc` de două ori închide doar în modul windowed/dezvoltare.
+| Adresă | Ce este | Acces |
+|---|---|---|
+| `http://localhost:4321/control/` | consola operatorului | login cu PIN (implicit **4078** — schimbați-l înainte de public) |
+| `http://localhost:4321/debug/` | stare, readiness, preflight, perf, clienți, config redactat, utilizatori | login cu PIN |
+| `http://<ip-lan>:4321/tablet/?post=1..5` | aplicația copiilor | public |
+| `http://localhost:4321/api/health` | stare scurtă | public |
 
-Pentru test rapid din consola operatorului, butonul mare **START EXPERIENCE** pornește direct numărătoarea T−10 și filmul; în `IDLE` sau `PRE-SHOW`, `Space` și `Enter` din consolă fac același lucru. Acest shortcut de test nu schimbă fluxul complet al butonului de pe ecranul master.
-
-Consola din browser este numai pentru regie; filmul și Căpitanul sunt randate în fereastra Electron separată **A Patra Lume — Nava**. Comenzile de pornire aduc automat playerul în față. Butonul **ARATĂ PLAYERUL** îl readuce manual dacă operatorul revine în browser.
-
-## Verificare și distribuție
-
-```powershell
-npm run check          # tipuri + show.json + build + smoke tests
-npm run dist           # executabil portabil + installer în dist-app/
-```
-
-Pentru verificarea vizuală live a compositorului Electron (overlay, cadre video și avatar), porniți aplicația cu DevTools Protocol și apoi rulați testul în alt terminal:
-
-```powershell
-.\node_modules\.bin\electron.cmd --remote-debugging-port=19191 . --config config.json --windowed
-npm run smoke:renderer
-```
-
-Testul păstrează capturile diagnostice în `runs/` și confirmă faptul că două cadre succesive diferă, `currentTime`/contorul de cadre avansează, overlay-ul ascuns nu acoperă filmul și canvasul GLB este vizibil la prima replică a Căpitanului.
-
-Filmul de 2,5 GB nu intră în Git și nu este inclus în installer. Copiați `media/cinema_4k_h264.mp4` lângă executabil, păstrând structura `media/`. Avatarul și scenariul sunt incluse în pachet.
-
-Pista vocală V3.3, adaptată scenic în limba română, este pre-generată și face parte din spectacolul executabil. Pentru toate cue-urile de producție, `fallback: "silent"` interzice vocea Windows/browser: dacă un MP3 lipsește, playerul păstrează subtitrarea, notează eroarea și folosește tăcere temporizată. Fallback-ul TTS rămâne disponibil numai pentru cue-uri ad-hoc/de test care îl cer explicit. Pentru regenerare, copiați variabilele necesare din `.env.example` într-un fișier local `.env`, apoi rulați `npm run tts`. Nu comiteți `.env`.
-
-Setul expresiv este definit în `assets/show/voice-script-v3.json` și sincronizat integral în `assets/show/show.json`: 17 replici ale Căpitanului, 18 ale Vocii Navei și 16 asset-uri ale civilizațiilor/ecourilor. Manifestul conține 51 de clipuri; într-o reprezentație se redau 49, deoarece la 6:35 serverul alege exact una dintre cele trei variante ale Tehnologicei în funcție de cele zece perspective. Fișierele și timpii de lip-sync sunt în `assets/voice/ro/manifest.json`. Comenzi utile:
-
-```powershell
-npm run validate:voices
-npm run sync:voices
-npm run voice:reels
-npm run qa:voices
-npm run tts -- --source assets/show/voice-script-v3.json --provider elevenlabs
-```
-
-Generarea și controlul de dicție cer `ELEVENLABS_API_KEY` numai în mediul local. Montajele de audiție sunt `assets/voice/ro/preview-capitan-v3.mp3`, `assets/voice/ro/preview-avatar-v3.mp3` și `assets/voice/ro/preview-civilizatii-v3.mp3`. După orice modificare de text sau timing vocal, regenerați clipurile afectate, rulați `npm run voice:reels`, `npm run qa:voices`, `npm run sync:voices` și apoi `npm run check`.
+Pe ecranul master: click / **PORNEȘTE EXPERIENȚA** / `Space` pornește fluxul complet; `S` sare direct la lansare; `Space` pauză/reluare în film; `E` epilog; `R` restart; `I` identifică ecranele. Consola din browser este doar regie; filmul și Căpitanul sunt în fereastra Electron **A Patra Lume — Nava** (**ARATĂ PLAYERUL** o readuce în față).
 
 ## Configurare
 
-`config.json` este ignorat de Git. Porniți de la `config.example.json` și configurați rolul `master`/`follower`, ecranele, calea filmului, ieșirea audio și adresa masterului. Referința completă este în [docs/SPEC-SHEET.md](docs/SPEC-SHEET.md), iar procedura de show în [docs/OPERARE.md](docs/OPERARE.md).
+`config.json` este ignorat de Git; porniți de la `config.example.json` (un ecran), `config.5screens.example.json` (5 TV-uri pe un PC) sau `config.follower.example.json` (PC secundar; copiați `security.screenToken` din `config.json` al masterului, generat la prima pornire). Referința completă a câmpurilor, rutelor și rolurilor: [docs/SPEC-SHEET.md](docs/SPEC-SHEET.md). Procedura de show: [docs/OPERARE.md](docs/OPERARE.md). Securitate pe LAN: [docs/SECURITATE.md](docs/SECURITATE.md). Avatarul Căpitanului (GLB, viseme, casting): [docs/AVATAR.md](docs/AVATAR.md). Decizii: [docs/DECIZII.md](docs/DECIZII.md).
+
+## Voci
+
+Pista V3.3 (51 clipuri ElevenLabs, 49 redate per rulare) este pre-generată în `assets/voice/ro/` cu manifest de cuvinte **și viseme precalculate**; toate cue-urile de producție au `fallback: "silent"` (niciodată voce Windows în show). Regenerare (cere `ELEVENLABS_API_KEY` în `.env`, niciodată în Git):
+
+```powershell
+npm run tts -- --source assets/show/voice-script-v3.json --provider elevenlabs [--cue <id>]
+node scripts/precompute-visemes.mjs        # visemes/vtimes/vdurations în manifest
+npm run voice:reels && npm run qa:voices && npm run sync:voices && npm run check
+```
+
+Textele se schimbă numai în `assets/show/voice-script-v3.json`; `assets/show/show.json` este singura sursă executabilă; `npm run docs:cues` regenerează `docs/CUE-SHEET.md`.
+
+## Distribuție
+
+```powershell
+npm run dist                                       # dist-app/NavaPlayer-0.1.0-x64-{portable,setup}.exe (nesemnate)
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-autostart.ps1   # Task Scheduler "NavaPlayer", --kiosk la logon
+```
+
+Copiați `media/cinema_4k_h264.mp4` lângă executabil. Pentru verificarea vizuală a compositorului: `electron --remote-debugging-port=19191 . --config config.json --windowed` apoi `npm run smoke:renderer`.
 
 ## Structură
 
-- `src/main`, `src/preload`: Electron, ferestre, căi, IPC;
-- `src/renderer`: player, timeline, sincronizare și overlay-uri;
-- `src/server`: server HTTP/WebSocket și mașina de stări;
-- `src/web/control`: consola operatorului;
-- `src/web/tablet`: interfața copiilor;
+- `src/main`, `src/preload`: Electron, ferestre (`windows` / `span`), config + `screenToken`, watchdog, autostart, IPC;
+- `src/renderer`: player, timeline, sincronizare, overlay-uri, `avatar/` (TalkingHead, lipsync-ro, casting), `voice/` (manifest, redare, ambianță);
+- `src/server`: Hono + WebSocket, mașina de stări + readiness, auth/utilizatori, preflight, debug, `features/` (lumini, dialog, dynamic-voice, editor show, certificate);
+- `src/web/control`, `tablet`, `login`, `debug`: aplicațiile web;
 - `src/shared`: contractele TypeScript obligatorii;
-- `assets/show/show.json`: singura sursă executabilă pentru scene, texte și timpi;
-- `scripts`: build, verificări, TTS și utilitare media.
+- `assets/show/show.json`: scenariul executabil; `assets/voice/ro/`: vocile; `assets/avatar/`: GLB-ul;
+- `scripts`: build, verificări, TTS, viseme, autostart, heartbeat, utilitare media.
 
 Proiect privat, fără licență de redistribuire (`UNLICENSED`).
