@@ -168,6 +168,8 @@ async function main() {
       screens: [{ id: "center", displayIndex: 0, showAvatar: true, showSubtitles: true, showEntities: true, playAudio: true, kiosk: false }],
       sync: { clockHz: 10, seekThresholdSec: 0.25, rateNudge: 0.03 },
       dev: { openDevTools: false, windowed: true },
+      // R4: PIN auth. screenToken "" keeps screens token-less (grace mode); the users file lives in the temp dir.
+      security: { operatorPin: "4078", screenToken: "", sessionTtlMin: 60, usersFile: path.join(temp, "data", "users.json"), publicState: true },
     };
     handle = await startServer({
       config,
@@ -185,11 +187,17 @@ async function main() {
     assert.ok(handle.port > 0, "ephemeral port was resolved");
     const http = `http://127.0.0.1:${handle.port}`;
     const wsUrl = `ws://127.0.0.1:${handle.port}/ws`;
+    // R4: operator session (PIN 4078) for protected HTTP routes and the control WS hello.
+    const loginResponse = await fetch(`${http}/api/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pin: "4078" }) });
+    assert.equal(loginResponse.status, 200, "PIN login");
+    const sessionToken = (await loginResponse.json()).token;
+    const authHeaders = { authorization: `Bearer ${sessionToken}` };
+    assert.equal((await fetch(`${http}/api/player/focus`, { method: "POST" })).status, 401, "focus without session is rejected");
 
     const health = await fetch(`${http}/api/health`).then((r) => r.json());
     assert.equal(health.ok, true);
     assert.equal(health.state, "idle");
-    const focusResponse = await fetch(`${http}/api/player/focus`, { method: "POST" });
+    const focusResponse = await fetch(`${http}/api/player/focus`, { method: "POST", headers: authHeaders });
     assert.equal(focusResponse.status, 200);
     assert.equal((await focusResponse.json()).ok, true);
     assert.equal(focusCalls, 1, "operator focus endpoint must call the local player focus hook exactly once");
@@ -198,7 +206,7 @@ async function main() {
     const qr = new Uint8Array(await fetch(`${http}/api/qr?size=96`).then((r) => r.arrayBuffer()));
     assert.deepEqual([...qr.slice(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
 
-    const control = socketClient(wsUrl, { type: "hello", client: "control", id: "control-smoke" });
+    const control = socketClient(wsUrl, { type: "hello", client: "control", id: "control-smoke", token: sessionToken });
     const screen = socketClient(wsUrl, { type: "hello", client: "screen", id: "center", isClockSource: true });
     const tablet = socketClient(wsUrl, { type: "hello", client: "tablet", id: "tablet-smoke" });
     assert.equal((await control.next((m) => m.type === "welcome", "control welcome")).state.state, "idle");
@@ -227,7 +235,7 @@ async function main() {
 
     const seekResponse = await fetch(`${http}/api/cmd`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...authHeaders },
       body: JSON.stringify({ action: "seek", time: -1.5 }),
     });
     assert.equal(seekResponse.status, 200);
@@ -262,16 +270,16 @@ async function main() {
     );
     assert.equal(reset.answers.length, 0);
 
-    const duplicate = socketClient(wsUrl, { type: "hello", client: "control", id: "duplicate-test" });
+    const duplicate = socketClient(wsUrl, { type: "hello", client: "control", id: "duplicate-test", token: sessionToken });
     await duplicate.next((m) => m.type === "welcome", "duplicate test welcome");
     duplicate.send({ type: "hello", client: "tablet", id: "role-escalation" });
     await duplicate.next((m) => m.type === "error" && /deja/.test(m.reason), "duplicate hello rejection");
 
     // A bad hot-reload must be rejected without replacing the currently running show.
     await writeFile(showPath, JSON.stringify({ title: "Broken", scenes: [], cues: [{ id: "bad", kind: "voice" }] }));
-    const badReload = await fetch(`${http}/api/show/reload`, { method: "POST" });
+    const badReload = await fetch(`${http}/api/show/reload`, { method: "POST", headers: authHeaders });
     assert.equal(badReload.status, 500);
-    assert.equal((await fetch(`${http}/api/show`).then((r) => r.json())).title, "Smoke");
+    assert.equal((await fetch(`${http}/api/show`, { headers: authHeaders }).then((r) => r.json())).title, "Smoke");
     assert.ok((await fetch(`${http}/api/health`).then((r) => r.json())).showError);
 
     const beforeStop = Date.now();
