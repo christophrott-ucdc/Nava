@@ -43,6 +43,7 @@ import { ShowDirector, emptyShow, validateCommand, type DispatchResult } from ".
 import { TabletRegistry } from "./tablets";
 import { RunLog, type LogFn } from "./runlog";
 import { createStaticHandler } from "./static";
+import { loadMusic } from './music';
 import { createTtsRouter } from "./tts";
 import { createAuth, type AuthEnv, type Principal } from "./auth";
 import { PerfStore, createDebugRouter, createFrameExtractor, createFrameRouter } from "./debug";
@@ -383,6 +384,8 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const artifactToken=(run:string,post:number,revision:number)=>createHmac("sha256",artifactSecret).update(`${run}:${post}:${revision}`).digest("hex");
   const mission=new MissionSession(new MissionStore(path.join(path.dirname(opts.runsDir),'data','nava.sqlite')));
   let narrator:NarratorManifest|null=null;
+  const musicPack=await loadMusic(opts.appRoot);
+  if(!musicPack)log('warn','Music: complete verified pack unavailable; procedural ambience remains available.');
   let narratorDirectory='';
   let narratorEnded='';
   try{
@@ -688,6 +691,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   };
 
   app.get("/", (c) => c.redirect("/control/"));
+  app.get('/api/music',c=>musicPack?c.json(musicPack.manifest):c.json({ok:false,reason:'Music pack unavailable'},503));
+  app.get('/assets/music/:file',async c=>{
+    if(!musicPack||!musicPack.manifest.tracks.some(t=>t.file===c.req.param('file')))return c.notFound();
+    return createStaticHandler({prefix:'/assets/music',dir:musicPack.directory})(c);
+  });
   app.get('/assets/experience/voice/ro/:file',async c=>{
     const file=c.req.param('file');
     if(!narrator||!Object.values(narrator.clips).some(clip=>clip.file===file))return c.notFound();

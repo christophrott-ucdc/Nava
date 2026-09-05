@@ -223,3 +223,7 @@ Ghidul complet și limitele de acceptare sunt în [IMPLEMENTARE-SCENARII-DISPLAY
 Ghid complet: [TUTORIAL-FINAL.md](TUTORIAL-FINAL.md). Selectează profilul, deschide **Tutorial și echipaj**, aplică numai locurile ocupate și începe. La finalul probei, **Predă Căpitanului și pornește** lansează preshow-ul după explicație și verificarea readiness. Poți pune pauză, repeta explicația sau omite explicit tutorialul. Nu adăuga participanți după proba de recunoaștere. Vocea se aude numai pe ieșirea audio configurată; dacă un pas rămâne blocat, verifică rendererul și sunetul, apoi repetă explicația.
 
 În ultimele 15 secunde ale epilogului apar alegerile finale; invitația naratorului se aude numai după terminarea show-ului. Jurnalul trimis operatorului include alegerile finale ale locurilor active; descărcarea locală este disponibilă și înainte. „Prefer să privesc” este un răspuns valid. Înainte de public: audiție la volum de sală și probă completă pe cele șase tablete și cinci TV-uri.
+
+## Muzica originală
+
+Pachetul `assets/music` este încărcat și verificat la pornirea aplicației. Comanda **ambient** controlează și muzica; nivelul moștenește ambient.volume și sfxVolume. Vocea atenuează automat muzica cu9dB. La232–246s dispar muzica și ambientul, dar replicile programate rămân. După înlocuirea pachetului, repornește aplicația pentru revalidare. Ghid și audiții: [MUZICA.md](MUZICA.md), `runs/debug/music/index.html`. Ascultă buclele și toate replicile în sală înainte de aprobarea artistică finală.

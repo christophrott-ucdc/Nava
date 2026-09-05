@@ -1,0 +1,48 @@
+{
+  "id": "M07",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:33:45.243Z",
+  "requestId": null,
+  "songId": "VVU1bjifwX5x0CLtIFWE",
+  "recoveredResponse": false,
+  "request": {
+    "model_id": "music_v2",
+    "prompt": "Abstract tension cue, 46 seconds. Begins in near silence with only a sub-bass tone felt more than heard. A continuous tone slides slowly and seems to fall forever without descending. Metallic textures stretch and distort. Around the last eight seconds a swell rises out of the noise and opens into clarity. Disorienting but not violent. No rhythm, no melody, no vocals. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+    "music_length_ms": 46000,
+    "force_instrumental": true,
+    "store_for_inpainting": true
+  },
+  "requestKey": "0c2979d00fa39a20f9a4717bde7158a43b6e57e3c02fcf85ffd319ea12244323",
+  "prompt": "Abstract tension cue, 46 seconds. Begins in near silence with only a sub-bass tone felt more than heard. A continuous tone slides slowly and seems to fall forever without descending. Metallic textures stretch and distort. Around the last eight seconds a swell rises out of the noise and opens into clarity. Disorienting but not violent. No rhythm, no melody, no vocals.",
+  "reference": null,
+  "apiFormat": "pcm_48000",
+  "apiSha256": "389c009c0580e15fb3005931999b9ae56c5e16422c3b58d78d4d445c23189d75",
+  "masterSha256": "8c1a92caaf8dc211abfb7af73cd45e4956e6ad44bfdeeec10d4ea6121339730f",
+  "containerOnly": true,
+  "channels": 2,
+  "masterDurationSec": 46,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "derivativeOffsetSec": 0,
+  "sha256": "4214b918c033eebacf5119c0ca229f0a86801bd5a35edad867873fad7a5449d3",
+  "durationSec": 46,
+  "normalization": {
+    "targetLufs": -20,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-20.26",
+      "input_tp": "-8.82",
+      "input_lra": "7.50",
+      "input_thresh": "-30.72",
+      "output_i": "-18.46",
+      "output_tp": "-7.02",
+      "output_lra": "5.00",
+      "output_thresh": "-28.71",
+      "normalization_type": "dynamic",
+      "target_offset": "-1.54"
+    }
+  },
+  "loop": null,
+  "processingVersion": 2
+}

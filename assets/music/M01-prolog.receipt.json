@@ -1,0 +1,85 @@
+{
+  "id": "M01",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:30:18.391Z",
+  "requestId": null,
+  "songId": "FDkgDM2T66Ay47u6COP8",
+  "request": {
+    "model_id": "music_v2",
+    "store_for_inpainting": true,
+    "composition_plan": {
+      "chunks": [
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 60000,
+          "positive_styles": [
+            "Ambient orchestral bed, 60 seconds, seamless loop. Very low church organ pedal tone, barely moving. Distant, sparse metallic pings with long decay, like a signal arriving from far away, irregular and unhurried. High sustained strings enter and fade, almost inaudible. A fragment of a piano motif appears once, incomplete, then dissolves. Mysterious and patient, not threatening, suitable under spoken dialogue. Extremely wide dynamic range, mostly quiet. No percussion, no melody in the mid frequencies. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+            "contemplative space score",
+            "spacious orchestration",
+            "wide dynamic range",
+            "minimalist",
+            "cinematic acoustic instruments",
+            "gentle and restrained"
+          ],
+          "negative_styles": [
+            "lyrics",
+            "speech",
+            "drums"
+          ],
+          "conditioning_ref": {
+            "song_id": "LjruTm13hwDR5Pexdel9",
+            "range": {
+              "start_ms": 0,
+              "end_ms": 30000
+            }
+          },
+          "condition_strength": "medium",
+          "context_adherence": "high"
+        }
+      ]
+    }
+  },
+  "requestKey": "0d8cc67bcbb988e2aa2d98e942014657969bd0d4d34c97a4688fbf12ef59dd7b",
+  "prompt": "Ambient orchestral bed, 60 seconds, seamless loop. Very low church organ pedal tone, barely moving. Distant, sparse metallic pings with long decay, like a signal arriving from far away, irregular and unhurried. High sustained strings enter and fade, almost inaudible. A fragment of a piano motif appears once, incomplete, then dissolves. Mysterious and patient, not threatening, suitable under spoken dialogue. Extremely wide dynamic range, mostly quiet. No percussion, no melody in the mid frequencies.",
+  "reference": {
+    "id": "M08",
+    "songId": "LjruTm13hwDR5Pexdel9",
+    "rangeMs": [
+      0,
+      30000
+    ],
+    "masterSha256": "a1a088c570ad3fbd8fdac97a9cae8f814ec62ee94058cb4095e12581575d2361"
+  },
+  "apiFormat": "pcm_48000",
+  "apiSha256": "cd2a6da10ba548f7c36521e1e2d410daae52551e992f65c8e08bf80d80d42ff9",
+  "masterSha256": "551d6324198df2db57dc8beb4c0daeaedb4a504d2c79738152f46d27224493be",
+  "containerOnly": true,
+  "channels": 2,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "sha256": "1deda466ca0d940ea04d190b229b4efdcdcabdfb42ed3cb21d40658450c36b0a",
+  "durationSec": 59,
+  "normalization": {
+    "targetLufs": -26,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-26.26",
+      "input_tp": "-14.46",
+      "input_lra": "1.60",
+      "input_thresh": "-36.26",
+      "output_i": "-25.79",
+      "output_tp": "-14.21",
+      "output_lra": "1.50",
+      "output_thresh": "-35.79",
+      "normalization_type": "dynamic",
+      "target_offset": "-0.21"
+    }
+  },
+  "loop": {
+    "crossfadeSec": 1,
+    "derivativeDurationSec": 59,
+    "needsAudition": true
+  },
+  "processingVersion": 2
+}

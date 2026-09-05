@@ -1,0 +1,46 @@
+{
+  "id": "M08",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:29:46.011Z",
+  "requestId": null,
+  "songId": "LjruTm13hwDR5Pexdel9",
+  "request": {
+    "model_id": "music_v2",
+    "prompt": "Intimate orchestral cue, 63 seconds. Solo piano states a simple five-note ascending motif, unhurried, with space between phrases. After the first statement, warm sustained strings enter underneath in slow harmonic motion over a pedal tone. A church organ swells very softly in the low register around the two-thirds mark, never dominating. The feeling is recognition and homecoming after a long journey — moving but restrained, hopeful rather than triumphant, no percussion, no fanfare. Ends open and unresolved on a sustained chord. Wide dynamic range, cinematic, spacious reverb. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+    "music_length_ms": 63000,
+    "force_instrumental": true,
+    "store_for_inpainting": true
+  },
+  "requestKey": "3b31296430acb80d17e649f9b8f769553c3252e96a5ca2a0be779d7449ed85d0",
+  "prompt": "Intimate orchestral cue, 63 seconds. Solo piano states a simple five-note ascending motif, unhurried, with space between phrases. After the first statement, warm sustained strings enter underneath in slow harmonic motion over a pedal tone. A church organ swells very softly in the low register around the two-thirds mark, never dominating. The feeling is recognition and homecoming after a long journey — moving but restrained, hopeful rather than triumphant, no percussion, no fanfare. Ends open and unresolved on a sustained chord. Wide dynamic range, cinematic, spacious reverb.",
+  "reference": null,
+  "apiFormat": "pcm_48000",
+  "apiSha256": "638b591965da51021dadfbfa04a632cc8ceea76c0445bbc53d6add66a3032dbb",
+  "masterSha256": "a1a088c570ad3fbd8fdac97a9cae8f814ec62ee94058cb4095e12581575d2361",
+  "containerOnly": true,
+  "channels": 2,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "sha256": "a1e73e2fd154ccd6644644e2be051d5bc83a5c21747a00d72717d5140fc3a469",
+  "durationSec": 63,
+  "normalization": {
+    "targetLufs": -20,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-20.26",
+      "input_tp": "-8.25",
+      "input_lra": "2.50",
+      "input_thresh": "-30.83",
+      "output_i": "-19.38",
+      "output_tp": "-7.64",
+      "output_lra": "2.10",
+      "output_thresh": "-29.89",
+      "normalization_type": "dynamic",
+      "target_offset": "-0.62"
+    }
+  },
+  "loop": null,
+  "derivativeOffsetSec": 0,
+  "processingVersion": 2
+}

@@ -15,6 +15,7 @@ import {createMissionOverlay} from "./ui/mission";
 import {createExperienceOverlay} from "./ui/experience";
 import type {RateAwareVoiceEngine} from "./voice/index";
 import { createAmbient } from "./voice/ambient";
+import type {MusicManifest} from '../shared/music';
 import { getAudioOutputLabel, routeAudioOutput } from "./voice/context";
 import { createNullAvatar, createNullVoiceEngine } from "./fallbacks";
 import { createLogger, describeError } from "./log";
@@ -208,6 +209,7 @@ async function main(): Promise<void> {
     volume: ambientCfg.volume,
     duck: ambientCfg.duck,
     sfxVolume: config.audio.sfxVolume,
+    fileBaseUrl:new URL('/assets/music/',boot.serverHttpUrl??boot.wsUrl.replace(/^ws/,'http')).href,
     log,
   });
   theme.onChange((t) => ambient.followTheme(t));
@@ -303,10 +305,13 @@ async function main(): Promise<void> {
     },
   });
   player.attach(boot.videoUrl);
+  if(screen.playAudio)void fetch(new URL('/api/music',boot.serverHttpUrl??boot.wsUrl.replace(/^ws/,'http'))).then(async r=>{
+    if(!r.ok)throw Error(`HTTP${r.status}`);player.setMusicManifest(await r.json() as MusicManifest);
+  }).catch(e=>log('warn',`Music pack unavailable: ${String(e)}`));
   launchControls.hidden = !isClockSource || player.getPlaybackState() !== "idle";
 
   const missionOverlay=createMissionOverlay($("stage"));
-  const experienceOverlay=createExperienceOverlay($("stage"),{audio:screen.playAudio,visual:screen.showAvatar,baseUrl:boot.serverHttpUrl??boot.wsUrl.replace(/^ws/, 'http'),volume:config.audio.voiceVolume,outputDeviceId:config.audio.outputDeviceId,clockOffset:()=>syncStatus.offsetMs,onNarration:(instance,status)=>sync.sendRaw({type:'experienceAudio',instance,status})});
+  const experienceOverlay=createExperienceOverlay($("stage"),{audio:screen.playAudio,visual:screen.showAvatar,baseUrl:boot.serverHttpUrl??boot.wsUrl.replace(/^ws/, 'http'),volume:config.audio.voiceVolume,outputDeviceId:config.audio.outputDeviceId,clockOffset:()=>syncStatus.offsetMs,onNarration:(instance,status)=>sync.sendRaw({type:'experienceAudio',instance,status}),onAudioActive:active=>ambient.setDucked(active,'narrator')});
   let missionRun="";let missionSuspended=false;
   // ---- R4 / B-07 — span mode: one <video>, one canvas per viewport, overlays in the focus viewport
   let span: SpanController | null = null;
@@ -398,6 +403,7 @@ async function main(): Promise<void> {
 
   // ---- OSD refresh
   player.onOsd = () => {
+    document.documentElement.dataset.musicStatus=JSON.stringify(ambient.musicStatus());
     osdReal.update({
       state: player.getPlaybackState(),
       phaseTime: player.phaseTime(),

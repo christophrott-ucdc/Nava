@@ -1,0 +1,48 @@
+{
+  "id": "M04",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:31:43.652Z",
+  "requestId": null,
+  "songId": "qGKDyAvyyiIJdXVuBusu",
+  "recoveredResponse": false,
+  "request": {
+    "model_id": "music_v2",
+    "prompt": "Warm ambient orchestral cue, 84 seconds. Golden and shimmering: high strings in slow suspended harmony, delicate harp-like arpeggios drifting in and out, wordless choral pad very soft in the background. A sense of standing in warm light, awe without grandeur. Very sparse in the middle frequencies so speech can sit on top. Slow harmonic rhythm, long sustains, gentle. No percussion, no words. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+    "music_length_ms": 84000,
+    "force_instrumental": true,
+    "store_for_inpainting": true
+  },
+  "requestKey": "8564bdbfc951b7ac64444dc958057faa49b8851c403a760541c11190b7787abe",
+  "prompt": "Warm ambient orchestral cue, 84 seconds. Golden and shimmering: high strings in slow suspended harmony, delicate harp-like arpeggios drifting in and out, wordless choral pad very soft in the background. A sense of standing in warm light, awe without grandeur. Very sparse in the middle frequencies so speech can sit on top. Slow harmonic rhythm, long sustains, gentle. No percussion, no words.",
+  "reference": null,
+  "apiFormat": "pcm_48000",
+  "apiSha256": "643b4260c5f87f64ed06f14f02c6a757c6bd5311c873f6269962ee2c9b18a688",
+  "masterSha256": "949911054672a75e350ff33b538984f6833fe92df3bcccd1c5e5cce2cd33dddf",
+  "containerOnly": true,
+  "channels": 2,
+  "masterDurationSec": 84,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "derivativeOffsetSec": 0,
+  "sha256": "3f62ad3d57a15169f917eca640f4394ec502f001d6c65d225e79d57e9e236b97",
+  "durationSec": 84,
+  "normalization": {
+    "targetLufs": -26,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-26.25",
+      "input_tp": "-11.18",
+      "input_lra": "19.20",
+      "input_thresh": "-37.65",
+      "output_i": "-22.79",
+      "output_tp": "-6.61",
+      "output_lra": "11.20",
+      "output_thresh": "-33.42",
+      "normalization_type": "dynamic",
+      "target_offset": "-3.21"
+    }
+  },
+  "loop": null,
+  "processingVersion": 2
+}

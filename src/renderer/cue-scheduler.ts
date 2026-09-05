@@ -139,6 +139,7 @@ export function derivedState(
         entities[c.entity] = c.action;
         break;
       case "ambient":
+        if(c.source?.type==='file')break;
         ambient = {
           action: c.action,
           bed: c.bed ?? theme ?? sceneAt(scenes, phase, c.at)?.theme ?? null,
@@ -170,6 +171,7 @@ export function explicitAmbientBeds(show: Pick<ShowFile, "cues" | "scenes">): Se
     for (const c of sortCues(show.cues, phase)) {
       if (c.kind === "theme") theme = c.theme;
       else if (c.kind === "ambient") {
+        if(c.source?.type==='file')continue;
         const bed = c.bed ?? theme ?? sceneAt(show.scenes, phase, c.at)?.theme ?? null;
         if (bed) beds.add(bed);
       }

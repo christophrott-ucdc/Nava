@@ -237,6 +237,7 @@ export class Timeline {
           this.deps.log("info", `dynamic-voice cue ${cue.id} (${cue.source}, ${cue.speaker}) — text comes from the server as dynamicVoice`);
           break;
         case "ambient": {
+          if(cue.source?.type==='file')break; // File layers are synchronized continuously by Player.
           const ambient = this.deps.ambient;
           if (!ambient) break;
           const bed: SceneTheme = cue.bed ?? this.deps.theme.current();

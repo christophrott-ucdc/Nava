@@ -98,3 +98,7 @@ Consola include confort pe post, editor de pachete, diagnostic și repetiție co
 ## Tutorial și final interactiv — 2026-09-05
 
 Tutorialul vocal „Nava vă recunoaște” și finalul colectiv sunt implementate pentru cele patru categorii. În consolă: **Tutorial și echipaj** → locuri ocupate → începe → predă Căpitanului. Narator român separat, probe A/B fără punctaj, pauză/repetare, SQLite și constelație bazată pe contribuții reale. Detalii și comenzi QA: [docs/TUTORIAL-FINAL.md](docs/TUTORIAL-FINAL.md). Galerie: `runs/debug/tutorial-final/index.html`. Audiția și acceptanța celor cinci TV-uri și șase tablete se fac în sală.
+
+## Coloana sonoră
+
+Zece piese originale Eleven Music sunt integrate în magistrala ambientală, cu ducking sub voce și tăcere muzicală la232–246s. Detalii, limite și regenerare: [docs/MUZICA.md](docs/MUZICA.md). Audiții: `runs/debug/music/index.html`. Piesele sunt marcate pentru audiție artistică și verificare în sală; filmul și replicile existente sunt păstrate.

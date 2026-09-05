@@ -1,0 +1,48 @@
+{
+  "id": "M03",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:31:29.485Z",
+  "requestId": null,
+  "songId": "8WKuQo9hWOjy12YOzHpD",
+  "recoveredResponse": false,
+  "request": {
+    "model_id": "music_v2",
+    "prompt": "Cinematic orchestral cue, 70 seconds. Opens immediately at full power: church organ in ascending arpeggiated ostinato, repeating and building, with sustained strings above in long rising lines. The first twenty seconds are the emotional peak — vast, uplifting, a sense of leaving something enormous behind. From around thirty seconds the texture gradually thins, the organ recedes, and only shimmering high strings and a distant pedal tone remain, opening into vastness. Minimalist and repetitive rather than melodic. No drums. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+    "music_length_ms": 70000,
+    "force_instrumental": true,
+    "store_for_inpainting": true
+  },
+  "requestKey": "a369b6894ae72f79f9dc04bfcb4b1dd6170429da17434cb339ea78bffb6b07b2",
+  "prompt": "Cinematic orchestral cue, 70 seconds. Opens immediately at full power: church organ in ascending arpeggiated ostinato, repeating and building, with sustained strings above in long rising lines. The first twenty seconds are the emotional peak — vast, uplifting, a sense of leaving something enormous behind. From around thirty seconds the texture gradually thins, the organ recedes, and only shimmering high strings and a distant pedal tone remain, opening into vastness. Minimalist and repetitive rather than melodic. No drums.",
+  "reference": null,
+  "apiFormat": "pcm_48000",
+  "apiSha256": "b652e8ebb4cd051588fb4e57e32f139516290911ce3b1aea47a11679a501d97a",
+  "masterSha256": "af859ae2cea7cbc090dfb8b7b491dc93cf87724b34354b4aaf58e9c4b4c9beb0",
+  "containerOnly": true,
+  "channels": 2,
+  "masterDurationSec": 70,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "derivativeOffsetSec": 0,
+  "sha256": "c25d1c206a0b14f536a24f0871a96ad7a42c9083cb54d15f21a54ed0c500477b",
+  "durationSec": 70,
+  "normalization": {
+    "targetLufs": -20,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-20.26",
+      "input_tp": "-7.62",
+      "input_lra": "11.00",
+      "input_thresh": "-31.02",
+      "output_i": "-17.81",
+      "output_tp": "-5.94",
+      "output_lra": "3.30",
+      "output_thresh": "-28.22",
+      "normalization_type": "dynamic",
+      "target_offset": "-2.19"
+    }
+  },
+  "loop": null,
+  "processingVersion": 2
+}

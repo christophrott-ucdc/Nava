@@ -1,0 +1,48 @@
+{
+  "id": "M02",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:31:18.749Z",
+  "requestId": null,
+  "songId": null,
+  "recoveredResponse": true,
+  "request": {
+    "model_id": "music_v2",
+    "prompt": "Rising tension cue, 12 seconds. A ticking pulse begins steady and slowly accelerates. Underneath, a low organ tone and strings build in a continuous rising motion that seems to climb without ever settling. The final second resolves into a single deep impact and immediate silence. Precise, mechanical, exciting rather than frightening. No melody, no vocals. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+    "music_length_ms": 12000,
+    "force_instrumental": true,
+    "store_for_inpainting": true
+  },
+  "requestKey": "a1e091caead5f1237cd87b43cad86318a38c6d992552d2f5376edabc6ec9bb75",
+  "prompt": "Rising tension cue, 12 seconds. A ticking pulse begins steady and slowly accelerates. Underneath, a low organ tone and strings build in a continuous rising motion that seems to climb without ever settling. The final second resolves into a single deep impact and immediate silence. Precise, mechanical, exciting rather than frightening. No melody, no vocals.",
+  "reference": null,
+  "apiFormat": "pcm_48000",
+  "apiSha256": "4b6ab8f0edfe706a53e70e45a1067056209e82d4b4769f59f155d89753558896",
+  "masterSha256": "13baebae67b75389e93894a1d05f2a1b1505a1bbc87006493b1617a5104f9f6f",
+  "containerOnly": true,
+  "channels": 2,
+  "masterDurationSec": 21,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "derivativeOffsetSec": 9,
+  "sha256": "4763d981d71a12326532f1d900699d81e51b22c08008aceb4bac551c217c1a68",
+  "durationSec": 12,
+  "normalization": {
+    "targetLufs": -20,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-20.30",
+      "input_tp": "-3.47",
+      "input_lra": "15.50",
+      "input_thresh": "-32.63",
+      "output_i": "-20.38",
+      "output_tp": "-4.36",
+      "output_lra": "14.90",
+      "output_thresh": "-31.94",
+      "normalization_type": "dynamic",
+      "target_offset": "0.38"
+    }
+  },
+  "loop": null,
+  "processingVersion": 2
+}

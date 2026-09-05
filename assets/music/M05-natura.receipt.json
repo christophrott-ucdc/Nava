@@ -1,0 +1,84 @@
+{
+  "id": "M05",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:33:13.840Z",
+  "requestId": null,
+  "songId": "pqdIYoA3uUE8sySBGRhw",
+  "recoveredResponse": false,
+  "request": {
+    "model_id": "music_v2",
+    "store_for_inpainting": true,
+    "composition_plan": {
+      "chunks": [
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 88000,
+          "positive_styles": [
+            "Organic ambient cue, 88 seconds. Built on the rhythm of slow breathing: a low woodwind-like tone swells and recedes about every eight seconds. Beneath it a wet, resonant drone and occasional distant low notes like something large and calm. A fragment of a piano motif appears twice, unfinished. Living, humid, unhurried. The last ten seconds thin out until almost nothing remains. No percussion, no melody in the mid range. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+            "contemplative space score",
+            "spacious orchestration",
+            "wide dynamic range",
+            "minimalist",
+            "cinematic acoustic instruments",
+            "gentle and restrained"
+          ],
+          "negative_styles": [
+            "lyrics",
+            "speech",
+            "drums"
+          ],
+          "conditioning_ref": {
+            "song_id": "LjruTm13hwDR5Pexdel9",
+            "range": {
+              "start_ms": 0,
+              "end_ms": 30000
+            }
+          },
+          "condition_strength": "medium",
+          "context_adherence": "high"
+        }
+      ]
+    }
+  },
+  "requestKey": "c5d58f7fde5632dbe51d42a43d65ec11dcc59420357ba3e56a6bde36db957b89",
+  "prompt": "Organic ambient cue, 88 seconds. Built on the rhythm of slow breathing: a low woodwind-like tone swells and recedes about every eight seconds. Beneath it a wet, resonant drone and occasional distant low notes like something large and calm. A fragment of a piano motif appears twice, unfinished. Living, humid, unhurried. The last ten seconds thin out until almost nothing remains. No percussion, no melody in the mid range.",
+  "reference": {
+    "id": "M08",
+    "songId": "LjruTm13hwDR5Pexdel9",
+    "rangeMs": [
+      0,
+      30000
+    ],
+    "masterSha256": "a1a088c570ad3fbd8fdac97a9cae8f814ec62ee94058cb4095e12581575d2361"
+  },
+  "apiFormat": "pcm_48000",
+  "apiSha256": "e4d00975940c3707c977184a15c1e34669a62377206f29f3a9396221f2db9888",
+  "masterSha256": "29fc73ae45ff0e4fd221e947392fabfc635f8240f05e67dde169f56f52d1ea97",
+  "containerOnly": true,
+  "channels": 2,
+  "masterDurationSec": 88,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "derivativeOffsetSec": 0,
+  "sha256": "1e8133ef8cd10fe4f26e694b0a7b026c8faf1cef9981bbe95bd492b21f9d6376",
+  "durationSec": 88,
+  "normalization": {
+    "targetLufs": -26,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-26.27",
+      "input_tp": "-14.01",
+      "input_lra": "2.30",
+      "input_thresh": "-36.56",
+      "output_i": "-26.03",
+      "output_tp": "-13.53",
+      "output_lra": "2.40",
+      "output_thresh": "-36.31",
+      "normalization_type": "dynamic",
+      "target_offset": "0.03"
+    }
+  },
+  "loop": null,
+  "processingVersion": 2
+}

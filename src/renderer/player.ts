@@ -22,6 +22,7 @@ import type { Osd } from "./ui/osd";
 import type { Subtitles } from "./ui/subtitles";
 import type { ThemeController } from "./ui/theme";
 import type { AmbientEngine } from "./voice/ambient";
+import {musicCues,type MusicManifest} from '../shared/music';
 import { setVoicePlaybackRate } from "./voice/index";
 
 /** R4 / B-06 — rehearse rate bounds (the server accepts `report.rate` up to 8). */
@@ -138,6 +139,7 @@ export class Player {
   /** R4 / B-06 — nominal playback rate (1 = show; rehearse/setRate change it). */
   private nominal = 1;
   private perspectiveWarned = false;
+  private musicManifest:MusicManifest|null=null;
 
   constructor(private readonly deps: PlayerDeps) {
     this.video = deps.video;
@@ -217,6 +219,12 @@ export class Player {
 
   setShow(show: ShowFile): void {
     this.timeline.setShow(show);
+    this.refreshMusic();
+  }
+  setMusicManifest(manifest:MusicManifest):void {this.musicManifest=manifest;this.refreshMusic();}
+  private refreshMusic():void {
+    const show=this.timeline.getShow();
+    this.deps.ambient?.setFileCues([...(this.musicManifest?musicCues(this.musicManifest,show):[]),...show.cues.filter((c):c is import('../shared/types').AmbientCue=>c.kind==='ambient'&&c.source?.type==='file')]);
   }
   getShow(): ShowFile {
     return this.timeline.getShow();
@@ -991,6 +999,7 @@ export class Player {
     if (this.disposed) return;
     this.raf = requestAnimationFrame(this.tick);
     if (this.isClockAdvancing()) this.timeline.update(this.phaseTime());
+    this.deps.ambient?.syncFiles(this.phaseMode,this.phaseTime(),this.rate());
     if (this.playLeadIn && this.state === "playing" && this.clock.now() >= 0) this.finishLeadIn();
     if (!this.playLeadIn && this.state === "playing" && this.phaseMode === "play" && this.phaseTime() >= this.duration() - 0.02) {
       this.video.pause();

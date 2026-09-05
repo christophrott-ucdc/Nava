@@ -1,0 +1,84 @@
+{
+  "id": "M10",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:34:07.496Z",
+  "requestId": null,
+  "songId": "9GojdD1pfzoSh47Qf7xA",
+  "recoveredResponse": false,
+  "request": {
+    "model_id": "music_v2",
+    "store_for_inpainting": true,
+    "composition_plan": {
+      "chunks": [
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 8000,
+          "positive_styles": [
+            "Short celebratory flourish, 8 seconds. A bright ascending figure on bells and harp-like strings, warm and childlike, ending on a clear sustained major chord with a soft shimmer. Joyful and gentle, not fanfare-loud. No percussion, no vocals. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+            "contemplative space score",
+            "spacious orchestration",
+            "wide dynamic range",
+            "minimalist",
+            "cinematic acoustic instruments",
+            "gentle and restrained"
+          ],
+          "negative_styles": [
+            "lyrics",
+            "speech",
+            "drums"
+          ],
+          "conditioning_ref": {
+            "song_id": "LjruTm13hwDR5Pexdel9",
+            "range": {
+              "start_ms": 0,
+              "end_ms": 30000
+            }
+          },
+          "condition_strength": "medium",
+          "context_adherence": "high"
+        }
+      ]
+    }
+  },
+  "requestKey": "0b27a02712cf4a486d1285e0c7c1e68b976ee8df70195579a26159969380ddbf",
+  "prompt": "Short celebratory flourish, 8 seconds. A bright ascending figure on bells and harp-like strings, warm and childlike, ending on a clear sustained major chord with a soft shimmer. Joyful and gentle, not fanfare-loud. No percussion, no vocals.",
+  "reference": {
+    "id": "M08",
+    "songId": "LjruTm13hwDR5Pexdel9",
+    "rangeMs": [
+      0,
+      30000
+    ],
+    "masterSha256": "a1a088c570ad3fbd8fdac97a9cae8f814ec62ee94058cb4095e12581575d2361"
+  },
+  "apiFormat": "pcm_48000",
+  "apiSha256": "b5e9edb840cce40a243aa50ad2176fc0fa383af735fd892045710b2287d193c5",
+  "masterSha256": "0445658318e02711ad7546155f064babfde5945b58ad49886a9395b0b2691739",
+  "containerOnly": true,
+  "channels": 2,
+  "masterDurationSec": 8,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "derivativeOffsetSec": 0,
+  "sha256": "39dcf8e940f4c3fcdb53a1c39af0a8d2b3a28c4f17ad988c83e7479ff9ac598e",
+  "durationSec": 8,
+  "normalization": {
+    "targetLufs": -20,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-20.27",
+      "input_tp": "-9.13",
+      "input_lra": "1.50",
+      "input_thresh": "-30.31",
+      "output_i": "-19.34",
+      "output_tp": "-8.46",
+      "output_lra": "0.60",
+      "output_thresh": "-29.34",
+      "normalization_type": "dynamic",
+      "target_offset": "-0.66"
+    }
+  },
+  "loop": null,
+  "processingVersion": 2
+}

@@ -1,0 +1,48 @@
+{
+  "id": "M06",
+  "provider": "elevenlabs",
+  "modelId": "music_v2",
+  "generatedAt": "2026-09-05T13:33:29.785Z",
+  "requestId": null,
+  "songId": "OD0NizKYZ8ewXWWJLI08",
+  "recoveredResponse": false,
+  "request": {
+    "model_id": "music_v2",
+    "prompt": "Cold minimalist cue, 110 seconds. A relentless metronomic tick, absolutely steady, like a clock that cannot be stopped. Above it crystalline metallic tones in a narrow, unresolved harmony with close intervals that never settle. A very low organ pedal underneath. Around the two-thirds point the tension increases: the tick stays constant but the harmony tightens and a rising line appears, then cuts off unresolved. Precise, beautiful and slightly wrong. No drums, no warmth. Instrumental only; no words, no sung syllables, no drums or trailer percussion. Sparse continuous energy between 300 and 3000 Hz, spacious lows below 200 Hz and airy overtones above 4 kHz.",
+    "music_length_ms": 110000,
+    "force_instrumental": true,
+    "store_for_inpainting": true
+  },
+  "requestKey": "8bc8fbd1a9b2e46177b3591049122136ae538e2a28cbf574cee1825c6e6eb511",
+  "prompt": "Cold minimalist cue, 110 seconds. A relentless metronomic tick, absolutely steady, like a clock that cannot be stopped. Above it crystalline metallic tones in a narrow, unresolved harmony with close intervals that never settle. A very low organ pedal underneath. Around the two-thirds point the tension increases: the tick stays constant but the harmony tightens and a rising line appears, then cuts off unresolved. Precise, beautiful and slightly wrong. No drums, no warmth.",
+  "reference": null,
+  "apiFormat": "pcm_48000",
+  "apiSha256": "09df64091919eb3cda1aa8be840c761f043ea78d9724dc2c6224dfe7bf6abf2b",
+  "masterSha256": "006a219affa7eed731745f2064fb3e6c4da435fd202b82da7efc06ab16de26d5",
+  "containerOnly": true,
+  "channels": 2,
+  "masterDurationSec": 110,
+  "needsReview": true,
+  "reviewReason": "Human musical audition, motif recognition and room intelligibility pending.",
+  "derivativeOffsetSec": 0,
+  "sha256": "167e87ec1d0919335081af7fb969b66d6514bde784781b27e201e2413d783d4f",
+  "durationSec": 110,
+  "normalization": {
+    "targetLufs": -26,
+    "truePeakLimitDb": -3,
+    "measured": {
+      "input_i": "-26.23",
+      "input_tp": "-3.41",
+      "input_lra": "6.50",
+      "input_thresh": "-37.76",
+      "output_i": "-25.54",
+      "output_tp": "-3.00",
+      "output_lra": "5.80",
+      "output_thresh": "-37.04",
+      "normalization_type": "dynamic",
+      "target_offset": "-0.46"
+    }
+  },
+  "loop": null,
+  "processingVersion": 2
+}

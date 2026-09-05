@@ -122,6 +122,19 @@ export interface AmbientCue extends CueBase {
   bed?: SceneTheme;
   gain?: number;
   fadeSec?: number;
+  /** Optional prerecorded layer; the procedural bed remains on the same ambient bus. */
+  source?: {
+    type: "file";
+    file: string;
+    sha256: string;
+    durationSec: number;
+    windowSec: number;
+    offsetSec?: number;
+    loop: boolean;
+    fadeOutSec: number;
+    gainDb: number;
+    trigger?: "thanks";
+  };
 }
 
 /** R4 — schimbare de lumina in sala (adaptor in src/server/features/lights.ts). */

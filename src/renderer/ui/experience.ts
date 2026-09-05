@@ -2,11 +2,13 @@ import type {MissionSnapshot} from '../../shared/mission';
 import {EXPERIENCE_PRACTICE,FINALE_CHOICES,type NarratorManifest} from '../../shared/experience';
 
 /** Narration uses the server instance and clock; only the configured audio owner plays it. */
-export function createExperienceOverlay(parent:HTMLElement,options:{audio:boolean;visual:boolean;baseUrl:string;volume:number;outputDeviceId?:string;clockOffset:()=>number;onNarration:(instance:string,status:'ended'|'error')=>void}){
+export function createExperienceOverlay(parent:HTMLElement,options:{audio:boolean;visual:boolean;baseUrl:string;volume:number;outputDeviceId?:string;clockOffset:()=>number;onNarration:(instance:string,status:'ended'|'error')=>void;onAudioActive?:(active:boolean)=>void}){
   const box=document.createElement('section');box.className='experience-tv';box.hidden=true;parent.append(box);
   const kicker=document.createElement('p'),title=document.createElement('h1'),copy=document.createElement('p'),sky=document.createElement('div'),foot=document.createElement('p'),subtitle=document.createElement('p'),constellation=document.createElement('div');
   kicker.className='experience-kicker';copy.className='experience-copy';sky.className='experience-sky';foot.className='experience-foot';subtitle.className='experience-narration';constellation.className='experience-constellation';subtitle.setAttribute('aria-live','polite');box.append(kicker,title,copy,constellation,sky,foot,subtitle);
   const audio=new Audio();audio.preload='auto';audio.volume=Math.max(0,Math.min(1,options.volume));
+  audio.addEventListener('playing',()=>options.onAudioActive?.(true));
+  for(const event of ['pause','ended','error','emptied'])audio.addEventListener(event,()=>options.onAudioActive?.(false));
   const routed=audio as HTMLAudioElement&{setSinkId?:(id:string)=>Promise<void>};if(options.audio&&options.outputDeviceId&&routed.setSinkId)void routed.setSinkId(options.outputDeviceId).catch(()=>{});
   let manifest:NarratorManifest|null=null,last:MissionSnapshot|null=null,instance='',completed='',paused=false,key='',generation=0,failed=false,disposed=false;
   let visualEpoch='',seen=new Set<string>();

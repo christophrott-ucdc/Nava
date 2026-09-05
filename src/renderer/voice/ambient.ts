@@ -15,7 +15,9 @@
  *   - screens with playAudio=false get a silent engine (no graph, state only).
  */
 
-import type { SceneTheme } from "../../shared/types";
+import type { AmbientCue, Phase, SceneTheme } from "../../shared/types";
+import { musicSilenceGain } from "../../shared/music";
+import { createMusicFiles } from "./music-files";
 import type { Logger } from "../log";
 import { getAudioContext, unlockAudio } from "./context";
 import { noiseBuffer } from "./sfx";
@@ -31,6 +33,7 @@ export interface AmbientOptions {
   /** config.audio.sfxVolume (updated by the setVolume command). */
   sfxVolume: number;
   log?: Logger;
+  fileBaseUrl?: string;
 }
 
 export interface BedOptions {
@@ -55,7 +58,10 @@ export interface AmbientEngine {
   /** Themes with explicit ambient cues in the current show (cue-scheduler.explicitAmbientBeds). */
   setExplicitBeds(beds: ReadonlySet<SceneTheme>): void;
   /** Voice playing -> duck. */
-  setDucked(on: boolean): void;
+  setDucked(on: boolean, owner?: 'voice'|'narrator'): void;
+  setFileCues(cues: readonly AmbientCue[]): void;
+  syncFiles(phase:Phase|null,time:number,rate:number):void;
+  musicStatus():{loaded:string[];failed:string[];active:string[];silenceGain:number;duckGain:number};
   /** config.ambient.volume (0..1). */
   setVolume(v: number): void;
   /** config.audio.sfxVolume (0..1.5). */
@@ -401,8 +407,12 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
   let enabled = opts.enabled;
   let volume = clamp01(opts.volume);
   let sfxVolume = Math.max(0, Math.min(1.5, opts.sfxVolume));
-  let duckLevel = clamp01(opts.duck);
+  let duckLevel = 10 ** (-9 / 20);
   let ducked = false;
+  const speakers=new Set<string>();
+  let fileCues:readonly AmbientCue[]=[];
+  let files:ReturnType<typeof createMusicFiles>|null=null;
+  let silenceGain=1;
   let explicitBeds: ReadonlySet<SceneTheme> = new Set();
   let lastTheme: SceneTheme | null = null;
   let current: Bed | null = null;
@@ -412,6 +422,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
   let ctx: AudioContext | null = null;
   let master: GainNode | null = null;
   let duck: GainNode | null = null;
+  let silence: GainNode | null = null;
 
   const masterTarget = () => sfxVolume * volume;
 
@@ -423,7 +434,9 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
       master.gain.value = masterTarget();
       duck = ctx.createGain();
       duck.gain.value = ducked ? duckLevel : 1;
-      duck.connect(master).connect(ctx.destination);
+      silence=ctx.createGain();silence.gain.value=silenceGain;
+      duck.connect(silence).connect(master).connect(ctx.destination);
+      if(opts.fileBaseUrl){files=createMusicFiles(ctx,duck,opts.fileBaseUrl,log);files.preload(fileCues);}
     }
     void unlockAudio();
     return { ctx, duck: duck! };
@@ -528,14 +541,23 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
     setExplicitBeds(beds) {
       explicitBeds = beds;
     },
-    setDucked(on) {
+    setFileCues(cues){fileCues=cues;const g=audible&&enabled?graph():null;if(g)files?.preload(cues);},
+    syncFiles(phase,time,rate){
+      silenceGain=musicSilenceGain(phase,time);if(silence)silence.gain.value=silenceGain;
+      if(audible&&enabled&&fileCues.length&&!files)graph();
+      files?.sync(fileCues,phase,time,rate,enabled);
+    },
+    musicStatus(){return {...(files?.status()??{loaded:[],failed:[],active:[]}),silenceGain,duckGain:duck?.gain.value??1};},
+    setDucked(on,owner='voice') {
+      if(on)speakers.add(owner);else speakers.delete(owner);
+      on=speakers.size>0;
       if (ducked === on) return;
       ducked = on;
       if (!ctx || !duck) return;
       const t = ctx.currentTime;
       duck.gain.cancelScheduledValues(t);
-      // Fast attack (80 ms) so the first syllable is clear, slow release (0.5 s) after the line.
-      duck.gain.setTargetAtTime(on ? duckLevel : 1, t, on ? 0.08 : 0.5);
+      duck.gain.setValueAtTime(duck.gain.value,t);
+      duck.gain.linearRampToValueAtTime(on ? duckLevel : 1,t+(on?.3:.8));
     },
     setVolume(v) {
       volume = clamp01(v);
@@ -548,6 +570,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
     currentBed: () => current?.theme ?? null,
     dispose() {
       disposed = true;
+      files?.dispose();
       stop({ fadeSec: 0.2 });
       duckLevel = 0;
     },
