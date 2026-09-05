@@ -10,6 +10,15 @@ import {
 import type { ServerMessage, TabletEventMsg, TabletViewMsg } from "@shared/protocol";
 import { createTelemetry } from "./telemetry";
 import { CERT_H, CERT_W, drawCertificate, type CertificateChoice } from "./certificate";
+import { applyTheme, icon, mascotPath, EffectGate, confetti, createTabletAudio } from "../shared/glass";
+import { rememberChoice, reconcileChoices, type PendingChoices } from "./choice-delivery";
+import type { MissionSnapshot } from "@shared/mission";
+import { createMissionUI } from "./mission-ui";
+
+const effects = new EffectGate();
+const audio = createTabletAudio();
+document.getElementById("brand-glyph")!.innerHTML = icon("rocket");
+document.getElementById("rotate-icon")!.innerHTML = icon("tablet");
 
 const STORAGE = {
   id: "nava.tablet.id.v3",
@@ -45,7 +54,6 @@ const dom = {
 };
 
 type TabletEvent = TabletEventMsg["event"];
-type ChoiceMap = Record<string, Partial<Record<TabletZone, string>>>;
 type PairedInteraction = Extract<NonNullable<TabletViewMsg["interaction"]>, { type: "paired-choice" }>;
 
 let socket: WebSocket | null = null;
@@ -58,14 +66,44 @@ let view: TabletViewMsg | null = null;
 let selectedPost: TabletPost | null = configuredPost();
 let postRequestSent = false;
 let noticeTimer: number | null = null;
-const pendingEvents: TabletEvent[] = [];
-const optimisticChoices: ChoiceMap = {};
+let photoTimer: number | null = null;
+const optimisticChoices: PendingChoices = {};
+let connectionStatus: "connecting" | "online" | "offline" = "connecting";
+let awaitingFreshView = true;
 /** D-06 — alegerile confirmate de server pe parcursul misiunii (per cue), cu etichetele opțiunilor. */
 const choiceHistory: Record<string, CertificateChoice> = {};
 /** D-06 — starea trimiterii certificatului curent (ca să nu-l regenerăm la fiecare `state`). */
 let certificateFor: string | null = null;
+let certificateStatus = "se trimite operatorului…";
+let certificateStatusOk = false;
+let certificatePending = true;
 let lastSubtitleKey = "";
 let startRequestPending = false;
+let lastInteractionKey = "";
+let lastPickerKey = "";
+let choiceOpenedAt = 0;
+let choiceOpenedCue: string | null = null;
+let lastPairedStructureKey = "";
+let runGeneration = 0;
+let missionSnapshot: MissionSnapshot | null = null;
+const missionUI = createMissionUI({
+  host: dom.interaction,
+  send: (event) => { if (socket?.readyState !== WebSocket.OPEN) return false; socket.send(JSON.stringify(event)); return true; },
+  notice: showNotice,
+  onConfirmed: (value) => {
+    if (missionSnapshot?.accessibility.sfxEnabled !== false && !missionSnapshot?.accessibility.reducedStimuli) audio.play("confirm");
+    if (missionSnapshot?.scenarioId === 'age-5-10' && value === 'link' && !missionSnapshot.accessibility.reducedMotion && !missionSnapshot.accessibility.reducedStimuli) confetti(dom.interaction, "var(--mint)");
+  },
+});
+const cueEffectVersions: Record<string, number> = {};
+
+function effectKey(cueId: string, action: string): string {
+  return `${cueId}:${cueEffectVersions[cueId] ?? 0}:${action}`;
+}
+
+function setText(node: HTMLElement, text: string): void {
+  if (node.textContent !== text) node.textContent = text;
+}
 
 const telemetry = createTelemetry(dom.telemetry);
 
@@ -106,11 +144,17 @@ function wsUrl(): string {
 }
 
 function setConnection(status: "connecting" | "online" | "offline", label: string): void {
+  const changed = connectionStatus !== status;
+  connectionStatus = status;
+  missionUI.connection(status === "online");
   dom.connection.dataset.status = status;
-  dom.connectionLabel.textContent = label;
+  if (dom.connectionLabel.textContent !== label) dom.connectionLabel.textContent = label;
+  setText(byId("connection-help"), status === "online" ? "" : "Legătura revine singură.");
+  if (changed && selectedPost !== null) renderInteraction();
 }
 
 function showNotice(message: string): void {
+  if (dom.notice.classList.contains("show") && dom.notice.textContent === message) return;
   dom.notice.textContent = message;
   dom.notice.classList.add("show");
   if (noticeTimer !== null) window.clearTimeout(noticeTimer);
@@ -118,6 +162,7 @@ function showNotice(message: string): void {
 }
 
 function connect(): void {
+  if (socket && socket.readyState < WebSocket.CLOSING) return;
   if (reconnectTimer !== null) window.clearTimeout(reconnectTimer);
   setConnection("connecting", reconnectAttempt ? "Reconectare" : "Conectare");
   const ws = new WebSocket(wsUrl());
@@ -125,18 +170,16 @@ function connect(): void {
   ws.addEventListener("open", () => {
     reconnectAttempt = 0;
     postRequestSent = false;
-    setConnection("online", "Conectat");
+    awaitingFreshView = true;
+    setConnection("connecting", "Conectăm postul…");
     ws.send(JSON.stringify({ type: "hello", client: "tablet", id: tabletId }));
     if (selectedPost !== null) {
       ws.send(JSON.stringify(tabletMessage({ kind: "set-post", post: selectedPost })));
       postRequestSent = true;
     }
-    while (pendingEvents.length) {
-      const event = pendingEvents.shift();
-      if (event) ws.send(JSON.stringify(tabletMessage(event)));
-    }
   });
   ws.addEventListener("message", (event) => {
+    if (socket !== ws) return;
     try {
       onMessage(JSON.parse(String(event.data)) as ServerMessage);
     } catch {
@@ -144,7 +187,9 @@ function connect(): void {
     }
   });
   ws.addEventListener("close", () => {
-    if (socket === ws) socket = null;
+    if (socket !== ws) return;
+    socket = null;
+    awaitingFreshView = true;
     reconnectAttempt += 1;
     const delay = Math.min(10_000, 700 * 1.7 ** Math.min(reconnectAttempt, 7));
     setConnection("offline", "Reconectare…");
@@ -158,28 +203,55 @@ function tabletMessage(event: TabletEvent): TabletEventMsg {
 }
 
 function sendEvent(event: TabletEvent): void {
-  if (socket?.readyState === WebSocket.OPEN) {
+  if (socket?.readyState === WebSocket.OPEN && (event.kind !== "choice" || !awaitingFreshView)) {
     socket.send(JSON.stringify(tabletMessage(event)));
     return;
   }
-  if (event.kind !== "ping") {
-    pendingEvents.push(event);
-    if (pendingEvents.length > 24) pendingEvents.shift();
-    showNotice("Semnal întrerupt. Alegerea va pleca la reconectare.");
-  }
+  // Local choices already live in optimisticChoices. Reconcile them only with the next fresh view.
+  // Post selection persists in storage and is sent by the handshake; never queue START offline.
 }
 
 function resetRun(): void {
+  runGeneration += 1;
+  lastSubtitleKey = "";
+  lastPairedStructureKey = "";
+  if (photoTimer !== null) window.clearTimeout(photoTimer);
+  photoTimer = null;
+  byId("photo-frame").classList.add("hidden");
+  effects.reset();
+  lastInteractionKey = "";
+  choiceOpenedCue = null;
+  certificateStatus = "se trimite operatorului…";
+  certificateStatusOk = false;
+  certificatePending = true;
   for (const cueId of Object.keys(optimisticChoices)) delete optimisticChoices[cueId];
   for (const cueId of Object.keys(choiceHistory)) delete choiceHistory[cueId];
+  for (const cueId of Object.keys(cueEffectVersions)) delete cueEffectVersions[cueId];
   certificateFor = null;
   startRequestPending = false;
   telemetry.clearMemory();
+  view = null;
 }
 
 function onMessage(message: ServerMessage): void {
   switch (message.type) {
+    case "mission":
+      missionSnapshot = message.snapshot;
+      if (message.snapshot.scenarioId === 'legacy-v3'&&!message.snapshot.experience?.active&&!message.snapshot.experience?.finaleActive) { missionUI.hide(); lastInteractionKey = ''; }
+      else if (message.snapshot.post) {
+        selectedPost = message.snapshot.post;
+        state = message.snapshot.state;
+        awaitingFreshView = false;
+        setConnection("online", "La bord");
+      }
+      renderShell();
+      renderMission();
+      break;
+    case "missionAck":
+      missionUI.ack(message.eventId, message.ok, message.status);
+      break;
     case "welcome":
+      if (message.state.state === "idle") resetRun();
       state = message.state;
       clockOffsetMs = message.serverTimeMs - Date.now();
       renderMission();
@@ -201,6 +273,12 @@ function onMessage(message: ServerMessage): void {
         sendEvent({ kind: "set-post", post: selectedPost });
         postRequestSent = true;
       }
+      if (message.post !== null || selectedPost === null) {
+        const resend = awaitingFreshView;
+        awaitingFreshView = false;
+        for (const event of reconcileChoices(optimisticChoices, message, resend)) sendEvent(event);
+        setConnection("online", "La bord");
+      }
       recordConfirmedChoices(message);
       renderShell();
       renderMission();
@@ -211,6 +289,7 @@ function onMessage(message: ServerMessage): void {
         storageSet(STORAGE.post, "");
         postRequestSent = false;
         renderShell();
+        byId("post-title").focus({ preventScroll: true });
       }
       if (/opțiune necunoscută|a răspuns deja|interacțiunea în pereche/i.test(message.reason) && view?.cueId) {
         delete optimisticChoices[view.cueId];
@@ -224,6 +303,13 @@ function onMessage(message: ServerMessage): void {
       break;
     case "photo":
       if (message.action === "countdown") showNotice(`Fotografie de echipaj în ${message.countdownSec ?? 3} secunde — priviți spre ecranul central!`);
+      if (message.action === "show" && message.dataUrl) {
+        if (photoTimer !== null) window.clearTimeout(photoTimer);
+        byId<HTMLImageElement>("crew-photo").src = message.dataUrl;
+        byId("photo-frame").classList.remove("hidden");
+        photoTimer = window.setTimeout(() => byId("photo-frame").classList.add("hidden"), Math.max(0, message.showSec ?? 12) * 1000);
+      }
+      if (message.action === "hide") { if (photoTimer !== null) window.clearTimeout(photoTimer); photoTimer = null; byId("photo-frame").classList.add("hidden"); }
       break;
     case "clock":
     case "applyCmd":
@@ -246,14 +332,24 @@ function phaseTimeNow(): number {
 }
 
 function recordConfirmedChoices(msg: TabletViewMsg): void {
+  if (missionSnapshot && missionSnapshot.scenarioId !== 'legacy-v3') return;
   if (!msg.cueId || msg.interaction?.type !== "paired-choice") return;
   const zones = Object.keys(msg.zoneChoices) as TabletZone[];
-  if (!zones.length) return;
-  const entry = (choiceHistory[msg.cueId] ??= { cueId: msg.cueId, prompt: msg.interaction.prompt });
+  if (!zones.length) {
+    if (choiceHistory[msg.cueId]) cueEffectVersions[msg.cueId] = (cueEffectVersions[msg.cueId] ?? 0) + 1;
+    delete choiceHistory[msg.cueId];
+    return;
+  }
+  const entry: CertificateChoice = { cueId: msg.cueId, prompt: msg.interaction.prompt };
+  choiceHistory[msg.cueId] = entry;
   for (const zone of zones) {
     const choice = msg.zoneChoices[zone];
     if (!choice) continue;
     entry[zone] = choice.observed ? "Doar privesc" : labelForValue(msg.interaction, choice.value);
+  }
+  if (msg.zoneChoices.A && msg.zoneChoices.B && effects.once(effectKey(msg.cueId, "confirm"))) {
+    audio.play("confirm");
+    confetti(dom.interaction, "var(--mint)");
   }
 }
 
@@ -267,19 +363,24 @@ function availablePostLabels(): string[] {
 }
 
 function renderPostPicker(): void {
-  dom.postGrid.replaceChildren();
   const labels = availablePostLabels();
+  const key = JSON.stringify(labels);
+  if (lastPickerKey === key) return;
+  lastPickerKey = key;
+  dom.postGrid.replaceChildren();
   for (let index = 0; index < 5; index += 1) {
     const post = (index + 1) as TabletPost;
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "post-button";
+    button.className = `post-button glass post-${post}`;
+    const mascot = createMascot(post);
     const number = document.createElement("strong");
-    number.textContent = String(post);
+    number.textContent = labels[index] || TABLET_POSTS[post].lens;
     const copy = document.createElement("span");
-    copy.textContent = labels[index] || TABLET_POSTS[post].lens;
-    button.append(number, copy);
+    copy.textContent = TABLET_POSTS[post].perspectives.join(" · ");
+    button.append(mascot, number, copy);
     button.addEventListener("click", () => {
+      if (effects.once(`post:${post}`)) { audio.play("pick"); confetti(button); }
       selectedPost = post;
       storageSet(STORAGE.post, String(post));
       postRequestSent = true;
@@ -303,9 +404,11 @@ function currentTheme(): SceneTheme {
 }
 
 function renderMission(): void {
+  audio.setEnabled((state?.tabletSfx ?? true) && (missionSnapshot?.accessibility.sfxEnabled ?? true) && !missionSnapshot?.accessibility.reducedStimuli);
+  applyTheme(currentTheme());
   if (selectedPost === null) return;
   const theme = currentTheme();
-  document.body.dataset.theme = theme;
+  applyTheme(theme);
   const phase = state?.state ?? "idle";
   const phaseLabels: Record<ShowState["state"], string> = {
     idle: "MISIUNE ÎN AȘTEPTARE",
@@ -315,38 +418,50 @@ function renderMission(): void {
     epilogue: "REINTRARE ÎN ATMOSFERĂ",
     ended: "MISIUNE ÎNCHEIATĂ",
   };
-  dom.phaseLabel.textContent = phaseLabels[phase];
-  dom.sceneLabel.textContent = view?.sceneLabel || "În așteptare";
-  dom.postName.textContent = `POSTUL ${selectedPost}`;
-  dom.postLens.textContent = view?.lens || TABLET_POSTS[selectedPost].lens;
+  setText(dom.phaseLabel, phaseLabels[phase]);
+  setText(dom.sceneLabel, missionSnapshot && missionSnapshot.scenarioId !== 'legacy-v3' ? missionSnapshot.summary.title : view?.sceneLabel || "În așteptare");
+  setText(dom.postName, TABLET_POSTS[selectedPost].label);
+  setText(dom.postLens, view?.lens || TABLET_POSTS[selectedPost].lens);
+  setText(byId("mission-status"), `${view?.sceneLabel || "La bord"} · ${phaseLabels[phase]}`);
 
   if (view?.subtitle) {
     dom.subtitle.classList.remove("hidden");
-    dom.subtitle.style.color = view.subtitle.color;
-    dom.subtitleSpeaker.textContent = view.subtitle.speaker;
-    dom.subtitleText.textContent = view.subtitle.text;
     const key = `${view.subtitle.speaker}|${view.subtitle.text}`;
     if (key !== lastSubtitleKey) {
       lastSubtitleKey = key;
+      dom.subtitleSpeaker.textContent = view.subtitle.speaker;
+      dom.subtitleSpeaker.dataset.ai = String(view.subtitle.speaker === "AVATARUL AI");
+      if (view.subtitle.speaker === "AVATARUL AI") dom.subtitleSpeaker.prepend(createMascot("ai", true));
+      dom.subtitleText.textContent = view.subtitle.text;
       telemetry.remember(view.subtitle.speaker, view.subtitle.text);
     }
   } else {
     dom.subtitle.classList.add("hidden");
-    dom.subtitleSpeaker.textContent = "";
-    dom.subtitleText.textContent = "";
+    lastSubtitleKey = "";
+    setText(dom.subtitleSpeaker, "");
+    setText(dom.subtitleText, "");
   }
   renderInteraction();
+}
+
+function createMascot(post: TabletPost | "ai", small = false): HTMLImageElement {
+  const image = document.createElement("img");
+  image.className = "post-mascot";
+  image.src = mascotPath(post, small);
+  image.alt = "";
+  image.draggable = false;
+  return image;
 }
 
 function createHead(iconText: string, titleText: string, description?: string): HTMLDivElement {
   const head = document.createElement("div");
   head.className = "interaction-head";
-  const icon = document.createElement("span");
-  icon.className = "icon";
-  icon.textContent = iconText;
+  const glyph = document.createElement("span");
+  glyph.className = "head-icon";
+  glyph.innerHTML = icon(iconText);
   const title = document.createElement("h2");
   title.textContent = titleText;
-  head.append(icon, title);
+  head.append(glyph, title);
   if (description) {
     const copy = document.createElement("p");
     copy.textContent = description;
@@ -361,12 +476,45 @@ function canOfferStart(): boolean {
 }
 
 function renderInteraction(): void {
+  if (missionSnapshot && (missionSnapshot.scenarioId !== 'legacy-v3'||missionSnapshot.experience?.active||missionSnapshot.experience?.finaleActive) && selectedPost !== null) {
+    telemetry.setVisible(false);
+    dom.signal.classList.add("hidden");
+    missionUI.update(missionSnapshot, connectionStatus === "online");
+    return;
+  }
+  // Preserve focus and nodes across 1 Hz state updates; effects are keyed separately.
+  const countdownValue = state?.state === "playing" && phaseTimeNow() < 0 ? Math.ceil(-phaseTimeNow()) : null;
+  const key = JSON.stringify([selectedPost, currentTheme(), view?.interaction, view?.cueId, view?.zoneChoices, optimisticChoices[view?.cueId ?? ""], state?.state, state?.autoRun, canOfferStart() ? state?.readiness : null, startRequestPending, countdownValue, connectionStatus]);
+  if (key === lastInteractionKey) return;
+  lastInteractionKey = key;
+  const pairedStructure = JSON.stringify([selectedPost, view?.cueId, view?.interaction]);
+  if (view?.interaction?.type === "paired-choice" && countdownValue === null && !canOfferStart() && lastPairedStructureKey === pairedStructure && dom.interaction.querySelector(".pair-zones")) {
+    updatePairedZones(view.interaction);
+    return;
+  }
+  const hadFocus = dom.interaction.contains(document.activeElement);
   dom.interaction.replaceChildren();
+  if (hadFocus) queueMicrotask(() => {
+    if (document.activeElement !== document.body) return;
+    const heading = dom.interaction.querySelector<HTMLElement>("h2");
+    heading?.setAttribute("tabindex", "-1");
+    heading?.focus({ preventScroll: true });
+  });
+  dom.interaction.dataset.view = view?.interaction?.type ?? "waiting";
   const interaction = view?.interaction ?? null;
   dom.signal.classList.toggle("hidden", interaction?.type === "thanks");
   const quiet = !interaction || interaction.type === "waiting" || interaction.type === "post-assign";
   // D-07: consola de post este vizibilă între interacțiuni (și în așteptare), ascunsă când copiii aleg / la final.
   telemetry.setVisible(quiet && selectedPost !== null && !canOfferStart());
+  if (state?.state === "playing" && phaseTimeNow() < 0) {
+    telemetry.setVisible(false);
+    dom.interaction.dataset.view = "countdown";
+    const countdown = document.createElement("div");
+    countdown.className = "countdown";
+    countdown.innerHTML = `<p>Pregătiți de decolare</p><div class="countdown-ring" style="--countdown-progress:${Math.max(0,Math.min(100,(10+phaseTimeNow())*10))}%"><strong>${Math.ceil(-phaseTimeNow())}</strong></div><p>Aventura începe împreună</p>`;
+    dom.interaction.append(countdown);
+    return;
+  }
   if (canOfferStart()) {
     renderStartButton();
     return;
@@ -376,6 +524,7 @@ function renderInteraction(): void {
     return;
   }
   if (interaction.type === "paired-choice") {
+    lastPairedStructureKey = pairedStructure;
     renderPairedChoice(interaction);
     return;
   }
@@ -393,7 +542,7 @@ function renderStartButton(): void {
   const readiness = state?.readiness;
   const ready = readiness?.ready ?? true;
   wrap.append(createHead(
-    "▶",
+    "rocket",
     "Echipajul este la posturi?",
     ready
       ? "Nava este pregătită. Apăsați o singură dată pentru a porni misiunea pentru toate posturile."
@@ -402,7 +551,7 @@ function renderStartButton(): void {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "start-button";
-  button.disabled = startRequestPending;
+  button.disabled = startRequestPending || !ready || connectionStatus !== "online";
   const label = document.createElement("strong");
   label.textContent = startRequestPending ? "SE PORNEȘTE…" : "PORNEȘTE MISIUNEA";
   const small = document.createElement("small");
@@ -410,18 +559,26 @@ function renderStartButton(): void {
   button.append(label, small);
   button.addEventListener("click", () => {
     if (startRequestPending) return;
+    if (effects.once("start")) audio.play("start");
     startRequestPending = true;
     sendEvent({ kind: "choice", cueId: START_REQUEST_CUE_ID, zone: "A", value: "start" });
     if ("vibrate" in navigator) navigator.vibrate([40, 60, 40]);
     renderInteraction();
+    const requestGeneration = runGeneration;
     window.setTimeout(() => {
-      if (startRequestPending && state?.state === "idle") {
+      if (requestGeneration === runGeneration && startRequestPending && state?.state === "idle") {
         startRequestPending = false;
         renderInteraction();
       }
     }, 6000);
   });
   wrap.append(button);
+  if (ready) {
+    const readyBadge = document.createElement("p");
+    readyBadge.className = "ready-badge";
+    readyBadge.innerHTML = `${icon("check")} Ecranele și vocile sunt pregătite`;
+    wrap.append(readyBadge);
+  }
   if (readiness && !ready && readiness.reasons.length) {
     const reasons = document.createElement("ul");
     reasons.className = "start-reasons";
@@ -438,23 +595,20 @@ function renderStartButton(): void {
 function renderWaiting(showRule = false): void {
   const wrap = document.createElement("div");
   wrap.className = "waiting";
+  wrap.append(createMascot(selectedPost ?? 1));
   wrap.append(createHead(
-    "◇",
-    showRule ? "Un singur echipaj · cinci posturi" : "Priviți ecranele",
+    "star",
+    showRule ? "Un singur echipaj · cinci posturi" : state?.state === "paused" ? "O mică pauză…" : state?.state === "idle" || state?.state === "preshow" ? "Așteptăm decolarea…" : "Priviți ecranele",
     showRule
-      ? "Fiecare folosește jumătatea din fața sa. Puteți alege la fel, diferit sau doar să priviți."
-      : "Povestea continuă. Tableta vă va anunța când puteți alege din nou.",
+      ? "A în stânga, B în dreapta. Fiecare alege în jumătatea sa."
+      : state?.state === "paused" ? "Rămâneți la posturi. Continuăm împreună." : state?.state === "idle" || state?.state === "preshow" ? "Așezați-vă alături. Fiecare are locul său." : "Povestea continuă. Vă anunțăm când puteți alege.",
   ));
-  const bars = document.createElement("div");
-  bars.className = "waiting-bars";
-  for (let index = 0; index < 5; index += 1) bars.append(document.createElement("i"));
-  wrap.append(bars);
   dom.interaction.append(wrap);
 }
 
 function renderLegacyHold(): void {
   dom.interaction.append(createHead(
-    "·",
+    "signal",
     "Priviți semnalul",
     "Această instrucțiune veche nu cere un răspuns. Misiunea continuă.",
   ));
@@ -482,10 +636,11 @@ function confirmedChoice(cueId: string, zone: TabletZone): string | undefined {
 
 function renderPairedChoice(interaction: PairedInteraction): void {
   const cueId = view?.cueId;
+  if (choiceOpenedCue !== cueId) { choiceOpenedCue = cueId ?? null; choiceOpenedAt = phaseTimeNow(); }
   dom.interaction.append(createHead(
-    interaction.mode === "color" ? "◈" : interaction.mode === "pulse" ? "◉" : "◇",
+    interaction.mode === "color" ? "light" : interaction.mode === "pulse" ? "pulse" : "planet",
     interaction.prompt,
-    "Fiecare răspunde în jumătatea din fața sa. Puteți alege la fel, diferit sau doar să priviți.",
+    "Fiecare alege în locul său. La fel, diferit sau doar priviți — toate sunt în regulă.",
   ));
   const zones = document.createElement("div");
   zones.className = "pair-zones";
@@ -493,11 +648,50 @@ function renderPairedChoice(interaction: PairedInteraction): void {
     zones.append(renderZone(zone, cueId, interaction));
   }
   dom.interaction.append(zones);
+  if (interaction.timeoutSec) {
+    const timer = document.createElement("span");
+    timer.className = "choice-timer";
+    timer.setAttribute("aria-label", "Timp pentru alegere");
+    timer.innerHTML = `${icon("timer")}<b></b>`;
+    dom.interaction.append(timer);
+    updateChoiceTimer();
+  }
+}
+
+function zoneRenderKey(zone: TabletZone): string {
+  const cueId = view?.cueId ?? "";
+  return JSON.stringify([view?.zoneChoices[zone], optimisticChoices[cueId]?.[zone], connectionStatus]);
+}
+
+function updatePairedZones(interaction: PairedInteraction): void {
+  for (const zone of ["A", "B"] as const) {
+    const previous = dom.interaction.querySelector<HTMLElement>(`.zone-${zone.toLowerCase()}`);
+    if (!previous || previous.dataset.renderKey === zoneRenderKey(zone)) continue;
+    // When only connection changes, untouched option grids remain stable for the other child.
+    const selected = view?.cueId ? confirmedChoice(view.cueId, zone) : undefined;
+    if (!selected && previous.querySelector(".choice-grid")) { previous.dataset.renderKey = zoneRenderKey(zone); continue; }
+    const hadFocus = previous.contains(document.activeElement);
+    const next = renderZone(zone, view?.cueId, interaction);
+    previous.replaceWith(next);
+    if (hadFocus) {
+      const result = next.querySelector<HTMLElement>(".zone-result") ?? next.querySelector<HTMLElement>("h3");
+      result?.setAttribute("tabindex", "-1");
+      result?.focus({ preventScroll: true });
+    }
+  }
+}
+
+function updateChoiceTimer(): void {
+  const interaction = view?.interaction;
+  const timer = dom.interaction.querySelector<HTMLElement>(".choice-timer b");
+  if (!timer || interaction?.type !== "paired-choice" || !interaction.timeoutSec) return;
+  timer.textContent = `${Math.max(0, Math.ceil(interaction.timeoutSec - (phaseTimeNow() - choiceOpenedAt)))} s`;
 }
 
 function renderZone(zone: TabletZone, cueId: string | null | undefined, interaction: PairedInteraction): HTMLElement {
   const panel = document.createElement("section");
-  panel.className = `zone zone-${zone.toLowerCase()}`;
+  panel.className = `zone glass zone-${zone.toLowerCase()}`;
+  panel.dataset.renderKey = zoneRenderKey(zone);
   panel.setAttribute("aria-labelledby", `zone-${zone}-title`);
   const head = document.createElement("div");
   head.className = "zone-head";
@@ -508,21 +702,27 @@ function renderZone(zone: TabletZone, cueId: string | null | undefined, interact
   title.id = `zone-${zone}-title`;
   const perspectiveIndex = zone === "A" ? 0 : 1;
   title.textContent = selectedPost ? TABLET_POSTS[selectedPost].perspectives[perspectiveIndex] : `JUMĂTATEA ${zone}`;
-  head.append(seal, title);
+  const side = document.createElement("span");
+  side.className = "zone-side";
+  side.textContent = zone === "A" ? "LOCUL DIN STÂNGA" : "LOCUL DIN DREAPTA";
+  head.append(seal, title, side);
   panel.append(head);
 
   const selected = cueId ? confirmedChoice(cueId, zone) : undefined;
   if (selected) {
     const result = document.createElement("div");
     result.className = "zone-result";
+    const confirmed = Boolean(view?.zoneChoices[zone]);
+    result.dataset.delivery = confirmed ? "confirmed" : "pending";
     const observed = selected === TABLET_OBSERVE_VALUE;
     const label = observed ? "RĂMÂN SĂ PRIVESC" : labelForValue(interaction, selected);
     const check = document.createElement("strong");
-    check.textContent = "✓";
+    check.innerHTML = icon(confirmed ? (observed ? "eye" : "check") : "signal");
     const text = document.createElement("span");
     text.textContent = label;
     const small = document.createElement("small");
-    small.textContent = observed ? "E în regulă." : "Alegere înregistrată.";
+    small.textContent = confirmed ? (observed ? "Mulțumim! E în regulă să privești." : "Mulțumim! Alegere înregistrată.") : connectionStatus === "online" ? "Trimitem alegerea…" : "Păstrată aici. O trimitem când revine legătura.";
+    result.setAttribute("role", "status");
     result.append(check, text, small);
     panel.append(result);
     return panel;
@@ -530,16 +730,21 @@ function renderZone(zone: TabletZone, cueId: string | null | undefined, interact
 
   const grid = document.createElement("div");
   grid.className = `choice-grid mode-${interaction.mode}`;
+  const count = interaction.options.length + (interaction.allowObserve ? 1 : 0);
+  grid.style.setProperty("--option-columns", String(count > 4 ? 3 : count));
+  grid.dataset.rows = count > 4 ? "2" : "1";
   for (const rawOption of interaction.options) {
     const option = optionData(rawOption);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "choice-button";
+    button.setAttribute("aria-pressed", "false");
     if (option.color) button.style.setProperty("--choice-color", option.color);
-    if (option.symbol) {
+    {
       const symbol = document.createElement("span");
       symbol.className = "choice-symbol";
-      symbol.textContent = option.symbol;
+      const names = ["light", "wave", "heart", "star", "hand"];
+      symbol.innerHTML = icon(interaction.mode === "pulse" ? "hand" : names[interaction.options.indexOf(rawOption) % names.length]);
       button.append(symbol);
     }
     const label = document.createElement("span");
@@ -553,7 +758,8 @@ function renderZone(zone: TabletZone, cueId: string | null | undefined, interact
     const observe = document.createElement("button");
     observe.type = "button";
     observe.className = "choice-button observe-button";
-    observe.textContent = "DOAR PRIVESC";
+    observe.setAttribute("aria-pressed", "false");
+    observe.innerHTML = `${icon("eye")}<span>DOAR PRIVESC</span>`;
     observe.disabled = !cueId;
     observe.addEventListener("click", () => choose(cueId, zone, TABLET_OBSERVE_VALUE));
     grid.append(observe);
@@ -563,9 +769,11 @@ function renderZone(zone: TabletZone, cueId: string | null | undefined, interact
 }
 
 function choose(cueId: string | null | undefined, zone: TabletZone, value: string): void {
-  if (!cueId || confirmedChoice(cueId, zone)) return;
-  optimisticChoices[cueId] ??= {};
-  optimisticChoices[cueId][zone] = value;
+  if (!cueId || !rememberChoice(optimisticChoices, view, cueId, zone, value)) return;
+  if (effects.once(effectKey(cueId, `pick:${zone}`))) {
+    audio.play("pick");
+    confetti(dom.interaction.querySelector(`.zone-${zone.toLowerCase()}`) as HTMLElement || dom.interaction, zone === "A" ? "var(--coral)" : "var(--sky)");
+  }
   sendEvent({ kind: "choice", cueId, zone, value });
   if ("vibrate" in navigator) navigator.vibrate(35);
   renderInteraction();
@@ -575,26 +783,14 @@ function choose(cueId: string | null | undefined, zone: TabletZone, value: strin
 // D-06 — certificatul de misiune
 
 function certificateChoices(): CertificateChoice[] {
-  // Confirmate de server (choiceHistory); completate cu alegerile optimiste pentru zonele fără confirmare.
-  const merged: Record<string, CertificateChoice> = {};
-  for (const [cueId, entry] of Object.entries(choiceHistory)) merged[cueId] = { ...entry };
-  for (const [cueId, zones] of Object.entries(optimisticChoices)) {
-    if (cueId === START_REQUEST_CUE_ID) continue;
-    const entry = (merged[cueId] ??= { cueId, prompt: cueId.replace(/-/g, " ") });
-    for (const zone of ["A", "B"] as TabletZone[]) {
-      const v = zones[zone];
-      if (v && !entry[zone]) entry[zone] = v === TABLET_OBSERVE_VALUE ? "Doar privesc" : v;
-    }
-  }
-  return Object.values(merged).filter((c) => c.A || c.B);
+  // A local pending tap is not a server-confirmed mission result.
+  return Object.values(choiceHistory).filter((c) => c.A || c.B);
 }
 
 function renderThanks(): void {
   const wrap = document.createElement("div");
   wrap.className = "thanks";
-  const earth = document.createElement("div");
-  earth.className = "earth";
-  earth.setAttribute("aria-hidden", "true");
+  const earth = createMascot(selectedPost ?? 1);
   const title = document.createElement("h2");
   title.textContent = "Misiunea s-a încheiat.";
   const copy = document.createElement("p");
@@ -621,12 +817,13 @@ function renderThanks(): void {
   actions.className = "certificate-actions";
   const save = document.createElement("a");
   save.className = "choice-button save-button";
-  save.textContent = "SALVEAZĂ";
+  save.innerHTML = `${icon("download")} SALVEAZĂ`;
   save.download = `certificat-exodus7-postul-${post}.png`;
   save.href = "#";
   save.addEventListener("click", (event) => {
     try {
       save.href = canvas.toDataURL("image/png");
+      audio.play("tap");
     } catch {
       event.preventDefault();
       showNotice("Tableta nu permite salvarea imaginii.");
@@ -634,26 +831,47 @@ function renderThanks(): void {
   });
   const status = document.createElement("span");
   status.className = "certificate-status";
-  status.textContent = "se trimite operatorului…";
-  actions.append(save, status);
+  status.textContent = certificateStatus;
+  status.classList.toggle("ok", certificateStatusOk);
+  const retry = document.createElement("button");
+  retry.type = "button";
+  retry.className = `certificate-retry${certificatePending || certificateStatusOk ? " hidden" : ""}`;
+  retry.textContent = "REÎNCEARCĂ TRIMITEREA";
+  retry.addEventListener("click", () => {
+    retry.classList.add("hidden");
+    status.textContent = "se trimite operatorului…";
+    void uploadCertificate(canvas, post, status);
+  });
+  actions.append(save, status, retry);
   wrap.append(actions);
   dom.interaction.append(wrap);
 
   const key = `${view?.cueId ?? "thanks"}:${post}`;
+  if (effects.once(`thanks:${key}`)) { audio.play("thanks"); confetti(wrap); }
   if (certificateFor !== key) {
     certificateFor = key;
     void uploadCertificate(canvas, post, status);
-  } else {
-    status.textContent = "trimis operatorului";
   }
 }
 
 async function uploadCertificate(canvas: HTMLCanvasElement, post: TabletPost, status: HTMLElement): Promise<void> {
+  const generation = runGeneration;
+  certificatePending = true;
+  const setStatus = (text: string, ok = false): void => {
+    if (generation !== runGeneration) return;
+    certificatePending = false;
+    certificateStatus = text;
+    certificateStatusOk = ok;
+    const current = dom.interaction.querySelector<HTMLElement>(".certificate-status") ?? status;
+    current.textContent = text;
+    current.classList.toggle("ok", ok);
+    dom.interaction.querySelector(".certificate-retry")?.classList.toggle("hidden", ok);
+  };
   let dataUrl: string;
   try {
     dataUrl = canvas.toDataURL("image/png");
   } catch {
-    status.textContent = "nu am putut genera imaginea";
+    setStatus("nu am putut genera imaginea");
     return;
   }
   try {
@@ -664,15 +882,12 @@ async function uploadCertificate(canvas: HTMLCanvasElement, post: TabletPost, st
       body: JSON.stringify({ post, dataUrl }),
     });
     if (res.ok) {
-      status.textContent = "trimis operatorului";
-      status.classList.add("ok");
+      setStatus("TRIMIS OPERATORULUI", true);
       return;
     }
-    certificateFor = null; // allow a retry on the next render
-    status.textContent = res.status === 401 || res.status === 403 ? "salvat pe tabletă · operatorul îl poate tipări din consolă" : `netrimis (eroare ${res.status}) · folosiți SALVEAZĂ`;
+    setStatus(res.status === 401 || res.status === 403 ? "Salvați certificatul pe tabletă" : `Netrimis (eroare ${res.status}) · folosiți SALVEAZĂ`);
   } catch {
-    certificateFor = null;
-    status.textContent = "fără legătură · folosiți SALVEAZĂ";
+    setStatus("Fără legătură · folosiți SALVEAZĂ");
   }
 }
 
@@ -684,6 +899,8 @@ window.setInterval(() => {
 
 // D-07 — 10 fps: instrumentele se mișcă între cele două eșantioane `state` de 1 Hz.
 window.setInterval(() => {
+  updateChoiceTimer();
+  if (dom.interaction.dataset.view === "countdown") renderInteraction();
   if (selectedPost === null || dom.telemetry.classList.contains("hidden")) return;
   telemetry.update({ state, phaseTime: phaseTimeNow(), theme: currentTheme(), post: selectedPost, sceneLabel: view?.sceneLabel ?? "" });
 }, 100);

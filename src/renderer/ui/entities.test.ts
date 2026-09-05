@@ -38,7 +38,7 @@ describe("entities.hexToRgb / tintPalette", () => {
     assert.equal(p[2], "#ffffff");
     assert.ok(hexToRgb(p[1])![0] > 0, "lighter mixes toward white");
     assert.ok(hexToRgb(p[3])![2] < 255, "darker mixes toward black");
-    assert.equal(tintPalette("nope")[0], "#fcd34d");
+    assert.equal(tintPalette("nope")[0], "#ffd166");
   });
 });
 

@@ -1,3 +1,7 @@
+import { createPresentation } from "./presentation";
+import { createMissionControl } from "./mission-control";
+import { createExperienceControl } from "./experience-control";
+import { applyTheme, icon, mascotPath } from "../shared/glass";
 import { SPEAKERS, type Cue, type PerfSample, type Phase, type PlaybackState, type Readiness, type SceneTheme, type ShowFile, type ShowState, type Speaker } from "@shared/types";
 import type { ClockMsg, Command, ServerMessage, TabletsMsg } from "@shared/protocol";
 import { createTimelineEditor } from "./editor";
@@ -56,6 +60,7 @@ const dom = {
   rateNormal: byId<HTMLButtonElement>("rate-normal"),
   rateNote: byId<HTMLSpanElement>("rate-note"),
   ambientToggle: byId<HTMLButtonElement>("ambient-toggle"),
+  tabletSfxToggle: byId<HTMLButtonElement>("tablet-sfx-toggle"),
   autorunToggle: byId<HTMLButtonElement>("autorun-toggle"),
   lightsTheme: byId<HTMLSelectElement>("lights-theme"),
   lightsApply: byId<HTMLButtonElement>("lights-apply"),
@@ -338,7 +343,7 @@ function commandLabel(action: Command["action"]): string {
     testAvatar: "Test avatar", identifyScreens: "Identificare ecrane",
     // R4
     rehearse: "Repetiție accelerată", setRate: "Viteză", autoRun: "Mod operator absent", lights: "Lumini",
-    ambient: "Ambianță", say: "Spune", setVariant: "Variantă scenariu", photo: "Fotografie echipaj", preflight: "Preflight",
+    tabletSfx: "Sunete tablete", ambient: "Ambianță", say: "Spune", setVariant: "Variantă scenariu", photo: "Fotografie echipaj", preflight: "Preflight",
   };
   return labels[action];
 }
@@ -468,7 +473,7 @@ function renderReadiness(readiness: Readiness | undefined, idle: boolean): void 
     return;
   }
   dom.readiness.dataset.ready = readiness.ready ? "yes" : "no";
-  dom.readinessBadge.textContent = readiness.ready ? "NAVA ESTE PREGĂTITĂ" : "NAVA NU ESTE PREGĂTITĂ";
+  dom.readinessBadge.innerHTML = icon(readiness.ready ? "check" : "warning") + (readiness.ready ? " Nava este pregătită" : " Nava nu este pregătită");
   dom.readinessSummary.textContent = readiness.ready
     ? "Toate ecranele cerute sunt conectate, filmul este încărcat și vocile au trecut verificarea."
     : `${readiness.reasons.length} ${readiness.reasons.length === 1 ? "problemă" : "probleme"} · pornirea manuală rămâne permisă.`;
@@ -491,7 +496,7 @@ function renderReadiness(readiness: Readiness | undefined, idle: boolean): void 
   dom.startExperience.classList.toggle("not-ready", warn);
   dom.startHint.textContent = warn
     ? `Atenție: ${readiness.reasons[0] ?? "nava nu este pregătită"} — START pornește oricum.`
-    : "Test: T−10 acum · film la zero · Căpitanul la aproximativ 19 secunde";
+    : "Începe numărătoarea de 10 secunde, apoi filmul.";
 }
 
 function renderR4Header(): void {
@@ -525,6 +530,10 @@ function renderR4Header(): void {
 
 function renderState(): void {
   if (!state) return;
+  applyTheme(state.theme);
+  dom.tabletSfxToggle.innerHTML = icon("speaker") + ` Sunete tablete · ${state.tabletSfx !== false ? "pornite" : "oprite"}`;
+  dom.tabletSfxToggle.setAttribute("aria-pressed", String(state.tabletSfx !== false));
+  dom.tabletSfxToggle.disabled = sessionUser?.role === "viewer" || !sessionUser;
   dom.playbackState.textContent = stateLabels[state.state];
   dom.playbackState.dataset.state = state.state;
   const currentScene = show?.scenes.find((scene) => scene.id === state?.sceneId);
@@ -677,7 +686,7 @@ function renderTablets(): void {
     const empty = document.createElement("p");
     empty.className = "empty";
     empty.textContent = "Nicio tabletă conectată.";
-    dom.tabletList.append(empty);
+    // The five waiting post cards below provide the empty state.
   } else {
     for (const tablet of [...tablets.tablets].sort((a, b) => Number(b.connected) - Number(a.connected))) {
       const item = document.createElement("div");
@@ -693,9 +702,28 @@ function renderTablets(): void {
       copy.append(name, role);
       const status = document.createElement("span");
       status.textContent = tablet.connected ? "LIVE" : "OFFLINE";
-      item.append(dot, copy, status);
+      if (tablet.post) {
+        const mascot = document.createElement("img"); mascot.src = mascotPath(tablet.post, true); mascot.alt = ""; mascot.className = "post-mascot"; item.append(mascot);
+      } else { item.append(dot); }
+      item.append(copy, status);
       dom.tabletList.append(item);
     }
+  }
+
+  // Keep all five physical posts visible, including tablets still to connect.
+  const postNames = ["NAVIGAȚIE", "PROPULSIE", "COMUNICAȚII", "BIOSEMNALE", "MEMORIE"];
+  for (const post of [1, 2, 3, 4, 5] as const) {
+    if (tablets.tablets.some(tablet => tablet.post === post)) continue;
+    const item = document.createElement("div");
+    item.className = "tablet-item awaiting";
+    const mascot = document.createElement("img");
+    mascot.src = mascotPath(post, true); mascot.alt = ""; mascot.className = "post-mascot";
+    const copy = document.createElement("div");
+    const title = document.createElement("strong"); title.textContent = `${post} · ${postNames[post - 1]}`;
+    const subtitle = document.createElement("span"); subtitle.textContent = "Așteaptă echipajul";
+    copy.append(title, subtitle);
+    const status = document.createElement("span"); status.textContent = "Neconectat";
+    item.append(mascot, copy, status); dom.tabletList.append(item);
   }
 
   dom.answerCount.textContent = `(${tablets.answers.length})`;
@@ -951,6 +979,7 @@ dom.cuePhase.addEventListener("change", renderCues);
 // --- R4 controls (D-10) -------------------------------------------------------------
 dom.rehearseX4.addEventListener("click", () => void dispatch({ action: "rehearse", rate: 4 }));
 dom.rateNormal.addEventListener("click", () => void dispatch({ action: "setRate", rate: 1 }));
+dom.tabletSfxToggle.addEventListener("click", () => { if (sessionUser && sessionUser.role !== "viewer") void dispatch({ action: "tabletSfx", enabled: state?.tabletSfx === false }); });
 dom.ambientToggle.addEventListener("click", () => void dispatch({ action: "ambient", enabled: !state?.ambientEnabled }));
 dom.autorunToggle.addEventListener("click", () => {
   const next = !state?.autoRun;
@@ -1039,8 +1068,18 @@ const editor = createTimelineEditor({
   },
 });
 
+createPresentation({
+  snapshot: () => ({ state, show, tablets, statuses: cueStatuses, time: phaseTime(), role: sessionUser?.role ?? null }),
+  dispatch, focusPlayer, describe: cueDescription, formatTime,
+});
+createMissionControl({snapshot:()=>({state,role:sessionUser?.role??null}),dispatch});
+createExperienceControl({snapshot:()=>({state,role:sessionUser?.role??null})});
+
 renderSpeakers();
 window.setInterval(renderClock, 100);
 window.setInterval(renderPerf, 5000);
 void loadAuxiliaryData();
 connect();
+
+// Shared visual symbols stay separate from labels updated by the live state.
+document.querySelectorAll<HTMLElement>("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon!); });

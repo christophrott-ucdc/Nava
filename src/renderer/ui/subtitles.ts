@@ -39,6 +39,7 @@ export function createSubtitles(el: HTMLElement, opts: { enabled: boolean }): Su
       clearTimer();
       if (!enabled) return;
       const profile = SPEAKERS[speaker];
+      el.dataset.speaker = speaker;
       if (speakerEl) {
         speakerEl.textContent = profile?.label ?? speaker;
       }

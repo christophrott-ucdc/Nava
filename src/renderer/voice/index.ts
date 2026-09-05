@@ -22,6 +22,8 @@ export { setTtsAuthToken } from "./manifest";
  * Proposed contract addition: `setPlaybackRate?(rate: number): void`.
  */
 export interface RateAwareVoiceEngine extends VoiceEngine {
+  setVoiceBaseUrl(url:string):Promise<void>;
+  isPrepared(lang:Lang):boolean;
   /** Voices play at min(rate, MAX_VOICE_RATE) with pitch preserved (HTMLAudioElement path when rate != 1). */
   setPlaybackRate(rate: number): void;
 }
@@ -62,7 +64,15 @@ function validClipMeta(meta: VoiceManifest["clips"][string], cueId: string, spea
 }
 
 class VoiceEngineImpl implements RateAwareVoiceEngine {
+  private sourceEpoch=0;
+  async setVoiceBaseUrl(url:string):Promise<void> {
+    if(this.opts.voiceBaseUrl===url){await this.prepare('ro');return;}
+    this.sourceEpoch++;this.opts.voiceBaseUrl=url;
+    this.manifests.clear();this.preparing.clear();this.clips.clear();this.inflight.clear();this.preloadFailures.clear();
+    await this.prepare('ro');
+  }
   private readonly player: VoicePlayer;
+  isPrepared(lang:Lang):boolean{return !!this.manifests.get(lang)&&!this.preparing.has(lang)&&this.preloadFailures.size===0;}
   private readonly manifests = new Map<Lang, VoiceManifest | null>();
   private readonly preparing = new Map<Lang, Promise<void>>();
   private readonly clips = new Map<string, VoiceClip>();
@@ -80,21 +90,24 @@ class VoiceEngineImpl implements RateAwareVoiceEngine {
   }
 
   prepare(lang: Lang): Promise<void> {
+    const epoch=this.sourceEpoch;
     const existing = this.preparing.get(lang);
     if (existing) return existing;
     if (this.manifests.has(lang)) return Promise.resolve();
     const request = loadManifest(this.opts.voiceBaseUrl, lang)
       .then(async (manifest) => {
+        if(epoch!==this.sourceEpoch)return;
         this.manifests.set(lang, manifest);
         if (!manifest) console.info(`[voice] no offline ${lang} manifest; each cue's fallback policy will be enforced`);
-        else await this.preloadManifest(manifest);
+        else await this.preloadManifest(manifest,epoch,this.opts.voiceBaseUrl);
       })
       .catch((err) => {
+        if(epoch!==this.sourceEpoch)return;
         // prepare() is contractually non-throwing for a missing or bad file.
         this.manifests.set(lang, null);
         console.warn(`[voice] manifest ${lang} failed:`, err);
       })
-      .finally(() => this.preparing.delete(lang));
+      .finally(() => {if(epoch===this.sourceEpoch)this.preparing.delete(lang);});
     this.preparing.set(lang, request);
     return request;
   }
@@ -121,27 +134,31 @@ class VoiceEngineImpl implements RateAwareVoiceEngine {
    * Individual failures stay non-fatal but are remembered: production cues still honour
    * `fallback: "silent"`, without retrying network I/O or decode on the live cue boundary.
    */
-  private async preloadManifest(manifest: VoiceManifest): Promise<void> {
+  private async preloadManifest(manifest: VoiceManifest,epoch:number,base:string): Promise<void> {
     const entries = Object.values(manifest.clips);
     if (!entries.length) return;
     let cursor = 0;
     const workers = Array.from({ length: Math.min(6, entries.length) }, async () => {
       while (cursor < entries.length) {
+        if(epoch!==this.sourceEpoch)return;
         const meta = entries[cursor++];
         if (!validClipMeta(meta, meta.cueId, meta.speaker, meta.text, manifest.lang)) {
           console.warn(`[voice] skipping malformed manifest entry for ${meta?.cueId ?? "?"}`);
+          this.preloadFailures.add(meta?.cueId??'invalid');
           continue;
         }
         const key = requestKey(manifest.lang, meta.cueId, meta.speaker, meta.text);
         if (this.clips.has(key)) continue;
         try {
-          const audio = await fetchClipBytes(clipFileUrl(this.opts.voiceBaseUrl, manifest.lang, meta.file));
+          const audio = await fetchClipBytes(clipFileUrl(base, manifest.lang, meta.file));
           if (!audio.byteLength) throw new Error("empty audio file");
           const clip: VoiceClip = { ...meta, audio };
           await this.player.decode(audio, clipKey(clip));
+          if(epoch!==this.sourceEpoch)return;
           this.clips.set(key, clip);
           this.preloadFailures.delete(key);
         } catch (err) {
+          if(epoch!==this.sourceEpoch)return;
           this.preloadFailures.add(key);
           console.warn(`[voice] preload failed for ${meta.cueId}:`, err);
         }

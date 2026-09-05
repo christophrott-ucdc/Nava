@@ -243,7 +243,7 @@ export class CueTracker {
     switch (cue.kind) {
       case "voice": {
         const holdMs = cue.subtitleHoldMs ?? SUBTITLE_HOLD_MS;
-        this.voice = { cue, firedAtMs: nowMs, untilMs: nowMs + estimateSpeechMs(cue.text.ro) + holdMs };
+        this.voice = { cue, firedAtMs: nowMs, untilMs: nowMs + (cue.audioDurationMs && Number.isFinite(cue.audioDurationMs) && cue.audioDurationMs>0 ? cue.audioDurationMs : estimateSpeechMs(cue.text.ro)) + holdMs };
         break;
       }
       case "dynamic-voice":

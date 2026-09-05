@@ -37,7 +37,7 @@ export function createCountdown(el: HTMLElement, opts: { enabled: boolean }): Co
     if (raf) cancelAnimationFrame(raf);
     raf = 0;
     running = false;
-    el.classList.remove("on");
+    el.classList.remove("on", "launch-flash");
     digitEl.classList.remove("pulse", "zero");
     const f = finish;
     finish = null;
@@ -48,6 +48,7 @@ export function createCountdown(el: HTMLElement, opts: { enabled: boolean }): Co
     if (!enabled) return;
     digitEl.textContent = String(value);
     digitEl.classList.toggle("zero", value === 0);
+    el.classList.toggle("launch-flash", value === 0);
     // Restart the pulse animation.
     digitEl.classList.remove("pulse");
     void digitEl.offsetWidth;
@@ -70,6 +71,7 @@ export function createCountdown(el: HTMLElement, opts: { enabled: boolean }): Co
         const frame = () => {
           if (!running) return;
           const elapsed = o.now() - o.startAt;
+          el.style.setProperty("--countdown-progress", String(Math.max(0, Math.min(100, 100 * elapsed / Math.max(0.001, o.durationSec)))));
           if (elapsed < -0.05) {
             // Phase clock moved before the start (seek back): the cue re-arms, we stop.
             stop();

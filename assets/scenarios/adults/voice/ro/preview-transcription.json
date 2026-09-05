@@ -1,0 +1,8937 @@
+{
+  "sha256": "c4000a14c27e24b0e3ec4a4c1544538d4e7e31c20d003018d8b4c4406d2fc69d",
+  "generatedAt": "2026-09-05T12:05:15.926Z",
+  "requestId": null,
+  "language_code": "ron",
+  "language_probability": 1,
+  "text": "Bun venit la bord! Dincolo de Pământ ne așteaptă lumi despre care știm puțin. Ce vom putea aduce înapoi? Fiecare jumătate de tabletă are un instrument, două unități de energie și un loc în arhivă. Resursele sunt independente. Mai întâi măsurați, apoi decideți dacă interveniți. La final, alegeți ce document trimiteți mai departe. Nu vom putea trimite tot. Puteți participa sau puteți privi. Instrumentele vă așteaptă. Comenzile lor rămân în mâinile voastre. Navigație păstrează ruta. Pregătiți instrumentele. Pământul ne va pierde curând din vedere. Zece canale sunt pregătite. Fiecare urmărește altceva un contur, un consum, o emisie, un ritm sau o schimbare. Nu putem opri călătoria la fiecare întrebare. Va trebui să alegem unde privim mai atent. De departe, suprafața mea pare uniformă. Apropiați instrumentul de un singur loc și veți pierde imaginea întregului. Observația largă costă o unitate, cea fină costă două. Rezerva rămasă va putea proteja sonda la următoarea oprire. Priviți obiectul de pe tabletă. Cât din el vreți să cercetați? Configurați instrumentul. Instrumentele a oprit citirea. Pe ecran vedeți cât am păstrat și ce rezervă ne însoțește. Păstrați lângă fiecare imagine și marginea ei. Acolo începe ceea ce încă nu ați văzut. Instrumentele voastre sunt acum în zona mea. Un nor de particule le va traversa. Puteți urmări trecerea sau puteți proteja sonda. Protecția costă o unitate și lasă trei secunde fără citire. Observarea pasivă păstrează continuitatea cu mai mult zgomot. Norul se apropie de sondă. Verificați rezerva. O citire întreruptă și una tulburată vor spune povești diferite. Puteți închide ochiul sondei pentru o clipă sau îl puteți lăsa deschis prin nor. Norul a trecut. Dacă ați păstrat o înregistrare, pe ecran se vede și urma comenzii voastre. Păstrăm și intervalele fără date. Altfel, următorul echipaj ar putea confunda liniștea instrumentului cu liniștea lumii. Pot păstra totul la bord, dar fiecare canal poate trimite acasă un singur document. Ce va reprezenta expediția voastră? Pe tabletă găsiți documentele păstrate, observația, raportul sondei sau locurile rămase goale. Fiecare spune altceva. Următorul echipaj va avea aceste documente înainte să vadă lumile. Alegeți ce ar fi mai de folos. Fiecare instrument are ceva de trimis. Priviți documentele și alegeți unul. Puteți lăsa locul liber. Unele instrumente nu au nimic de trimis. Unde există documente, alegeți unul. Puteți lăsa locul liber. Așez documentele alese în pachetul de întoarcere. Restul rămân în memoria navei. Lasă vizibile și locurile goale. Poate că de acolo va porni următoarea expediție. Transmisia este pregătită. Instrumentele se odihnesc. Priviți înainte. Intrăm în traversare. Undeva dincolo de trecerea aceasta este casa noastră. Încerc să-mi amintesc cât de mare părea când am plecat. Pământul în față. Deschid legătura de întoarcere și pregătesc ceea ce ați ales să trimiteți. Arătați și întinderea privirii voastre. O imagine îngustă nu este lumea întreagă. Păstrați lângă citire și urma sondei și instrumentul vostru a trecut prin această lume. Memoria navei rămâne deschisă. Ce lipsește va avea locul său până la o nouă călătorie. Am privit trei lumi fără să le epuizăm misterul. Acum se apropie lumea despre care credeam că știm totul. Legătura cu Pământul este pregătită. Iată bagajul expediției. În transmisie se întâlnesc două priviri, observațiile lumilor și urmele sondei. Următorul echipaj le va putea cerceta împreună. Ați trimis un singur fel de document? Va fi prima fereastră a următorului echipaj către călătoria noastră. Niciun document nu pleacă spre Pământ. Ce există în memoria navei rămâne aici. Drumul poate fi cercetat din nou. Acesta este locul pentru bagajul expediției. Ce am ales să păstrăm poate deveni începutul altui drum. Zece locuri. Zece documente. Transmisia este completă. Dincolo de ea, lumile au încă multe de arătat. În transmisie au rămas locuri libere. Le păstrăm așa. Următoarea călătorie va avea propriile întrebări. De aici, drumul nostru poate deveni începutul altuia. Mulțumesc, echipaj. Rămâneți la posturi. Ghidul vă va spune când vă puteți ridica.",
+  "words": [
+    {
+      "text": "Bun",
+      "start": 0.12,
+      "end": 0.28,
+      "type": "word",
+      "logprob": -0.00429718941450119
+    },
+    {
+      "text": " ",
+      "start": 0.28,
+      "end": 0.34,
+      "type": "spacing",
+      "logprob": -0.0002131234941771254
+    },
+    {
+      "text": "venit",
+      "start": 0.34,
+      "end": 0.6,
+      "type": "word",
+      "logprob": -0.0002131234941771254
+    },
+    {
+      "text": " ",
+      "start": 0.6,
+      "end": 0.64,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-7
+    },
+    {
+      "text": "la",
+      "start": 0.64,
+      "end": 0.72,
+      "type": "word",
+      "logprob": -7.152555099310121e-7
+    },
+    {
+      "text": " ",
+      "start": 0.72,
+      "end": 0.799,
+      "type": "spacing",
+      "logprob": -0.00008535020606359467
+    },
+    {
+      "text": "bord!",
+      "start": 0.8,
+      "end": 1.1,
+      "type": "word",
+      "logprob": -0.00007636239170096814
+    },
+    {
+      "text": " ",
+      "start": 1.1,
+      "end": 1.37,
+      "type": "spacing",
+      "logprob": -0.0005626287311315536
+    },
+    {
+      "text": "Dincolo",
+      "start": 1.37,
+      "end": 1.78,
+      "type": "word",
+      "logprob": -0.0002412628382281972
+    },
+    {
+      "text": " ",
+      "start": 1.78,
+      "end": 1.82,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": "de",
+      "start": 1.82,
+      "end": 1.9,
+      "type": "word",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": " ",
+      "start": 1.9,
+      "end": 1.98,
+      "type": "spacing",
+      "logprob": -0.014250772073864937
+    },
+    {
+      "text": "Pământ",
+      "start": 1.98,
+      "end": 2.36,
+      "type": "word",
+      "logprob": -0.002415796781027287
+    },
+    {
+      "text": " ",
+      "start": 2.36,
+      "end": 2.48,
+      "type": "spacing",
+      "logprob": -0.00014006110723130405
+    },
+    {
+      "text": "ne",
+      "start": 2.48,
+      "end": 2.56,
+      "type": "word",
+      "logprob": -0.00014006110723130405
+    },
+    {
+      "text": " ",
+      "start": 2.56,
+      "end": 2.62,
+      "type": "spacing",
+      "logprob": -0.000032066785934148356
+    },
+    {
+      "text": "așteaptă",
+      "start": 2.62,
+      "end": 3.08,
+      "type": "word",
+      "logprob": -0.000036015320795002026
+    },
+    {
+      "text": " ",
+      "start": 3.08,
+      "end": 3.18,
+      "type": "spacing",
+      "logprob": -0.001001571537926793
+    },
+    {
+      "text": "lumi",
+      "start": 3.18,
+      "end": 3.5,
+      "type": "word",
+      "logprob": -0.001001571537926793
+    },
+    {
+      "text": " ",
+      "start": 3.5,
+      "end": 3.56,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-7
+    },
+    {
+      "text": "despre",
+      "start": 3.56,
+      "end": 3.9,
+      "type": "word",
+      "logprob": -8.344646857949556e-7
+    },
+    {
+      "text": " ",
+      "start": 3.9,
+      "end": 3.94,
+      "type": "spacing",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": "care",
+      "start": 3.94,
+      "end": 4.18,
+      "type": "word",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": " ",
+      "start": 4.18,
+      "end": 4.22,
+      "type": "spacing",
+      "logprob": -0.00003802703940891661
+    },
+    {
+      "text": "știm",
+      "start": 4.22,
+      "end": 4.46,
+      "type": "word",
+      "logprob": -0.00003445088896114612
+    },
+    {
+      "text": " ",
+      "start": 4.46,
+      "end": 4.54,
+      "type": "spacing",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": "puțin.",
+      "start": 4.54,
+      "end": 5,
+      "type": "word",
+      "logprob": -0.07905615369346226
+    },
+    {
+      "text": " ",
+      "start": 5,
+      "end": 5.56,
+      "type": "spacing",
+      "logprob": -0.000034689302992774174
+    },
+    {
+      "text": "Ce",
+      "start": 5.56,
+      "end": 5.68,
+      "type": "word",
+      "logprob": -0.000034689302992774174
+    },
+    {
+      "text": " ",
+      "start": 5.68,
+      "end": 5.76,
+      "type": "spacing",
+      "logprob": -0.00015138434537220746
+    },
+    {
+      "text": "vom",
+      "start": 5.76,
+      "end": 5.9,
+      "type": "word",
+      "logprob": -0.00015138434537220746
+    },
+    {
+      "text": " ",
+      "start": 5.9,
+      "end": 5.96,
+      "type": "spacing",
+      "logprob": -0.00001549708758830093
+    },
+    {
+      "text": "putea",
+      "start": 5.96,
+      "end": 6.22,
+      "type": "word",
+      "logprob": -0.00001549708758830093
+    },
+    {
+      "text": " ",
+      "start": 6.22,
+      "end": 6.279,
+      "type": "spacing",
+      "logprob": -0.0000058412379075889476
+    },
+    {
+      "text": "aduce",
+      "start": 6.28,
+      "end": 6.7,
+      "type": "word",
+      "logprob": -0.000003838530301436549
+    },
+    {
+      "text": " ",
+      "start": 6.7,
+      "end": 6.78,
+      "type": "spacing",
+      "logprob": -0.00007068861305015162
+    },
+    {
+      "text": "înapoi?",
+      "start": 6.78,
+      "end": 7.22,
+      "type": "word",
+      "logprob": -0.000028047480295104572
+    },
+    {
+      "text": " ",
+      "start": 7.22,
+      "end": 7.44,
+      "type": "spacing",
+      "logprob": -0.0012434140080586076
+    },
+    {
+      "text": "Fiecare",
+      "start": 7.44,
+      "end": 7.92,
+      "type": "word",
+      "logprob": -0.0005342541080608498
+    },
+    {
+      "text": " ",
+      "start": 7.92,
+      "end": 7.979,
+      "type": "spacing",
+      "logprob": -0.000018954096958623268
+    },
+    {
+      "text": "jumătate",
+      "start": 7.98,
+      "end": 8.48,
+      "type": "word",
+      "logprob": -0.000011280097567123448
+    },
+    {
+      "text": " ",
+      "start": 8.48,
+      "end": 8.52,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": "de",
+      "start": 8.52,
+      "end": 8.58,
+      "type": "word",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": " ",
+      "start": 8.58,
+      "end": 8.64,
+      "type": "spacing",
+      "logprob": -0.0006881968001835048
+    },
+    {
+      "text": "tabletă",
+      "start": 8.64,
+      "end": 9.16,
+      "type": "word",
+      "logprob": -0.0005898829715858613
+    },
+    {
+      "text": " ",
+      "start": 9.16,
+      "end": 9.64,
+      "type": "spacing",
+      "logprob": -0.000008702239938429557
+    },
+    {
+      "text": "are",
+      "start": 9.64,
+      "end": 9.82,
+      "type": "word",
+      "logprob": -0.000008702239938429557
+    },
+    {
+      "text": " ",
+      "start": 9.82,
+      "end": 9.92,
+      "type": "spacing",
+      "logprob": -0.0000016689286894688848
+    },
+    {
+      "text": "un",
+      "start": 9.92,
+      "end": 10.04,
+      "type": "word",
+      "logprob": -0.0000016689286894688848
+    },
+    {
+      "text": " ",
+      "start": 10.04,
+      "end": 10.08,
+      "type": "spacing",
+      "logprob": -0.000011324817933200393
+    },
+    {
+      "text": "instrument,",
+      "start": 10.08,
+      "end": 10.68,
+      "type": "word",
+      "logprob": -0.000011292306722184135
+    },
+    {
+      "text": " ",
+      "start": 10.68,
+      "end": 11.28,
+      "type": "spacing",
+      "logprob": -0.006203325465321541
+    },
+    {
+      "text": "două",
+      "start": 11.28,
+      "end": 11.54,
+      "type": "word",
+      "logprob": -0.006203325465321541
+    },
+    {
+      "text": " ",
+      "start": 11.54,
+      "end": 11.68,
+      "type": "spacing",
+      "logprob": -0.00019488819816615433
+    },
+    {
+      "text": "unități",
+      "start": 11.68,
+      "end": 12.13,
+      "type": "word",
+      "logprob": -0.0001215314132423373
+    },
+    {
+      "text": " ",
+      "start": 12.13,
+      "end": 12.2,
+      "type": "spacing",
+      "logprob": 0
+    },
+    {
+      "text": "de",
+      "start": 12.2,
+      "end": 12.28,
+      "type": "word",
+      "logprob": 0
+    },
+    {
+      "text": " ",
+      "start": 12.28,
+      "end": 12.32,
+      "type": "spacing",
+      "logprob": -0.001279965159483254
+    },
+    {
+      "text": "energie",
+      "start": 12.32,
+      "end": 12.92,
+      "type": "word",
+      "logprob": -0.001279965159483254
+    },
+    {
+      "text": " ",
+      "start": 12.92,
+      "end": 13.36,
+      "type": "spacing",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": "și",
+      "start": 13.36,
+      "end": 13.48,
+      "type": "word",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": " ",
+      "start": 13.48,
+      "end": 13.62,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": "un",
+      "start": 13.62,
+      "end": 13.72,
+      "type": "word",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": " ",
+      "start": 13.72,
+      "end": 13.76,
+      "type": "spacing",
+      "logprob": -0.000004768360213347478
+    },
+    {
+      "text": "loc",
+      "start": 13.76,
+      "end": 14.1,
+      "type": "word",
+      "logprob": -0.000004768360213347478
+    },
+    {
+      "text": " ",
+      "start": 14.1,
+      "end": 14.12,
+      "type": "spacing",
+      "logprob": -0.000010609570381348021
+    },
+    {
+      "text": "în",
+      "start": 14.12,
+      "end": 14.24,
+      "type": "word",
+      "logprob": -0.000010609570381348021
+    },
+    {
+      "text": " ",
+      "start": 14.24,
+      "end": 14.3,
+      "type": "spacing",
+      "logprob": -0.005266127642244101
+    },
+    {
+      "text": "arhivă.",
+      "start": 14.3,
+      "end": 14.78,
+      "type": "word",
+      "logprob": -0.006509110065360956
+    },
+    {
+      "text": " ",
+      "start": 14.78,
+      "end": 15.6,
+      "type": "spacing",
+      "logprob": -0.0033893303479999304
+    },
+    {
+      "text": "Resursele",
+      "start": 15.6,
+      "end": 16.66,
+      "type": "word",
+      "logprob": -0.0014614172905567102
+    },
+    {
+      "text": " ",
+      "start": 16.66,
+      "end": 16.76,
+      "type": "spacing",
+      "logprob": -0.000009417489309271332
+    },
+    {
+      "text": "sunt",
+      "start": 16.76,
+      "end": 17.14,
+      "type": "word",
+      "logprob": -0.000009417489309271332
+    },
+    {
+      "text": " ",
+      "start": 17.14,
+      "end": 17.22,
+      "type": "spacing",
+      "logprob": -0.0063954684883356094
+    },
+    {
+      "text": "independente.",
+      "start": 17.22,
+      "end": 18.099,
+      "type": "word",
+      "logprob": -0.005904958211501183
+    },
+    {
+      "text": " ",
+      "start": 18.099,
+      "end": 18.259,
+      "type": "spacing",
+      "logprob": -0.00048780461656861007
+    },
+    {
+      "text": "Mai",
+      "start": 18.26,
+      "end": 18.44,
+      "type": "word",
+      "logprob": -0.00048780461656861007
+    },
+    {
+      "text": " ",
+      "start": 18.44,
+      "end": 18.46,
+      "type": "spacing",
+      "logprob": -0.00013028726971242577
+    },
+    {
+      "text": "întâi",
+      "start": 18.46,
+      "end": 18.82,
+      "type": "word",
+      "logprob": -0.00010422981576994062
+    },
+    {
+      "text": " ",
+      "start": 18.82,
+      "end": 19.08,
+      "type": "spacing",
+      "logprob": -0.0033959834836423397
+    },
+    {
+      "text": "măsurați,",
+      "start": 19.08,
+      "end": 19.76,
+      "type": "word",
+      "logprob": -0.0008189130091977859
+    },
+    {
+      "text": " ",
+      "start": 19.76,
+      "end": 20.24,
+      "type": "spacing",
+      "logprob": -0.00023922442051116377
+    },
+    {
+      "text": "apoi",
+      "start": 20.24,
+      "end": 20.68,
+      "type": "word",
+      "logprob": -0.00023922442051116377
+    },
+    {
+      "text": " ",
+      "start": 20.68,
+      "end": 20.76,
+      "type": "spacing",
+      "logprob": -0.00033158526639454067
+    },
+    {
+      "text": "decideți",
+      "start": 20.76,
+      "end": 21.38,
+      "type": "word",
+      "logprob": -0.00024964262229332235
+    },
+    {
+      "text": " ",
+      "start": 21.38,
+      "end": 21.419,
+      "type": "spacing",
+      "logprob": -0.000012636104656849056
+    },
+    {
+      "text": "dacă",
+      "start": 21.42,
+      "end": 21.68,
+      "type": "word",
+      "logprob": -0.000012636104656849056
+    },
+    {
+      "text": " ",
+      "start": 21.68,
+      "end": 21.7,
+      "type": "spacing",
+      "logprob": -0.0006030171643942595
+    },
+    {
+      "text": "interveniți.",
+      "start": 21.7,
+      "end": 22.46,
+      "type": "word",
+      "logprob": -0.00040380949995248255
+    },
+    {
+      "text": " ",
+      "start": 22.46,
+      "end": 23.08,
+      "type": "spacing",
+      "logprob": -0.0000032186455882765586
+    },
+    {
+      "text": "La",
+      "start": 23.08,
+      "end": 23.18,
+      "type": "word",
+      "logprob": -0.0000032186455882765586
+    },
+    {
+      "text": " ",
+      "start": 23.18,
+      "end": 23.259,
+      "type": "spacing",
+      "logprob": -3.576278118089249e-7
+    },
+    {
+      "text": "final,",
+      "start": 23.26,
+      "end": 23.64,
+      "type": "word",
+      "logprob": -0.00006380460394931713
+    },
+    {
+      "text": " ",
+      "start": 23.64,
+      "end": 23.939,
+      "type": "spacing",
+      "logprob": -0.0009159421897493303
+    },
+    {
+      "text": "alegeți",
+      "start": 23.94,
+      "end": 24.44,
+      "type": "word",
+      "logprob": -0.00013101918318625394
+    },
+    {
+      "text": " ",
+      "start": 24.44,
+      "end": 24.52,
+      "type": "spacing",
+      "logprob": -0.000004768360213347478
+    },
+    {
+      "text": "ce",
+      "start": 24.52,
+      "end": 24.64,
+      "type": "word",
+      "logprob": -0.000004768360213347478
+    },
+    {
+      "text": " ",
+      "start": 24.64,
+      "end": 24.66,
+      "type": "spacing",
+      "logprob": -0.000036954195820726454
+    },
+    {
+      "text": "document",
+      "start": 24.66,
+      "end": 25.18,
+      "type": "word",
+      "logprob": -0.000036954195820726454
+    },
+    {
+      "text": " ",
+      "start": 25.18,
+      "end": 25.259,
+      "type": "spacing",
+      "logprob": -0.00004076874756719917
+    },
+    {
+      "text": "trimiteți",
+      "start": 25.26,
+      "end": 25.76,
+      "type": "word",
+      "logprob": -0.000028344800840487653
+    },
+    {
+      "text": " ",
+      "start": 25.76,
+      "end": 25.8,
+      "type": "spacing",
+      "logprob": -0.00007557583012385294
+    },
+    {
+      "text": "mai",
+      "start": 25.8,
+      "end": 25.9,
+      "type": "word",
+      "logprob": -0.00007557583012385294
+    },
+    {
+      "text": " ",
+      "start": 25.9,
+      "end": 25.92,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-7
+    },
+    {
+      "text": "departe.",
+      "start": 25.92,
+      "end": 26.46,
+      "type": "word",
+      "logprob": -0.0000023394728145831323
+    },
+    {
+      "text": " ",
+      "start": 26.46,
+      "end": 26.72,
+      "type": "spacing",
+      "logprob": -0.000041960789531003684
+    },
+    {
+      "text": "Nu",
+      "start": 26.72,
+      "end": 26.8,
+      "type": "word",
+      "logprob": -0.000041960789531003684
+    },
+    {
+      "text": " ",
+      "start": 26.8,
+      "end": 26.88,
+      "type": "spacing",
+      "logprob": -0.0000598412734689191
+    },
+    {
+      "text": "vom",
+      "start": 26.88,
+      "end": 27,
+      "type": "word",
+      "logprob": -0.0000598412734689191
+    },
+    {
+      "text": " ",
+      "start": 27,
+      "end": 27.06,
+      "type": "spacing",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": "putea",
+      "start": 27.06,
+      "end": 27.3,
+      "type": "word",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": " ",
+      "start": 27.3,
+      "end": 27.34,
+      "type": "spacing",
+      "logprob": -0.000020861407392658293
+    },
+    {
+      "text": "trimite",
+      "start": 27.34,
+      "end": 27.68,
+      "type": "word",
+      "logprob": -0.000017285188732785173
+    },
+    {
+      "text": " ",
+      "start": 27.68,
+      "end": 27.759,
+      "type": "spacing",
+      "logprob": -0.0000023841830625315197
+    },
+    {
+      "text": "tot.",
+      "start": 27.76,
+      "end": 27.98,
+      "type": "word",
+      "logprob": -0.0000040531035665480886
+    },
+    {
+      "text": " ",
+      "start": 27.98,
+      "end": 28.12,
+      "type": "spacing",
+      "logprob": -0.0000066756979322235566
+    },
+    {
+      "text": "Puteți",
+      "start": 28.12,
+      "end": 28.5,
+      "type": "word",
+      "logprob": -0.0000024040490037198956
+    },
+    {
+      "text": " ",
+      "start": 28.5,
+      "end": 28.54,
+      "type": "spacing",
+      "logprob": -0.002641167026013136
+    },
+    {
+      "text": "participa",
+      "start": 28.54,
+      "end": 29.22,
+      "type": "word",
+      "logprob": -0.002641167026013136
+    },
+    {
+      "text": " ",
+      "start": 29.22,
+      "end": 29.759,
+      "type": "spacing",
+      "logprob": -0.00011860620725201443
+    },
+    {
+      "text": "sau",
+      "start": 29.76,
+      "end": 29.96,
+      "type": "word",
+      "logprob": -0.00011860620725201443
+    },
+    {
+      "text": " ",
+      "start": 29.96,
+      "end": 29.98,
+      "type": "spacing",
+      "logprob": -0.000023483953555114567
+    },
+    {
+      "text": "puteți",
+      "start": 29.98,
+      "end": 30.36,
+      "type": "word",
+      "logprob": -0.000016808323531828744
+    },
+    {
+      "text": " ",
+      "start": 30.36,
+      "end": 30.38,
+      "type": "spacing",
+      "logprob": -0.00036554806865751743
+    },
+    {
+      "text": "privi.",
+      "start": 30.38,
+      "end": 30.78,
+      "type": "word",
+      "logprob": -0.049881317342321076
+    },
+    {
+      "text": " ",
+      "start": 30.78,
+      "end": 31.7,
+      "type": "spacing",
+      "logprob": -0.0017485818825662136
+    },
+    {
+      "text": "Instrumentele",
+      "start": 31.7,
+      "end": 32.439,
+      "type": "word",
+      "logprob": -0.0013452280455532252
+    },
+    {
+      "text": " ",
+      "start": 32.439,
+      "end": 32.479,
+      "type": "spacing",
+      "logprob": -0.000020503786799963564
+    },
+    {
+      "text": "vă",
+      "start": 32.48,
+      "end": 32.54,
+      "type": "word",
+      "logprob": -0.000020503786799963564
+    },
+    {
+      "text": " ",
+      "start": 32.54,
+      "end": 32.56,
+      "type": "spacing",
+      "logprob": -0.000006437280717364047
+    },
+    {
+      "text": "așteaptă.",
+      "start": 32.56,
+      "end": 33.74,
+      "type": "word",
+      "logprob": -0.0001107609346478158
+    },
+    {
+      "text": " ",
+      "start": 33.74,
+      "end": 33.82,
+      "type": "spacing",
+      "logprob": -0.039000459015369415
+    },
+    {
+      "text": "Comenzile",
+      "start": 33.82,
+      "end": 34.46,
+      "type": "word",
+      "logprob": -0.026001855727372458
+    },
+    {
+      "text": " ",
+      "start": 34.46,
+      "end": 34.5,
+      "type": "spacing",
+      "logprob": -0.000011801649634435307
+    },
+    {
+      "text": "lor",
+      "start": 34.5,
+      "end": 34.78,
+      "type": "word",
+      "logprob": -0.000011801649634435307
+    },
+    {
+      "text": " ",
+      "start": 34.78,
+      "end": 35.5,
+      "type": "spacing",
+      "logprob": -0.00003564294092939235
+    },
+    {
+      "text": "rămân",
+      "start": 35.5,
+      "end": 36.58,
+      "type": "word",
+      "logprob": -0.000056670157209737224
+    },
+    {
+      "text": " ",
+      "start": 36.58,
+      "end": 36.68,
+      "type": "spacing",
+      "logprob": -0.000017881233361549675
+    },
+    {
+      "text": "în",
+      "start": 36.68,
+      "end": 36.76,
+      "type": "word",
+      "logprob": -0.000017881233361549675
+    },
+    {
+      "text": " ",
+      "start": 36.76,
+      "end": 36.839,
+      "type": "spacing",
+      "logprob": -0.00033408781746402383
+    },
+    {
+      "text": "mâinile",
+      "start": 36.84,
+      "end": 37.24,
+      "type": "word",
+      "logprob": -0.00009622000711065734
+    },
+    {
+      "text": " ",
+      "start": 37.24,
+      "end": 37.34,
+      "type": "spacing",
+      "logprob": -0.00011097769311163574
+    },
+    {
+      "text": "voastre.",
+      "start": 37.34,
+      "end": 37.8,
+      "type": "word",
+      "logprob": -0.00003170812018993274
+    },
+    {
+      "text": " ",
+      "start": 37.8,
+      "end": 37.98,
+      "type": "spacing",
+      "logprob": -0.0078003560192883015
+    },
+    {
+      "text": "Navigație",
+      "start": 37.98,
+      "end": 38.72,
+      "type": "word",
+      "logprob": -0.0026223309117388758
+    },
+    {
+      "text": " ",
+      "start": 38.72,
+      "end": 38.98,
+      "type": "spacing",
+      "logprob": -0.024295805022120476
+    },
+    {
+      "text": "păstrează",
+      "start": 38.98,
+      "end": 39.58,
+      "type": "word",
+      "logprob": -0.005578354325229561
+    },
+    {
+      "text": " ",
+      "start": 39.58,
+      "end": 39.68,
+      "type": "spacing",
+      "logprob": -0.00015579440514557064
+    },
+    {
+      "text": "ruta.",
+      "start": 39.68,
+      "end": 40.06,
+      "type": "word",
+      "logprob": -0.00012892701233795377
+    },
+    {
+      "text": " ",
+      "start": 40.06,
+      "end": 40.53,
+      "type": "spacing",
+      "logprob": -0.0006998711614869535
+    },
+    {
+      "text": "Pregătiți",
+      "start": 40.53,
+      "end": 41.12,
+      "type": "word",
+      "logprob": -0.0003224049148937209
+    },
+    {
+      "text": " ",
+      "start": 41.12,
+      "end": 41.2,
+      "type": "spacing",
+      "logprob": -0.0006432848167605698
+    },
+    {
+      "text": "instrumentele.",
+      "start": 41.2,
+      "end": 42.32,
+      "type": "word",
+      "logprob": -0.0006654499946340106
+    },
+    {
+      "text": " ",
+      "start": 42.32,
+      "end": 42.36,
+      "type": "spacing",
+      "logprob": -0.000004529942543740617
+    },
+    {
+      "text": "Pământul",
+      "start": 42.36,
+      "end": 42.86,
+      "type": "word",
+      "logprob": -0.0001845567299483264
+    },
+    {
+      "text": " ",
+      "start": 42.86,
+      "end": 42.94,
+      "type": "spacing",
+      "logprob": -0.000007629365427419543
+    },
+    {
+      "text": "ne",
+      "start": 42.94,
+      "end": 43.02,
+      "type": "word",
+      "logprob": -0.000007629365427419543
+    },
+    {
+      "text": " ",
+      "start": 43.02,
+      "end": 43.06,
+      "type": "spacing",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": "va",
+      "start": 43.06,
+      "end": 43.14,
+      "type": "word",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": " ",
+      "start": 43.14,
+      "end": 43.22,
+      "type": "spacing",
+      "logprob": -0.0011855486081913114
+    },
+    {
+      "text": "pierde",
+      "start": 43.22,
+      "end": 43.6,
+      "type": "word",
+      "logprob": -0.0011855486081913114
+    },
+    {
+      "text": " ",
+      "start": 43.6,
+      "end": 43.7,
+      "type": "spacing",
+      "logprob": -0.000010013530300057027
+    },
+    {
+      "text": "curând",
+      "start": 43.7,
+      "end": 44.14,
+      "type": "word",
+      "logprob": -0.00003099371542703011
+    },
+    {
+      "text": " ",
+      "start": 44.14,
+      "end": 44.26,
+      "type": "spacing",
+      "logprob": -0.000003099436753473128
+    },
+    {
+      "text": "din",
+      "start": 44.26,
+      "end": 44.38,
+      "type": "word",
+      "logprob": -0.000003099436753473128
+    },
+    {
+      "text": " ",
+      "start": 44.38,
+      "end": 44.46,
+      "type": "spacing",
+      "logprob": -0.00017414960893802345
+    },
+    {
+      "text": "vedere.",
+      "start": 44.46,
+      "end": 44.88,
+      "type": "word",
+      "logprob": -0.0001512806072371729
+    },
+    {
+      "text": " ",
+      "start": 44.88,
+      "end": 45.12,
+      "type": "spacing",
+      "logprob": -0.0028059417381882668
+    },
+    {
+      "text": "Zece",
+      "start": 45.12,
+      "end": 45.4,
+      "type": "word",
+      "logprob": -0.001432116690921248
+    },
+    {
+      "text": " ",
+      "start": 45.4,
+      "end": 45.519,
+      "type": "spacing",
+      "logprob": -0.0002896366349887103
+    },
+    {
+      "text": "canale",
+      "start": 45.52,
+      "end": 46.1,
+      "type": "word",
+      "logprob": -0.0002896366349887103
+    },
+    {
+      "text": " ",
+      "start": 46.1,
+      "end": 46.36,
+      "type": "spacing",
+      "logprob": -0.00001156323378381785
+    },
+    {
+      "text": "sunt",
+      "start": 46.36,
+      "end": 46.6,
+      "type": "word",
+      "logprob": -0.00001156323378381785
+    },
+    {
+      "text": " ",
+      "start": 46.6,
+      "end": 46.64,
+      "type": "spacing",
+      "logprob": -0.000019907753085135482
+    },
+    {
+      "text": "pregătite.",
+      "start": 46.64,
+      "end": 47.28,
+      "type": "word",
+      "logprob": -0.00001397114367591712
+    },
+    {
+      "text": " ",
+      "start": 47.28,
+      "end": 47.98,
+      "type": "spacing",
+      "logprob": -0.000020146166207268834
+    },
+    {
+      "text": "Fiecare",
+      "start": 47.98,
+      "end": 48.62,
+      "type": "word",
+      "logprob": -0.000009315266782193379
+    },
+    {
+      "text": " ",
+      "start": 48.62,
+      "end": 48.88,
+      "type": "spacing",
+      "logprob": -0.000036477376852417365
+    },
+    {
+      "text": "urmărește",
+      "start": 48.88,
+      "end": 49.44,
+      "type": "word",
+      "logprob": -0.00005238420271780342
+    },
+    {
+      "text": " ",
+      "start": 49.44,
+      "end": 49.54,
+      "type": "spacing",
+      "logprob": -0.000013708974620385561
+    },
+    {
+      "text": "altceva",
+      "start": 49.54,
+      "end": 50.06,
+      "type": "word",
+      "logprob": -0.00008018892068711076
+    },
+    {
+      "text": " ",
+      "start": 50.06,
+      "end": 50.7,
+      "type": "spacing",
+      "logprob": -0.005138405133038759
+    },
+    {
+      "text": "un",
+      "start": 50.76,
+      "end": 50.88,
+      "type": "word",
+      "logprob": -0.005138405133038759
+    },
+    {
+      "text": " ",
+      "start": 50.88,
+      "end": 50.96,
+      "type": "spacing",
+      "logprob": -0.00008666139910928905
+    },
+    {
+      "text": "contur,",
+      "start": 50.96,
+      "end": 51.5,
+      "type": "word",
+      "logprob": -0.00004969109842737193
+    },
+    {
+      "text": " ",
+      "start": 51.5,
+      "end": 52.02,
+      "type": "spacing",
+      "logprob": -0.00000250339189733495
+    },
+    {
+      "text": "un",
+      "start": 52.02,
+      "end": 52.14,
+      "type": "word",
+      "logprob": -0.00000250339189733495
+    },
+    {
+      "text": " ",
+      "start": 52.14,
+      "end": 52.22,
+      "type": "spacing",
+      "logprob": -0.00034195298212580383
+    },
+    {
+      "text": "consum,",
+      "start": 52.22,
+      "end": 52.78,
+      "type": "word",
+      "logprob": -0.00029315364579523314
+    },
+    {
+      "text": " ",
+      "start": 52.78,
+      "end": 53.24,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "o",
+      "start": 53.24,
+      "end": 53.32,
+      "type": "word",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": " ",
+      "start": 53.32,
+      "end": 53.38,
+      "type": "spacing",
+      "logprob": -0.036818936467170715
+    },
+    {
+      "text": "emisie,",
+      "start": 53.38,
+      "end": 54.02,
+      "type": "word",
+      "logprob": -0.010716527933108668
+    },
+    {
+      "text": " ",
+      "start": 54.02,
+      "end": 54.48,
+      "type": "spacing",
+      "logprob": -0.0000011920922133867862
+    },
+    {
+      "text": "un",
+      "start": 54.48,
+      "end": 54.58,
+      "type": "word",
+      "logprob": -0.0000011920922133867862
+    },
+    {
+      "text": " ",
+      "start": 54.58,
+      "end": 54.68,
+      "type": "spacing",
+      "logprob": -0.0002002515539061278
+    },
+    {
+      "text": "ritm",
+      "start": 54.68,
+      "end": 55.06,
+      "type": "word",
+      "logprob": -0.00015075490892968446
+    },
+    {
+      "text": " ",
+      "start": 55.06,
+      "end": 55.62,
+      "type": "spacing",
+      "logprob": -0.000040649541915627196
+    },
+    {
+      "text": "sau",
+      "start": 55.62,
+      "end": 55.72,
+      "type": "word",
+      "logprob": -0.000040649541915627196
+    },
+    {
+      "text": " ",
+      "start": 55.72,
+      "end": 55.78,
+      "type": "spacing",
+      "logprob": -0.000010251946150674485
+    },
+    {
+      "text": "o",
+      "start": 55.78,
+      "end": 55.82,
+      "type": "word",
+      "logprob": -0.000010251946150674485
+    },
+    {
+      "text": " ",
+      "start": 55.82,
+      "end": 55.9,
+      "type": "spacing",
+      "logprob": -0.009587788954377174
+    },
+    {
+      "text": "schimbare.",
+      "start": 55.9,
+      "end": 56.5,
+      "type": "word",
+      "logprob": -0.005753007158180168
+    },
+    {
+      "text": " ",
+      "start": 56.5,
+      "end": 56.62,
+      "type": "spacing",
+      "logprob": -0.00001966933996300213
+    },
+    {
+      "text": "Nu",
+      "start": 56.62,
+      "end": 56.68,
+      "type": "word",
+      "logprob": -0.00001966933996300213
+    },
+    {
+      "text": " ",
+      "start": 56.68,
+      "end": 56.76,
+      "type": "spacing",
+      "logprob": -0.000022053474822314456
+    },
+    {
+      "text": "putem",
+      "start": 56.76,
+      "end": 57.02,
+      "type": "word",
+      "logprob": -0.000022053474822314456
+    },
+    {
+      "text": " ",
+      "start": 57.02,
+      "end": 57.08,
+      "type": "spacing",
+      "logprob": -0.00002098061486321967
+    },
+    {
+      "text": "opri",
+      "start": 57.08,
+      "end": 57.32,
+      "type": "word",
+      "logprob": -0.000327367371028231
+    },
+    {
+      "text": " ",
+      "start": 57.32,
+      "end": 57.4,
+      "type": "spacing",
+      "logprob": -0.000007033323527139146
+    },
+    {
+      "text": "călătoria",
+      "start": 57.4,
+      "end": 57.96,
+      "type": "word",
+      "logprob": -0.00014574358556274092
+    },
+    {
+      "text": " ",
+      "start": 57.96,
+      "end": 58,
+      "type": "spacing",
+      "logprob": -0.00013863079948350787
+    },
+    {
+      "text": "la",
+      "start": 58,
+      "end": 58.18,
+      "type": "word",
+      "logprob": -0.00013863079948350787
+    },
+    {
+      "text": " ",
+      "start": 58.18,
+      "end": 58.22,
+      "type": "spacing",
+      "logprob": -0.000008106198947643861
+    },
+    {
+      "text": "fiecare",
+      "start": 58.22,
+      "end": 58.66,
+      "type": "word",
+      "logprob": -0.000008106198947643861
+    },
+    {
+      "text": " ",
+      "start": 58.66,
+      "end": 58.68,
+      "type": "spacing",
+      "logprob": -0.000012278481335670222
+    },
+    {
+      "text": "întrebare.",
+      "start": 58.68,
+      "end": 59.3,
+      "type": "word",
+      "logprob": -0.000007545902684569228
+    },
+    {
+      "text": " ",
+      "start": 59.3,
+      "end": 59.62,
+      "type": "spacing",
+      "logprob": -0.0011150578502565622
+    },
+    {
+      "text": "Va",
+      "start": 59.62,
+      "end": 59.72,
+      "type": "word",
+      "logprob": -0.0011150578502565622
+    },
+    {
+      "text": " ",
+      "start": 59.72,
+      "end": 59.76,
+      "type": "spacing",
+      "logprob": -0.00043084874050691724
+    },
+    {
+      "text": "trebui",
+      "start": 59.76,
+      "end": 60.06,
+      "type": "word",
+      "logprob": -0.00043084874050691724
+    },
+    {
+      "text": " ",
+      "start": 60.06,
+      "end": 60.14,
+      "type": "spacing",
+      "logprob": -0.00007486063259420916
+    },
+    {
+      "text": "să",
+      "start": 60.14,
+      "end": 60.22,
+      "type": "word",
+      "logprob": -0.00007486063259420916
+    },
+    {
+      "text": " ",
+      "start": 60.22,
+      "end": 60.26,
+      "type": "spacing",
+      "logprob": -0.00037019551382400095
+    },
+    {
+      "text": "alegem",
+      "start": 60.26,
+      "end": 60.7,
+      "type": "word",
+      "logprob": -0.0002471546368951749
+    },
+    {
+      "text": " ",
+      "start": 60.7,
+      "end": 60.86,
+      "type": "spacing",
+      "logprob": -0.0003219324571546167
+    },
+    {
+      "text": "unde",
+      "start": 60.86,
+      "end": 61.24,
+      "type": "word",
+      "logprob": -0.0003219324571546167
+    },
+    {
+      "text": " ",
+      "start": 61.24,
+      "end": 61.26,
+      "type": "spacing",
+      "logprob": -0.00047398300375789404
+    },
+    {
+      "text": "privim",
+      "start": 61.26,
+      "end": 61.94,
+      "type": "word",
+      "logprob": -0.0003176973312595995
+    },
+    {
+      "text": " ",
+      "start": 61.94,
+      "end": 61.95,
+      "type": "spacing",
+      "logprob": -0.00028046013903804123
+    },
+    {
+      "text": "mai",
+      "start": 61.95,
+      "end": 62.12,
+      "type": "word",
+      "logprob": -0.00028046013903804123
+    },
+    {
+      "text": " ",
+      "start": 62.12,
+      "end": 62.16,
+      "type": "spacing",
+      "logprob": -0.000014543427823809907
+    },
+    {
+      "text": "atent.",
+      "start": 62.16,
+      "end": 62.54,
+      "type": "word",
+      "logprob": -0.00002129838564239132
+    },
+    {
+      "text": " ",
+      "start": 62.54,
+      "end": 62.78,
+      "type": "spacing",
+      "logprob": -0.00024399164249189198
+    },
+    {
+      "text": "De",
+      "start": 62.78,
+      "end": 62.86,
+      "type": "word",
+      "logprob": -0.0000015497195136049413
+    },
+    {
+      "text": " ",
+      "start": 62.86,
+      "end": 62.9,
+      "type": "spacing",
+      "logprob": -0.00017081231635529548
+    },
+    {
+      "text": "departe,",
+      "start": 62.9,
+      "end": 63.46,
+      "type": "word",
+      "logprob": -0.0034458847130736103
+    },
+    {
+      "text": " ",
+      "start": 63.46,
+      "end": 63.52,
+      "type": "spacing",
+      "logprob": -0.00006925819616299123
+    },
+    {
+      "text": "suprafața",
+      "start": 63.52,
+      "end": 64.08,
+      "type": "word",
+      "logprob": -0.00007746927197634552
+    },
+    {
+      "text": " ",
+      "start": 64.08,
+      "end": 64.12,
+      "type": "spacing",
+      "logprob": -0.10290203243494034
+    },
+    {
+      "text": "mea",
+      "start": 64.12,
+      "end": 64.32,
+      "type": "word",
+      "logprob": -0.10290203243494034
+    },
+    {
+      "text": " ",
+      "start": 64.32,
+      "end": 64.34,
+      "type": "spacing",
+      "logprob": -0.0002026352594839409
+    },
+    {
+      "text": "pare",
+      "start": 64.34,
+      "end": 64.54,
+      "type": "word",
+      "logprob": -0.0002026352594839409
+    },
+    {
+      "text": " ",
+      "start": 64.54,
+      "end": 64.599,
+      "type": "spacing",
+      "logprob": -0.00040665941196493804
+    },
+    {
+      "text": "uniformă.",
+      "start": 64.599,
+      "end": 65.9,
+      "type": "word",
+      "logprob": -0.0003163171447005829
+    },
+    {
+      "text": " ",
+      "start": 65.9,
+      "end": 65.98,
+      "type": "spacing",
+      "logprob": -0.01970852166414261
+    },
+    {
+      "text": "Apropiați",
+      "start": 65.98,
+      "end": 66.54,
+      "type": "word",
+      "logprob": -0.003355987519575542
+    },
+    {
+      "text": " ",
+      "start": 66.54,
+      "end": 66.56,
+      "type": "spacing",
+      "logprob": -0.00029488030122593045
+    },
+    {
+      "text": "instrumentul",
+      "start": 66.56,
+      "end": 67.16,
+      "type": "word",
+      "logprob": -0.0002459123981945292
+    },
+    {
+      "text": " ",
+      "start": 67.16,
+      "end": 67.179,
+      "type": "spacing",
+      "logprob": -0.0000010728830375228426
+    },
+    {
+      "text": "de",
+      "start": 67.18,
+      "end": 67.28,
+      "type": "word",
+      "logprob": -0.0000010728830375228426
+    },
+    {
+      "text": " ",
+      "start": 67.28,
+      "end": 67.3,
+      "type": "spacing",
+      "logprob": 0
+    },
+    {
+      "text": "un",
+      "start": 67.3,
+      "end": 67.44,
+      "type": "word",
+      "logprob": 0
+    },
+    {
+      "text": " ",
+      "start": 67.44,
+      "end": 67.46,
+      "type": "spacing",
+      "logprob": -0.0009685831028036773
+    },
+    {
+      "text": "singur",
+      "start": 67.46,
+      "end": 67.82,
+      "type": "word",
+      "logprob": -0.0006457220685357848
+    },
+    {
+      "text": " ",
+      "start": 67.82,
+      "end": 67.86,
+      "type": "spacing",
+      "logprob": -0.000005960446742392378
+    },
+    {
+      "text": "loc",
+      "start": 67.86,
+      "end": 68.06,
+      "type": "word",
+      "logprob": -0.000005960446742392378
+    },
+    {
+      "text": " ",
+      "start": 68.06,
+      "end": 68.1,
+      "type": "spacing",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": "și",
+      "start": 68.1,
+      "end": 68.2,
+      "type": "word",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": " ",
+      "start": 68.2,
+      "end": 68.24,
+      "type": "spacing",
+      "logprob": -0.0000020265558760002023
+    },
+    {
+      "text": "veți",
+      "start": 68.24,
+      "end": 68.46,
+      "type": "word",
+      "logprob": -0.0000030994361850389396
+    },
+    {
+      "text": " ",
+      "start": 68.46,
+      "end": 68.48,
+      "type": "spacing",
+      "logprob": -0.00043478095903992653
+    },
+    {
+      "text": "pierde",
+      "start": 68.48,
+      "end": 68.82,
+      "type": "word",
+      "logprob": -0.00043478095903992653
+    },
+    {
+      "text": " ",
+      "start": 68.82,
+      "end": 68.88,
+      "type": "spacing",
+      "logprob": -0.001884471857920289
+    },
+    {
+      "text": "imaginea",
+      "start": 68.88,
+      "end": 69.3,
+      "type": "word",
+      "logprob": -0.0016489426779990879
+    },
+    {
+      "text": " ",
+      "start": 69.3,
+      "end": 69.32,
+      "type": "spacing",
+      "logprob": -0.0001538873475510627
+    },
+    {
+      "text": "întregului.",
+      "start": 69.32,
+      "end": 69.9,
+      "type": "word",
+      "logprob": -0.00009761331168854007
+    },
+    {
+      "text": " ",
+      "start": 69.9,
+      "end": 70.1,
+      "type": "spacing",
+      "logprob": -0.0000393382906622719
+    },
+    {
+      "text": "Observația",
+      "start": 70.1,
+      "end": 70.86,
+      "type": "word",
+      "logprob": -0.026027220017385843
+    },
+    {
+      "text": " ",
+      "start": 70.86,
+      "end": 70.88,
+      "type": "spacing",
+      "logprob": -0.00015555603022221476
+    },
+    {
+      "text": "largă",
+      "start": 70.88,
+      "end": 71.34,
+      "type": "word",
+      "logprob": -0.0001244448241777718
+    },
+    {
+      "text": " ",
+      "start": 71.34,
+      "end": 71.64,
+      "type": "spacing",
+      "logprob": -0.00030858523678034544
+    },
+    {
+      "text": "costă",
+      "start": 71.64,
+      "end": 72.2,
+      "type": "word",
+      "logprob": -0.00024686818942427636
+    },
+    {
+      "text": " ",
+      "start": 72.2,
+      "end": 72.24,
+      "type": "spacing",
+      "logprob": -0.00003576214658096433
+    },
+    {
+      "text": "o",
+      "start": 72.24,
+      "end": 72.34,
+      "type": "word",
+      "logprob": -0.00003576214658096433
+    },
+    {
+      "text": " ",
+      "start": 72.34,
+      "end": 72.36,
+      "type": "spacing",
+      "logprob": -0.000041960789531003684
+    },
+    {
+      "text": "unitate,",
+      "start": 72.36,
+      "end": 73,
+      "type": "word",
+      "logprob": -0.03918698013384869
+    },
+    {
+      "text": " ",
+      "start": 73,
+      "end": 73.7,
+      "type": "spacing",
+      "logprob": -0.004324252251535654
+    },
+    {
+      "text": "cea",
+      "start": 73.7,
+      "end": 73.9,
+      "type": "word",
+      "logprob": -0.004324252251535654
+    },
+    {
+      "text": " ",
+      "start": 73.9,
+      "end": 73.98,
+      "type": "spacing",
+      "logprob": -0.00023707917716819793
+    },
+    {
+      "text": "fină",
+      "start": 73.98,
+      "end": 74.34,
+      "type": "word",
+      "logprob": -0.0001778689875138184
+    },
+    {
+      "text": " ",
+      "start": 74.34,
+      "end": 74.76,
+      "type": "spacing",
+      "logprob": -0.00011669908417388797
+    },
+    {
+      "text": "costă",
+      "start": 74.76,
+      "end": 75.16,
+      "type": "word",
+      "logprob": -0.00009424141417184728
+    },
+    {
+      "text": " ",
+      "start": 75.16,
+      "end": 75.2,
+      "type": "spacing",
+      "logprob": -0.008818963542580605
+    },
+    {
+      "text": "două.",
+      "start": 75.2,
+      "end": 75.52,
+      "type": "word",
+      "logprob": -0.007055409252507161
+    },
+    {
+      "text": " ",
+      "start": 75.52,
+      "end": 76.2,
+      "type": "spacing",
+      "logprob": -0.006338137201964855
+    },
+    {
+      "text": "Rezerva",
+      "start": 76.2,
+      "end": 76.64,
+      "type": "word",
+      "logprob": -0.005117955883698804
+    },
+    {
+      "text": " ",
+      "start": 76.64,
+      "end": 76.7,
+      "type": "spacing",
+      "logprob": -0.004132185596972704
+    },
+    {
+      "text": "rămasă",
+      "start": 76.7,
+      "end": 77.16,
+      "type": "word",
+      "logprob": -0.0013803158179446957
+    },
+    {
+      "text": " ",
+      "start": 77.16,
+      "end": 77.22,
+      "type": "spacing",
+      "logprob": -0.000016569954823353328
+    },
+    {
+      "text": "va",
+      "start": 77.22,
+      "end": 77.28,
+      "type": "word",
+      "logprob": -0.000016569954823353328
+    },
+    {
+      "text": " ",
+      "start": 77.28,
+      "end": 77.36,
+      "type": "spacing",
+      "logprob": -0.00015555603022221476
+    },
+    {
+      "text": "putea",
+      "start": 77.36,
+      "end": 77.64,
+      "type": "word",
+      "logprob": -0.00015555603022221476
+    },
+    {
+      "text": " ",
+      "start": 77.64,
+      "end": 77.66,
+      "type": "spacing",
+      "logprob": -0.00011801023356383666
+    },
+    {
+      "text": "proteja",
+      "start": 77.66,
+      "end": 78.18,
+      "type": "word",
+      "logprob": -0.0000881758143285489
+    },
+    {
+      "text": " ",
+      "start": 78.18,
+      "end": 78.2,
+      "type": "spacing",
+      "logprob": -0.00030155404238030314
+    },
+    {
+      "text": "sonda",
+      "start": 78.2,
+      "end": 78.899,
+      "type": "word",
+      "logprob": -0.00030155404238030314
+    },
+    {
+      "text": " ",
+      "start": 78.899,
+      "end": 78.98,
+      "type": "spacing",
+      "logprob": -0.00134080124553293
+    },
+    {
+      "text": "la",
+      "start": 78.98,
+      "end": 79.08,
+      "type": "word",
+      "logprob": -0.00134080124553293
+    },
+    {
+      "text": " ",
+      "start": 79.08,
+      "end": 79.12,
+      "type": "spacing",
+      "logprob": -0.00008475421054754406
+    },
+    {
+      "text": "următoarea",
+      "start": 79.12,
+      "end": 79.64,
+      "type": "word",
+      "logprob": -0.00009872259252006189
+    },
+    {
+      "text": " ",
+      "start": 79.64,
+      "end": 79.68,
+      "type": "spacing",
+      "logprob": -0.00006687417771900073
+    },
+    {
+      "text": "oprire.",
+      "start": 79.68,
+      "end": 80.06,
+      "type": "word",
+      "logprob": -0.0001760670910308753
+    },
+    {
+      "text": " ",
+      "start": 80.06,
+      "end": 80.26,
+      "type": "spacing",
+      "logprob": -0.0021898592822253704
+    },
+    {
+      "text": "Priviți",
+      "start": 80.26,
+      "end": 80.7,
+      "type": "word",
+      "logprob": -0.0012518931175650647
+    },
+    {
+      "text": " ",
+      "start": 80.7,
+      "end": 80.76,
+      "type": "spacing",
+      "logprob": -0.012073767371475697
+    },
+    {
+      "text": "obiectul",
+      "start": 80.76,
+      "end": 81.28,
+      "type": "word",
+      "logprob": -0.009055444737867901
+    },
+    {
+      "text": " ",
+      "start": 81.28,
+      "end": 81.3,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": "de",
+      "start": 81.3,
+      "end": 81.38,
+      "type": "word",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": " ",
+      "start": 81.38,
+      "end": 81.42,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-7
+    },
+    {
+      "text": "pe",
+      "start": 81.42,
+      "end": 81.5,
+      "type": "word",
+      "logprob": -9.536738616588991e-7
+    },
+    {
+      "text": " ",
+      "start": 81.5,
+      "end": 81.56,
+      "type": "spacing",
+      "logprob": -0.00024351492174901068
+    },
+    {
+      "text": "tabletă.",
+      "start": 81.56,
+      "end": 82.13,
+      "type": "word",
+      "logprob": -0.000183098126456116
+    },
+    {
+      "text": " ",
+      "start": 82.13,
+      "end": 82.46,
+      "type": "spacing",
+      "logprob": -0.0000040531076592742465
+    },
+    {
+      "text": "Cât",
+      "start": 82.46,
+      "end": 82.66,
+      "type": "word",
+      "logprob": -0.000049112512291079234
+    },
+    {
+      "text": " ",
+      "start": 82.66,
+      "end": 82.72,
+      "type": "spacing",
+      "logprob": -0.0000029802276912960224
+    },
+    {
+      "text": "din",
+      "start": 82.72,
+      "end": 82.86,
+      "type": "word",
+      "logprob": -0.0000029802276912960224
+    },
+    {
+      "text": " ",
+      "start": 82.86,
+      "end": 82.94,
+      "type": "spacing",
+      "logprob": -0.000004291525328881107
+    },
+    {
+      "text": "el",
+      "start": 82.94,
+      "end": 83.08,
+      "type": "word",
+      "logprob": -0.000004291525328881107
+    },
+    {
+      "text": " ",
+      "start": 83.08,
+      "end": 83.16,
+      "type": "spacing",
+      "logprob": -0.00003433168603805825
+    },
+    {
+      "text": "vreți",
+      "start": 83.16,
+      "end": 83.46,
+      "type": "word",
+      "logprob": -0.00002293550678587053
+    },
+    {
+      "text": " ",
+      "start": 83.46,
+      "end": 83.52,
+      "type": "spacing",
+      "logprob": -0.0000020265558760002023
+    },
+    {
+      "text": "să",
+      "start": 83.52,
+      "end": 83.64,
+      "type": "word",
+      "logprob": -0.0000020265558760002023
+    },
+    {
+      "text": " ",
+      "start": 83.64,
+      "end": 83.66,
+      "type": "spacing",
+      "logprob": -0.00010406429646536708
+    },
+    {
+      "text": "cercetați?",
+      "start": 83.66,
+      "end": 84.38,
+      "type": "word",
+      "logprob": -0.00005444047217224579
+    },
+    {
+      "text": " ",
+      "start": 84.38,
+      "end": 84.38,
+      "type": "spacing",
+      "logprob": -0.01612936705350876
+    },
+    {
+      "text": "Configurați",
+      "start": 85.44,
+      "end": 86.24,
+      "type": "word",
+      "logprob": -0.008929272608260031
+    },
+    {
+      "text": " ",
+      "start": 86.24,
+      "end": 86.32,
+      "type": "spacing",
+      "logprob": -0.03833813965320587
+    },
+    {
+      "text": "instrumentul.",
+      "start": 86.32,
+      "end": 87.32,
+      "type": "word",
+      "logprob": -0.029492472210571045
+    },
+    {
+      "text": " ",
+      "start": 87.32,
+      "end": 87.38,
+      "type": "spacing",
+      "logprob": -0.001335205975919962
+    },
+    {
+      "text": "Instrumentele",
+      "start": 87.38,
+      "end": 88.48,
+      "type": "word",
+      "logprob": -0.0010281544010257886
+    },
+    {
+      "text": " ",
+      "start": 88.48,
+      "end": 88.56,
+      "type": "spacing",
+      "logprob": -0.05553612858057022
+    },
+    {
+      "text": "a",
+      "start": 88.56,
+      "end": 88.58,
+      "type": "word",
+      "logprob": -0.05553612858057022
+    },
+    {
+      "text": " ",
+      "start": 88.58,
+      "end": 88.66,
+      "type": "spacing",
+      "logprob": -0.0000036954811548639555
+    },
+    {
+      "text": "oprit",
+      "start": 88.66,
+      "end": 89.08,
+      "type": "word",
+      "logprob": -0.000009226752536051207
+    },
+    {
+      "text": " ",
+      "start": 89.08,
+      "end": 89.12,
+      "type": "spacing",
+      "logprob": -0.00006925819616299123
+    },
+    {
+      "text": "citirea.",
+      "start": 89.12,
+      "end": 89.58,
+      "type": "word",
+      "logprob": -0.00006948134762296831
+    },
+    {
+      "text": " ",
+      "start": 89.58,
+      "end": 90.22,
+      "type": "spacing",
+      "logprob": -0.00003290122185717337
+    },
+    {
+      "text": "Pe",
+      "start": 90.22,
+      "end": 90.28,
+      "type": "word",
+      "logprob": -0.00003290122185717337
+    },
+    {
+      "text": " ",
+      "start": 90.28,
+      "end": 90.34,
+      "type": "spacing",
+      "logprob": -0.0011074369540438056
+    },
+    {
+      "text": "ecran",
+      "start": 90.34,
+      "end": 90.66,
+      "type": "word",
+      "logprob": -0.00044461986749411153
+    },
+    {
+      "text": " ",
+      "start": 90.66,
+      "end": 90.72,
+      "type": "spacing",
+      "logprob": -0.009018639102578163
+    },
+    {
+      "text": "vedeți",
+      "start": 90.72,
+      "end": 91.12,
+      "type": "word",
+      "logprob": -0.0060146115649028315
+    },
+    {
+      "text": " ",
+      "start": 91.12,
+      "end": 91.56,
+      "type": "spacing",
+      "logprob": -0.000007629365427419543
+    },
+    {
+      "text": "cât",
+      "start": 91.56,
+      "end": 91.74,
+      "type": "word",
+      "logprob": -0.000007629365427419543
+    },
+    {
+      "text": " ",
+      "start": 91.74,
+      "end": 91.82,
+      "type": "spacing",
+      "logprob": 0
+    },
+    {
+      "text": "am",
+      "start": 91.82,
+      "end": 92.02,
+      "type": "word",
+      "logprob": 0
+    },
+    {
+      "text": " ",
+      "start": 92.02,
+      "end": 92.039,
+      "type": "spacing",
+      "logprob": -0.000011444026313256472
+    },
+    {
+      "text": "păstrat",
+      "start": 92.04,
+      "end": 92.62,
+      "type": "word",
+      "logprob": -0.000029580431666025625
+    },
+    {
+      "text": " ",
+      "start": 92.62,
+      "end": 93.02,
+      "type": "spacing",
+      "logprob": -0.000004529942543740617
+    },
+    {
+      "text": "și",
+      "start": 93.02,
+      "end": 93.2,
+      "type": "word",
+      "logprob": -0.000004529942543740617
+    },
+    {
+      "text": " ",
+      "start": 93.2,
+      "end": 93.26,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-7
+    },
+    {
+      "text": "ce",
+      "start": 93.26,
+      "end": 93.38,
+      "type": "word",
+      "logprob": -5.960462772236497e-7
+    },
+    {
+      "text": " ",
+      "start": 93.38,
+      "end": 93.42,
+      "type": "spacing",
+      "logprob": -0.0018020119750872254
+    },
+    {
+      "text": "rezervă",
+      "start": 93.42,
+      "end": 93.9,
+      "type": "word",
+      "logprob": -0.0015445816929319075
+    },
+    {
+      "text": " ",
+      "start": 93.9,
+      "end": 93.96,
+      "type": "spacing",
+      "logprob": -0.000022172682292875834
+    },
+    {
+      "text": "ne",
+      "start": 93.96,
+      "end": 94.04,
+      "type": "word",
+      "logprob": -0.000022172682292875834
+    },
+    {
+      "text": " ",
+      "start": 94.04,
+      "end": 94.06,
+      "type": "spacing",
+      "logprob": -0.0011049362365156412
+    },
+    {
+      "text": "însoțește.",
+      "start": 94.06,
+      "end": 94.76,
+      "type": "word",
+      "logprob": -0.0003691751549467881
+    },
+    {
+      "text": " ",
+      "start": 94.76,
+      "end": 95.14,
+      "type": "spacing",
+      "logprob": -0.0000029802276912960224
+    },
+    {
+      "text": "Păstrați",
+      "start": 95.14,
+      "end": 95.54,
+      "type": "word",
+      "logprob": -0.000536528290666638
+    },
+    {
+      "text": " ",
+      "start": 95.54,
+      "end": 95.58,
+      "type": "spacing",
+      "logprob": -0.0000036954811548639555
+    },
+    {
+      "text": "lângă",
+      "start": 95.58,
+      "end": 95.78,
+      "type": "word",
+      "logprob": -0.0000036954811548639555
+    },
+    {
+      "text": " ",
+      "start": 95.78,
+      "end": 95.84,
+      "type": "spacing",
+      "logprob": -0.000002264974000354414
+    },
+    {
+      "text": "fiecare",
+      "start": 95.84,
+      "end": 96.24,
+      "type": "word",
+      "logprob": -0.000002264974000354414
+    },
+    {
+      "text": " ",
+      "start": 96.24,
+      "end": 96.3,
+      "type": "spacing",
+      "logprob": -0.0003967689990531653
+    },
+    {
+      "text": "imagine",
+      "start": 96.3,
+      "end": 96.78,
+      "type": "word",
+      "logprob": -0.0003967689990531653
+    },
+    {
+      "text": " ",
+      "start": 96.78,
+      "end": 96.82,
+      "type": "spacing",
+      "logprob": -0.000022172682292875834
+    },
+    {
+      "text": "și",
+      "start": 96.82,
+      "end": 96.86,
+      "type": "word",
+      "logprob": -0.000022172682292875834
+    },
+    {
+      "text": " ",
+      "start": 96.86,
+      "end": 96.96,
+      "type": "spacing",
+      "logprob": -0.00007152301259338856
+    },
+    {
+      "text": "marginea",
+      "start": 96.96,
+      "end": 97.46,
+      "type": "word",
+      "logprob": -0.00003766885129152797
+    },
+    {
+      "text": " ",
+      "start": 97.46,
+      "end": 97.56,
+      "type": "spacing",
+      "logprob": -0.00007497983460780233
+    },
+    {
+      "text": "ei.",
+      "start": 97.56,
+      "end": 97.9,
+      "type": "word",
+      "logprob": -0.00005225152517596143
+    },
+    {
+      "text": " ",
+      "start": 97.9,
+      "end": 98.54,
+      "type": "spacing",
+      "logprob": -0.000002145764938177308
+    },
+    {
+      "text": "Acolo",
+      "start": 98.54,
+      "end": 98.82,
+      "type": "word",
+      "logprob": -0.0000013828267583448906
+    },
+    {
+      "text": " ",
+      "start": 98.82,
+      "end": 98.84,
+      "type": "spacing",
+      "logprob": -0.00003838465272565372
+    },
+    {
+      "text": "începe",
+      "start": 98.84,
+      "end": 99.22,
+      "type": "word",
+      "logprob": -0.00002662291406826019
+    },
+    {
+      "text": " ",
+      "start": 99.22,
+      "end": 99.28,
+      "type": "spacing",
+      "logprob": -0.000019073304429184645
+    },
+    {
+      "text": "ceea",
+      "start": 99.28,
+      "end": 99.52,
+      "type": "word",
+      "logprob": -0.000019073304429184645
+    },
+    {
+      "text": " ",
+      "start": 99.52,
+      "end": 99.56,
+      "type": "spacing",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": "ce",
+      "start": 99.56,
+      "end": 99.66,
+      "type": "word",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": " ",
+      "start": 99.66,
+      "end": 99.7,
+      "type": "spacing",
+      "logprob": -0.00001680836794548668
+    },
+    {
+      "text": "încă",
+      "start": 99.7,
+      "end": 99.92,
+      "type": "word",
+      "logprob": -0.00001680836794548668
+    },
+    {
+      "text": " ",
+      "start": 99.92,
+      "end": 100,
+      "type": "spacing",
+      "logprob": -0.000002622600959512056
+    },
+    {
+      "text": "nu",
+      "start": 100,
+      "end": 100.04,
+      "type": "word",
+      "logprob": -0.000002622600959512056
+    },
+    {
+      "text": " ",
+      "start": 100.04,
+      "end": 100.14,
+      "type": "spacing",
+      "logprob": -0.0000014305104514278355
+    },
+    {
+      "text": "ați",
+      "start": 100.14,
+      "end": 100.36,
+      "type": "word",
+      "logprob": -0.00002328515707480013
+    },
+    {
+      "text": " ",
+      "start": 100.36,
+      "end": 100.38,
+      "type": "spacing",
+      "logprob": -0.0000014305104514278355
+    },
+    {
+      "text": "văzut.",
+      "start": 100.38,
+      "end": 100.81,
+      "type": "word",
+      "logprob": -0.000001529849541270778
+    },
+    {
+      "text": " ",
+      "start": 100.81,
+      "end": 101.04,
+      "type": "spacing",
+      "logprob": -0.00005829164365422912
+    },
+    {
+      "text": "Instrumentele",
+      "start": 101.04,
+      "end": 101.68,
+      "type": "word",
+      "logprob": -0.002853149655344658
+    },
+    {
+      "text": " ",
+      "start": 101.68,
+      "end": 101.69,
+      "type": "spacing",
+      "logprob": -0.0003387354372534901
+    },
+    {
+      "text": "voastre",
+      "start": 101.69,
+      "end": 102.02,
+      "type": "word",
+      "logprob": -0.00010359348042194532
+    },
+    {
+      "text": " ",
+      "start": 102.02,
+      "end": 102.1,
+      "type": "spacing",
+      "logprob": -0.000008821448318485636
+    },
+    {
+      "text": "sunt",
+      "start": 102.1,
+      "end": 102.27,
+      "type": "word",
+      "logprob": -0.000008821448318485636
+    },
+    {
+      "text": " ",
+      "start": 102.27,
+      "end": 102.32,
+      "type": "spacing",
+      "logprob": -0.000009179073458653875
+    },
+    {
+      "text": "acum",
+      "start": 102.32,
+      "end": 102.52,
+      "type": "word",
+      "logprob": -0.000009179073458653875
+    },
+    {
+      "text": " ",
+      "start": 102.52,
+      "end": 102.58,
+      "type": "spacing",
+      "logprob": -0.000011205610462639015
+    },
+    {
+      "text": "în",
+      "start": 102.58,
+      "end": 102.64,
+      "type": "word",
+      "logprob": -0.000011205610462639015
+    },
+    {
+      "text": " ",
+      "start": 102.64,
+      "end": 102.7,
+      "type": "spacing",
+      "logprob": -0.000021219027985353023
+    },
+    {
+      "text": "zona",
+      "start": 102.7,
+      "end": 102.92,
+      "type": "word",
+      "logprob": -0.000021219027985353023
+    },
+    {
+      "text": " ",
+      "start": 102.92,
+      "end": 102.98,
+      "type": "spacing",
+      "logprob": -0.00010275312524754554
+    },
+    {
+      "text": "mea.",
+      "start": 102.98,
+      "end": 103.66,
+      "type": "word",
+      "logprob": -0.000078018516433076
+    },
+    {
+      "text": " ",
+      "start": 103.66,
+      "end": 103.72,
+      "type": "spacing",
+      "logprob": -0.000013828182090946939
+    },
+    {
+      "text": "Un",
+      "start": 103.72,
+      "end": 103.82,
+      "type": "word",
+      "logprob": -0.000013828182090946939
+    },
+    {
+      "text": " ",
+      "start": 103.82,
+      "end": 103.86,
+      "type": "spacing",
+      "logprob": -0.00010132275929208845
+    },
+    {
+      "text": "nor",
+      "start": 103.86,
+      "end": 104.02,
+      "type": "word",
+      "logprob": -0.00010132275929208845
+    },
+    {
+      "text": " ",
+      "start": 104.02,
+      "end": 104.04,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "de",
+      "start": 104.04,
+      "end": 104.22,
+      "type": "word",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": " ",
+      "start": 104.22,
+      "end": 104.26,
+      "type": "spacing",
+      "logprob": -0.000406301929615438
+    },
+    {
+      "text": "particule",
+      "start": 104.26,
+      "end": 104.8,
+      "type": "word",
+      "logprob": -0.0006348535340900222
+    },
+    {
+      "text": " ",
+      "start": 104.8,
+      "end": 104.81,
+      "type": "spacing",
+      "logprob": -0.00037079135654494166
+    },
+    {
+      "text": "le",
+      "start": 104.81,
+      "end": 104.9,
+      "type": "word",
+      "logprob": -0.00037079135654494166
+    },
+    {
+      "text": " ",
+      "start": 104.9,
+      "end": 104.96,
+      "type": "spacing",
+      "logprob": -0.000016331539882230572
+    },
+    {
+      "text": "va",
+      "start": 104.96,
+      "end": 105.04,
+      "type": "word",
+      "logprob": -0.000016331539882230572
+    },
+    {
+      "text": " ",
+      "start": 105.04,
+      "end": 105.1,
+      "type": "spacing",
+      "logprob": -0.002050441922619939
+    },
+    {
+      "text": "traversa.",
+      "start": 105.1,
+      "end": 106.14,
+      "type": "word",
+      "logprob": -0.0015952120164810265
+    },
+    {
+      "text": " ",
+      "start": 106.14,
+      "end": 106.16,
+      "type": "spacing",
+      "logprob": -0.0000036954811548639555
+    },
+    {
+      "text": "Puteți",
+      "start": 106.16,
+      "end": 106.48,
+      "type": "word",
+      "logprob": -0.000001192091550213566
+    },
+    {
+      "text": " ",
+      "start": 106.48,
+      "end": 106.54,
+      "type": "spacing",
+      "logprob": -0.000188332938705571
+    },
+    {
+      "text": "urmări",
+      "start": 106.54,
+      "end": 106.84,
+      "type": "word",
+      "logprob": -0.0001448874500056263
+    },
+    {
+      "text": " ",
+      "start": 106.84,
+      "end": 106.92,
+      "type": "spacing",
+      "logprob": -0.0001691436773398891
+    },
+    {
+      "text": "trecerea",
+      "start": 106.92,
+      "end": 107.51,
+      "type": "word",
+      "logprob": -0.00010065080732601928
+    },
+    {
+      "text": " ",
+      "start": 107.51,
+      "end": 107.52,
+      "type": "spacing",
+      "logprob": -0.0015509016811847687
+    },
+    {
+      "text": "sau",
+      "start": 107.52,
+      "end": 107.7,
+      "type": "word",
+      "logprob": -0.0015509016811847687
+    },
+    {
+      "text": " ",
+      "start": 107.7,
+      "end": 107.72,
+      "type": "spacing",
+      "logprob": -0.000012874520507466514
+    },
+    {
+      "text": "puteți",
+      "start": 107.72,
+      "end": 108.04,
+      "type": "word",
+      "logprob": -0.000008940641350818623
+    },
+    {
+      "text": " ",
+      "start": 108.04,
+      "end": 108.06,
+      "type": "spacing",
+      "logprob": -0.00005006664650863968
+    },
+    {
+      "text": "proteja",
+      "start": 108.06,
+      "end": 108.47,
+      "type": "word",
+      "logprob": -0.00004257376869125957
+    },
+    {
+      "text": " ",
+      "start": 108.47,
+      "end": 108.6,
+      "type": "spacing",
+      "logprob": -0.0003067976504098624
+    },
+    {
+      "text": "sonda.",
+      "start": 108.6,
+      "end": 109.24,
+      "type": "word",
+      "logprob": -0.0003480263161084925
+    },
+    {
+      "text": " ",
+      "start": 109.24,
+      "end": 109.26,
+      "type": "spacing",
+      "logprob": -0.00010501786891836673
+    },
+    {
+      "text": "Protecția",
+      "start": 109.26,
+      "end": 109.92,
+      "type": "word",
+      "logprob": -0.002072422776513526
+    },
+    {
+      "text": " ",
+      "start": 109.92,
+      "end": 110,
+      "type": "spacing",
+      "logprob": -0.00022718709078617394
+    },
+    {
+      "text": "costă",
+      "start": 110,
+      "end": 110.48,
+      "type": "word",
+      "logprob": -0.00018177351448542823
+    },
+    {
+      "text": " ",
+      "start": 110.48,
+      "end": 110.66,
+      "type": "spacing",
+      "logprob": -0.000011920858014491387
+    },
+    {
+      "text": "o",
+      "start": 110.66,
+      "end": 110.74,
+      "type": "word",
+      "logprob": -0.000011920858014491387
+    },
+    {
+      "text": " ",
+      "start": 110.74,
+      "end": 110.8,
+      "type": "spacing",
+      "logprob": -0.00008701899787411094
+    },
+    {
+      "text": "unitate",
+      "start": 110.8,
+      "end": 111.42,
+      "type": "word",
+      "logprob": -0.00005442536790464406
+    },
+    {
+      "text": " ",
+      "start": 111.42,
+      "end": 111.84,
+      "type": "spacing",
+      "logprob": -0.000005602820692729438
+    },
+    {
+      "text": "și",
+      "start": 111.84,
+      "end": 111.94,
+      "type": "word",
+      "logprob": -0.000005602820692729438
+    },
+    {
+      "text": " ",
+      "start": 111.94,
+      "end": 112,
+      "type": "spacing",
+      "logprob": -0.000023245540432981215
+    },
+    {
+      "text": "lasă",
+      "start": 112,
+      "end": 112.42,
+      "type": "word",
+      "logprob": -0.00001743415532473591
+    },
+    {
+      "text": " ",
+      "start": 112.42,
+      "end": 112.46,
+      "type": "spacing",
+      "logprob": -0.009286069311201572
+    },
+    {
+      "text": "trei",
+      "start": 112.46,
+      "end": 112.64,
+      "type": "word",
+      "logprob": -0.009286069311201572
+    },
+    {
+      "text": " ",
+      "start": 112.64,
+      "end": 112.74,
+      "type": "spacing",
+      "logprob": -0.003304261714220047
+    },
+    {
+      "text": "secunde",
+      "start": 112.74,
+      "end": 113.52,
+      "type": "word",
+      "logprob": -0.0014373650815936603
+    },
+    {
+      "text": " ",
+      "start": 113.52,
+      "end": 113.6,
+      "type": "spacing",
+      "logprob": -0.00003576214658096433
+    },
+    {
+      "text": "fără",
+      "start": 113.6,
+      "end": 113.82,
+      "type": "word",
+      "logprob": -0.00003576214658096433
+    },
+    {
+      "text": " ",
+      "start": 113.82,
+      "end": 113.88,
+      "type": "spacing",
+      "logprob": -0.000013470558769768104
+    },
+    {
+      "text": "citire.",
+      "start": 113.88,
+      "end": 114.34,
+      "type": "word",
+      "logprob": -0.000009213125654891233
+    },
+    {
+      "text": " ",
+      "start": 114.34,
+      "end": 115.3,
+      "type": "spacing",
+      "logprob": -0.00048137042904272676
+    },
+    {
+      "text": "Observarea",
+      "start": 115.3,
+      "end": 115.88,
+      "type": "word",
+      "logprob": -0.0002925892531493446
+    },
+    {
+      "text": " ",
+      "start": 115.88,
+      "end": 115.979,
+      "type": "spacing",
+      "logprob": -0.00008749579137656838
+    },
+    {
+      "text": "pasivă",
+      "start": 115.98,
+      "end": 116.7,
+      "type": "word",
+      "logprob": -0.00004702614046436793
+    },
+    {
+      "text": " ",
+      "start": 116.7,
+      "end": 116.74,
+      "type": "spacing",
+      "logprob": -0.00018463814922142774
+    },
+    {
+      "text": "păstrează",
+      "start": 116.74,
+      "end": 117.34,
+      "type": "word",
+      "logprob": -0.00005398459868249322
+    },
+    {
+      "text": " ",
+      "start": 117.34,
+      "end": 117.36,
+      "type": "spacing",
+      "logprob": -0.0063553135842084885
+    },
+    {
+      "text": "continuitatea",
+      "start": 117.36,
+      "end": 118.56,
+      "type": "word",
+      "logprob": -0.003026681914119623
+    },
+    {
+      "text": " ",
+      "start": 118.56,
+      "end": 118.62,
+      "type": "spacing",
+      "logprob": -0.00001823885577323381
+    },
+    {
+      "text": "cu",
+      "start": 118.62,
+      "end": 118.68,
+      "type": "word",
+      "logprob": -0.00001823885577323381
+    },
+    {
+      "text": " ",
+      "start": 118.68,
+      "end": 118.76,
+      "type": "spacing",
+      "logprob": -0.000007867782187531702
+    },
+    {
+      "text": "mai",
+      "start": 118.76,
+      "end": 118.92,
+      "type": "word",
+      "logprob": -0.000007867782187531702
+    },
+    {
+      "text": " ",
+      "start": 118.92,
+      "end": 118.98,
+      "type": "spacing",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": "mult",
+      "start": 118.98,
+      "end": 119.24,
+      "type": "word",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": " ",
+      "start": 119.24,
+      "end": 119.26,
+      "type": "spacing",
+      "logprob": -0.0000015497195136049413
+    },
+    {
+      "text": "zgomot.",
+      "start": 119.26,
+      "end": 119.72,
+      "type": "word",
+      "logprob": -0.000005415483769866114
+    },
+    {
+      "text": " ",
+      "start": 119.72,
+      "end": 119.96,
+      "type": "spacing",
+      "logprob": -0.00033456450910307467
+    },
+    {
+      "text": "Norul",
+      "start": 119.96,
+      "end": 120.38,
+      "type": "word",
+      "logprob": -0.00020083407288211673
+    },
+    {
+      "text": " ",
+      "start": 120.38,
+      "end": 120.46,
+      "type": "spacing",
+      "logprob": -0.000004172316494077677
+    },
+    {
+      "text": "se",
+      "start": 120.46,
+      "end": 120.54,
+      "type": "word",
+      "logprob": -0.000004172316494077677
+    },
+    {
+      "text": " ",
+      "start": 120.54,
+      "end": 120.58,
+      "type": "spacing",
+      "logprob": -0.0010090741561725736
+    },
+    {
+      "text": "apropie",
+      "start": 120.58,
+      "end": 121.02,
+      "type": "word",
+      "logprob": -0.0005872403284489078
+    },
+    {
+      "text": " ",
+      "start": 121.02,
+      "end": 121.039,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-7
+    },
+    {
+      "text": "de",
+      "start": 121.04,
+      "end": 121.14,
+      "type": "word",
+      "logprob": -7.152555099310121e-7
+    },
+    {
+      "text": " ",
+      "start": 121.14,
+      "end": 121.24,
+      "type": "spacing",
+      "logprob": -0.003953261766582727
+    },
+    {
+      "text": "sondă.",
+      "start": 121.24,
+      "end": 121.7,
+      "type": "word",
+      "logprob": -0.002636640329143347
+    },
+    {
+      "text": " ",
+      "start": 121.7,
+      "end": 122.16,
+      "type": "spacing",
+      "logprob": -0.0015891077928245068
+    },
+    {
+      "text": "Verificați",
+      "start": 122.16,
+      "end": 122.92,
+      "type": "word",
+      "logprob": -0.0012715246527022829
+    },
+    {
+      "text": " ",
+      "start": 122.92,
+      "end": 123.04,
+      "type": "spacing",
+      "logprob": -0.012818558141589165
+    },
+    {
+      "text": "rezerva.",
+      "start": 123.04,
+      "end": 123.6,
+      "type": "word",
+      "logprob": -0.005065191490302823
+    },
+    {
+      "text": " ",
+      "start": 123.6,
+      "end": 124.02,
+      "type": "spacing",
+      "logprob": -0.000003576272320060525
+    },
+    {
+      "text": "O",
+      "start": 124.02,
+      "end": 124.1,
+      "type": "word",
+      "logprob": -0.000003576272320060525
+    },
+    {
+      "text": " ",
+      "start": 124.1,
+      "end": 124.14,
+      "type": "spacing",
+      "logprob": -0.000038265450712060556
+    },
+    {
+      "text": "citire",
+      "start": 124.14,
+      "end": 124.5,
+      "type": "word",
+      "logprob": -0.00002580840100563364
+    },
+    {
+      "text": " ",
+      "start": 124.5,
+      "end": 124.52,
+      "type": "spacing",
+      "logprob": -0.000869253883138299
+    },
+    {
+      "text": "întreruptă",
+      "start": 124.52,
+      "end": 125.12,
+      "type": "word",
+      "logprob": -0.00047131971514318137
+    },
+    {
+      "text": " ",
+      "start": 125.12,
+      "end": 125.18,
+      "type": "spacing",
+      "logprob": -0.00000250339189733495
+    },
+    {
+      "text": "și",
+      "start": 125.18,
+      "end": 125.3,
+      "type": "word",
+      "logprob": -0.00000250339189733495
+    },
+    {
+      "text": " ",
+      "start": 125.3,
+      "end": 125.38,
+      "type": "spacing",
+      "logprob": -0.0001510267611593008
+    },
+    {
+      "text": "una",
+      "start": 125.38,
+      "end": 125.54,
+      "type": "word",
+      "logprob": -0.0001510267611593008
+    },
+    {
+      "text": " ",
+      "start": 125.54,
+      "end": 125.6,
+      "type": "spacing",
+      "logprob": -0.000014543427823809907
+    },
+    {
+      "text": "tulburată",
+      "start": 125.6,
+      "end": 126.3,
+      "type": "word",
+      "logprob": -0.00012046276909435012
+    },
+    {
+      "text": " ",
+      "start": 126.3,
+      "end": 126.5,
+      "type": "spacing",
+      "logprob": -0.000005006777428206988
+    },
+    {
+      "text": "vor",
+      "start": 126.5,
+      "end": 126.66,
+      "type": "word",
+      "logprob": -0.000005006777428206988
+    },
+    {
+      "text": " ",
+      "start": 126.66,
+      "end": 126.7,
+      "type": "spacing",
+      "logprob": -0.000005006777428206988
+    },
+    {
+      "text": "spune",
+      "start": 126.7,
+      "end": 126.98,
+      "type": "word",
+      "logprob": -0.000005006777428206988
+    },
+    {
+      "text": " ",
+      "start": 126.98,
+      "end": 127.06,
+      "type": "spacing",
+      "logprob": -0.0004377598816063255
+    },
+    {
+      "text": "povești",
+      "start": 127.06,
+      "end": 127.62,
+      "type": "word",
+      "logprob": -0.0003237113539528634
+    },
+    {
+      "text": " ",
+      "start": 127.62,
+      "end": 127.68,
+      "type": "spacing",
+      "logprob": -0.0005666795768775046
+    },
+    {
+      "text": "diferite.",
+      "start": 127.68,
+      "end": 128.28,
+      "type": "word",
+      "logprob": -0.0005041125430377886
+    },
+    {
+      "text": " ",
+      "start": 128.28,
+      "end": 128.479,
+      "type": "spacing",
+      "logprob": -0.000010132738680113107
+    },
+    {
+      "text": "Puteți",
+      "start": 128.479,
+      "end": 128.759,
+      "type": "word",
+      "logprob": -0.000007092899939683169
+    },
+    {
+      "text": " ",
+      "start": 128.759,
+      "end": 128.82,
+      "type": "spacing",
+      "logprob": -0.000085588610090781
+    },
+    {
+      "text": "închide",
+      "start": 128.82,
+      "end": 129.18,
+      "type": "word",
+      "logprob": -0.00005336988553088824
+    },
+    {
+      "text": " ",
+      "start": 129.18,
+      "end": 129.22,
+      "type": "spacing",
+      "logprob": -0.00011073929636040702
+    },
+    {
+      "text": "ochiul",
+      "start": 129.22,
+      "end": 129.58,
+      "type": "word",
+      "logprob": -0.00005473459653397109
+    },
+    {
+      "text": " ",
+      "start": 129.58,
+      "end": 129.64,
+      "type": "spacing",
+      "logprob": -0.047398149967193604
+    },
+    {
+      "text": "sondei",
+      "start": 129.64,
+      "end": 130.06,
+      "type": "word",
+      "logprob": -0.03949845830599467
+    },
+    {
+      "text": " ",
+      "start": 130.06,
+      "end": 130.08,
+      "type": "spacing",
+      "logprob": -0.000013589766240329482
+    },
+    {
+      "text": "pentru",
+      "start": 130.08,
+      "end": 130.32,
+      "type": "word",
+      "logprob": -0.000013589766240329482
+    },
+    {
+      "text": " ",
+      "start": 130.32,
+      "end": 130.34,
+      "type": "spacing",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": "o",
+      "start": 130.34,
+      "end": 130.44,
+      "type": "word",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": " ",
+      "start": 130.44,
+      "end": 130.46,
+      "type": "spacing",
+      "logprob": -0.0002754547167569399
+    },
+    {
+      "text": "clipă",
+      "start": 130.46,
+      "end": 130.82,
+      "type": "word",
+      "logprob": -0.0002203637734055519
+    },
+    {
+      "text": " ",
+      "start": 130.82,
+      "end": 131.039,
+      "type": "spacing",
+      "logprob": -0.00048792376765049994
+    },
+    {
+      "text": "sau",
+      "start": 131.039,
+      "end": 131.18,
+      "type": "word",
+      "logprob": -0.00048792376765049994
+    },
+    {
+      "text": " ",
+      "start": 131.18,
+      "end": 131.2,
+      "type": "spacing",
+      "logprob": -0.00005245071224635467
+    },
+    {
+      "text": "îl",
+      "start": 131.2,
+      "end": 131.28,
+      "type": "word",
+      "logprob": -0.00005245071224635467
+    },
+    {
+      "text": " ",
+      "start": 131.28,
+      "end": 131.36,
+      "type": "spacing",
+      "logprob": -0.000017762025890988298
+    },
+    {
+      "text": "puteți",
+      "start": 131.36,
+      "end": 131.66,
+      "type": "word",
+      "logprob": -0.000011881087021473983
+    },
+    {
+      "text": " ",
+      "start": 131.66,
+      "end": 131.7,
+      "type": "spacing",
+      "logprob": -0.000025033637939486653
+    },
+    {
+      "text": "lăsa",
+      "start": 131.7,
+      "end": 131.98,
+      "type": "word",
+      "logprob": -0.00001654011217055995
+    },
+    {
+      "text": " ",
+      "start": 131.98,
+      "end": 132.019,
+      "type": "spacing",
+      "logprob": -0.000002622600959512056
+    },
+    {
+      "text": "deschis",
+      "start": 132.02,
+      "end": 132.48,
+      "type": "word",
+      "logprob": -0.0000015326892740371737
+    },
+    {
+      "text": " ",
+      "start": 132.48,
+      "end": 132.5,
+      "type": "spacing",
+      "logprob": -0.00033122775494121015
+    },
+    {
+      "text": "prin",
+      "start": 132.5,
+      "end": 132.74,
+      "type": "word",
+      "logprob": -0.00033122775494121015
+    },
+    {
+      "text": " ",
+      "start": 132.74,
+      "end": 132.76,
+      "type": "spacing",
+      "logprob": -0.000047801782784517854
+    },
+    {
+      "text": "nor.",
+      "start": 132.76,
+      "end": 133,
+      "type": "word",
+      "logprob": -0.004115490317417425
+    },
+    {
+      "text": " ",
+      "start": 133,
+      "end": 133.3,
+      "type": "spacing",
+      "logprob": -0.000064490144723095
+    },
+    {
+      "text": "Norul",
+      "start": 133.3,
+      "end": 133.76,
+      "type": "word",
+      "logprob": -0.00013509682485164377
+    },
+    {
+      "text": " ",
+      "start": 133.76,
+      "end": 133.94,
+      "type": "spacing",
+      "logprob": -0.00022420754248742014
+    },
+    {
+      "text": "a",
+      "start": 133.94,
+      "end": 134.04,
+      "type": "word",
+      "logprob": -0.00022420754248742014
+    },
+    {
+      "text": " ",
+      "start": 134.04,
+      "end": 134.1,
+      "type": "spacing",
+      "logprob": -0.000085588610090781
+    },
+    {
+      "text": "trecut.",
+      "start": 134.1,
+      "end": 134.66,
+      "type": "word",
+      "logprob": -0.04027526405531846
+    },
+    {
+      "text": " ",
+      "start": 134.66,
+      "end": 135.22,
+      "type": "spacing",
+      "logprob": -0.0000340932747349143
+    },
+    {
+      "text": "Dacă",
+      "start": 135.22,
+      "end": 135.44,
+      "type": "word",
+      "logprob": -0.0000340932747349143
+    },
+    {
+      "text": " ",
+      "start": 135.44,
+      "end": 135.46,
+      "type": "spacing",
+      "logprob": -0.000039219088648678735
+    },
+    {
+      "text": "ați",
+      "start": 135.46,
+      "end": 135.62,
+      "type": "word",
+      "logprob": -0.00001378828490790814
+    },
+    {
+      "text": " ",
+      "start": 135.62,
+      "end": 135.64,
+      "type": "spacing",
+      "logprob": -0.0000107287787614041
+    },
+    {
+      "text": "păstrat",
+      "start": 135.64,
+      "end": 136.08,
+      "type": "word",
+      "logprob": -0.00005202464490139391
+    },
+    {
+      "text": " ",
+      "start": 136.08,
+      "end": 136.12,
+      "type": "spacing",
+      "logprob": -0.0000084638240878121
+    },
+    {
+      "text": "o",
+      "start": 136.12,
+      "end": 136.14,
+      "type": "word",
+      "logprob": -0.0000084638240878121
+    },
+    {
+      "text": " ",
+      "start": 136.14,
+      "end": 136.16,
+      "type": "spacing",
+      "logprob": -0.00043049128726124763
+    },
+    {
+      "text": "înregistrare,",
+      "start": 136.16,
+      "end": 136.9,
+      "type": "word",
+      "logprob": -0.0258770840032062
+    },
+    {
+      "text": " ",
+      "start": 136.9,
+      "end": 137.34,
+      "type": "spacing",
+      "logprob": -0.00010108436981681734
+    },
+    {
+      "text": "pe",
+      "start": 137.34,
+      "end": 137.44,
+      "type": "word",
+      "logprob": -0.00010108436981681734
+    },
+    {
+      "text": " ",
+      "start": 137.44,
+      "end": 137.5,
+      "type": "spacing",
+      "logprob": -0.00010311071673640981
+    },
+    {
+      "text": "ecran",
+      "start": 137.5,
+      "end": 137.86,
+      "type": "word",
+      "logprob": -0.000042102592965420625
+    },
+    {
+      "text": " ",
+      "start": 137.86,
+      "end": 137.96,
+      "type": "spacing",
+      "logprob": -0.000019788545614574105
+    },
+    {
+      "text": "se",
+      "start": 137.96,
+      "end": 138.04,
+      "type": "word",
+      "logprob": -0.000019788545614574105
+    },
+    {
+      "text": " ",
+      "start": 138.04,
+      "end": 138.12,
+      "type": "spacing",
+      "logprob": -0.000058053239627042785
+    },
+    {
+      "text": "vede",
+      "start": 138.12,
+      "end": 138.38,
+      "type": "word",
+      "logprob": -0.000058053239627042785
+    },
+    {
+      "text": " ",
+      "start": 138.38,
+      "end": 138.48,
+      "type": "spacing",
+      "logprob": -0.000005245195097813848
+    },
+    {
+      "text": "și",
+      "start": 138.48,
+      "end": 138.74,
+      "type": "word",
+      "logprob": -0.000005245195097813848
+    },
+    {
+      "text": " ",
+      "start": 138.74,
+      "end": 138.86,
+      "type": "spacing",
+      "logprob": -0.01152736134827137
+    },
+    {
+      "text": "urma",
+      "start": 138.86,
+      "end": 139.2,
+      "type": "word",
+      "logprob": -0.01152736134827137
+    },
+    {
+      "text": " ",
+      "start": 139.2,
+      "end": 139.28,
+      "type": "spacing",
+      "logprob": -0.01774483360350132
+    },
+    {
+      "text": "comenzii",
+      "start": 139.28,
+      "end": 139.78,
+      "type": "word",
+      "logprob": -0.013310055710007873
+    },
+    {
+      "text": " ",
+      "start": 139.78,
+      "end": 139.82,
+      "type": "spacing",
+      "logprob": -0.00007009260298218578
+    },
+    {
+      "text": "voastre.",
+      "start": 139.82,
+      "end": 140.34,
+      "type": "word",
+      "logprob": -0.00003814602342799844
+    },
+    {
+      "text": " ",
+      "start": 140.34,
+      "end": 140.68,
+      "type": "spacing",
+      "logprob": -0.00006651657167822123
+    },
+    {
+      "text": "Păstrăm",
+      "start": 140.68,
+      "end": 141.2,
+      "type": "word",
+      "logprob": -0.0006897205061509989
+    },
+    {
+      "text": " ",
+      "start": 141.2,
+      "end": 141.26,
+      "type": "spacing",
+      "logprob": -0.000002622600959512056
+    },
+    {
+      "text": "și",
+      "start": 141.26,
+      "end": 141.38,
+      "type": "word",
+      "logprob": -0.000002622600959512056
+    },
+    {
+      "text": " ",
+      "start": 141.38,
+      "end": 141.5,
+      "type": "spacing",
+      "logprob": -0.011695154942572117
+    },
+    {
+      "text": "intervalele",
+      "start": 141.5,
+      "end": 142.2,
+      "type": "word",
+      "logprob": -0.008505697277428226
+    },
+    {
+      "text": " ",
+      "start": 142.2,
+      "end": 142.3,
+      "type": "spacing",
+      "logprob": -0.000002264974000354414
+    },
+    {
+      "text": "fără",
+      "start": 142.3,
+      "end": 142.52,
+      "type": "word",
+      "logprob": -0.000002264974000354414
+    },
+    {
+      "text": " ",
+      "start": 142.52,
+      "end": 142.58,
+      "type": "spacing",
+      "logprob": -0.000053881147323409095
+    },
+    {
+      "text": "date.",
+      "start": 142.58,
+      "end": 142.98,
+      "type": "word",
+      "logprob": -0.004151531637762673
+    },
+    {
+      "text": " ",
+      "start": 142.98,
+      "end": 143.2,
+      "type": "spacing",
+      "logprob": -0.000012397689715726301
+    },
+    {
+      "text": "Altfel,",
+      "start": 143.2,
+      "end": 143.7,
+      "type": "word",
+      "logprob": -0.002342421318644483
+    },
+    {
+      "text": " ",
+      "start": 143.7,
+      "end": 143.859,
+      "type": "spacing",
+      "logprob": -0.0006479309522546828
+    },
+    {
+      "text": "următorul",
+      "start": 143.86,
+      "end": 144.4,
+      "type": "word",
+      "logprob": -0.00026018818930771833
+    },
+    {
+      "text": " ",
+      "start": 144.4,
+      "end": 144.44,
+      "type": "spacing",
+      "logprob": -0.001387705677188933
+    },
+    {
+      "text": "echipaj",
+      "start": 144.44,
+      "end": 145.02,
+      "type": "word",
+      "logprob": -0.0009914567593308935
+    },
+    {
+      "text": " ",
+      "start": 145.02,
+      "end": 145.08,
+      "type": "spacing",
+      "logprob": -0.0000011920922133867862
+    },
+    {
+      "text": "ar",
+      "start": 145.08,
+      "end": 145.14,
+      "type": "word",
+      "logprob": -0.0000011920922133867862
+    },
+    {
+      "text": " ",
+      "start": 145.14,
+      "end": 145.22,
+      "type": "spacing",
+      "logprob": -0.00008165503095369786
+    },
+    {
+      "text": "putea",
+      "start": 145.22,
+      "end": 145.44,
+      "type": "word",
+      "logprob": -0.00008165503095369786
+    },
+    {
+      "text": " ",
+      "start": 145.44,
+      "end": 145.48,
+      "type": "spacing",
+      "logprob": -0.0007682471186853945
+    },
+    {
+      "text": "confunda",
+      "start": 145.48,
+      "end": 146.04,
+      "type": "word",
+      "logprob": -0.00046506011858582497
+    },
+    {
+      "text": " ",
+      "start": 146.04,
+      "end": 146.22,
+      "type": "spacing",
+      "logprob": -0.0018496087286621332
+    },
+    {
+      "text": "liniștea",
+      "start": 146.22,
+      "end": 146.7,
+      "type": "word",
+      "logprob": -0.001584618199558463
+    },
+    {
+      "text": " ",
+      "start": 146.7,
+      "end": 146.74,
+      "type": "spacing",
+      "logprob": -0.000012636104656849056
+    },
+    {
+      "text": "instrumentului",
+      "start": 146.74,
+      "end": 147.76,
+      "type": "word",
+      "logprob": -0.000018902959709521383
+    },
+    {
+      "text": " ",
+      "start": 147.76,
+      "end": 147.82,
+      "type": "spacing",
+      "logprob": -0.000036477376852417365
+    },
+    {
+      "text": "cu",
+      "start": 147.82,
+      "end": 147.92,
+      "type": "word",
+      "logprob": -0.000036477376852417365
+    },
+    {
+      "text": " ",
+      "start": 147.92,
+      "end": 148,
+      "type": "spacing",
+      "logprob": -0.00018845213344320655
+    },
+    {
+      "text": "liniștea",
+      "start": 148,
+      "end": 148.54,
+      "type": "word",
+      "logprob": -0.00042440529068699107
+    },
+    {
+      "text": " ",
+      "start": 148.54,
+      "end": 148.579,
+      "type": "spacing",
+      "logprob": -0.0006338732782751322
+    },
+    {
+      "text": "lumii.",
+      "start": 148.58,
+      "end": 149.01,
+      "type": "word",
+      "logprob": -0.00032395005897948675
+    },
+    {
+      "text": " ",
+      "start": 149.01,
+      "end": 149.03,
+      "type": "spacing",
+      "logprob": -0.00004029192859889008
+    },
+    {
+      "text": "Pot",
+      "start": 149.03,
+      "end": 149.2,
+      "type": "word",
+      "logprob": -0.00026925752172246575
+    },
+    {
+      "text": " ",
+      "start": 149.2,
+      "end": 149.22,
+      "type": "spacing",
+      "logprob": -0.00001811964830267243
+    },
+    {
+      "text": "păstra",
+      "start": 149.22,
+      "end": 149.52,
+      "type": "word",
+      "logprob": -0.00005292722077380555
+    },
+    {
+      "text": " ",
+      "start": 149.52,
+      "end": 149.62,
+      "type": "spacing",
+      "logprob": -0.0012652019504457712
+    },
+    {
+      "text": "totul",
+      "start": 149.62,
+      "end": 149.96,
+      "type": "word",
+      "logprob": -0.0007592165376877347
+    },
+    {
+      "text": " ",
+      "start": 149.96,
+      "end": 149.97,
+      "type": "spacing",
+      "logprob": -0.00000965590606938349
+    },
+    {
+      "text": "la",
+      "start": 149.97,
+      "end": 150.1,
+      "type": "word",
+      "logprob": -0.00000965590606938349
+    },
+    {
+      "text": " ",
+      "start": 150.1,
+      "end": 150.14,
+      "type": "spacing",
+      "logprob": -0.000015735502529423684
+    },
+    {
+      "text": "bord,",
+      "start": 150.14,
+      "end": 150.44,
+      "type": "word",
+      "logprob": -0.07738684405921958
+    },
+    {
+      "text": " ",
+      "start": 150.44,
+      "end": 151.34,
+      "type": "spacing",
+      "logprob": -0.0003483880718704313
+    },
+    {
+      "text": "dar",
+      "start": 151.34,
+      "end": 151.5,
+      "type": "word",
+      "logprob": -0.0003483880718704313
+    },
+    {
+      "text": " ",
+      "start": 151.5,
+      "end": 151.52,
+      "type": "spacing",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": "fiecare",
+      "start": 151.52,
+      "end": 151.9,
+      "type": "word",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": " ",
+      "start": 151.9,
+      "end": 151.98,
+      "type": "spacing",
+      "logprob": -0.00027414379292167723
+    },
+    {
+      "text": "canal",
+      "start": 151.98,
+      "end": 152.34,
+      "type": "word",
+      "logprob": -0.00027414379292167723
+    },
+    {
+      "text": " ",
+      "start": 152.34,
+      "end": 152.36,
+      "type": "spacing",
+      "logprob": -0.000006079655122448457
+    },
+    {
+      "text": "poate",
+      "start": 152.36,
+      "end": 152.56,
+      "type": "word",
+      "logprob": -0.000006079655122448457
+    },
+    {
+      "text": " ",
+      "start": 152.56,
+      "end": 152.64,
+      "type": "spacing",
+      "logprob": -0.000014185804502631072
+    },
+    {
+      "text": "trimite",
+      "start": 152.64,
+      "end": 152.94,
+      "type": "word",
+      "logprob": -0.000018681610786838325
+    },
+    {
+      "text": " ",
+      "start": 152.94,
+      "end": 153,
+      "type": "spacing",
+      "logprob": -0.000008583032467868179
+    },
+    {
+      "text": "acasă",
+      "start": 153,
+      "end": 153.58,
+      "type": "word",
+      "logprob": -0.000006723380374751287
+    },
+    {
+      "text": " ",
+      "start": 153.58,
+      "end": 153.6,
+      "type": "spacing",
+      "logprob": -0.00004470248313737102
+    },
+    {
+      "text": "un",
+      "start": 153.6,
+      "end": 153.74,
+      "type": "word",
+      "logprob": -0.00004470248313737102
+    },
+    {
+      "text": " ",
+      "start": 153.74,
+      "end": 153.78,
+      "type": "spacing",
+      "logprob": -0.000014662635294371285
+    },
+    {
+      "text": "singur",
+      "start": 153.78,
+      "end": 154.04,
+      "type": "word",
+      "logprob": -0.000009775090196247524
+    },
+    {
+      "text": " ",
+      "start": 154.04,
+      "end": 154.1,
+      "type": "spacing",
+      "logprob": -0.00003540453326422721
+    },
+    {
+      "text": "document.",
+      "start": 154.1,
+      "end": 154.7,
+      "type": "word",
+      "logprob": -0.001117782214552992
+    },
+    {
+      "text": " ",
+      "start": 154.7,
+      "end": 154.7,
+      "type": "spacing",
+      "logprob": -0.00002288792165927589
+    },
+    {
+      "text": "Ce",
+      "start": 155.74,
+      "end": 155.82,
+      "type": "word",
+      "logprob": -0.00002288792165927589
+    },
+    {
+      "text": " ",
+      "start": 155.82,
+      "end": 155.859,
+      "type": "spacing",
+      "logprob": -0.00000822540732769994
+    },
+    {
+      "text": "va",
+      "start": 155.86,
+      "end": 155.92,
+      "type": "word",
+      "logprob": -0.00000822540732769994
+    },
+    {
+      "text": " ",
+      "start": 155.92,
+      "end": 155.96,
+      "type": "spacing",
+      "logprob": -0.000613143783994019
+    },
+    {
+      "text": "reprezenta",
+      "start": 155.96,
+      "end": 156.54,
+      "type": "word",
+      "logprob": -0.000368553841872199
+    },
+    {
+      "text": " ",
+      "start": 156.54,
+      "end": 156.579,
+      "type": "spacing",
+      "logprob": -0.00100514420773834
+    },
+    {
+      "text": "expediția",
+      "start": 156.58,
+      "end": 157.24,
+      "type": "word",
+      "logprob": -0.0006822949993268897
+    },
+    {
+      "text": " ",
+      "start": 157.24,
+      "end": 157.26,
+      "type": "spacing",
+      "logprob": -0.0002181292074965313
+    },
+    {
+      "text": "voastră?",
+      "start": 157.26,
+      "end": 157.66,
+      "type": "word",
+      "logprob": -0.00016690377378836274
+    },
+    {
+      "text": " ",
+      "start": 157.66,
+      "end": 157.799,
+      "type": "spacing",
+      "logprob": -0.0002205128694185987
+    },
+    {
+      "text": "Pe",
+      "start": 157.8,
+      "end": 157.86,
+      "type": "word",
+      "logprob": -0.000007033323527139146
+    },
+    {
+      "text": " ",
+      "start": 157.86,
+      "end": 157.94,
+      "type": "spacing",
+      "logprob": -0.0005775213940069079
+    },
+    {
+      "text": "tabletă",
+      "start": 157.94,
+      "end": 158.46,
+      "type": "word",
+      "logprob": -0.0004950523975131611
+    },
+    {
+      "text": " ",
+      "start": 158.46,
+      "end": 158.52,
+      "type": "spacing",
+      "logprob": -0.0015906550688669086
+    },
+    {
+      "text": "găsiți",
+      "start": 158.52,
+      "end": 158.96,
+      "type": "word",
+      "logprob": -0.0005786536867162795
+    },
+    {
+      "text": " ",
+      "start": 158.96,
+      "end": 159.02,
+      "type": "spacing",
+      "logprob": -0.00019393471302464604
+    },
+    {
+      "text": "documentele",
+      "start": 159.02,
+      "end": 159.68,
+      "type": "word",
+      "logprob": -0.0001411409625120541
+    },
+    {
+      "text": " ",
+      "start": 159.68,
+      "end": 159.76,
+      "type": "spacing",
+      "logprob": -0.0002889215829782188
+    },
+    {
+      "text": "păstrate,",
+      "start": 159.76,
+      "end": 160.4,
+      "type": "word",
+      "logprob": -0.0008703075646836725
+    },
+    {
+      "text": " ",
+      "start": 160.4,
+      "end": 160.94,
+      "type": "spacing",
+      "logprob": -0.001910886145196855
+    },
+    {
+      "text": "observația,",
+      "start": 160.94,
+      "end": 161.8,
+      "type": "word",
+      "logprob": -0.0012684765843005152
+    },
+    {
+      "text": " ",
+      "start": 161.8,
+      "end": 162.24,
+      "type": "spacing",
+      "logprob": -0.0002022777043748647
+    },
+    {
+      "text": "raportul",
+      "start": 162.24,
+      "end": 162.76,
+      "type": "word",
+      "logprob": -0.00015176788291881849
+    },
+    {
+      "text": " ",
+      "start": 162.76,
+      "end": 162.859,
+      "type": "spacing",
+      "logprob": -0.009379842318594456
+    },
+    {
+      "text": "sondei",
+      "start": 162.86,
+      "end": 163.3,
+      "type": "word",
+      "logprob": -0.00781653526549538
+    },
+    {
+      "text": " ",
+      "start": 163.3,
+      "end": 163.78,
+      "type": "spacing",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": "sau",
+      "start": 163.78,
+      "end": 163.96,
+      "type": "word",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": " ",
+      "start": 163.96,
+      "end": 164.02,
+      "type": "spacing",
+      "logprob": -0.0001137191939051263
+    },
+    {
+      "text": "locurile",
+      "start": 164.02,
+      "end": 164.58,
+      "type": "word",
+      "logprob": -0.00012221183260407997
+    },
+    {
+      "text": " ",
+      "start": 164.58,
+      "end": 164.64,
+      "type": "spacing",
+      "logprob": -0.0010151476599276066
+    },
+    {
+      "text": "rămase",
+      "start": 164.64,
+      "end": 165.1,
+      "type": "word",
+      "logprob": -0.0005119845541230461
+    },
+    {
+      "text": " ",
+      "start": 165.1,
+      "end": 165.14,
+      "type": "spacing",
+      "logprob": -0.00013136000779923052
+    },
+    {
+      "text": "goale.",
+      "start": 165.14,
+      "end": 165.64,
+      "type": "word",
+      "logprob": -0.00005809162909523972
+    },
+    {
+      "text": " ",
+      "start": 165.64,
+      "end": 166.32,
+      "type": "spacing",
+      "logprob": -0.000048636207793606445
+    },
+    {
+      "text": "Fiecare",
+      "start": 166.32,
+      "end": 167.02,
+      "type": "word",
+      "logprob": -0.000022002120983545736
+    },
+    {
+      "text": " ",
+      "start": 167.02,
+      "end": 167.56,
+      "type": "spacing",
+      "logprob": -0.00004577531944960356
+    },
+    {
+      "text": "spune",
+      "start": 167.56,
+      "end": 168.02,
+      "type": "word",
+      "logprob": -0.00004577531944960356
+    },
+    {
+      "text": " ",
+      "start": 168.02,
+      "end": 168.12,
+      "type": "spacing",
+      "logprob": -0.000008106198947643861
+    },
+    {
+      "text": "altceva.",
+      "start": 168.12,
+      "end": 168.62,
+      "type": "word",
+      "logprob": -0.00008725410815202395
+    },
+    {
+      "text": " ",
+      "start": 168.62,
+      "end": 168.78,
+      "type": "spacing",
+      "logprob": -0.000004768360213347478
+    },
+    {
+      "text": "Următorul",
+      "start": 168.78,
+      "end": 169.38,
+      "type": "word",
+      "logprob": -0.00011948991065303794
+    },
+    {
+      "text": " ",
+      "start": 169.38,
+      "end": 169.42,
+      "type": "spacing",
+      "logprob": -0.0003601856005843729
+    },
+    {
+      "text": "echipaj",
+      "start": 169.42,
+      "end": 169.98,
+      "type": "word",
+      "logprob": -0.0002573435485747463
+    },
+    {
+      "text": " ",
+      "start": 169.98,
+      "end": 170.02,
+      "type": "spacing",
+      "logprob": -0.00002276871418871451
+    },
+    {
+      "text": "va",
+      "start": 170.02,
+      "end": 170.14,
+      "type": "word",
+      "logprob": -0.00002276871418871451
+    },
+    {
+      "text": " ",
+      "start": 170.14,
+      "end": 170.2,
+      "type": "spacing",
+      "logprob": -0.000050424259825376794
+    },
+    {
+      "text": "avea",
+      "start": 170.2,
+      "end": 170.46,
+      "type": "word",
+      "logprob": -0.000050424259825376794
+    },
+    {
+      "text": " ",
+      "start": 170.46,
+      "end": 170.54,
+      "type": "spacing",
+      "logprob": -0.00001490105023549404
+    },
+    {
+      "text": "aceste",
+      "start": 170.54,
+      "end": 170.88,
+      "type": "word",
+      "logprob": -0.00001490105023549404
+    },
+    {
+      "text": " ",
+      "start": 170.88,
+      "end": 170.92,
+      "type": "spacing",
+      "logprob": -0.00009786603914108127
+    },
+    {
+      "text": "documente",
+      "start": 170.92,
+      "end": 171.64,
+      "type": "word",
+      "logprob": -0.0000870847530904939
+    },
+    {
+      "text": " ",
+      "start": 171.64,
+      "end": 171.7,
+      "type": "spacing",
+      "logprob": -0.0000058412379075889476
+    },
+    {
+      "text": "înainte",
+      "start": 171.7,
+      "end": 172.16,
+      "type": "word",
+      "logprob": -0.0000058412379075889476
+    },
+    {
+      "text": " ",
+      "start": 172.16,
+      "end": 172.22,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-7
+    },
+    {
+      "text": "să",
+      "start": 172.22,
+      "end": 172.32,
+      "type": "word",
+      "logprob": -8.344646857949556e-7
+    },
+    {
+      "text": " ",
+      "start": 172.32,
+      "end": 172.359,
+      "type": "spacing",
+      "logprob": -0.0000697350042173639
+    },
+    {
+      "text": "vadă",
+      "start": 172.36,
+      "end": 172.62,
+      "type": "word",
+      "logprob": -0.00005230125316302292
+    },
+    {
+      "text": " ",
+      "start": 172.62,
+      "end": 172.68,
+      "type": "spacing",
+      "logprob": -0.09544283896684647
+    },
+    {
+      "text": "lumile.",
+      "start": 172.68,
+      "end": 173.399,
+      "type": "word",
+      "logprob": -0.040921307758724525
+    },
+    {
+      "text": " ",
+      "start": 173.399,
+      "end": 173.52,
+      "type": "spacing",
+      "logprob": -0.00011944057769142091
+    },
+    {
+      "text": "Alegeți",
+      "start": 173.52,
+      "end": 174.08,
+      "type": "word",
+      "logprob": -0.000024079216278291176
+    },
+    {
+      "text": " ",
+      "start": 174.08,
+      "end": 174.18,
+      "type": "spacing",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": "ce",
+      "start": 174.18,
+      "end": 174.3,
+      "type": "word",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": " ",
+      "start": 174.3,
+      "end": 174.38,
+      "type": "spacing",
+      "logprob": -0.16029366850852966
+    },
+    {
+      "text": "ar",
+      "start": 174.38,
+      "end": 174.46,
+      "type": "word",
+      "logprob": -0.16029366850852966
+    },
+    {
+      "text": " ",
+      "start": 174.46,
+      "end": 174.54,
+      "type": "spacing",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": "fi",
+      "start": 174.54,
+      "end": 174.64,
+      "type": "word",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": " ",
+      "start": 174.64,
+      "end": 174.68,
+      "type": "spacing",
+      "logprob": -0.0000016689286894688848
+    },
+    {
+      "text": "mai",
+      "start": 174.68,
+      "end": 174.8,
+      "type": "word",
+      "logprob": -0.0000016689286894688848
+    },
+    {
+      "text": " ",
+      "start": 174.8,
+      "end": 174.82,
+      "type": "spacing",
+      "logprob": -0.000004291525328881107
+    },
+    {
+      "text": "de",
+      "start": 174.82,
+      "end": 174.88,
+      "type": "word",
+      "logprob": -0.000004291525328881107
+    },
+    {
+      "text": " ",
+      "start": 174.88,
+      "end": 174.96,
+      "type": "spacing",
+      "logprob": -0.0000213382354559144
+    },
+    {
+      "text": "folos.",
+      "start": 174.96,
+      "end": 175.4,
+      "type": "word",
+      "logprob": -0.00003613908211264061
+    },
+    {
+      "text": " ",
+      "start": 175.4,
+      "end": 175.74,
+      "type": "spacing",
+      "logprob": -0.00009250213042832911
+    },
+    {
+      "text": "Fiecare",
+      "start": 175.74,
+      "end": 176.26,
+      "type": "word",
+      "logprob": -0.00004175547370063474
+    },
+    {
+      "text": " ",
+      "start": 176.26,
+      "end": 176.28,
+      "type": "spacing",
+      "logprob": -0.000007748573807475623
+    },
+    {
+      "text": "instrument",
+      "start": 176.28,
+      "end": 177.12,
+      "type": "word",
+      "logprob": -0.000007748573807475623
+    },
+    {
+      "text": " ",
+      "start": 177.12,
+      "end": 177.14,
+      "type": "spacing",
+      "logprob": -0.000006079655122448457
+    },
+    {
+      "text": "are",
+      "start": 177.14,
+      "end": 177.32,
+      "type": "word",
+      "logprob": -0.000006079655122448457
+    },
+    {
+      "text": " ",
+      "start": 177.32,
+      "end": 177.38,
+      "type": "spacing",
+      "logprob": -0.000002145764938177308
+    },
+    {
+      "text": "ceva",
+      "start": 177.38,
+      "end": 177.64,
+      "type": "word",
+      "logprob": -0.000002145764938177308
+    },
+    {
+      "text": " ",
+      "start": 177.64,
+      "end": 177.7,
+      "type": "spacing",
+      "logprob": 0
+    },
+    {
+      "text": "de",
+      "start": 177.7,
+      "end": 177.8,
+      "type": "word",
+      "logprob": 0
+    },
+    {
+      "text": " ",
+      "start": 177.8,
+      "end": 177.82,
+      "type": "spacing",
+      "logprob": -0.00010597144137136638
+    },
+    {
+      "text": "trimis.",
+      "start": 177.82,
+      "end": 178.28,
+      "type": "word",
+      "logprob": -0.00006077649785701007
+    },
+    {
+      "text": " ",
+      "start": 178.28,
+      "end": 178.98,
+      "type": "spacing",
+      "logprob": -0.0007649118197150528
+    },
+    {
+      "text": "Priviți",
+      "start": 178.98,
+      "end": 179.32,
+      "type": "word",
+      "logprob": -0.00044703776268306683
+    },
+    {
+      "text": " ",
+      "start": 179.32,
+      "end": 179.36,
+      "type": "spacing",
+      "logprob": -0.0000358813522325363
+    },
+    {
+      "text": "documentele",
+      "start": 179.36,
+      "end": 180.12,
+      "type": "word",
+      "logprob": -0.000026128040518875135
+    },
+    {
+      "text": " ",
+      "start": 180.12,
+      "end": 180.48,
+      "type": "spacing",
+      "logprob": -0.0000036954811548639555
+    },
+    {
+      "text": "și",
+      "start": 180.48,
+      "end": 180.58,
+      "type": "word",
+      "logprob": -0.0000036954811548639555
+    },
+    {
+      "text": " ",
+      "start": 180.58,
+      "end": 180.62,
+      "type": "spacing",
+      "logprob": -0.000007152531907195225
+    },
+    {
+      "text": "alegeți",
+      "start": 180.62,
+      "end": 181.07,
+      "type": "word",
+      "logprob": -0.000001498627040876142
+    },
+    {
+      "text": " ",
+      "start": 181.07,
+      "end": 181.2,
+      "type": "spacing",
+      "logprob": -0.00006544376083184034
+    },
+    {
+      "text": "unul.",
+      "start": 181.2,
+      "end": 181.6,
+      "type": "word",
+      "logprob": -0.00005237885052196134
+    },
+    {
+      "text": " ",
+      "start": 181.6,
+      "end": 182.22,
+      "type": "spacing",
+      "logprob": -0.0000036954811548639555
+    },
+    {
+      "text": "Puteți",
+      "start": 182.22,
+      "end": 182.6,
+      "type": "word",
+      "logprob": -0.0000013709051790063616
+    },
+    {
+      "text": " ",
+      "start": 182.6,
+      "end": 182.62,
+      "type": "spacing",
+      "logprob": -0.0000058412379075889476
+    },
+    {
+      "text": "lăsa",
+      "start": 182.62,
+      "end": 182.92,
+      "type": "word",
+      "logprob": -0.000023096337031347502
+    },
+    {
+      "text": " ",
+      "start": 182.92,
+      "end": 183,
+      "type": "spacing",
+      "logprob": -0.00008225102646974847
+    },
+    {
+      "text": "locul",
+      "start": 183,
+      "end": 183.32,
+      "type": "word",
+      "logprob": -0.00008225102646974847
+    },
+    {
+      "text": " ",
+      "start": 183.32,
+      "end": 183.38,
+      "type": "spacing",
+      "logprob": -0.00001168244216387393
+    },
+    {
+      "text": "liber.",
+      "start": 183.38,
+      "end": 183.74,
+      "type": "word",
+      "logprob": -0.00003657516587433444
+    },
+    {
+      "text": " ",
+      "start": 183.74,
+      "end": 183.94,
+      "type": "spacing",
+      "logprob": -0.004393092822283506
+    },
+    {
+      "text": "Unele",
+      "start": 183.94,
+      "end": 184.2,
+      "type": "word",
+      "logprob": -0.0026361894792444216
+    },
+    {
+      "text": " ",
+      "start": 184.2,
+      "end": 184.24,
+      "type": "spacing",
+      "logprob": -0.0003358753747306764
+    },
+    {
+      "text": "instrumente",
+      "start": 184.24,
+      "end": 185.3,
+      "type": "word",
+      "logprob": -0.0003053520869626554
+    },
+    {
+      "text": " ",
+      "start": 185.3,
+      "end": 185.4,
+      "type": "spacing",
+      "logprob": -0.00004124556289752945
+    },
+    {
+      "text": "nu",
+      "start": 185.4,
+      "end": 185.48,
+      "type": "word",
+      "logprob": -0.00004124556289752945
+    },
+    {
+      "text": " ",
+      "start": 185.48,
+      "end": 185.56,
+      "type": "spacing",
+      "logprob": -0.000007986990567587782
+    },
+    {
+      "text": "au",
+      "start": 185.56,
+      "end": 185.7,
+      "type": "word",
+      "logprob": -0.000007986990567587782
+    },
+    {
+      "text": " ",
+      "start": 185.7,
+      "end": 185.74,
+      "type": "spacing",
+      "logprob": -0.000006437280717364047
+    },
+    {
+      "text": "nimic",
+      "start": 185.74,
+      "end": 186.18,
+      "type": "word",
+      "logprob": -0.000006437280717364047
+    },
+    {
+      "text": " ",
+      "start": 186.18,
+      "end": 186.22,
+      "type": "spacing",
+      "logprob": 0
+    },
+    {
+      "text": "de",
+      "start": 186.22,
+      "end": 186.3,
+      "type": "word",
+      "logprob": 0
+    },
+    {
+      "text": " ",
+      "start": 186.3,
+      "end": 186.38,
+      "type": "spacing",
+      "logprob": -0.000038265450712060556
+    },
+    {
+      "text": "trimis.",
+      "start": 186.38,
+      "end": 186.84,
+      "type": "word",
+      "logprob": -0.00003344583611765627
+    },
+    {
+      "text": " ",
+      "start": 186.84,
+      "end": 187.7,
+      "type": "spacing",
+      "logprob": -0.00005340433563105762
+    },
+    {
+      "text": "Unde",
+      "start": 187.7,
+      "end": 187.92,
+      "type": "word",
+      "logprob": -0.00005340433563105762
+    },
+    {
+      "text": " ",
+      "start": 187.92,
+      "end": 187.96,
+      "type": "spacing",
+      "logprob": -0.0001411338453181088
+    },
+    {
+      "text": "există",
+      "start": 187.96,
+      "end": 188.4,
+      "type": "word",
+      "logprob": -0.0001411338453181088
+    },
+    {
+      "text": " ",
+      "start": 188.4,
+      "end": 188.44,
+      "type": "spacing",
+      "logprob": -0.00007974783511599526
+    },
+    {
+      "text": "documente,",
+      "start": 188.44,
+      "end": 189.1,
+      "type": "word",
+      "logprob": -0.000449981325061799
+    },
+    {
+      "text": " ",
+      "start": 189.1,
+      "end": 189.48,
+      "type": "spacing",
+      "logprob": -0.020550191402435303
+    },
+    {
+      "text": "alegeți",
+      "start": 189.48,
+      "end": 189.96,
+      "type": "word",
+      "logprob": -0.002936014107165517
+    },
+    {
+      "text": " ",
+      "start": 189.96,
+      "end": 190.06,
+      "type": "spacing",
+      "logprob": -0.00005543078441405669
+    },
+    {
+      "text": "unul.",
+      "start": 190.06,
+      "end": 190.42,
+      "type": "word",
+      "logprob": -0.0000495420848892536
+    },
+    {
+      "text": " ",
+      "start": 190.42,
+      "end": 191.14,
+      "type": "spacing",
+      "logprob": -0.000014781842764932662
+    },
+    {
+      "text": "Puteți",
+      "start": 191.14,
+      "end": 191.54,
+      "type": "word",
+      "logprob": -0.000009079693550499238
+    },
+    {
+      "text": " ",
+      "start": 191.54,
+      "end": 191.58,
+      "type": "spacing",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": "lăsa",
+      "start": 191.58,
+      "end": 191.94,
+      "type": "word",
+      "logprob": -0.0000034570620073282043
+    },
+    {
+      "text": " ",
+      "start": 191.94,
+      "end": 192.02,
+      "type": "spacing",
+      "logprob": -0.00002753696753643453
+    },
+    {
+      "text": "locul",
+      "start": 192.02,
+      "end": 192.38,
+      "type": "word",
+      "logprob": -0.00002753696753643453
+    },
+    {
+      "text": " ",
+      "start": 192.38,
+      "end": 192.4,
+      "type": "spacing",
+      "logprob": -0.00004482168878894299
+    },
+    {
+      "text": "liber.",
+      "start": 192.4,
+      "end": 192.8,
+      "type": "word",
+      "logprob": -0.00007112395057144265
+    },
+    {
+      "text": " ",
+      "start": 192.8,
+      "end": 192.98,
+      "type": "spacing",
+      "logprob": -0.00008618460560683161
+    },
+    {
+      "text": "Așez",
+      "start": 192.98,
+      "end": 193.26,
+      "type": "word",
+      "logprob": -0.022746274511973752
+    },
+    {
+      "text": " ",
+      "start": 193.26,
+      "end": 193.269,
+      "type": "spacing",
+      "logprob": -0.008435334078967571
+    },
+    {
+      "text": "documentele",
+      "start": 193.269,
+      "end": 193.84,
+      "type": "word",
+      "logprob": -0.0061348859559250905
+    },
+    {
+      "text": " ",
+      "start": 193.84,
+      "end": 193.86,
+      "type": "spacing",
+      "logprob": -0.000014543427823809907
+    },
+    {
+      "text": "alese",
+      "start": 193.86,
+      "end": 194.18,
+      "type": "word",
+      "logprob": -0.000012254638386366424
+    },
+    {
+      "text": " ",
+      "start": 194.18,
+      "end": 194.2,
+      "type": "spacing",
+      "logprob": -0.00002729855441430118
+    },
+    {
+      "text": "în",
+      "start": 194.2,
+      "end": 194.28,
+      "type": "word",
+      "logprob": -0.00002729855441430118
+    },
+    {
+      "text": " ",
+      "start": 194.28,
+      "end": 194.34,
+      "type": "spacing",
+      "logprob": -0.00006639736966462806
+    },
+    {
+      "text": "pachetul",
+      "start": 194.34,
+      "end": 194.74,
+      "type": "word",
+      "logprob": -0.000028192414276873023
+    },
+    {
+      "text": " ",
+      "start": 194.74,
+      "end": 194.78,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "de",
+      "start": 194.78,
+      "end": 194.88,
+      "type": "word",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": " ",
+      "start": 194.88,
+      "end": 194.9,
+      "type": "spacing",
+      "logprob": -0.00045753977610729635
+    },
+    {
+      "text": "întoarcere.",
+      "start": 194.9,
+      "end": 195.6,
+      "type": "word",
+      "logprob": -0.00021135066404295603
+    },
+    {
+      "text": " ",
+      "start": 195.6,
+      "end": 196.22,
+      "type": "spacing",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": "Restul",
+      "start": 196.22,
+      "end": 196.64,
+      "type": "word",
+      "logprob": -0.00000611938348053324
+    },
+    {
+      "text": " ",
+      "start": 196.64,
+      "end": 197.08,
+      "type": "spacing",
+      "logprob": -0.00005924526340095326
+    },
+    {
+      "text": "rămân",
+      "start": 197.08,
+      "end": 197.3,
+      "type": "word",
+      "logprob": -0.0001530225810711272
+    },
+    {
+      "text": " ",
+      "start": 197.3,
+      "end": 197.36,
+      "type": "spacing",
+      "logprob": -0.000011920858014491387
+    },
+    {
+      "text": "în",
+      "start": 197.36,
+      "end": 197.44,
+      "type": "word",
+      "logprob": -0.000011920858014491387
+    },
+    {
+      "text": " ",
+      "start": 197.44,
+      "end": 197.48,
+      "type": "spacing",
+      "logprob": -0.0011481605470180511
+    },
+    {
+      "text": "memoria",
+      "start": 197.48,
+      "end": 197.94,
+      "type": "word",
+      "logprob": -0.0011481605470180511
+    },
+    {
+      "text": " ",
+      "start": 197.94,
+      "end": 197.96,
+      "type": "spacing",
+      "logprob": -0.0019246878800913692
+    },
+    {
+      "text": "navei.",
+      "start": 197.96,
+      "end": 198.32,
+      "type": "word",
+      "logprob": -0.0012857279692373897
+    },
+    {
+      "text": " ",
+      "start": 198.32,
+      "end": 198.52,
+      "type": "spacing",
+      "logprob": -0.000039457496313843876
+    },
+    {
+      "text": "Lasă",
+      "start": 198.52,
+      "end": 198.84,
+      "type": "word",
+      "logprob": -0.00017718367598718032
+    },
+    {
+      "text": " ",
+      "start": 198.84,
+      "end": 198.9,
+      "type": "spacing",
+      "logprob": -0.000027179348762729205
+    },
+    {
+      "text": "vizibile",
+      "start": 198.9,
+      "end": 199.56,
+      "type": "word",
+      "logprob": -0.005456017773894928
+    },
+    {
+      "text": " ",
+      "start": 199.56,
+      "end": 199.62,
+      "type": "spacing",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": "și",
+      "start": 199.62,
+      "end": 199.76,
+      "type": "word",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": " ",
+      "start": 199.76,
+      "end": 199.8,
+      "type": "spacing",
+      "logprob": -0.00006258291978156194
+    },
+    {
+      "text": "locurile",
+      "start": 199.8,
+      "end": 200.36,
+      "type": "word",
+      "logprob": -0.00002853496926036314
+    },
+    {
+      "text": " ",
+      "start": 200.36,
+      "end": 200.44,
+      "type": "spacing",
+      "logprob": -0.00010251473577227443
+    },
+    {
+      "text": "goale.",
+      "start": 200.44,
+      "end": 200.84,
+      "type": "word",
+      "logprob": -0.00004760231179901098
+    },
+    {
+      "text": " ",
+      "start": 200.84,
+      "end": 201.079,
+      "type": "spacing",
+      "logprob": -0.000007390948667307384
+    },
+    {
+      "text": "Poate",
+      "start": 201.08,
+      "end": 201.3,
+      "type": "word",
+      "logprob": -0.0000031709561540083087
+    },
+    {
+      "text": " ",
+      "start": 201.3,
+      "end": 201.36,
+      "type": "spacing",
+      "logprob": -0.000010251946150674485
+    },
+    {
+      "text": "că",
+      "start": 201.36,
+      "end": 201.44,
+      "type": "word",
+      "logprob": -0.000010251946150674485
+    },
+    {
+      "text": " ",
+      "start": 201.44,
+      "end": 201.46,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": "de",
+      "start": 201.46,
+      "end": 201.54,
+      "type": "word",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": " ",
+      "start": 201.54,
+      "end": 201.579,
+      "type": "spacing",
+      "logprob": -0.000011444026313256472
+    },
+    {
+      "text": "acolo",
+      "start": 201.58,
+      "end": 202.12,
+      "type": "word",
+      "logprob": -0.000011444026313256472
+    },
+    {
+      "text": " ",
+      "start": 202.12,
+      "end": 202.18,
+      "type": "spacing",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": "va",
+      "start": 202.18,
+      "end": 202.32,
+      "type": "word",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": " ",
+      "start": 202.32,
+      "end": 202.34,
+      "type": "spacing",
+      "logprob": -0.03929116949439049
+    },
+    {
+      "text": "porni",
+      "start": 202.34,
+      "end": 202.72,
+      "type": "word",
+      "logprob": -0.023583141625567804
+    },
+    {
+      "text": " ",
+      "start": 202.72,
+      "end": 202.88,
+      "type": "spacing",
+      "logprob": -0.0004970983718521893
+    },
+    {
+      "text": "următoarea",
+      "start": 202.88,
+      "end": 203.38,
+      "type": "word",
+      "logprob": -0.0003228751360438764
+    },
+    {
+      "text": " ",
+      "start": 203.38,
+      "end": 203.54,
+      "type": "spacing",
+      "logprob": -0.0006204110686667264
+    },
+    {
+      "text": "expediție.",
+      "start": 203.54,
+      "end": 204.4,
+      "type": "word",
+      "logprob": -0.00037670503793378883
+    },
+    {
+      "text": " ",
+      "start": 204.4,
+      "end": 204.44,
+      "type": "spacing",
+      "logprob": -0.0005015069036744535
+    },
+    {
+      "text": "Transmisia",
+      "start": 204.44,
+      "end": 205.48,
+      "type": "word",
+      "logprob": -0.0017048755758878541
+    },
+    {
+      "text": " ",
+      "start": 205.48,
+      "end": 205.66,
+      "type": "spacing",
+      "logprob": -0.00002884823152271565
+    },
+    {
+      "text": "este",
+      "start": 205.66,
+      "end": 205.94,
+      "type": "word",
+      "logprob": -0.00002884823152271565
+    },
+    {
+      "text": " ",
+      "start": 205.94,
+      "end": 205.98,
+      "type": "spacing",
+      "logprob": -0.0000058412379075889476
+    },
+    {
+      "text": "pregătită.",
+      "start": 205.98,
+      "end": 207.32,
+      "type": "word",
+      "logprob": -0.0002811207756167278
+    },
+    {
+      "text": " ",
+      "start": 207.32,
+      "end": 207.46,
+      "type": "spacing",
+      "logprob": -0.0005681092734448612
+    },
+    {
+      "text": "Instrumentele",
+      "start": 207.46,
+      "end": 208.42,
+      "type": "word",
+      "logprob": -0.0004371171727370893
+    },
+    {
+      "text": " ",
+      "start": 208.42,
+      "end": 208.68,
+      "type": "spacing",
+      "logprob": -0.000010967194612021558
+    },
+    {
+      "text": "se",
+      "start": 208.74,
+      "end": 208.82,
+      "type": "word",
+      "logprob": -0.000010967194612021558
+    },
+    {
+      "text": " ",
+      "start": 208.82,
+      "end": 208.86,
+      "type": "spacing",
+      "logprob": -0.00022456508304458112
+    },
+    {
+      "text": "odihnesc.",
+      "start": 208.86,
+      "end": 209.54,
+      "type": "word",
+      "logprob": -0.000253837921996415
+    },
+    {
+      "text": " ",
+      "start": 209.54,
+      "end": 210.41,
+      "type": "spacing",
+      "logprob": -0.0018454440869390965
+    },
+    {
+      "text": "Priviți",
+      "start": 210.41,
+      "end": 210.8,
+      "type": "word",
+      "logprob": -0.0010563105838303141
+    },
+    {
+      "text": " ",
+      "start": 210.8,
+      "end": 210.86,
+      "type": "spacing",
+      "logprob": -0.0000017881377516459906
+    },
+    {
+      "text": "înainte.",
+      "start": 210.86,
+      "end": 211.38,
+      "type": "word",
+      "logprob": -0.0484566725776574
+    },
+    {
+      "text": " ",
+      "start": 211.38,
+      "end": 212.28,
+      "type": "spacing",
+      "logprob": -0.0006631797295995057
+    },
+    {
+      "text": "Intrăm",
+      "start": 212.28,
+      "end": 213.28,
+      "type": "word",
+      "logprob": -0.00044661000598959316
+    },
+    {
+      "text": " ",
+      "start": 213.28,
+      "end": 213.38,
+      "type": "spacing",
+      "logprob": -0.000028371408916427754
+    },
+    {
+      "text": "în",
+      "start": 213.38,
+      "end": 213.5,
+      "type": "word",
+      "logprob": -0.000028371408916427754
+    },
+    {
+      "text": " ",
+      "start": 213.5,
+      "end": 213.54,
+      "type": "spacing",
+      "logprob": -0.0036486501339823008
+    },
+    {
+      "text": "traversare.",
+      "start": 213.54,
+      "end": 214.36,
+      "type": "word",
+      "logprob": -0.01715240472999953
+    },
+    {
+      "text": " ",
+      "start": 214.36,
+      "end": 214.44,
+      "type": "spacing",
+      "logprob": -0.00010489867418073118
+    },
+    {
+      "text": "Undeva",
+      "start": 214.44,
+      "end": 215.02,
+      "type": "word",
+      "logprob": -0.00006782709897379391
+    },
+    {
+      "text": " ",
+      "start": 215.02,
+      "end": 215.16,
+      "type": "spacing",
+      "logprob": -0.0063194213435053825
+    },
+    {
+      "text": "dincolo",
+      "start": 215.16,
+      "end": 215.56,
+      "type": "word",
+      "logprob": -0.0027085959112420305
+    },
+    {
+      "text": " ",
+      "start": 215.56,
+      "end": 215.62,
+      "type": "spacing",
+      "logprob": -0.0000020265558760002023
+    },
+    {
+      "text": "de",
+      "start": 215.62,
+      "end": 215.7,
+      "type": "word",
+      "logprob": -0.0000020265558760002023
+    },
+    {
+      "text": " ",
+      "start": 215.7,
+      "end": 215.78,
+      "type": "spacing",
+      "logprob": -0.00013720047718379647
+    },
+    {
+      "text": "trecerea",
+      "start": 215.78,
+      "end": 216.3,
+      "type": "word",
+      "logprob": -0.000055175447982946935
+    },
+    {
+      "text": " ",
+      "start": 216.3,
+      "end": 216.38,
+      "type": "spacing",
+      "logprob": -0.0027281944639980793
+    },
+    {
+      "text": "aceasta",
+      "start": 216.38,
+      "end": 217.08,
+      "type": "word",
+      "logprob": -0.0027281944639980793
+    },
+    {
+      "text": " ",
+      "start": 217.08,
+      "end": 217.24,
+      "type": "spacing",
+      "logprob": -0.0014423454413190484
+    },
+    {
+      "text": "este",
+      "start": 217.24,
+      "end": 217.46,
+      "type": "word",
+      "logprob": -0.0014423454413190484
+    },
+    {
+      "text": " ",
+      "start": 217.46,
+      "end": 217.56,
+      "type": "spacing",
+      "logprob": -0.00003886147169396281
+    },
+    {
+      "text": "casa",
+      "start": 217.56,
+      "end": 217.82,
+      "type": "word",
+      "logprob": -0.00003886147169396281
+    },
+    {
+      "text": " ",
+      "start": 217.82,
+      "end": 217.88,
+      "type": "spacing",
+      "logprob": -0.00009583967766957358
+    },
+    {
+      "text": "noastră.",
+      "start": 217.88,
+      "end": 218.42,
+      "type": "word",
+      "logprob": -0.000083904421437353
+    },
+    {
+      "text": " ",
+      "start": 218.42,
+      "end": 218.42,
+      "type": "spacing",
+      "logprob": -0.0012181727215647697
+    },
+    {
+      "text": "Încerc",
+      "start": 219.74,
+      "end": 220.1,
+      "type": "word",
+      "logprob": -0.0002611000824496538
+    },
+    {
+      "text": " ",
+      "start": 220.1,
+      "end": 220.16,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": "să-mi",
+      "start": 220.16,
+      "end": 220.3,
+      "type": "word",
+      "logprob": -0.002513871152766001
+    },
+    {
+      "text": " ",
+      "start": 220.3,
+      "end": 220.32,
+      "type": "spacing",
+      "logprob": -0.0000015497195136049413
+    },
+    {
+      "text": "amintesc",
+      "start": 220.32,
+      "end": 220.84,
+      "type": "word",
+      "logprob": -0.0001476578768517811
+    },
+    {
+      "text": " ",
+      "start": 220.84,
+      "end": 220.98,
+      "type": "spacing",
+      "logprob": -0.000004291525328881107
+    },
+    {
+      "text": "cât",
+      "start": 220.98,
+      "end": 221.1,
+      "type": "word",
+      "logprob": -0.000004291525328881107
+    },
+    {
+      "text": " ",
+      "start": 221.1,
+      "end": 221.12,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "de",
+      "start": 221.12,
+      "end": 221.24,
+      "type": "word",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": " ",
+      "start": 221.24,
+      "end": 221.28,
+      "type": "spacing",
+      "logprob": -0.000002622600959512056
+    },
+    {
+      "text": "mare",
+      "start": 221.28,
+      "end": 221.54,
+      "type": "word",
+      "logprob": -0.000002622600959512056
+    },
+    {
+      "text": " ",
+      "start": 221.54,
+      "end": 221.62,
+      "type": "spacing",
+      "logprob": -0.0001842805795604363
+    },
+    {
+      "text": "părea",
+      "start": 221.62,
+      "end": 221.96,
+      "type": "word",
+      "logprob": -0.00008343963127117604
+    },
+    {
+      "text": " ",
+      "start": 221.96,
+      "end": 222.14,
+      "type": "spacing",
+      "logprob": -0.000047801782784517854
+    },
+    {
+      "text": "când",
+      "start": 222.14,
+      "end": 222.3,
+      "type": "word",
+      "logprob": -0.000047801782784517854
+    },
+    {
+      "text": " ",
+      "start": 222.3,
+      "end": 222.36,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "am",
+      "start": 222.36,
+      "end": 222.44,
+      "type": "word",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": " ",
+      "start": 222.44,
+      "end": 222.5,
+      "type": "spacing",
+      "logprob": -0.00000822540732769994
+    },
+    {
+      "text": "plecat.",
+      "start": 222.5,
+      "end": 223.16,
+      "type": "word",
+      "logprob": -0.0014606714663126955
+    },
+    {
+      "text": " ",
+      "start": 223.16,
+      "end": 223.22,
+      "type": "spacing",
+      "logprob": -0.00024327656137757003
+    },
+    {
+      "text": "Pământul",
+      "start": 223.22,
+      "end": 224.24,
+      "type": "word",
+      "logprob": -0.00007101427036104724
+    },
+    {
+      "text": " ",
+      "start": 224.24,
+      "end": 224.3,
+      "type": "spacing",
+      "logprob": -0.00042512916843406856
+    },
+    {
+      "text": "în",
+      "start": 224.3,
+      "end": 224.41,
+      "type": "word",
+      "logprob": -0.00042512916843406856
+    },
+    {
+      "text": " ",
+      "start": 224.41,
+      "end": 224.52,
+      "type": "spacing",
+      "logprob": -0.00004386805812828243
+    },
+    {
+      "text": "față.",
+      "start": 224.52,
+      "end": 225.1,
+      "type": "word",
+      "logprob": -0.0005316755501553416
+    },
+    {
+      "text": " ",
+      "start": 225.1,
+      "end": 225.94,
+      "type": "spacing",
+      "logprob": -0.0030285704415291548
+    },
+    {
+      "text": "Deschid",
+      "start": 225.94,
+      "end": 226.34,
+      "type": "word",
+      "logprob": -0.0013540865495867496
+    },
+    {
+      "text": " ",
+      "start": 226.34,
+      "end": 226.4,
+      "type": "spacing",
+      "logprob": -0.000014185804502631072
+    },
+    {
+      "text": "legătura",
+      "start": 226.4,
+      "end": 226.84,
+      "type": "word",
+      "logprob": -0.0001614228908692894
+    },
+    {
+      "text": " ",
+      "start": 226.84,
+      "end": 226.92,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "de",
+      "start": 226.92,
+      "end": 226.98,
+      "type": "word",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": " ",
+      "start": 226.98,
+      "end": 227.02,
+      "type": "spacing",
+      "logprob": -0.00008284702198579907
+    },
+    {
+      "text": "întoarcere",
+      "start": 227.02,
+      "end": 227.68,
+      "type": "word",
+      "logprob": -0.00006942316827931449
+    },
+    {
+      "text": " ",
+      "start": 227.68,
+      "end": 228.1,
+      "type": "spacing",
+      "logprob": -0.000014662635294371285
+    },
+    {
+      "text": "și",
+      "start": 228.1,
+      "end": 228.26,
+      "type": "word",
+      "logprob": -0.000014662635294371285
+    },
+    {
+      "text": " ",
+      "start": 228.26,
+      "end": 228.28,
+      "type": "spacing",
+      "logprob": -0.00021765247220173478
+    },
+    {
+      "text": "pregătesc",
+      "start": 228.28,
+      "end": 229,
+      "type": "word",
+      "logprob": -0.0001317141561432638
+    },
+    {
+      "text": " ",
+      "start": 229,
+      "end": 229.1,
+      "type": "spacing",
+      "logprob": -0.000015139465176616795
+    },
+    {
+      "text": "ceea",
+      "start": 229.14,
+      "end": 229.36,
+      "type": "word",
+      "logprob": -0.000015139465176616795
+    },
+    {
+      "text": " ",
+      "start": 229.36,
+      "end": 229.4,
+      "type": "spacing",
+      "logprob": -0.0000046491513785440475
+    },
+    {
+      "text": "ce",
+      "start": 229.4,
+      "end": 229.48,
+      "type": "word",
+      "logprob": -0.0000046491513785440475
+    },
+    {
+      "text": " ",
+      "start": 229.48,
+      "end": 229.54,
+      "type": "spacing",
+      "logprob": -0.000003933898824470816
+    },
+    {
+      "text": "ați",
+      "start": 229.54,
+      "end": 229.68,
+      "type": "word",
+      "logprob": -0.0000018676093986869091
+    },
+    {
+      "text": " ",
+      "start": 229.68,
+      "end": 229.72,
+      "type": "spacing",
+      "logprob": -0.0002740246127359569
+    },
+    {
+      "text": "ales",
+      "start": 229.72,
+      "end": 230.1,
+      "type": "word",
+      "logprob": -0.0002740246127359569
+    },
+    {
+      "text": " ",
+      "start": 230.1,
+      "end": 230.4,
+      "type": "spacing",
+      "logprob": -0.0000014305104514278355
+    },
+    {
+      "text": "să",
+      "start": 230.4,
+      "end": 230.52,
+      "type": "word",
+      "logprob": -0.0000014305104514278355
+    },
+    {
+      "text": " ",
+      "start": 230.52,
+      "end": 230.58,
+      "type": "spacing",
+      "logprob": -0.0000811782301752828
+    },
+    {
+      "text": "trimiteți.",
+      "start": 230.58,
+      "end": 231.22,
+      "type": "word",
+      "logprob": -0.00004120923269965715
+    },
+    {
+      "text": " ",
+      "start": 231.22,
+      "end": 231.52,
+      "type": "spacing",
+      "logprob": -0.000017881233361549675
+    },
+    {
+      "text": "Arătați",
+      "start": 231.52,
+      "end": 231.92,
+      "type": "word",
+      "logprob": -0.0003422785818137137
+    },
+    {
+      "text": " ",
+      "start": 231.92,
+      "end": 231.94,
+      "type": "spacing",
+      "logprob": -0.0005765683017671108
+    },
+    {
+      "text": "și",
+      "start": 231.94,
+      "end": 232.02,
+      "type": "word",
+      "logprob": -0.0005765683017671108
+    },
+    {
+      "text": " ",
+      "start": 232.02,
+      "end": 232.04,
+      "type": "spacing",
+      "logprob": -0.00037424711626954377
+    },
+    {
+      "text": "întinderea",
+      "start": 232.04,
+      "end": 232.54,
+      "type": "word",
+      "logprob": -0.0002574430836830288
+    },
+    {
+      "text": " ",
+      "start": 232.54,
+      "end": 232.62,
+      "type": "spacing",
+      "logprob": -0.0008214913541451097
+    },
+    {
+      "text": "privirii",
+      "start": 232.62,
+      "end": 233,
+      "type": "word",
+      "logprob": -0.0006131220870884135
+    },
+    {
+      "text": " ",
+      "start": 233,
+      "end": 233.02,
+      "type": "spacing",
+      "logprob": -0.000041960789531003684
+    },
+    {
+      "text": "voastre.",
+      "start": 233.02,
+      "end": 233.52,
+      "type": "word",
+      "logprob": -0.000021487161973254842
+    },
+    {
+      "text": " ",
+      "start": 233.52,
+      "end": 233.9,
+      "type": "spacing",
+      "logprob": -0.000013828182090946939
+    },
+    {
+      "text": "O",
+      "start": 233.9,
+      "end": 233.96,
+      "type": "word",
+      "logprob": -0.000013828182090946939
+    },
+    {
+      "text": " ",
+      "start": 233.96,
+      "end": 234,
+      "type": "spacing",
+      "logprob": -0.0006821212591603398
+    },
+    {
+      "text": "imagine",
+      "start": 234,
+      "end": 234.44,
+      "type": "word",
+      "logprob": -0.0006821212591603398
+    },
+    {
+      "text": " ",
+      "start": 234.44,
+      "end": 234.48,
+      "type": "spacing",
+      "logprob": -0.0008747326792217791
+    },
+    {
+      "text": "îngustă",
+      "start": 234.48,
+      "end": 235,
+      "type": "word",
+      "logprob": -0.0003821911980464522
+    },
+    {
+      "text": " ",
+      "start": 235,
+      "end": 235.24,
+      "type": "spacing",
+      "logprob": -0.00008272782724816352
+    },
+    {
+      "text": "nu",
+      "start": 235.24,
+      "end": 235.34,
+      "type": "word",
+      "logprob": -0.00008272782724816352
+    },
+    {
+      "text": " ",
+      "start": 235.34,
+      "end": 235.42,
+      "type": "spacing",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": "este",
+      "start": 235.42,
+      "end": 235.66,
+      "type": "word",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": " ",
+      "start": 235.66,
+      "end": 235.72,
+      "type": "spacing",
+      "logprob": -0.0010477773612365127
+    },
+    {
+      "text": "lumea",
+      "start": 235.72,
+      "end": 235.94,
+      "type": "word",
+      "logprob": -0.0010477773612365127
+    },
+    {
+      "text": " ",
+      "start": 235.94,
+      "end": 235.96,
+      "type": "spacing",
+      "logprob": -0.0012999664759263396
+    },
+    {
+      "text": "întreagă.",
+      "start": 235.96,
+      "end": 236.42,
+      "type": "word",
+      "logprob": -0.0007328262203777235
+    },
+    {
+      "text": " ",
+      "start": 236.42,
+      "end": 236.62,
+      "type": "spacing",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": "Păstrați",
+      "start": 236.62,
+      "end": 237.08,
+      "type": "word",
+      "logprob": -0.00020979471213422585
+    },
+    {
+      "text": " ",
+      "start": 237.08,
+      "end": 237.12,
+      "type": "spacing",
+      "logprob": -0.000014662635294371285
+    },
+    {
+      "text": "lângă",
+      "start": 237.12,
+      "end": 237.36,
+      "type": "word",
+      "logprob": -0.000014662635294371285
+    },
+    {
+      "text": " ",
+      "start": 237.36,
+      "end": 237.42,
+      "type": "spacing",
+      "logprob": -0.00003421248038648628
+    },
+    {
+      "text": "citire",
+      "start": 237.42,
+      "end": 237.859,
+      "type": "word",
+      "logprob": -0.000023066669200488832
+    },
+    {
+      "text": " ",
+      "start": 237.859,
+      "end": 237.92,
+      "type": "spacing",
+      "logprob": -0.00005602679812000133
+    },
+    {
+      "text": "și",
+      "start": 237.92,
+      "end": 237.98,
+      "type": "word",
+      "logprob": -0.00005602679812000133
+    },
+    {
+      "text": " ",
+      "start": 237.98,
+      "end": 238.02,
+      "type": "spacing",
+      "logprob": -0.001416513929143548
+    },
+    {
+      "text": "urma",
+      "start": 238.02,
+      "end": 238.26,
+      "type": "word",
+      "logprob": -0.001416513929143548
+    },
+    {
+      "text": " ",
+      "start": 238.26,
+      "end": 238.38,
+      "type": "spacing",
+      "logprob": -0.0039747534319758415
+    },
+    {
+      "text": "sondei",
+      "start": 238.38,
+      "end": 238.8,
+      "type": "word",
+      "logprob": -0.0033122945266465345
+    },
+    {
+      "text": " ",
+      "start": 238.8,
+      "end": 239.16,
+      "type": "spacing",
+      "logprob": -0.10037566721439362
+    },
+    {
+      "text": "și",
+      "start": 239.16,
+      "end": 239.26,
+      "type": "word",
+      "logprob": -0.10037566721439362
+    },
+    {
+      "text": " ",
+      "start": 239.26,
+      "end": 239.269,
+      "type": "spacing",
+      "logprob": -0.00032455421751365066
+    },
+    {
+      "text": "instrumentul",
+      "start": 239.269,
+      "end": 239.86,
+      "type": "word",
+      "logprob": -0.00027511094534323394
+    },
+    {
+      "text": " ",
+      "start": 239.86,
+      "end": 239.92,
+      "type": "spacing",
+      "logprob": -0.00008725739462533966
+    },
+    {
+      "text": "vostru",
+      "start": 239.92,
+      "end": 240.4,
+      "type": "word",
+      "logprob": -0.000058648433234035714
+    },
+    {
+      "text": " ",
+      "start": 240.4,
+      "end": 240.42,
+      "type": "spacing",
+      "logprob": -0.0007945717661641538
+    },
+    {
+      "text": "a",
+      "start": 240.42,
+      "end": 240.5,
+      "type": "word",
+      "logprob": -0.0007945717661641538
+    },
+    {
+      "text": " ",
+      "start": 240.5,
+      "end": 240.58,
+      "type": "spacing",
+      "logprob": -0.00005721882189391181
+    },
+    {
+      "text": "trecut",
+      "start": 240.58,
+      "end": 240.92,
+      "type": "word",
+      "logprob": -0.00005721882189391181
+    },
+    {
+      "text": " ",
+      "start": 240.92,
+      "end": 240.94,
+      "type": "spacing",
+      "logprob": -0.00002825220326485578
+    },
+    {
+      "text": "prin",
+      "start": 240.94,
+      "end": 241.1,
+      "type": "word",
+      "logprob": -0.00002825220326485578
+    },
+    {
+      "text": " ",
+      "start": 241.1,
+      "end": 241.14,
+      "type": "spacing",
+      "logprob": -0.000034450891689630225
+    },
+    {
+      "text": "această",
+      "start": 241.14,
+      "end": 241.58,
+      "type": "word",
+      "logprob": -0.000034450891689630225
+    },
+    {
+      "text": " ",
+      "start": 241.58,
+      "end": 241.62,
+      "type": "spacing",
+      "logprob": -0.0000015497195136049413
+    },
+    {
+      "text": "lume.",
+      "start": 241.62,
+      "end": 242.02,
+      "type": "word",
+      "logprob": -0.0000022888146304467226
+    },
+    {
+      "text": " ",
+      "start": 242.02,
+      "end": 242.08,
+      "type": "spacing",
+      "logprob": -0.00001549708758830093
+    },
+    {
+      "text": "Memoria",
+      "start": 242.08,
+      "end": 242.5,
+      "type": "word",
+      "logprob": -0.011520847021269478
+    },
+    {
+      "text": " ",
+      "start": 242.5,
+      "end": 242.54,
+      "type": "spacing",
+      "logprob": -0.00035696811391972005
+    },
+    {
+      "text": "navei",
+      "start": 242.54,
+      "end": 242.8,
+      "type": "word",
+      "logprob": -0.00028557449113577606
+    },
+    {
+      "text": " ",
+      "start": 242.8,
+      "end": 242.82,
+      "type": "spacing",
+      "logprob": -0.00004362964682513848
+    },
+    {
+      "text": "rămâne",
+      "start": 242.82,
+      "end": 243.12,
+      "type": "word",
+      "logprob": -0.00017199597277794965
+    },
+    {
+      "text": " ",
+      "start": 243.12,
+      "end": 243.16,
+      "type": "spacing",
+      "logprob": -0.0000010728830375228426
+    },
+    {
+      "text": "deschisă.",
+      "start": 243.16,
+      "end": 243.72,
+      "type": "word",
+      "logprob": -0.0000038014393592473225
+    },
+    {
+      "text": " ",
+      "start": 243.72,
+      "end": 244.44,
+      "type": "spacing",
+      "logprob": -0.0000084638240878121
+    },
+    {
+      "text": "Ce",
+      "start": 244.44,
+      "end": 244.56,
+      "type": "word",
+      "logprob": -0.0000084638240878121
+    },
+    {
+      "text": " ",
+      "start": 244.56,
+      "end": 244.6,
+      "type": "spacing",
+      "logprob": -0.00005435795901576057
+    },
+    {
+      "text": "lipsește",
+      "start": 244.6,
+      "end": 245.18,
+      "type": "word",
+      "logprob": -0.000024333020149924778
+    },
+    {
+      "text": " ",
+      "start": 245.18,
+      "end": 245.42,
+      "type": "spacing",
+      "logprob": -0.016359485685825348
+    },
+    {
+      "text": "va",
+      "start": 245.42,
+      "end": 245.52,
+      "type": "word",
+      "logprob": -0.016359485685825348
+    },
+    {
+      "text": " ",
+      "start": 245.52,
+      "end": 245.56,
+      "type": "spacing",
+      "logprob": -0.00001811964830267243
+    },
+    {
+      "text": "avea",
+      "start": 245.56,
+      "end": 245.74,
+      "type": "word",
+      "logprob": -0.00001811964830267243
+    },
+    {
+      "text": " ",
+      "start": 245.74,
+      "end": 245.8,
+      "type": "spacing",
+      "logprob": -0.00013767725613433868
+    },
+    {
+      "text": "locul",
+      "start": 245.8,
+      "end": 246.06,
+      "type": "word",
+      "logprob": -0.00013767725613433868
+    },
+    {
+      "text": " ",
+      "start": 246.06,
+      "end": 246.18,
+      "type": "spacing",
+      "logprob": -0.000005364403477869928
+    },
+    {
+      "text": "său",
+      "start": 246.18,
+      "end": 246.9,
+      "type": "word",
+      "logprob": -0.000005364403477869928
+    },
+    {
+      "text": " ",
+      "start": 246.9,
+      "end": 246.92,
+      "type": "spacing",
+      "logprob": -0.0005653690313920379
+    },
+    {
+      "text": "până",
+      "start": 246.92,
+      "end": 247.14,
+      "type": "word",
+      "logprob": -0.0005653690313920379
+    },
+    {
+      "text": " ",
+      "start": 247.14,
+      "end": 247.16,
+      "type": "spacing",
+      "logprob": -0.0000032186455882765586
+    },
+    {
+      "text": "la",
+      "start": 247.16,
+      "end": 247.26,
+      "type": "word",
+      "logprob": -0.0000032186455882765586
+    },
+    {
+      "text": " ",
+      "start": 247.26,
+      "end": 247.3,
+      "type": "spacing",
+      "logprob": -0.000010371154530730564
+    },
+    {
+      "text": "o",
+      "start": 247.3,
+      "end": 247.38,
+      "type": "word",
+      "logprob": -0.000010371154530730564
+    },
+    {
+      "text": " ",
+      "start": 247.38,
+      "end": 247.42,
+      "type": "spacing",
+      "logprob": -0.00005185469490243122
+    },
+    {
+      "text": "nouă",
+      "start": 247.42,
+      "end": 247.64,
+      "type": "word",
+      "logprob": -0.00005185469490243122
+    },
+    {
+      "text": " ",
+      "start": 247.64,
+      "end": 247.68,
+      "type": "spacing",
+      "logprob": -0.000005722029527532868
+    },
+    {
+      "text": "călătorie.",
+      "start": 247.68,
+      "end": 248.2,
+      "type": "word",
+      "logprob": -0.0001559719743212895
+    },
+    {
+      "text": " ",
+      "start": 248.2,
+      "end": 248.31,
+      "type": "spacing",
+      "logprob": -0.000025152843591058627
+    },
+    {
+      "text": "Am",
+      "start": 248.31,
+      "end": 248.48,
+      "type": "word",
+      "logprob": -8.344646857949556e-7
+    },
+    {
+      "text": " ",
+      "start": 248.48,
+      "end": 248.52,
+      "type": "spacing",
+      "logprob": -0.00017534149810671806
+    },
+    {
+      "text": "privit",
+      "start": 248.52,
+      "end": 248.92,
+      "type": "word",
+      "logprob": -0.00011689433207114537
+    },
+    {
+      "text": " ",
+      "start": 248.92,
+      "end": 249,
+      "type": "spacing",
+      "logprob": -0.00008451581379631534
+    },
+    {
+      "text": "trei",
+      "start": 249,
+      "end": 249.32,
+      "type": "word",
+      "logprob": -0.00008451581379631534
+    },
+    {
+      "text": " ",
+      "start": 249.32,
+      "end": 249.38,
+      "type": "spacing",
+      "logprob": -0.0024082250893115997
+    },
+    {
+      "text": "lumi",
+      "start": 249.38,
+      "end": 249.76,
+      "type": "word",
+      "logprob": -0.0024082250893115997
+    },
+    {
+      "text": " ",
+      "start": 249.76,
+      "end": 249.92,
+      "type": "spacing",
+      "logprob": -0.00004053033626405522
+    },
+    {
+      "text": "fără",
+      "start": 249.92,
+      "end": 250.16,
+      "type": "word",
+      "logprob": -0.00004053033626405522
+    },
+    {
+      "text": " ",
+      "start": 250.16,
+      "end": 250.22,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "să",
+      "start": 250.22,
+      "end": 250.3,
+      "type": "word",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": " ",
+      "start": 250.3,
+      "end": 250.36,
+      "type": "spacing",
+      "logprob": -0.000005602820692729438
+    },
+    {
+      "text": "le",
+      "start": 250.36,
+      "end": 250.46,
+      "type": "word",
+      "logprob": -0.000005602820692729438
+    },
+    {
+      "text": " ",
+      "start": 250.46,
+      "end": 250.48,
+      "type": "spacing",
+      "logprob": -0.007936608977615833
+    },
+    {
+      "text": "epuizăm",
+      "start": 250.48,
+      "end": 251.06,
+      "type": "word",
+      "logprob": -0.0022728136707712565
+    },
+    {
+      "text": " ",
+      "start": 251.06,
+      "end": 251.12,
+      "type": "spacing",
+      "logprob": -0.010354607366025448
+    },
+    {
+      "text": "misterul.",
+      "start": 251.12,
+      "end": 251.76,
+      "type": "word",
+      "logprob": -0.006903879550463898
+    },
+    {
+      "text": " ",
+      "start": 251.76,
+      "end": 252.12,
+      "type": "spacing",
+      "logprob": -0.00002169585604860913
+    },
+    {
+      "text": "Acum",
+      "start": 252.12,
+      "end": 252.48,
+      "type": "word",
+      "logprob": -0.000010847928024304565
+    },
+    {
+      "text": " ",
+      "start": 252.48,
+      "end": 252.68,
+      "type": "spacing",
+      "logprob": -0.000002861018856492592
+    },
+    {
+      "text": "se",
+      "start": 252.68,
+      "end": 252.76,
+      "type": "word",
+      "logprob": -0.000002861018856492592
+    },
+    {
+      "text": " ",
+      "start": 252.76,
+      "end": 252.8,
+      "type": "spacing",
+      "logprob": -0.00023016665363684297
+    },
+    {
+      "text": "apropie",
+      "start": 252.8,
+      "end": 253.24,
+      "type": "word",
+      "logprob": -0.0001366838301432186
+    },
+    {
+      "text": " ",
+      "start": 253.24,
+      "end": 253.34,
+      "type": "spacing",
+      "logprob": -0.00010477947944309562
+    },
+    {
+      "text": "lumea",
+      "start": 253.34,
+      "end": 253.64,
+      "type": "word",
+      "logprob": -0.00010477947944309562
+    },
+    {
+      "text": " ",
+      "start": 253.64,
+      "end": 253.72,
+      "type": "spacing",
+      "logprob": -0.000010251946150674485
+    },
+    {
+      "text": "despre",
+      "start": 253.72,
+      "end": 254.02,
+      "type": "word",
+      "logprob": -0.000010251946150674485
+    },
+    {
+      "text": " ",
+      "start": 254.02,
+      "end": 254.1,
+      "type": "spacing",
+      "logprob": -0.000011086402082582936
+    },
+    {
+      "text": "care",
+      "start": 254.1,
+      "end": 254.34,
+      "type": "word",
+      "logprob": -0.000011086402082582936
+    },
+    {
+      "text": " ",
+      "start": 254.34,
+      "end": 254.38,
+      "type": "spacing",
+      "logprob": -0.00035339308669790626
+    },
+    {
+      "text": "credeam",
+      "start": 254.38,
+      "end": 254.8,
+      "type": "word",
+      "logprob": -0.0002524236333556473
+    },
+    {
+      "text": " ",
+      "start": 254.8,
+      "end": 254.92,
+      "type": "spacing",
+      "logprob": -0.00002074220174108632
+    },
+    {
+      "text": "că",
+      "start": 254.92,
+      "end": 255,
+      "type": "word",
+      "logprob": -0.00002074220174108632
+    },
+    {
+      "text": " ",
+      "start": 255,
+      "end": 255.08,
+      "type": "spacing",
+      "logprob": -0.00004386805812828243
+    },
+    {
+      "text": "știm",
+      "start": 255.08,
+      "end": 255.38,
+      "type": "word",
+      "logprob": -0.00003778862446779385
+    },
+    {
+      "text": " ",
+      "start": 255.38,
+      "end": 255.48,
+      "type": "spacing",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": "totul.",
+      "start": 255.48,
+      "end": 255.82,
+      "type": "word",
+      "logprob": -0.0000045100647767526425
+    },
+    {
+      "text": " ",
+      "start": 255.82,
+      "end": 256.04,
+      "type": "spacing",
+      "logprob": -0.00004136476854910143
+    },
+    {
+      "text": "Legătura",
+      "start": 256.04,
+      "end": 256.6,
+      "type": "word",
+      "logprob": -0.00006502423980236927
+    },
+    {
+      "text": " ",
+      "start": 256.6,
+      "end": 256.62,
+      "type": "spacing",
+      "logprob": -0.0000016689286894688848
+    },
+    {
+      "text": "cu",
+      "start": 256.62,
+      "end": 256.7,
+      "type": "word",
+      "logprob": -0.0000016689286894688848
+    },
+    {
+      "text": " ",
+      "start": 256.7,
+      "end": 256.779,
+      "type": "spacing",
+      "logprob": -0.0008485292200930417
+    },
+    {
+      "text": "Pământul",
+      "start": 256.78,
+      "end": 257.459,
+      "type": "word",
+      "logprob": -0.00023852597223594785
+    },
+    {
+      "text": " ",
+      "start": 257.459,
+      "end": 257.88,
+      "type": "spacing",
+      "logprob": -0.000006556489552167477
+    },
+    {
+      "text": "este",
+      "start": 257.88,
+      "end": 258.079,
+      "type": "word",
+      "logprob": -0.000006556489552167477
+    },
+    {
+      "text": " ",
+      "start": 258.079,
+      "end": 258.149,
+      "type": "spacing",
+      "logprob": -0.000004768360213347478
+    },
+    {
+      "text": "pregătită.",
+      "start": 258.149,
+      "end": 259.64,
+      "type": "word",
+      "logprob": -0.00000973931782937143
+    },
+    {
+      "text": " ",
+      "start": 259.64,
+      "end": 259.76,
+      "type": "spacing",
+      "logprob": -1.1920928244535389e-7
+    },
+    {
+      "text": "Iată",
+      "start": 259.76,
+      "end": 260.06,
+      "type": "word",
+      "logprob": -0.0000015497192276114902
+    },
+    {
+      "text": " ",
+      "start": 260.06,
+      "end": 260.14,
+      "type": "spacing",
+      "logprob": -0.000007510157047363464
+    },
+    {
+      "text": "bagajul",
+      "start": 260.14,
+      "end": 260.7,
+      "type": "word",
+      "logprob": -0.0005649972054015961
+    },
+    {
+      "text": " ",
+      "start": 260.7,
+      "end": 260.779,
+      "type": "spacing",
+      "logprob": -0.000964414793998003
+    },
+    {
+      "text": "expediției.",
+      "start": 260.78,
+      "end": 261.8,
+      "type": "word",
+      "logprob": -0.0014329422238833186
+    },
+    {
+      "text": " ",
+      "start": 261.8,
+      "end": 261.899,
+      "type": "spacing",
+      "logprob": -0.0004969792207702994
+    },
+    {
+      "text": "În",
+      "start": 261.899,
+      "end": 261.98,
+      "type": "word",
+      "logprob": -0.0004969792207702994
+    },
+    {
+      "text": " ",
+      "start": 261.98,
+      "end": 262.079,
+      "type": "spacing",
+      "logprob": -0.024612687528133392
+    },
+    {
+      "text": "transmisie",
+      "start": 262.079,
+      "end": 263.4,
+      "type": "word",
+      "logprob": -0.01969062685911922
+    },
+    {
+      "text": " ",
+      "start": 263.4,
+      "end": 263.5,
+      "type": "spacing",
+      "logprob": -0.0003741279651876539
+    },
+    {
+      "text": "se",
+      "start": 263.5,
+      "end": 263.56,
+      "type": "word",
+      "logprob": -0.0003741279651876539
+    },
+    {
+      "text": " ",
+      "start": 263.56,
+      "end": 263.62,
+      "type": "spacing",
+      "logprob": -0.00006913899414939806
+    },
+    {
+      "text": "întâlnesc",
+      "start": 263.62,
+      "end": 264.48,
+      "type": "word",
+      "logprob": -0.00004619885556975431
+    },
+    {
+      "text": " ",
+      "start": 264.48,
+      "end": 264.52,
+      "type": "spacing",
+      "logprob": -0.001081358641386032
+    },
+    {
+      "text": "două",
+      "start": 264.52,
+      "end": 264.72,
+      "type": "word",
+      "logprob": -0.001081358641386032
+    },
+    {
+      "text": " ",
+      "start": 264.72,
+      "end": 264.82,
+      "type": "spacing",
+      "logprob": -0.00012051333033014089
+    },
+    {
+      "text": "priviri,",
+      "start": 264.82,
+      "end": 265.34,
+      "type": "word",
+      "logprob": -0.0893516054511565
+    },
+    {
+      "text": " ",
+      "start": 265.34,
+      "end": 266.18,
+      "type": "spacing",
+      "logprob": -0.0010124086402356625
+    },
+    {
+      "text": "observațiile",
+      "start": 266.18,
+      "end": 267.12,
+      "type": "word",
+      "logprob": -0.000679621460828154
+    },
+    {
+      "text": " ",
+      "start": 267.12,
+      "end": 267.18,
+      "type": "spacing",
+      "logprob": -0.0006973695708438754
+    },
+    {
+      "text": "lumilor",
+      "start": 267.18,
+      "end": 268.2,
+      "type": "word",
+      "logprob": -0.0003418545197096786
+    },
+    {
+      "text": " ",
+      "start": 268.2,
+      "end": 268.26,
+      "type": "spacing",
+      "logprob": -9.536738616588991e-7
+    },
+    {
+      "text": "și",
+      "start": 268.26,
+      "end": 268.46,
+      "type": "word",
+      "logprob": -9.536738616588991e-7
+    },
+    {
+      "text": " ",
+      "start": 268.46,
+      "end": 268.56,
+      "type": "spacing",
+      "logprob": -0.0008709213580004871
+    },
+    {
+      "text": "urmele",
+      "start": 268.6,
+      "end": 268.96,
+      "type": "word",
+      "logprob": -0.0005808526571703018
+    },
+    {
+      "text": " ",
+      "start": 268.96,
+      "end": 269.08,
+      "type": "spacing",
+      "logprob": -0.0015979153104126453
+    },
+    {
+      "text": "sondei.",
+      "start": 269.08,
+      "end": 269.6,
+      "type": "word",
+      "logprob": -0.0011454722254191957
+    },
+    {
+      "text": " ",
+      "start": 269.6,
+      "end": 269.6,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-7
+    },
+    {
+      "text": "Următorul",
+      "start": 270.68,
+      "end": 271.22,
+      "type": "word",
+      "logprob": -0.0001925049905603752
+    },
+    {
+      "text": " ",
+      "start": 271.22,
+      "end": 271.28,
+      "type": "spacing",
+      "logprob": -0.00021598390594590455
+    },
+    {
+      "text": "echipaj",
+      "start": 271.28,
+      "end": 272.28,
+      "type": "word",
+      "logprob": -0.00015430827832777335
+    },
+    {
+      "text": " ",
+      "start": 272.28,
+      "end": 272.34,
+      "type": "spacing",
+      "logprob": -0.00001847726889536716
+    },
+    {
+      "text": "le",
+      "start": 272.34,
+      "end": 272.46,
+      "type": "word",
+      "logprob": -0.00001847726889536716
+    },
+    {
+      "text": " ",
+      "start": 272.46,
+      "end": 272.5,
+      "type": "spacing",
+      "logprob": -0.0000015497195136049413
+    },
+    {
+      "text": "va",
+      "start": 272.5,
+      "end": 272.64,
+      "type": "word",
+      "logprob": -0.0000015497195136049413
+    },
+    {
+      "text": " ",
+      "start": 272.64,
+      "end": 272.659,
+      "type": "spacing",
+      "logprob": -0.00004017272294731811
+    },
+    {
+      "text": "putea",
+      "start": 272.66,
+      "end": 272.98,
+      "type": "word",
+      "logprob": -0.00004017272294731811
+    },
+    {
+      "text": " ",
+      "start": 272.98,
+      "end": 273.02,
+      "type": "spacing",
+      "logprob": -0.00004327203714638017
+    },
+    {
+      "text": "cerceta",
+      "start": 273.02,
+      "end": 274.12,
+      "type": "word",
+      "logprob": -0.00003310550658040613
+    },
+    {
+      "text": " ",
+      "start": 274.12,
+      "end": 274.2,
+      "type": "spacing",
+      "logprob": -0.0000033378546504536644
+    },
+    {
+      "text": "împreună.",
+      "start": 274.2,
+      "end": 274.78,
+      "type": "word",
+      "logprob": -0.0000037352163594227427
+    },
+    {
+      "text": " ",
+      "start": 274.78,
+      "end": 274.9,
+      "type": "spacing",
+      "logprob": -0.0000010728830375228426
+    },
+    {
+      "text": "Ați",
+      "start": 274.9,
+      "end": 275.16,
+      "type": "word",
+      "logprob": -0.000008940641350818623
+    },
+    {
+      "text": " ",
+      "start": 275.16,
+      "end": 275.2,
+      "type": "spacing",
+      "logprob": -0.00011085849109804258
+    },
+    {
+      "text": "trimis",
+      "start": 275.2,
+      "end": 275.78,
+      "type": "word",
+      "logprob": -0.00007390566073202838
+    },
+    {
+      "text": " ",
+      "start": 275.78,
+      "end": 275.88,
+      "type": "spacing",
+      "logprob": -0.000004410734163684538
+    },
+    {
+      "text": "un",
+      "start": 275.88,
+      "end": 275.95,
+      "type": "word",
+      "logprob": -0.000004410734163684538
+    },
+    {
+      "text": " ",
+      "start": 275.95,
+      "end": 276.04,
+      "type": "spacing",
+      "logprob": -0.000033854863431770355
+    },
+    {
+      "text": "singur",
+      "start": 276.04,
+      "end": 276.4,
+      "type": "word",
+      "logprob": -0.00002256990895451357
+    },
+    {
+      "text": " ",
+      "start": 276.4,
+      "end": 276.5,
+      "type": "spacing",
+      "logprob": -0.00007795983401592821
+    },
+    {
+      "text": "fel",
+      "start": 276.5,
+      "end": 276.66,
+      "type": "word",
+      "logprob": -0.00007795983401592821
+    },
+    {
+      "text": " ",
+      "start": 276.66,
+      "end": 276.72,
+      "type": "spacing",
+      "logprob": -0.000004410734163684538
+    },
+    {
+      "text": "de",
+      "start": 276.72,
+      "end": 276.78,
+      "type": "word",
+      "logprob": -0.000004410734163684538
+    },
+    {
+      "text": " ",
+      "start": 276.78,
+      "end": 276.86,
+      "type": "spacing",
+      "logprob": -0.00007784063927829266
+    },
+    {
+      "text": "document?",
+      "start": 276.86,
+      "end": 277.5,
+      "type": "word",
+      "logprob": -0.038788087459074125
+    },
+    {
+      "text": " ",
+      "start": 277.5,
+      "end": 278.14,
+      "type": "spacing",
+      "logprob": -0.0009723940747790039
+    },
+    {
+      "text": "Va",
+      "start": 278.14,
+      "end": 278.24,
+      "type": "word",
+      "logprob": -0.0009723940747790039
+    },
+    {
+      "text": " ",
+      "start": 278.24,
+      "end": 278.36,
+      "type": "spacing",
+      "logprob": -0.0000010728830375228426
+    },
+    {
+      "text": "fi",
+      "start": 278.36,
+      "end": 278.46,
+      "type": "word",
+      "logprob": -0.0000010728830375228426
+    },
+    {
+      "text": " ",
+      "start": 278.46,
+      "end": 278.659,
+      "type": "spacing",
+      "logprob": -0.00019369633810129017
+    },
+    {
+      "text": "prima",
+      "start": 278.66,
+      "end": 278.98,
+      "type": "word",
+      "logprob": -0.00019369633810129017
+    },
+    {
+      "text": " ",
+      "start": 278.98,
+      "end": 279.06,
+      "type": "spacing",
+      "logprob": -0.00006925819616299123
+    },
+    {
+      "text": "fereastră",
+      "start": 279.06,
+      "end": 279.66,
+      "type": "word",
+      "logprob": -0.00012640553177334368
+    },
+    {
+      "text": " ",
+      "start": 279.66,
+      "end": 279.76,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-7
+    },
+    {
+      "text": "a",
+      "start": 279.76,
+      "end": 279.84,
+      "type": "word",
+      "logprob": -4.768370445162873e-7
+    },
+    {
+      "text": " ",
+      "start": 279.84,
+      "end": 279.88,
+      "type": "spacing",
+      "logprob": -0.0034737978130578995
+    },
+    {
+      "text": "următorului",
+      "start": 279.88,
+      "end": 280.58,
+      "type": "word",
+      "logprob": -0.0009760522873627699
+    },
+    {
+      "text": " ",
+      "start": 280.58,
+      "end": 280.7,
+      "type": "spacing",
+      "logprob": -0.00044907975825481117
+    },
+    {
+      "text": "echipaj",
+      "start": 280.7,
+      "end": 281.32,
+      "type": "word",
+      "logprob": -0.0003210777939070145
+    },
+    {
+      "text": " ",
+      "start": 281.32,
+      "end": 281.78,
+      "type": "spacing",
+      "logprob": -0.0017234723782166839
+    },
+    {
+      "text": "către",
+      "start": 281.78,
+      "end": 282.06,
+      "type": "word",
+      "logprob": -0.0017234723782166839
+    },
+    {
+      "text": " ",
+      "start": 282.06,
+      "end": 282.12,
+      "type": "spacing",
+      "logprob": -0.000007033323527139146
+    },
+    {
+      "text": "călătoria",
+      "start": 282.12,
+      "end": 282.68,
+      "type": "word",
+      "logprob": -0.00006757040782506212
+    },
+    {
+      "text": " ",
+      "start": 282.68,
+      "end": 282.74,
+      "type": "spacing",
+      "logprob": -0.00016091958968900144
+    },
+    {
+      "text": "noastră.",
+      "start": 282.74,
+      "end": 283.28,
+      "type": "word",
+      "logprob": -0.0001491490129410522
+    },
+    {
+      "text": " ",
+      "start": 283.28,
+      "end": 283.58,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-7
+    },
+    {
+      "text": "Niciun",
+      "start": 283.58,
+      "end": 283.94,
+      "type": "word",
+      "logprob": -0.0015993601979099974
+    },
+    {
+      "text": " ",
+      "start": 283.94,
+      "end": 283.98,
+      "type": "spacing",
+      "logprob": -0.000020503786799963564
+    },
+    {
+      "text": "document",
+      "start": 283.98,
+      "end": 284.64,
+      "type": "word",
+      "logprob": -0.000020503786799963564
+    },
+    {
+      "text": " ",
+      "start": 284.64,
+      "end": 284.68,
+      "type": "spacing",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": "nu",
+      "start": 284.68,
+      "end": 284.74,
+      "type": "word",
+      "logprob": -0.000008940656698541716
+    },
+    {
+      "text": " ",
+      "start": 284.74,
+      "end": 284.84,
+      "type": "spacing",
+      "logprob": -0.0000036954811548639555
+    },
+    {
+      "text": "pleacă",
+      "start": 284.84,
+      "end": 285.16,
+      "type": "word",
+      "logprob": -0.00004923118854094355
+    },
+    {
+      "text": " ",
+      "start": 285.16,
+      "end": 285.24,
+      "type": "spacing",
+      "logprob": -0.00004136476854910143
+    },
+    {
+      "text": "spre",
+      "start": 285.24,
+      "end": 285.44,
+      "type": "word",
+      "logprob": -0.00004136476854910143
+    },
+    {
+      "text": " ",
+      "start": 285.44,
+      "end": 285.52,
+      "type": "spacing",
+      "logprob": -0.00029869386344216764
+    },
+    {
+      "text": "Pământ.",
+      "start": 285.52,
+      "end": 286.02,
+      "type": "word",
+      "logprob": -0.000060176984659067655
+    },
+    {
+      "text": " ",
+      "start": 286.02,
+      "end": 286.8,
+      "type": "spacing",
+      "logprob": -0.000010251946150674485
+    },
+    {
+      "text": "Ce",
+      "start": 286.8,
+      "end": 286.9,
+      "type": "word",
+      "logprob": -0.000010251946150674485
+    },
+    {
+      "text": " ",
+      "start": 286.9,
+      "end": 286.94,
+      "type": "spacing",
+      "logprob": -0.0005878866068087518
+    },
+    {
+      "text": "există",
+      "start": 286.94,
+      "end": 287.36,
+      "type": "word",
+      "logprob": -0.0005878866068087518
+    },
+    {
+      "text": " ",
+      "start": 287.36,
+      "end": 287.38,
+      "type": "spacing",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": "în",
+      "start": 287.38,
+      "end": 287.48,
+      "type": "word",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": " ",
+      "start": 287.48,
+      "end": 287.52,
+      "type": "spacing",
+      "logprob": -0.0005834784242324531
+    },
+    {
+      "text": "memoria",
+      "start": 287.52,
+      "end": 288,
+      "type": "word",
+      "logprob": -0.0005834784242324531
+    },
+    {
+      "text": " ",
+      "start": 288,
+      "end": 288.04,
+      "type": "spacing",
+      "logprob": -0.00019965562387369573
+    },
+    {
+      "text": "navei",
+      "start": 288.04,
+      "end": 288.48,
+      "type": "word",
+      "logprob": -0.00015972449909895658
+    },
+    {
+      "text": " ",
+      "start": 288.48,
+      "end": 288.76,
+      "type": "spacing",
+      "logprob": -0.0008623456815257668
+    },
+    {
+      "text": "rămâne",
+      "start": 288.86,
+      "end": 289.18,
+      "type": "word",
+      "logprob": -0.0004805230528290849
+    },
+    {
+      "text": " ",
+      "start": 289.18,
+      "end": 289.24,
+      "type": "spacing",
+      "logprob": -0.000005722029527532868
+    },
+    {
+      "text": "aici.",
+      "start": 289.24,
+      "end": 289.6,
+      "type": "word",
+      "logprob": -0.00000789161458669696
+    },
+    {
+      "text": " ",
+      "start": 289.6,
+      "end": 290.56,
+      "type": "spacing",
+      "logprob": -0.0009352362249046564
+    },
+    {
+      "text": "Drumul",
+      "start": 290.56,
+      "end": 291.42,
+      "type": "word",
+      "logprob": -0.000623530553030586
+    },
+    {
+      "text": " ",
+      "start": 291.42,
+      "end": 291.46,
+      "type": "spacing",
+      "logprob": -0.000002264974000354414
+    },
+    {
+      "text": "poate",
+      "start": 291.46,
+      "end": 291.72,
+      "type": "word",
+      "logprob": -0.000002264974000354414
+    },
+    {
+      "text": " ",
+      "start": 291.72,
+      "end": 291.78,
+      "type": "spacing",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": "fi",
+      "start": 291.78,
+      "end": 291.86,
+      "type": "word",
+      "logprob": -0.0000034570634852570947
+    },
+    {
+      "text": " ",
+      "start": 291.86,
+      "end": 291.94,
+      "type": "spacing",
+      "logprob": -0.0000655629628454335
+    },
+    {
+      "text": "cercetat",
+      "start": 291.94,
+      "end": 292.56,
+      "type": "word",
+      "logprob": -0.000129689240566222
+    },
+    {
+      "text": " ",
+      "start": 292.56,
+      "end": 292.64,
+      "type": "spacing",
+      "logprob": -0.0000015497195136049413
+    },
+    {
+      "text": "din",
+      "start": 292.64,
+      "end": 292.8,
+      "type": "word",
+      "logprob": -0.0000015497195136049413
+    },
+    {
+      "text": " ",
+      "start": 292.8,
+      "end": 292.88,
+      "type": "spacing",
+      "logprob": -0.000001311301275563892
+    },
+    {
+      "text": "nou.",
+      "start": 292.88,
+      "end": 293.24,
+      "type": "word",
+      "logprob": -0.0000010132782772842575
+    },
+    {
+      "text": " ",
+      "start": 293.24,
+      "end": 293.36,
+      "type": "spacing",
+      "logprob": -0.00006747018051100895
+    },
+    {
+      "text": "Acesta",
+      "start": 293.36,
+      "end": 293.76,
+      "type": "word",
+      "logprob": -0.000024715296603972092
+    },
+    {
+      "text": " ",
+      "start": 293.76,
+      "end": 293.8,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-7
+    },
+    {
+      "text": "este",
+      "start": 293.8,
+      "end": 294,
+      "type": "word",
+      "logprob": -5.960462772236497e-7
+    },
+    {
+      "text": " ",
+      "start": 294,
+      "end": 294.04,
+      "type": "spacing",
+      "logprob": -0.0000948860906646587
+    },
+    {
+      "text": "locul",
+      "start": 294.04,
+      "end": 294.38,
+      "type": "word",
+      "logprob": -0.0000948860906646587
+    },
+    {
+      "text": " ",
+      "start": 294.38,
+      "end": 294.4,
+      "type": "spacing",
+      "logprob": -0.000005722029527532868
+    },
+    {
+      "text": "pentru",
+      "start": 294.4,
+      "end": 294.7,
+      "type": "word",
+      "logprob": -0.000005722029527532868
+    },
+    {
+      "text": " ",
+      "start": 294.7,
+      "end": 294.719,
+      "type": "spacing",
+      "logprob": -5.960462772236497e-7
+    },
+    {
+      "text": "bagajul",
+      "start": 294.72,
+      "end": 295.26,
+      "type": "word",
+      "logprob": -0.00006305826321652473
+    },
+    {
+      "text": " ",
+      "start": 295.26,
+      "end": 295.32,
+      "type": "spacing",
+      "logprob": -0.0008815216715447605
+    },
+    {
+      "text": "expediției.",
+      "start": 295.32,
+      "end": 296.599,
+      "type": "word",
+      "logprob": -0.0004962727596813983
+    },
+    {
+      "text": " ",
+      "start": 296.599,
+      "end": 296.68,
+      "type": "spacing",
+      "logprob": -0.000034689302992774174
+    },
+    {
+      "text": "Ce",
+      "start": 296.68,
+      "end": 296.74,
+      "type": "word",
+      "logprob": -0.000034689302992774174
+    },
+    {
+      "text": " ",
+      "start": 296.74,
+      "end": 296.84,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-7
+    },
+    {
+      "text": "am",
+      "start": 296.84,
+      "end": 296.9,
+      "type": "word",
+      "logprob": -4.768370445162873e-7
+    },
+    {
+      "text": " ",
+      "start": 296.9,
+      "end": 296.98,
+      "type": "spacing",
+      "logprob": -0.00037531962152570486
+    },
+    {
+      "text": "ales",
+      "start": 296.98,
+      "end": 297.34,
+      "type": "word",
+      "logprob": -0.00037531962152570486
+    },
+    {
+      "text": " ",
+      "start": 297.34,
+      "end": 297.36,
+      "type": "spacing",
+      "logprob": -0.000012874520507466514
+    },
+    {
+      "text": "să",
+      "start": 297.36,
+      "end": 297.48,
+      "type": "word",
+      "logprob": -0.000012874520507466514
+    },
+    {
+      "text": " ",
+      "start": 297.48,
+      "end": 297.5,
+      "type": "spacing",
+      "logprob": -0.000024437606043647975
+    },
+    {
+      "text": "păstrăm",
+      "start": 297.5,
+      "end": 298.28,
+      "type": "word",
+      "logprob": -0.0003220897197024897
+    },
+    {
+      "text": " ",
+      "start": 298.28,
+      "end": 298.32,
+      "type": "spacing",
+      "logprob": -0.0003951007383875549
+    },
+    {
+      "text": "poate",
+      "start": 298.32,
+      "end": 298.56,
+      "type": "word",
+      "logprob": -0.0003951007383875549
+    },
+    {
+      "text": " ",
+      "start": 298.56,
+      "end": 298.62,
+      "type": "spacing",
+      "logprob": -0.00043108707177452743
+    },
+    {
+      "text": "deveni",
+      "start": 298.62,
+      "end": 299.02,
+      "type": "word",
+      "logprob": -0.00035925909469251377
+    },
+    {
+      "text": " ",
+      "start": 299.02,
+      "end": 299.14,
+      "type": "spacing",
+      "logprob": -0.00020418466010596603
+    },
+    {
+      "text": "începutul",
+      "start": 299.14,
+      "end": 299.86,
+      "type": "word",
+      "logprob": -0.0001588632730936802
+    },
+    {
+      "text": " ",
+      "start": 299.86,
+      "end": 300,
+      "type": "spacing",
+      "logprob": -0.00018940561858471483
+    },
+    {
+      "text": "altui",
+      "start": 300,
+      "end": 300.4,
+      "type": "word",
+      "logprob": -0.0001752459880663082
+    },
+    {
+      "text": " ",
+      "start": 300.4,
+      "end": 300.44,
+      "type": "spacing",
+      "logprob": -0.000006437280717364047
+    },
+    {
+      "text": "drum.",
+      "start": 300.44,
+      "end": 300.76,
+      "type": "word",
+      "logprob": -0.000007772411663609091
+    },
+    {
+      "text": " ",
+      "start": 300.76,
+      "end": 300.98,
+      "type": "spacing",
+      "logprob": -0.012887051329016685
+    },
+    {
+      "text": "Zece",
+      "start": 300.98,
+      "end": 301.26,
+      "type": "word",
+      "logprob": -0.006466592129072524
+    },
+    {
+      "text": " ",
+      "start": 301.26,
+      "end": 301.34,
+      "type": "spacing",
+      "logprob": -0.0003967689990531653
+    },
+    {
+      "text": "locuri.",
+      "start": 301.34,
+      "end": 301.82,
+      "type": "word",
+      "logprob": -0.0034912734699779385
+    },
+    {
+      "text": " ",
+      "start": 301.82,
+      "end": 302.16,
+      "type": "spacing",
+      "logprob": -0.0010399178136140108
+    },
+    {
+      "text": "Zece",
+      "start": 302.16,
+      "end": 302.38,
+      "type": "word",
+      "logprob": -0.0005323565192156821
+    },
+    {
+      "text": " ",
+      "start": 302.38,
+      "end": 302.46,
+      "type": "spacing",
+      "logprob": -0.0007178590167313814
+    },
+    {
+      "text": "documente.",
+      "start": 302.46,
+      "end": 303.22,
+      "type": "word",
+      "logprob": -0.0005743348970895567
+    },
+    {
+      "text": " ",
+      "start": 303.22,
+      "end": 303.76,
+      "type": "spacing",
+      "logprob": -0.0003325386205688119
+    },
+    {
+      "text": "Transmisia",
+      "start": 303.76,
+      "end": 304.38,
+      "type": "word",
+      "logprob": -0.0003540968154084112
+    },
+    {
+      "text": " ",
+      "start": 304.38,
+      "end": 304.42,
+      "type": "spacing",
+      "logprob": -0.00001680836794548668
+    },
+    {
+      "text": "este",
+      "start": 304.42,
+      "end": 304.64,
+      "type": "word",
+      "logprob": -0.00001680836794548668
+    },
+    {
+      "text": " ",
+      "start": 304.64,
+      "end": 304.68,
+      "type": "spacing",
+      "logprob": -0.00006568216485902667
+    },
+    {
+      "text": "completă.",
+      "start": 304.68,
+      "end": 305.2,
+      "type": "word",
+      "logprob": -0.00007513731058376531
+    },
+    {
+      "text": " ",
+      "start": 305.2,
+      "end": 305.92,
+      "type": "spacing",
+      "logprob": -0.000200609109015204
+    },
+    {
+      "text": "Dincolo",
+      "start": 305.92,
+      "end": 306.36,
+      "type": "word",
+      "logprob": -0.00008631593030778666
+    },
+    {
+      "text": " ",
+      "start": 306.36,
+      "end": 306.38,
+      "type": "spacing",
+      "logprob": 0
+    },
+    {
+      "text": "de",
+      "start": 306.38,
+      "end": 306.46,
+      "type": "word",
+      "logprob": 0
+    },
+    {
+      "text": " ",
+      "start": 306.46,
+      "end": 306.52,
+      "type": "spacing",
+      "logprob": -0.000033854863431770355
+    },
+    {
+      "text": "ea,",
+      "start": 306.52,
+      "end": 306.68,
+      "type": "word",
+      "logprob": -0.00015141024778131396
+    },
+    {
+      "text": " ",
+      "start": 306.68,
+      "end": 307.34,
+      "type": "spacing",
+      "logprob": -0.014067302457988262
+    },
+    {
+      "text": "lumile",
+      "start": 307.34,
+      "end": 307.9,
+      "type": "word",
+      "logprob": -0.007043783915833046
+    },
+    {
+      "text": " ",
+      "start": 307.9,
+      "end": 308.24,
+      "type": "spacing",
+      "logprob": -0.000019073304429184645
+    },
+    {
+      "text": "au",
+      "start": 308.24,
+      "end": 308.38,
+      "type": "word",
+      "logprob": -0.000019073304429184645
+    },
+    {
+      "text": " ",
+      "start": 308.38,
+      "end": 308.4,
+      "type": "spacing",
+      "logprob": -0.000009417489309271332
+    },
+    {
+      "text": "încă",
+      "start": 308.4,
+      "end": 308.7,
+      "type": "word",
+      "logprob": -0.000009417489309271332
+    },
+    {
+      "text": " ",
+      "start": 308.7,
+      "end": 308.719,
+      "type": "spacing",
+      "logprob": -0.000004410734163684538
+    },
+    {
+      "text": "multe",
+      "start": 308.72,
+      "end": 309.1,
+      "type": "word",
+      "logprob": -0.000004410734163684538
+    },
+    {
+      "text": " ",
+      "start": 309.1,
+      "end": 309.11,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "de",
+      "start": 309.11,
+      "end": 309.18,
+      "type": "word",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": " ",
+      "start": 309.18,
+      "end": 309.2,
+      "type": "spacing",
+      "logprob": -2.3841855067985307e-7
+    },
+    {
+      "text": "arătat.",
+      "start": 309.2,
+      "end": 309.7,
+      "type": "word",
+      "logprob": -0.000022342591746239903
+    },
+    {
+      "text": " ",
+      "start": 309.7,
+      "end": 309.83,
+      "type": "spacing",
+      "logprob": -0.0013293724041432142
+    },
+    {
+      "text": "În",
+      "start": 309.83,
+      "end": 309.98,
+      "type": "word",
+      "logprob": -0.0013293724041432142
+    },
+    {
+      "text": " ",
+      "start": 309.98,
+      "end": 310.06,
+      "type": "spacing",
+      "logprob": -0.0017279945313930511
+    },
+    {
+      "text": "transmisie",
+      "start": 310.06,
+      "end": 311.28,
+      "type": "word",
+      "logprob": -0.001382395625114441
+    },
+    {
+      "text": " ",
+      "start": 311.28,
+      "end": 311.32,
+      "type": "spacing",
+      "logprob": -0.00044050050200894475
+    },
+    {
+      "text": "au",
+      "start": 311.32,
+      "end": 311.46,
+      "type": "word",
+      "logprob": -0.00044050050200894475
+    },
+    {
+      "text": " ",
+      "start": 311.46,
+      "end": 311.5,
+      "type": "spacing",
+      "logprob": -0.00038509105797857046
+    },
+    {
+      "text": "rămas",
+      "start": 311.5,
+      "end": 312.08,
+      "type": "word",
+      "logprob": -0.00015532388215433457
+    },
+    {
+      "text": " ",
+      "start": 312.08,
+      "end": 312.18,
+      "type": "spacing",
+      "logprob": -0.00010001159535022452
+    },
+    {
+      "text": "locuri",
+      "start": 312.18,
+      "end": 312.54,
+      "type": "word",
+      "logprob": -0.000050184611581016725
+    },
+    {
+      "text": " ",
+      "start": 312.54,
+      "end": 312.6,
+      "type": "spacing",
+      "logprob": -0.00005817244164063595
+    },
+    {
+      "text": "libere.",
+      "start": 312.6,
+      "end": 313.08,
+      "type": "word",
+      "logprob": -0.00002663403022649748
+    },
+    {
+      "text": " ",
+      "start": 313.08,
+      "end": 313.74,
+      "type": "spacing",
+      "logprob": -4.768370445162873e-7
+    },
+    {
+      "text": "Le",
+      "start": 313.74,
+      "end": 313.86,
+      "type": "word",
+      "logprob": -4.768370445162873e-7
+    },
+    {
+      "text": " ",
+      "start": 313.86,
+      "end": 313.9,
+      "type": "spacing",
+      "logprob": -0.000019311717551317997
+    },
+    {
+      "text": "păstrăm",
+      "start": 313.9,
+      "end": 314.28,
+      "type": "word",
+      "logprob": -0.00018085566833495444
+    },
+    {
+      "text": " ",
+      "start": 314.28,
+      "end": 314.36,
+      "type": "spacing",
+      "logprob": -0.000017046782886609435
+    },
+    {
+      "text": "așa.",
+      "start": 314.36,
+      "end": 314.72,
+      "type": "word",
+      "logprob": -0.000014573220141755883
+    },
+    {
+      "text": " ",
+      "start": 314.72,
+      "end": 315.42,
+      "type": "spacing",
+      "logprob": -7.152555099310121e-7
+    },
+    {
+      "text": "Următoarea",
+      "start": 315.42,
+      "end": 315.96,
+      "type": "word",
+      "logprob": -0.00007453694122432353
+    },
+    {
+      "text": " ",
+      "start": 315.96,
+      "end": 316.06,
+      "type": "spacing",
+      "logprob": -0.0000016689286894688848
+    },
+    {
+      "text": "călătorie",
+      "start": 316.06,
+      "end": 317.16,
+      "type": "word",
+      "logprob": -0.00010668377290635867
+    },
+    {
+      "text": " ",
+      "start": 317.16,
+      "end": 317.26,
+      "type": "spacing",
+      "logprob": -0.00004005352093372494
+    },
+    {
+      "text": "va",
+      "start": 317.26,
+      "end": 317.36,
+      "type": "word",
+      "logprob": -0.00004005352093372494
+    },
+    {
+      "text": " ",
+      "start": 317.36,
+      "end": 317.42,
+      "type": "spacing",
+      "logprob": -0.0000247952248173533
+    },
+    {
+      "text": "avea",
+      "start": 317.42,
+      "end": 317.8,
+      "type": "word",
+      "logprob": -0.0000247952248173533
+    },
+    {
+      "text": " ",
+      "start": 317.8,
+      "end": 318.36,
+      "type": "spacing",
+      "logprob": -0.0008281615446321666
+    },
+    {
+      "text": "propriile",
+      "start": 318.36,
+      "end": 318.92,
+      "type": "word",
+      "logprob": -0.0005521474328489262
+    },
+    {
+      "text": " ",
+      "start": 318.92,
+      "end": 318.94,
+      "type": "spacing",
+      "logprob": -0.000030874729418428615
+    },
+    {
+      "text": "întrebări.",
+      "start": 318.94,
+      "end": 319.56,
+      "type": "word",
+      "logprob": -0.00030088318762864217
+    },
+    {
+      "text": " ",
+      "start": 319.56,
+      "end": 319.76,
+      "type": "spacing",
+      "logprob": -0.000017404405298293568
+    },
+    {
+      "text": "De",
+      "start": 319.76,
+      "end": 319.84,
+      "type": "word",
+      "logprob": -0.000017404405298293568
+    },
+    {
+      "text": " ",
+      "start": 319.84,
+      "end": 319.92,
+      "type": "spacing",
+      "logprob": -0.00007235741941258311
+    },
+    {
+      "text": "aici,",
+      "start": 319.92,
+      "end": 320.26,
+      "type": "word",
+      "logprob": -0.06277690916322172
+    },
+    {
+      "text": " ",
+      "start": 320.26,
+      "end": 320.46,
+      "type": "spacing",
+      "logprob": -0.00008821098163025454
+    },
+    {
+      "text": "drumul",
+      "start": 320.46,
+      "end": 320.78,
+      "type": "word",
+      "logprob": -0.000058847057514318145
+    },
+    {
+      "text": " ",
+      "start": 320.78,
+      "end": 320.82,
+      "type": "spacing",
+      "logprob": -0.000009775113539944869
+    },
+    {
+      "text": "nostru",
+      "start": 320.82,
+      "end": 321.3,
+      "type": "word",
+      "logprob": -0.000009775113539944869
+    },
+    {
+      "text": " ",
+      "start": 321.3,
+      "end": 321.32,
+      "type": "spacing",
+      "logprob": -0.000002145764938177308
+    },
+    {
+      "text": "poate",
+      "start": 321.32,
+      "end": 321.56,
+      "type": "word",
+      "logprob": -0.000002145764938177308
+    },
+    {
+      "text": " ",
+      "start": 321.56,
+      "end": 321.62,
+      "type": "spacing",
+      "logprob": -0.00003504691630951129
+    },
+    {
+      "text": "deveni",
+      "start": 321.62,
+      "end": 322.12,
+      "type": "word",
+      "logprob": -0.00002920576359125941
+    },
+    {
+      "text": " ",
+      "start": 322.12,
+      "end": 322.13,
+      "type": "spacing",
+      "logprob": -0.00003957670196541585
+    },
+    {
+      "text": "începutul",
+      "start": 322.13,
+      "end": 322.8,
+      "type": "word",
+      "logprob": -0.000030808370258089075
+    },
+    {
+      "text": " ",
+      "start": 322.8,
+      "end": 322.9,
+      "type": "spacing",
+      "logprob": -0.0007250064518302679
+    },
+    {
+      "text": "altuia.",
+      "start": 322.9,
+      "end": 323.68,
+      "type": "word",
+      "logprob": -0.0003431918386362603
+    },
+    {
+      "text": " ",
+      "start": 323.68,
+      "end": 323.78,
+      "type": "spacing",
+      "logprob": -0.0002640137099660933
+    },
+    {
+      "text": "Mulțumesc,",
+      "start": 323.78,
+      "end": 324.3,
+      "type": "word",
+      "logprob": -0.0007102953306457494
+    },
+    {
+      "text": " ",
+      "start": 324.3,
+      "end": 324.4,
+      "type": "spacing",
+      "logprob": -0.005501013249158859
+    },
+    {
+      "text": "echipaj.",
+      "start": 324.4,
+      "end": 325.16,
+      "type": "word",
+      "logprob": -0.003447505981057475
+    },
+    {
+      "text": " ",
+      "start": 325.16,
+      "end": 325.22,
+      "type": "spacing",
+      "logprob": -0.000004410734163684538
+    },
+    {
+      "text": "Rămâneți",
+      "start": 325.22,
+      "end": 325.6,
+      "type": "word",
+      "logprob": -0.00031733938197753275
+    },
+    {
+      "text": " ",
+      "start": 325.6,
+      "end": 325.64,
+      "type": "spacing",
+      "logprob": 0
+    },
+    {
+      "text": "la",
+      "start": 325.64,
+      "end": 325.76,
+      "type": "word",
+      "logprob": 0
+    },
+    {
+      "text": " ",
+      "start": 325.76,
+      "end": 325.78,
+      "type": "spacing",
+      "logprob": -0.00009989239333663136
+    },
+    {
+      "text": "posturi.",
+      "start": 325.78,
+      "end": 326.56,
+      "type": "word",
+      "logprob": -0.000052240966624594876
+    },
+    {
+      "text": " ",
+      "start": 326.56,
+      "end": 326.7,
+      "type": "spacing",
+      "logprob": -0.00014709345123264939
+    },
+    {
+      "text": "Ghidul",
+      "start": 326.7,
+      "end": 327.06,
+      "type": "word",
+      "logprob": -0.00005014376923403082
+    },
+    {
+      "text": " ",
+      "start": 327.06,
+      "end": 327.08,
+      "type": "spacing",
+      "logprob": -0.000012755313036905136
+    },
+    {
+      "text": "vă",
+      "start": 327.08,
+      "end": 327.18,
+      "type": "word",
+      "logprob": -0.000012755313036905136
+    },
+    {
+      "text": " ",
+      "start": 327.18,
+      "end": 327.2,
+      "type": "spacing",
+      "logprob": -0.00003421248038648628
+    },
+    {
+      "text": "va",
+      "start": 327.2,
+      "end": 327.28,
+      "type": "word",
+      "logprob": -0.00003421248038648628
+    },
+    {
+      "text": " ",
+      "start": 327.28,
+      "end": 327.38,
+      "type": "spacing",
+      "logprob": -0.0000033378546504536644
+    },
+    {
+      "text": "spune",
+      "start": 327.38,
+      "end": 327.89,
+      "type": "word",
+      "logprob": -0.0000033378546504536644
+    },
+    {
+      "text": " ",
+      "start": 327.89,
+      "end": 327.92,
+      "type": "spacing",
+      "logprob": -0.000018596476365928538
+    },
+    {
+      "text": "când",
+      "start": 327.92,
+      "end": 328.06,
+      "type": "word",
+      "logprob": -0.000018596476365928538
+    },
+    {
+      "text": " ",
+      "start": 328.06,
+      "end": 328.12,
+      "type": "spacing",
+      "logprob": -8.344646857949556e-7
+    },
+    {
+      "text": "vă",
+      "start": 328.12,
+      "end": 328.18,
+      "type": "word",
+      "logprob": -8.344646857949556e-7
+    },
+    {
+      "text": " ",
+      "start": 328.18,
+      "end": 328.24,
+      "type": "spacing",
+      "logprob": -0.000010609570381348021
+    },
+    {
+      "text": "puteți",
+      "start": 328.24,
+      "end": 328.66,
+      "type": "word",
+      "logprob": -0.00000723199260240411
+    },
+    {
+      "text": " ",
+      "start": 328.66,
+      "end": 328.7,
+      "type": "spacing",
+      "logprob": -0.000059960475482512265
+    },
+    {
+      "text": "ridica.",
+      "start": 328.7,
+      "end": 329.02,
+      "type": "word",
+      "logprob": -0.000287593607416576
+    }
+  ],
+  "transcription_id": "zBQVywDruHsccxQHKFit",
+  "audio_duration_secs": 329.0743125
+}

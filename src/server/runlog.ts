@@ -53,7 +53,7 @@ export class RunLog {
       // Avoid clobbering a file created in the same second (e.g. rapid start/restart).
       this.seq += 1;
       const suffix = this.seq > 1 ? `-${this.seq}` : "";
-      const file = path.join(this.runsDir, `show-${runStamp()}${suffix}.jsonl`);
+        const file = path.join(this.runsDir, `${reason==='diagnostic'?'diagnostic':'show'}-${runStamp()}${suffix}.jsonl`);
       this.stream = createWriteStream(file, { flags: "a" });
       this.stream.on("error", (err) => this.log("warn", "runlog write error", { err: String(err) }));
       this.filePath = file;

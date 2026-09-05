@@ -1,16 +1,18 @@
 <!doctype html>
-<html lang="ro">
+<html lang="ro" data-theme="prologue">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>NavaPlayer · Autentificare</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="/shared/glass.css" />
+    <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <main class="card" role="main">
+  <main class="glass card" role="main">
     <header>
+      <div class="login-mark" data-icon="rocket" aria-hidden="true"></div>
       <div class="eyebrow">EXODUS-7 · A PATRA LUME</div>
-      <h1>ACCES ECHIPAJ</h1>
+      <h1>Bun venit la bord</h1>
       <p class="hint">Introdu PIN-ul de operator ca să intri în consolă.</p>
     </header>
 
@@ -23,7 +25,7 @@
         <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
         <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
         <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
-        <button type="button" data-k="del" class="alt" aria-label="Șterge">⌫</button><button type="button" data-k="0">0</button><button type="submit" class="ok" aria-label="Intră">➜</button>
+        <button type="button" data-k="del" class="alt" aria-label="Șterge" data-icon="back"></button><button type="button" data-k="0">0</button><button type="submit" class="ok" aria-label="Intră" data-icon="play"></button>
       </div>
       <p id="msg" class="msg" role="alert"></p>
     </form>

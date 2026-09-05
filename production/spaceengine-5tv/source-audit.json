@@ -1,0 +1,889 @@
+{
+  "sourceFile": "A_PATRA_LUME_SMOOTH_APPROACH_MANN_NO_TEXT.txt",
+  "sha256": "e494e01acc8eec100eebefd384733ab0c3d5379745c45a261dcf9bcbec60f954",
+  "explicitWaitCount": 61,
+  "explicitWaitSumSeconds": 625.5,
+  "spline": {
+    "name": "EARTH_DEPARTURE",
+    "body": "Earth",
+    "parent": "Earth-Moon",
+    "syncRot": false,
+    "explicitDurationSeconds": 40,
+    "knots": 61,
+    "positionsAreRelativeNotAbsolute": true
+  },
+  "remainingPositions": "Not numerically present in source. SpaceEngine resolves bodies, flight integration and wormhole transport. Do not invent absolute positions.",
+  "showMovieSeconds": 465,
+  "compatibleWithExistingShowTiming": false,
+  "timeline": [
+    {
+      "scriptTimeSeconds": 0,
+      "sourceLine": 134,
+      "command": "Select \"EARTH_DEPARTURE\"",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 0,
+      "sourceLine": 135,
+      "command": "Goto { Time 0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 0.5,
+      "sourceLine": 137,
+      "command": "PlaySplinePath \"EARTH_DEPARTURE\" { Time 40.0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 40.5,
+      "sourceLine": 147,
+      "command": "Select \"Siwarha\"",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 40.5,
+      "sourceLine": 148,
+      "command": "Center { Time 7.0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 47.5,
+      "sourceLine": 150,
+      "command": "Track",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 47.5,
+      "sourceLine": 154,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 47.5,
+      "sourceLine": 163,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 81.5,
+      "sourceLine": 168,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 81.5,
+      "sourceLine": 177,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 103.5,
+      "sourceLine": 184,
+      "command": "Untrack",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 103.5,
+      "sourceLine": 185,
+      "command": "Orbit",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 160.5,
+      "sourceLine": 203,
+      "command": "StopOrbit { FadeTime 8.0 Func \"Sin\" }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 160.5,
+      "sourceLine": 204,
+      "command": "Select \"Kepler-186 d\"",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 160.5,
+      "sourceLine": 205,
+      "command": "Center { Time 8.0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 168.5,
+      "sourceLine": 207,
+      "command": "Track",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 168.5,
+      "sourceLine": 213,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 168.5,
+      "sourceLine": 222,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 200.5,
+      "sourceLine": 227,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 200.5,
+      "sourceLine": 236,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 224.5,
+      "sourceLine": 242,
+      "command": "Untrack",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 224.5,
+      "sourceLine": 243,
+      "command": "Orbit",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 279.5,
+      "sourceLine": 259,
+      "command": "StopOrbit { FadeTime 9.0 Func \"Sin\" }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 279.5,
+      "sourceLine": 260,
+      "command": "Select \"Mann\"",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 279.5,
+      "sourceLine": 261,
+      "command": "Center { Time 9.0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 288.5,
+      "sourceLine": 263,
+      "command": "Track",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 288.5,
+      "sourceLine": 270,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 288.5,
+      "sourceLine": 279,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 324.5,
+      "sourceLine": 284,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 324.5,
+      "sourceLine": 293,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 350.5,
+      "sourceLine": 299,
+      "command": "Untrack",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 350.5,
+      "sourceLine": 300,
+      "command": "Orbit",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 372.5,
+      "sourceLine": 313,
+      "command": "StopOrbit { FadeTime 8.0 Func \"Sin\" }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 372.5,
+      "sourceLine": 314,
+      "command": "Select \"Gargantua\"",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 372.5,
+      "sourceLine": 315,
+      "command": "Center { Time 8.0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 380.5,
+      "sourceLine": 317,
+      "command": "Track",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 426.5,
+      "sourceLine": 329,
+      "command": "Untrack",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 426.5,
+      "sourceLine": 330,
+      "command": "Select \"Gargantua Wormhole\"",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 426.5,
+      "sourceLine": 331,
+      "command": "Center { Time 8.0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 434.5,
+      "sourceLine": 333,
+      "command": "Track",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 434.5,
+      "sourceLine": 336,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 434.5,
+      "sourceLine": 345,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 454.5,
+      "sourceLine": 352,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 454.5,
+      "sourceLine": 361,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 466.5,
+      "sourceLine": 366,
+      "command": "Untrack",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 466.5,
+      "sourceLine": 367,
+      "command": "Fly",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 472.5,
+      "sourceLine": 375,
+      "command": "StopFly { FadeTime 2.0 Func \"Sin\" }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 474.5,
+      "sourceLine": 381,
+      "command": "Select \"Saturn\"",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 474.5,
+      "sourceLine": 382,
+      "command": "Center { Time 5.0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 479.5,
+      "sourceLine": 384,
+      "command": "Track",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 479.5,
+      "sourceLine": 387,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 479.5,
+      "sourceLine": 396,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 491.5,
+      "sourceLine": 400,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 491.5,
+      "sourceLine": 409,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 501.5,
+      "sourceLine": 414,
+      "command": "Untrack",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 501.5,
+      "sourceLine": 415,
+      "command": "Orbit",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 511.5,
+      "sourceLine": 425,
+      "command": "StopOrbit { FadeTime 7.0 Func \"Sin\" }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 511.5,
+      "sourceLine": 426,
+      "command": "Select \"Earth\"",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 511.5,
+      "sourceLine": 427,
+      "command": "Center { Time 7.0 }",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 518.5,
+      "sourceLine": 429,
+      "command": "Track",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 518.5,
+      "sourceLine": 435,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 518.5,
+      "sourceLine": 444,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 542.5,
+      "sourceLine": 453,
+      "command": "Goto",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 542.5,
+      "sourceLine": 462,
+      "command": "Center false",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 560.5,
+      "sourceLine": 467,
+      "command": "Untrack",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 560.5,
+      "sourceLine": 468,
+      "command": "Orbit",
+      "position": "Engine-evaluated; command start, not arrival"
+    },
+    {
+      "scriptTimeSeconds": 618.5,
+      "sourceLine": 484,
+      "command": "StopOrbit { FadeTime 7.0 Func \"Sin\" }",
+      "position": "Engine-evaluated; command start, not arrival"
+    }
+  ],
+  "geometryComparisons": [
+    {
+      "distanceMm": 4000,
+      "panels": [
+        {
+          "id": "01-stanga-exterior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": -5560.25,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4000,
+          "leftMm": -6645.012913505214,
+          "rightMm": -4475.487086494786,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": -54.26905753089565,
+          "leftAngleDeg": -58.95394389630394,
+          "rightAngleDeg": -48.211010191349004,
+          "paddedWidth": 23528,
+          "paddedHeight": 2164,
+          "cropX": 3,
+          "cropY": 2,
+          "horizontalFov": 117.91870482089202,
+          "verticalFov": 17.37825172143206,
+          "cropErrorXmm": 0.275087601661653,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 44485
+        },
+        {
+          "id": "02-stanga-interior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": -2875.1499999999996,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4000,
+          "leftMm": -3959.9129135052135,
+          "rightMm": -1790.3870864947858,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": -35.708108090127816,
+          "leftAngleDeg": -44.71145394721515,
+          "rightAngleDeg": -24.113135251517967,
+          "paddedWidth": 14022,
+          "paddedHeight": 2164,
+          "cropX": 2,
+          "cropY": 2,
+          "horizontalFov": 89.43978496256346,
+          "verticalFov": 17.37825172143206,
+          "cropErrorXmm": -0.03670147293451009,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 44485
+        },
+        {
+          "id": "03-centru",
+          "diagonalInches": 115,
+          "casingWidthMm": 2565.2,
+          "casingHeightMm": 1467.6,
+          "activeWidthMm": 2545.8721439408087,
+          "activeHeightMm": 1432.0530809667048,
+          "centerXmm": 0,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4000,
+          "leftMm": -1272.9360719704043,
+          "rightMm": 1272.9360719704043,
+          "bottomMm": -716.0265404833524,
+          "topMm": 716.0265404833524,
+          "bearingDeg": 0,
+          "leftAngleDeg": -17.65284005356987,
+          "rightAngleDeg": 17.65284005356987,
+          "paddedWidth": 3844,
+          "paddedHeight": 2164,
+          "cropX": 2,
+          "cropY": 2,
+          "horizontalFov": 35.340169967494504,
+          "verticalFov": 20.334474385182617,
+          "cropErrorXmm": 0,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.3314937687422928,
+          "requiredEquirectangularWidthForNativeSampling": 37909
+        },
+        {
+          "id": "04-dreapta-interior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": 2875.1499999999996,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4000,
+          "leftMm": 1790.3870864947858,
+          "rightMm": 3959.9129135052135,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": 35.708108090127816,
+          "leftAngleDeg": 24.113135251517967,
+          "rightAngleDeg": 44.71145394721515,
+          "paddedWidth": 14022,
+          "paddedHeight": 2164,
+          "cropX": 10180,
+          "cropY": 2,
+          "horizontalFov": 89.43978496256346,
+          "verticalFov": 17.37825172143206,
+          "cropErrorXmm": 0.03670147293451009,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 44485
+        },
+        {
+          "id": "05-dreapta-exterior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": 5560.25,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4000,
+          "leftMm": 4475.487086494786,
+          "rightMm": 6645.012913505214,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": 54.26905753089565,
+          "leftAngleDeg": 48.211010191349004,
+          "rightAngleDeg": 58.95394389630394,
+          "paddedWidth": 23528,
+          "paddedHeight": 2164,
+          "cropX": 19685,
+          "cropY": 2,
+          "horizontalFov": 117.91870482089202,
+          "verticalFov": 17.37825172143206,
+          "cropErrorXmm": -0.275087601661653,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 44485
+        }
+      ]
+    },
+    {
+      "distanceMm": 4500,
+      "panels": [
+        {
+          "id": "01-stanga-exterior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": -5560.25,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4500,
+          "leftMm": -6645.012913505214,
+          "rightMm": -4475.487086494786,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": -51.0161951580668,
+          "leftAngleDeg": -55.89415895961306,
+          "rightAngleDeg": -44.843520136352275,
+          "paddedWidth": 23528,
+          "paddedHeight": 2164,
+          "cropX": 3,
+          "cropY": 2,
+          "horizontalFov": 111.79968418216043,
+          "verticalFov": 15.472146622329406,
+          "cropErrorXmm": 0.275087601661653,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 50045
+        },
+        {
+          "id": "02-stanga-interior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": -2875.1499999999996,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4500,
+          "leftMm": -3959.9129135052135,
+          "rightMm": -1790.3870864947858,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": -32.57541337580114,
+          "leftAngleDeg": -41.34715231531361,
+          "rightAngleDeg": -21.69581853543153,
+          "paddedWidth": 14022,
+          "paddedHeight": 2164,
+          "cropX": 2,
+          "cropY": 2,
+          "horizontalFov": 82.7110458253492,
+          "verticalFov": 15.472146622329406,
+          "cropErrorXmm": -0.03670147293451009,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 50045
+        },
+        {
+          "id": "03-centru",
+          "diagonalInches": 115,
+          "casingWidthMm": 2565.2,
+          "casingHeightMm": 1467.6,
+          "activeWidthMm": 2545.8721439408087,
+          "activeHeightMm": 1432.0530809667048,
+          "centerXmm": 0,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4500,
+          "leftMm": -1272.9360719704043,
+          "rightMm": 1272.9360719704043,
+          "bottomMm": -716.0265404833524,
+          "topMm": 716.0265404833524,
+          "bearingDeg": 0,
+          "leftAngleDeg": -15.79486510507928,
+          "rightAngleDeg": 15.79486510507928,
+          "paddedWidth": 3844,
+          "paddedHeight": 2164,
+          "cropX": 2,
+          "cropY": 2,
+          "horizontalFov": 31.62099178984159,
+          "verticalFov": 18.114812988800246,
+          "cropErrorXmm": 0,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.3314937687422928,
+          "requiredEquirectangularWidthForNativeSampling": 42647
+        },
+        {
+          "id": "04-dreapta-interior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": 2875.1499999999996,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4500,
+          "leftMm": 1790.3870864947858,
+          "rightMm": 3959.9129135052135,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": 32.57541337580114,
+          "leftAngleDeg": 21.69581853543153,
+          "rightAngleDeg": 41.34715231531361,
+          "paddedWidth": 14022,
+          "paddedHeight": 2164,
+          "cropX": 10180,
+          "cropY": 2,
+          "horizontalFov": 82.7110458253492,
+          "verticalFov": 15.472146622329406,
+          "cropErrorXmm": 0.03670147293451009,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 50045
+        },
+        {
+          "id": "05-dreapta-exterior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": 5560.25,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 4500,
+          "leftMm": 4475.487086494786,
+          "rightMm": 6645.012913505214,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": 51.0161951580668,
+          "leftAngleDeg": 44.843520136352275,
+          "rightAngleDeg": 55.89415895961306,
+          "paddedWidth": 23528,
+          "paddedHeight": 2164,
+          "cropX": 19685,
+          "cropY": 2,
+          "horizontalFov": 111.79968418216043,
+          "verticalFov": 15.472146622329406,
+          "cropErrorXmm": -0.275087601661653,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 50045
+        }
+      ]
+    },
+    {
+      "distanceMm": 5000,
+      "panels": [
+        {
+          "id": "01-stanga-exterior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": -5560.25,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 5000,
+          "leftMm": -6645.012913505214,
+          "rightMm": -4475.487086494786,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": -48.03684999310865,
+          "leftAngleDeg": -53.04058820436578,
+          "rightAngleDeg": -41.83164175783168,
+          "paddedWidth": 23528,
+          "paddedHeight": 2164,
+          "cropX": 3,
+          "cropY": 2,
+          "horizontalFov": 106.09293827158353,
+          "verticalFov": 13.940984251573663,
+          "cropErrorXmm": 0.275087601661653,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 55606
+        },
+        {
+          "id": "02-stanga-interior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": -2875.1499999999996,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 5000,
+          "leftMm": -3959.9129135052135,
+          "rightMm": -1790.3870864947858,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": -29.90019360083322,
+          "leftAngleDeg": -38.378610651380086,
+          "rightAngleDeg": -19.701299066827325,
+          "paddedWidth": 14022,
+          "paddedHeight": 2164,
+          "cropX": 2,
+          "cropY": 2,
+          "horizontalFov": 76.77365094154904,
+          "verticalFov": 13.940984251573663,
+          "cropErrorXmm": -0.03670147293451009,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 55606
+        },
+        {
+          "id": "03-centru",
+          "diagonalInches": 115,
+          "casingWidthMm": 2565.2,
+          "casingHeightMm": 1467.6,
+          "activeWidthMm": 2545.8721439408087,
+          "activeHeightMm": 1432.0530809667048,
+          "centerXmm": 0,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 5000,
+          "leftMm": -1272.9360719704043,
+          "rightMm": 1272.9360719704043,
+          "bottomMm": -716.0265404833524,
+          "topMm": 716.0265404833524,
+          "bearingDeg": 0,
+          "leftAngleDeg": -14.28334278147145,
+          "rightAngleDeg": 14.28334278147145,
+          "paddedWidth": 3844,
+          "paddedHeight": 2164,
+          "cropX": 2,
+          "cropY": 2,
+          "horizontalFov": 28.595223095624814,
+          "verticalFov": 16.32907897540839,
+          "cropErrorXmm": 0,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.3314937687422928,
+          "requiredEquirectangularWidthForNativeSampling": 47386
+        },
+        {
+          "id": "04-dreapta-interior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": 2875.1499999999996,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 5000,
+          "leftMm": 1790.3870864947858,
+          "rightMm": 3959.9129135052135,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": 29.90019360083322,
+          "leftAngleDeg": 19.701299066827325,
+          "rightAngleDeg": 38.378610651380086,
+          "paddedWidth": 14022,
+          "paddedHeight": 2164,
+          "cropX": 10180,
+          "cropY": 2,
+          "horizontalFov": 76.77365094154904,
+          "verticalFov": 13.940984251573663,
+          "cropErrorXmm": 0.03670147293451009,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 55606
+        },
+        {
+          "id": "05-dreapta-exterior",
+          "diagonalInches": 98,
+          "casingWidthMm": 2185.1,
+          "casingHeightMm": 1249.3,
+          "activeWidthMm": 2169.5258270104277,
+          "activeHeightMm": 1220.3582776933658,
+          "centerXmm": 5560.25,
+          "centerYmm": 0,
+          "width": 3840,
+          "height": 2160,
+          "distanceMm": 5000,
+          "leftMm": 4475.487086494786,
+          "rightMm": 6645.012913505214,
+          "bottomMm": -610.1791388466829,
+          "topMm": 610.1791388466829,
+          "bearingDeg": 48.03684999310865,
+          "leftAngleDeg": 41.83164175783168,
+          "rightAngleDeg": 53.04058820436578,
+          "paddedWidth": 23528,
+          "paddedHeight": 2164,
+          "cropX": 19685,
+          "cropY": 2,
+          "horizontalFov": 106.09293827158353,
+          "verticalFov": 13.940984251573663,
+          "cropErrorXmm": -0.275087601661653,
+          "cropErrorYmm": 0,
+          "maximumCropRoundingMm": 0.2824903420586495,
+          "requiredEquirectangularWidthForNativeSampling": 55606
+        }
+      ]
+    }
+  ]
+}

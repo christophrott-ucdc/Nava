@@ -22,6 +22,8 @@ import {
   type Speaker,
 } from "../shared/types";
 import type { LogFn } from "./logger";
+import { validateVideoWall, validateWallScreens } from "../shared/video-wall";
+import { validateAutoDisplays } from "../shared/display-topology";
 
 export interface CliArgs {
   /** --config <path>  (absolute, or relative to appRoot). Default: <appRoot>/config.json */
@@ -34,6 +36,8 @@ export interface CliArgs {
   screen?: string;
   /** --windowed  : never kiosk/fullscreen (also sets config.dev.windowed = true for the renderers). */
   windowed: boolean;
+  /** --wall-preview: simulate all physical panels inside one development window. */
+  wallPreview?: boolean;
   /**
    * --kiosk : force kiosk/fullscreen regardless of config.dev.windowed (Task Scheduler autostart, RUN.bat --kiosk).
    * Wins over --windowed when both are present.
@@ -67,6 +71,10 @@ export function parseArgs(argv: string[]): CliArgs {
         args.dev = true;
         break;
       case "--windowed":
+        args.windowed = true;
+        break;
+      case "--wall-preview":
+        args.wallPreview = true;
         args.windowed = true;
         break;
       case "--kiosk":
@@ -421,9 +429,18 @@ export function loadConfig(opts: { cli: CliArgs; appRoot: string; resourcesRoot:
     delete config.masterUrl;
   }
   config.screens = sanitizeScreens(raw.screens, log);
+  if (raw.videoWall !== undefined) {
+    const wall = validateVideoWall(raw.videoWall, config.screens.map(s => s.id));
+    if (!wall.ok) throw new Error(`config.videoWall: ${wall.reason}`);
+    const outputs = validateWallScreens(raw.screens,wall.value);
+    if (!outputs.ok) throw new Error(`config.videoWall: ${outputs.reason}`);
+    config.videoWall = wall.value;
+    config.screens = outputs.screens;
+  }
 
   // --- validation / normalization (R4 sections) ---------------------------------------------------
   const r4 = config as unknown as Json;
+  if (raw.autoDisplays !== undefined) config.autoDisplays = validateAutoDisplays(raw.autoDisplays);
   const displayMode = oneOf(r4.displayMode, ["windows", "span"] as const, CONFIG_DEFAULTS_R4.displayMode);
   if (r4.displayMode !== undefined && displayMode !== r4.displayMode) {
     log("warn", `config.displayMode "${String(r4.displayMode)}" invalid -> "${displayMode}"`);
@@ -434,6 +451,7 @@ export function loadConfig(opts: { cli: CliArgs; appRoot: string; resourcesRoot:
   config.ambient = normalizeAmbient(r4.ambient);
   config.lights = normalizeLights(r4.lights, log);
   config.autoRun = normalizeAutoRun(r4.autoRun, log);
+  config.tabletSfx = bool(r4.tabletSfx, true);
   if (typeof r4.variant === "string" && r4.variant.trim()) config.variant = r4.variant.trim();
   else {
     if (r4.variant !== undefined && r4.variant !== null && r4.variant !== "") {
@@ -468,6 +486,11 @@ export function loadConfig(opts: { cli: CliArgs; appRoot: string; resourcesRoot:
   }
 
   // --- CLI overrides ---------------------------------------------------------------------------
+  if (cli.wallPreview) {
+    if (!config.videoWall) throw new Error("--wall-preview necesită videoWall. Rulează npm run wall:configure.");
+    if (cli.kiosk) throw new Error("--wall-preview și --kiosk sunt moduri separate.");
+    config.displayMode = "span";
+  }
   if (cli.kiosk) {
     if (cli.windowed) log("warn", "--kiosk and --windowed both given -> --kiosk wins");
     if (config.dev.windowed) log("info", "--kiosk overrides config.dev.windowed=true");

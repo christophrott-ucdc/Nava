@@ -1,0 +1,166 @@
+{
+  "$comment": "Samsung QN90F 98–98–115–98–98. Un singur PC, desktop extins, toate ieșirile 3840×2160 și scalare100%. Dimensiuni active nominale16:9; măsoară golurile și alinierile în /wall/. Creează profilul local cu npm run wall:configure pentru a păstra media și autentificarea existente.",
+  "role": "master",
+  "server": {
+    "port": 4321,
+    "bindHost": "0.0.0.0"
+  },
+  "lang": "ro",
+  "show": "assets/show/show.json",
+  "video": {
+    "path": "media/cinema_4k_h264.mp4",
+    "fit": "cover",
+    "preloadPoster": true
+  },
+  "avatar": {
+    "glb": "assets/avatar/avatar-ai.glb",
+    "corner": "bottom-left",
+    "widthPercent": 22,
+    "marginPx": 40
+  },
+  "audio": {
+    "voiceVolume": 1,
+    "sfxVolume": 0.8,
+    "outputDeviceId": "default"
+  },
+  "displayMode": "span",
+  "autostart": false,
+  "screens": [
+    {
+      "id": "port-outer",
+      "displayIndex": 0,
+      "roleLabel": "BABORD EXTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": false,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": 0
+    },
+    {
+      "id": "port-inner",
+      "displayIndex": 1,
+      "roleLabel": "BABORD INTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": false,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": 0
+    },
+    {
+      "id": "center",
+      "displayIndex": 2,
+      "roleLabel": "FEREASTRA FRONTALA",
+      "showAvatar": true,
+      "showSubtitles": true,
+      "showEntities": true,
+      "playAudio": true,
+      "kiosk": true,
+      "yawOffsetDeg": 0
+    },
+    {
+      "id": "starboard-inner",
+      "displayIndex": 3,
+      "roleLabel": "TRIBORD INTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": false,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": 0
+    },
+    {
+      "id": "starboard-outer",
+      "displayIndex": 4,
+      "roleLabel": "TRIBORD EXTERIOR",
+      "showAvatar": false,
+      "showSubtitles": false,
+      "showEntities": false,
+      "playAudio": false,
+      "kiosk": true,
+      "yawOffsetDeg": 0
+    }
+  ],
+  "sync": {
+    "clockHz": 4,
+    "seekThresholdSec": 0.25,
+    "rateNudge": 0.03
+  },
+  "dev": {
+    "openDevTools": false,
+    "windowed": false
+  },
+  "security": {
+    "operatorPin": "4078",
+    "screenToken": "",
+    "sessionTtlMin": 720,
+    "usersFile": "data/users.json",
+    "publicState": true
+  },
+  "ambient": {
+    "enabled": true,
+    "volume": 0.5,
+    "duck": 0.25
+  },
+  "lights": {
+    "driver": "none"
+  },
+  "autoRun": {
+    "enabled": false,
+    "requireScreens": [
+      "port-outer",
+      "port-inner",
+      "center",
+      "starboard-inner",
+      "starboard-outer"
+    ],
+    "requireTablets": 5,
+    "startTrigger": "operator",
+    "resetAfterSec": 0
+  },
+  "videoWall": {
+    "mode": "cinema",
+    "fit": "cover",
+    "focusX": 0.5,
+    "focusY": 0.5,
+    "calibration": false,
+    "panels": [
+      {
+        "screenId": "port-outer",
+        "x": 0,
+        "y": 106,
+        "width": 2170,
+        "height": 1220
+      },
+      {
+        "screenId": "port-inner",
+        "x": 2170,
+        "y": 106,
+        "width": 2170,
+        "height": 1220
+      },
+      {
+        "screenId": "center",
+        "x": 4340,
+        "y": 0,
+        "width": 2546,
+        "height": 1432
+      },
+      {
+        "screenId": "starboard-inner",
+        "x": 6886,
+        "y": 106,
+        "width": 2170,
+        "height": 1220
+      },
+      {
+        "screenId": "starboard-outer",
+        "x": 9056,
+        "y": 106,
+        "width": 2170,
+        "height": 1220
+      }
+    ]
+  }
+}

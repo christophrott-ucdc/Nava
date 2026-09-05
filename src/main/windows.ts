@@ -28,7 +28,8 @@ import {
   type Rectangle,
 } from "electron";
 import fs from "node:fs";
-import type { ScreenConfig, SpanViewport } from "../shared/types";
+import type { ScreenConfig, SpanViewport, VideoWallConfig } from "../shared/types";
+import { wallBounds, type WallRuntimeInfo } from "../shared/video-wall";
 import type { LogFn } from "./logger";
 import { installWindowShortcuts } from "./shortcuts";
 
@@ -40,6 +41,8 @@ export interface WindowManagerOptions {
   openDevTools: boolean;
   /** config.displayMode (normalized by the config loader). */
   displayMode: "windows" | "span";
+  videoWall?: VideoWallConfig;
+  wallPreview?: boolean;
   log: LogFn;
   /** Renderer crash loop detected (CRASH_LOOP_MAX crashes within CRASH_LOOP_WINDOW_MS). Windows are not re-created after this. */
   onCrashLoop?: (crashes: number, windowMs: number) => void;
@@ -73,6 +76,8 @@ export class WindowManager {
   private crashLoop = false;
   private quitting = false;
   private created = 0;
+  private layoutGeneration = 0;
+  private readonly openedDisplayIds = new Map<string, number>();
 
   constructor(private readonly opts: WindowManagerOptions) {}
 
@@ -88,6 +93,10 @@ export class WindowManager {
     const { log } = this.opts;
     const primaryId = electronScreen.getPrimaryDisplay().id;
     const displays = WindowManager.sortedDisplays();
+    for (const sc of screens) {
+      const display = displays[sc.displayIndex];
+      if (display) this.openedDisplayIds.set(sc.id, display.id);
+    }
     log(
       "info",
       `displays detected: ${displays.length}`,
@@ -103,6 +112,37 @@ export class WindowManager {
     else for (const sc of screens) this.create(sc);
   }
 
+  /** Idle-only transaction: keep existing windows until every replacement has loaded. */
+  async reconfigure(screens:ScreenConfig[],displayMode:'span'|'windows',videoWall?:VideoWallConfig):Promise<void> {
+    const oldWindows=this.all(),oldScreens=new Map(this.byScreenId),oldContents=new Map(this.byWebContents),oldIds=new Map(this.openedDisplayIds);
+    const oldOptions={displayMode:this.opts.displayMode,videoWall:this.opts.videoWall},oldLayout=this.spanLayout,oldGeneration=this.layoutGeneration;
+    this.layoutGeneration++;
+    this.byScreenId.clear();this.byWebContents.clear();this.openedDisplayIds.clear();this.spanLayout=null;
+    this.opts.displayMode=displayMode;this.opts.videoWall=videoWall;
+    try{
+      this.open(screens);
+      await Promise.all(this.all().map(win=>new Promise<void>((resolve,reject)=>{
+        let timer:ReturnType<typeof setTimeout>;
+        const done=()=>{clearTimeout(timer);win.webContents.removeListener('did-finish-load',loaded);win.webContents.removeListener('did-fail-load',failed);};
+        const loaded=()=>{done();resolve();};
+        const failed=(_event:unknown,_code:number,description:string,_url:string,isMainFrame:boolean)=>{if(isMainFrame){done();reject(new Error(description));}};
+        timer=setTimeout(()=>{done();reject(new Error('Rendererul nou nu a confirmat încărcarea în 15 secunde.'));},15000);
+        win.webContents.once('did-finish-load',loaded);win.webContents.on('did-fail-load',failed);
+        if(win.webContents.getURL()&&!win.webContents.isLoadingMainFrame())loaded();
+      })));
+      for(const old of oldWindows)if(!old.isDestroyed())old.destroy();
+    }catch(err){
+      for(const win of this.all())if(!win.isDestroyed())win.destroy();
+      this.byScreenId.clear();this.byWebContents.clear();this.openedDisplayIds.clear();
+      for(const [id,win] of oldScreens)this.byScreenId.set(id,win);
+      for(const [id,sc] of oldContents)this.byWebContents.set(id,sc);
+      for(const [id,display] of oldIds)this.openedDisplayIds.set(id,display);
+      Object.assign(this.opts,oldOptions);this.spanLayout=oldLayout;
+      this.layoutGeneration=oldGeneration;
+      throw err;
+    }
+  }
+
   /** The ScreenConfig a renderer belongs to (span: the primary screen — see spanPrimaryScreen). */
   screenFor(webContentsId: number): ScreenConfig | undefined {
     return this.byWebContents.get(webContentsId);
@@ -111,6 +151,27 @@ export class WindowManager {
   /** Span mode only: per-screen viewports relative to the spanning window; undefined in windows mode. */
   viewports(): SpanViewport[] | undefined {
     return this.spanLayout ? this.spanLayout.viewports.map((v) => ({ ...v })) : undefined;
+  }
+
+  wallRuntime(screens: ScreenConfig[]): WallRuntimeInfo {
+    const displays = WindowManager.sortedDisplays().map((d,index) => ({index, id:d.id, bounds:d.bounds, scaleFactor:d.scaleFactor}));
+    const issues: string[] = [];
+    const preview = this.opts.wallPreview === true || this.opts.windowed;
+    if (preview) issues.push("Previzualizare locală; prezența fizică a TV-urilor nu este validată.");
+    const used = screens.map(s => displays[s.displayIndex]);
+    if (used.some(d => !d)) issues.push("Lipsesc ieșiri video configurate în Windows.");
+    if (new Set(used.filter(Boolean).map(d => d.id)).size !== screens.length) issues.push("Fiecare TV trebuie să aibă o ieșire video separată (desktop extins).");
+    if (this.opts.displayMode === "span" && new Set(used.filter(Boolean).map(d => d.scaleFactor)).size > 1) issues.push("Folosește aceeași scalare Windows pe toate TV-urile în modul span.");
+    if (!preview && screens.some(s => this.openedDisplayIds.get(s.id) !== displays[s.displayIndex]?.id)) issues.push("Identitatea display-urilor s-a schimbat; reaplică configurația în pregătire.");
+    if (this.opts.displayMode === "span" && this.spanLayout && !preview) {
+      const actual = this.all()[0]?.getContentBounds(), expected = this.spanLayout.bounds;
+      if (!actual || ["x","y","width","height"].some(k => actual[k as keyof Rectangle] !== expected[k as keyof Rectangle])) issues.push("Fereastra panoramică nu acoperă suprafața Windows configurată.");
+      for (const s of screens) {
+        const current = displays[s.displayIndex]?.bounds, viewport = this.spanLayout.viewports.find(v => v.screenId === s.id);
+        if (current && viewport && (current.x !== viewport.x+expected.x || current.y !== viewport.y+expected.y || current.width !== viewport.width || current.height !== viewport.height)) issues.push(`Poziția Windows pentru ${s.id} s-a schimbat; repornește playerul.`);
+      }
+    }
+    return {preview,displays,issues,verifiedScreenIds:issues.length ? [] : screens.filter(s => !!this.windowFor(s.id)).map(s => s.id)};
   }
 
   windowFor(screenId: string): BrowserWindow | undefined {
@@ -141,6 +202,7 @@ export class WindowManager {
     for (const win of this.all()) win.destroy();
     this.byScreenId.clear();
     this.byWebContents.clear();
+    this.openedDisplayIds.clear();
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -210,6 +272,17 @@ export class WindowManager {
     const { log } = this.opts;
     const displays = WindowManager.sortedDisplays();
     const primaryDisplay = electronScreen.getPrimaryDisplay();
+    if (this.opts.wallPreview && this.opts.videoWall) {
+      const wall = this.opts.videoWall, b = wallBounds(wall), wa = primaryDisplay.workArea;
+      const scale = Math.min(Math.min(1600,wa.width-80)/b.width,(wa.height-160)/b.height);
+      const bounds = {x:wa.x+40,y:wa.y+80,width:Math.round(b.width*scale),height:Math.round(b.height*scale)};
+      const viewports = screens.map(sc => {
+        const p = wall.panels.find(p => p.screenId===sc.id)!;
+        return {screenId:sc.id,x:(p.x-b.x)*scale,y:(p.y-b.y)*scale,width:p.width*scale,height:p.height*scale,scaleFactor:1};
+      });
+      log("warn","Physical wall preview: simulated viewports; hardware readiness is NOT certified");
+      return {bounds,union:{x:0,y:0,width:bounds.width,height:bounds.height},scale:1,kiosk:false,viewports};
+    }
 
     const placed = screens.map((sc) => {
       let display: Display | undefined = displays[sc.displayIndex];
@@ -384,6 +457,7 @@ export class WindowManager {
   ): void {
     const { log } = this.opts;
     const wcId = win.webContents.id;
+    const generation = this.layoutGeneration;
     win.setMenuBarVisibility(false);
     // The player is a local, privileged renderer. Keep it on its bundled document and deny popups so
     // a compromised/accidental link cannot turn the preload bridge into a general browsing surface.
@@ -412,10 +486,10 @@ export class WindowManager {
     win.webContents.on("render-process-gone", (_event, details) => {
       log("error", `${p.label}: renderer process gone (${details.reason}, exit code ${details.exitCode})`);
       this.byWebContents.delete(wcId);
-      if (this.quitting || details.reason === "clean-exit") return;
+      if (this.quitting || generation !== this.layoutGeneration || details.reason === "clean-exit") return;
       if (this.registerCrash()) return;
       setTimeout(() => {
-        if (this.quitting || this.crashLoop) return;
+        if (this.quitting || this.crashLoop || generation !== this.layoutGeneration) return;
         if (!win.isDestroyed()) win.destroy();
         this.forget(win, p.screenIds);
         log("warn", `${p.label}: re-creating window`);

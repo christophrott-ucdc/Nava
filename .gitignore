@@ -20,6 +20,9 @@ logs/
 .env.*
 !.env.example
 config.json
+config.wall.local.json
+config.auto.local.json
+config.wall.local.json.*.tmp
 !config.example.json
 
 # voice cache produced at runtime (pre-generated voices under assets/voice ARE committed)
@@ -36,3 +39,7 @@ HEARTBEAT.log
 .tmp-tests/
 data/users.json
 data/sessions.json
+data/nava.sqlite*
+data/diagnostics/
+data/installations/
+.venv-optical/

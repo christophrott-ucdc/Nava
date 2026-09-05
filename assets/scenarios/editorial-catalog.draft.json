@@ -1,0 +1,26 @@
+{
+  "status": "editorial-draft",
+  "runtimeActivation": "not-loaded",
+  "profiles": [
+    {
+      "profile": "age-5-10",
+      "path": "assets/scenarios/age-5-10/dialogue.ro.draft.json",
+      "productionReady": false
+    },
+    {
+      "profile": "age-10-15",
+      "path": "assets/scenarios/age-10-15/dialogue.ro.draft.json",
+      "productionReady": false
+    },
+    {
+      "profile": "age-15-18",
+      "path": "assets/scenarios/age-15-18/dialogue.ro.draft.json",
+      "productionReady": false
+    },
+    {
+      "profile": "adults",
+      "path": "assets/scenarios/adults/dialogue.ro.draft.json",
+      "productionReady": false
+    }
+  ]
+}

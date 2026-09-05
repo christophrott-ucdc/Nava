@@ -27,6 +27,10 @@ files:
   - "!node_modules/**"
 
 extraResources:
+  - from: scripts/display-inventory.ps1
+    to: scripts/display-inventory.ps1
+  - from: scripts/calibrate-wall.py
+    to: scripts/calibrate-wall.py
   - from: assets
     to: assets
     filter:

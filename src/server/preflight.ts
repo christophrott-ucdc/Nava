@@ -69,7 +69,8 @@ export async function runPreflight(show: ShowFile, lang: Lang, variant: string |
   const reasons: string[] = [];
   const issues: PreflightIssue[] = [];
 
-  const manifestPath = await firstExisting(candidatesFor(deps.appRoot, path.join("assets", "voice", lang, "manifest.json")));
+  const voiceRoot=show.scenario?.voiceRoot??'assets/voice';
+  const manifestPath = await firstExisting(candidatesFor(deps.appRoot, path.join(voiceRoot, lang, "manifest.json")));
   const assetsDir = manifestPath ? path.dirname(path.dirname(path.dirname(manifestPath))) : null;
   let manifest: VoiceManifest | null = null;
   if (manifestPath) {

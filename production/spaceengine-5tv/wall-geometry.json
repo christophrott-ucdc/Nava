@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "geometryVerified": false,
+  "arrangement": "flat-coplanar",
+  "gapBetweenCasingsMm": 500,
+  "viewer": {
+    "distanceMm": 4500,
+    "xMm": 0,
+    "yMm": 0
+  },
+  "assumptions": [
+    "4.5 m is the midpoint of the user estimate 4–5 m.",
+    "Vertical panel centres and eye height are provisionally equal.",
+    "500 mm interpreted as casing-edge to casing-edge.",
+    "Active dimensions estimated from nominal diagonal and 16:9; measure visible pixels before final render.",
+    "Casings sourced from Samsung regional QN90F specifications; verify exact installed model."
+  ],
+  "panels": [
+    {
+      "id": "01-stanga-exterior",
+      "diagonalInches": 98,
+      "casingWidthMm": 2185.1,
+      "casingHeightMm": 1249.3,
+      "activeWidthMm": 2169.5258270104277,
+      "activeHeightMm": 1220.3582776933658,
+      "centerXmm": -5560.25,
+      "centerYmm": 0
+    },
+    {
+      "id": "02-stanga-interior",
+      "diagonalInches": 98,
+      "casingWidthMm": 2185.1,
+      "casingHeightMm": 1249.3,
+      "activeWidthMm": 2169.5258270104277,
+      "activeHeightMm": 1220.3582776933658,
+      "centerXmm": -2875.1499999999996,
+      "centerYmm": 0
+    },
+    {
+      "id": "03-centru",
+      "diagonalInches": 115,
+      "casingWidthMm": 2565.2,
+      "casingHeightMm": 1467.6,
+      "activeWidthMm": 2545.8721439408087,
+      "activeHeightMm": 1432.0530809667048,
+      "centerXmm": 0,
+      "centerYmm": 0
+    },
+    {
+      "id": "04-dreapta-interior",
+      "diagonalInches": 98,
+      "casingWidthMm": 2185.1,
+      "casingHeightMm": 1249.3,
+      "activeWidthMm": 2169.5258270104277,
+      "activeHeightMm": 1220.3582776933658,
+      "centerXmm": 2875.1499999999996,
+      "centerYmm": 0
+    },
+    {
+      "id": "05-dreapta-exterior",
+      "diagonalInches": 98,
+      "casingWidthMm": 2185.1,
+      "casingHeightMm": 1249.3,
+      "activeWidthMm": 2169.5258270104277,
+      "activeHeightMm": 1220.3582776933658,
+      "centerXmm": 5560.25,
+      "centerYmm": 0
+    }
+  ]
+}

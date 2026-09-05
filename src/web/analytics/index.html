@@ -1,16 +1,17 @@
 <!doctype html>
-<html lang="ro">
+<html lang="ro" data-theme="prologue">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#fdfcf7" />
     <title>Nava · Analitică</title>
+    <link rel="stylesheet" href="/shared/glass.css" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <header class="topbar">
       <div class="brand">
-        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-mark" data-icon="planet" aria-hidden="true"></span>
         <div><strong>EXODUS-7</strong><span>Analitica rulărilor</span></div>
       </div>
       <nav class="topnav" aria-label="Pagini">
@@ -23,32 +24,33 @@
     </header>
 
     <main>
+      <div class="page-intro"><p class="eyebrow">FIECARE CĂLĂTORIE CONTEAZĂ</p><h1>Povestea misiunilor</h1><p>Rulări, participare și alegerile echipajului, într-o privire.</p></div>
       <section class="cards" aria-label="Indicatori">
-        <article class="card"><span>Rulări înregistrate</span><strong id="k-runs">—</strong><small id="k-runs-note">—</small></article>
-        <article class="card"><span>Rată de finalizare</span><strong id="k-completion">—</strong><small id="k-completion-note">—</small></article>
-        <article class="card"><span>Durată medie misiune</span><strong id="k-duration">—</strong><small id="k-duration-note">—</small></article>
-        <article class="card"><span>Răspunsuri tablete / rulare</span><strong id="k-answers">—</strong><small id="k-answers-note">—</small></article>
+        <article class="glass card"><span>Rulări înregistrate</span><strong id="k-runs">—</strong><small id="k-runs-note">—</small></article>
+        <article class="glass card"><span>Rată de finalizare</span><strong id="k-completion">—</strong><small id="k-completion-note">—</small></article>
+        <article class="glass card"><span>Durată medie misiune</span><strong id="k-duration">—</strong><small id="k-duration-note">—</small></article>
+        <article class="glass card"><span>Răspunsuri tablete / rulare</span><strong id="k-answers">—</strong><small id="k-answers-note">—</small></article>
       </section>
 
       <div class="grid">
-        <section class="panel" aria-labelledby="durations-title">
+        <section class="glass panel" aria-labelledby="durations-title">
           <div class="section-heading"><div><p class="eyebrow">RULĂRI</p><h2 id="durations-title">Durata misiunilor (ultimele 20)</h2></div></div>
           <canvas id="chart-durations" class="chart" width="800" height="260" role="img" aria-label="Durata misiunilor per rulare"></canvas>
           <p class="empty" id="durations-empty" hidden>Nicio misiune pornită încă.</p>
         </section>
 
-        <section class="panel" aria-labelledby="commands-title">
+        <section class="glass panel" aria-labelledby="commands-title">
           <div class="section-heading"><div><p class="eyebrow">OPERATOR</p><h2 id="commands-title">Comenzi trimise (toate rulările)</h2></div></div>
           <canvas id="chart-commands" class="chart" width="800" height="260" role="img" aria-label="Comenzi per tip"></canvas>
           <p class="empty" id="commands-empty" hidden>Nicio comandă înregistrată.</p>
         </section>
 
-        <section class="panel span2" aria-labelledby="choices-title">
+        <section class="glass panel span2" aria-labelledby="choices-title">
           <div class="section-heading"><div><p class="eyebrow">ECHIPAJ</p><h2 id="choices-title">Alegerile copiilor pe interacțiune</h2></div><span class="note" id="choices-note"></span></div>
           <div class="choices" id="choices"></div>
         </section>
 
-        <section class="panel span2" aria-labelledby="runs-title">
+        <section class="glass panel span2" aria-labelledby="runs-title">
           <div class="section-heading"><div><p class="eyebrow">JURNAL</p><h2 id="runs-title">Rulări</h2></div><label class="toggle"><input type="checkbox" id="only-started" checked /> doar misiuni pornite</label></div>
           <div class="table-wrap">
             <table class="runs" id="runs-table">
@@ -58,7 +60,7 @@
           </div>
         </section>
 
-        <section class="panel span2" id="detail" aria-labelledby="detail-title" hidden>
+        <section class="glass panel span2" id="detail" aria-labelledby="detail-title" hidden>
           <div class="section-heading"><div><p class="eyebrow">DETALII RULARE</p><h2 id="detail-title">—</h2></div><button class="nav-link nav-button" id="detail-close" type="button">ÎNCHIDE</button></div>
           <div class="detail-grid">
             <div><h3>Tranziții de stare</h3><ol class="states" id="detail-states"></ol></div>

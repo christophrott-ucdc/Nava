@@ -36,6 +36,7 @@ export interface Entities {
 
 interface Frame {
   ctx: CanvasRenderingContext2D;
+  reducedMotion?: boolean;
   /** Seconds since renderer start. */
   t: number;
   dt: number;
@@ -153,18 +154,18 @@ interface Particle {
   color: number;
 }
 
-const LUMINA_COLORS = ["#fcd34d", "#fde68a", "#ffffff", "#f59e0b"];
+const LUMINA_COLORS = ["#ffd166", "#ffe5a6", "#ffffff", "#eab455"];
 
 class LuminaRenderer implements EntityRenderer {
   private particles: Particle[] = [];
   private seed = 1;
   private palette = LUMINA_COLORS;
-  private core: [number, number, number] = [252, 211, 77];
+  private core: [number, number, number] = [255, 209, 102];
   private density = 1;
 
   setParams(p: EntityParams | null): void {
     this.palette = tintPalette(p?.color);
-    this.core = hexToRgb(p?.color) ?? [252, 211, 77];
+    this.core = hexToRgb(p?.color) ?? [255, 209, 102];
     const d = entityDensity(p);
     if (Math.abs(d - this.density) > 0.05) {
       this.density = d;
@@ -260,6 +261,7 @@ class LuminaRenderer implements EntityRenderer {
     const damp = Math.exp(-3.2 * dt);
     for (const p of this.particles) {
       this.target(p, t, amp, tmp);
+      if (f.reducedMotion) { p.x = tmp.x; p.y = tmp.y; p.vx = 0; p.vy = 0; }
       const ax = (tmp.x - p.x) * k * (0.15 + 0.85 * cohesion);
       const ay = (tmp.y - p.y) * k * (0.15 + 0.85 * cohesion);
       const turb = (1 - cohesion) * 1.4 + 0.12;
@@ -399,7 +401,7 @@ class NaturaRenderer implements EntityRenderer {
       this.cycleStart = t;
       ct = 0;
     }
-    const growth = clamp01(ct / G);
+    const growth = f.reducedMotion ? 1 : clamp01(ct / G);
     const treeAlpha = ct > G + H ? 1 - smooth((ct - G - H) / F) : 1;
     const sway = Math.sin(t * 0.8) * 0.02 + Math.sin(t * 2.7) * 0.008 * amp;
 
@@ -415,7 +417,7 @@ class NaturaRenderer implements EntityRenderer {
         d.x = (Math.random() - 0.5) * 2.2;
       }
       if (d.x < -1.15) d.x += 2.3;
-      ctx.strokeStyle = `rgba(134, 239, 172, ${d.a * alpha * 0.7})`;
+      ctx.strokeStyle = `rgba(123, 224, 181, ${d.a * alpha * 0.7})`;
       ctx.beginPath();
       ctx.moveTo(d.x, d.y);
       ctx.lineTo(d.x - d.len * 0.12, d.y - d.len);
@@ -424,8 +426,8 @@ class NaturaRenderer implements EntityRenderer {
 
     // ---- soft ground glow
     const gg = ctx.createRadialGradient(0, 0.2, 0, 0, 0.2, 0.95);
-    gg.addColorStop(0, `rgba(34, 197, 94, ${0.16 * alpha * (0.6 + 0.4 * amp)})`);
-    gg.addColorStop(1, "rgba(34, 197, 94, 0)");
+    gg.addColorStop(0, `rgba(83, 178, 137, ${0.16 * alpha * (0.6 + 0.4 * amp)})`);
+    gg.addColorStop(1, "rgba(83, 178, 137, 0)");
     ctx.fillStyle = gg;
     ctx.fillRect(-1.1, -1.1, 2.2, 2.2);
 
@@ -444,10 +446,10 @@ class NaturaRenderer implements EntityRenderer {
         const w = (0.9 + s.width * 3.2) * (1 + amp * 0.35);
         if (pass === 0) {
           ctx.lineWidth = (w + 5) * px;
-          ctx.strokeStyle = `rgba(34, 197, 94, ${0.12 * alpha * treeAlpha * (0.5 + amp)})`;
+          ctx.strokeStyle = `rgba(83, 178, 137, ${0.12 * alpha * treeAlpha * (0.5 + amp)})`;
         } else {
           ctx.lineWidth = w * px;
-          const bright = s.depth >= 4 ? "134, 239, 172" : "74, 222, 128";
+          const bright = s.depth >= 4 ? "123, 224, 181" : "74, 222, 128";
           ctx.strokeStyle = `rgba(${bright}, ${(0.55 + 0.45 * amp) * alpha * treeAlpha})`;
         }
         ctx.beginPath();
@@ -457,7 +459,7 @@ class NaturaRenderer implements EntityRenderer {
         if (pass === 1 && s.tip && k >= 1) {
           // leaf bud at the tip
           const pulse = 0.5 + 0.5 * Math.sin(t * 3 + s.x1 * 20);
-          ctx.fillStyle = `rgba(134, 239, 172, ${(0.35 + 0.5 * pulse * (0.5 + amp)) * alpha * treeAlpha})`;
+          ctx.fillStyle = `rgba(123, 224, 181, ${(0.35 + 0.5 * pulse * (0.5 + amp)) * alpha * treeAlpha})`;
           ctx.beginPath();
           ctx.arc(s.x1, s.y1, (2.2 + amp * 2) * px, 0, TAU);
           ctx.fill();
@@ -487,14 +489,14 @@ class NaturaRenderer implements EntityRenderer {
         ctx.scale(1, Math.max(0.06, blink));
         ctx.globalCompositeOperation = "lighter";
         const eg = ctx.createRadialGradient(0, 0, 0, 0, 0, 0.26);
-        eg.addColorStop(0, `rgba(187, 247, 208, ${0.55 * glow * alpha * eyesIn})`);
-        eg.addColorStop(1, "rgba(34, 197, 94, 0)");
+        eg.addColorStop(0, `rgba(194, 244, 222, ${0.55 * glow * alpha * eyesIn})`);
+        eg.addColorStop(1, "rgba(83, 178, 137, 0)");
         ctx.fillStyle = eg;
         ctx.beginPath();
         ctx.arc(0, 0, 0.26, 0, TAU);
         ctx.fill();
         // leaf outline: two quadratic curves
-        ctx.fillStyle = `rgba(134, 239, 172, ${(0.75 + 0.25 * amp) * alpha * eyesIn})`;
+        ctx.fillStyle = `rgba(123, 224, 181, ${(0.75 + 0.25 * amp) * alpha * eyesIn})`;
         ctx.beginPath();
         ctx.moveTo(-0.11, 0);
         ctx.quadraticCurveTo(0, -0.075, 0.11, 0);
@@ -581,8 +583,8 @@ class TehnologicRenderer implements EntityRenderer {
       if (g >= 1) this.glitchAt = -1;
     }
     const scale = 1 + amp * 0.14;
-    const c1 = "165, 243, 252"; // #a5f3fc
-    const c2 = "103, 232, 249"; // #67e8f9
+    const c1 = "124, 196, 255"; // Nava sky
+    const c2 = "178, 220, 255"; // pearl sky
 
     ctx.save();
     ctx.scale(scale, scale);
@@ -716,6 +718,7 @@ const MAX_BACKING_PX = 1080;
 
 export function createEntities(canvas: HTMLCanvasElement, opts: { enabled: boolean; getAmplitude: () => number }): Entities {
   const ctx = canvas.getContext("2d", { alpha: true });
+  const motionPreference = window.matchMedia?.("(prefers-reduced-motion: reduce)");
   let enabled = opts.enabled && !!ctx;
   const slots: Record<EntityId, Slot> = {
     LUMINA: { id: "LUMINA", renderer: new LuminaRenderer(), alpha: 0, target: 0, amp: 0, params: null },
@@ -752,19 +755,21 @@ export function createEntities(canvas: HTMLCanvasElement, opts: { enabled: boole
   const frame = (now: number) => {
     raf = 0;
     if (disposed || !ctx) return;
-    const dt = Math.min(0.05, Math.max(0.001, (now - lastNow) / 1000));
+    const reducedMotion = motionPreference?.matches ?? false;
+    const dt = reducedMotion ? 0 : Math.min(0.05, Math.max(0.001, (now - lastNow) / 1000));
     lastNow = now;
-    const t = (now - t0) / 1000;
+    const t = reducedMotion ? 0 : (now - t0) / 1000;
     fit();
     const w = canvas.width;
     const h = canvas.height;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, w, h);
     const S = Math.min(w, h) / 2;
-    const rawAmp = clamp01(opts.getAmplitude());
+    const rawAmp = reducedMotion ? 0 : clamp01(opts.getAmplitude());
 
     for (const s of Object.values(slots)) {
       // fade
+      if (reducedMotion) s.alpha = s.target;
       if (s.target > s.alpha) s.alpha = Math.min(1, s.alpha + dt / FADE_IN_S);
       else if (s.target < s.alpha) s.alpha = Math.max(0, s.alpha - dt / FADE_OUT_S);
       if (s.alpha <= 0.001) continue;
@@ -772,7 +777,7 @@ export function createEntities(canvas: HTMLCanvasElement, opts: { enabled: boole
       const targetAmp = speaking === null ? rawAmp * 0.6 : speaking === s.id ? rawAmp : rawAmp * 0.25;
       s.amp += (targetAmp - s.amp) * (targetAmp > s.amp ? 0.55 : 0.1);
       ctx.setTransform(S, 0, 0, S, w / 2, h / 2);
-      s.renderer.draw({ ctx, t, dt, amp: s.amp, alpha: smooth(s.alpha), px: 1 / S });
+      s.renderer.draw({ ctx, t, dt, amp: reducedMotion ? 0 : s.amp, alpha: smooth(s.alpha), px: 1 / S, reducedMotion });
     }
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 

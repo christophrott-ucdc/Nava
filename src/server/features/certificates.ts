@@ -12,10 +12,13 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import {createHash} from 'node:crypto';
 import { Hono } from "hono";
 import type { LogFn } from "../runlog";
 
 export interface CertificatesDeps {
+  authorizeUpload?:(body:Record<string,unknown>)=>string|null|undefined;
+  recordArtifact?:(run:string,id:string,hash:string,file:string)=>void;
   runsDir: string;
   /** Numele rularii curente (ex. "show-20260904-221003-2") sau null. */
   currentRunId: () => string | null;
@@ -54,12 +57,25 @@ export function createCertificatesRouter(deps: CertificatesDeps): Hono {
     const png = Buffer.from(m[1].replace(/\s+/g, ""), "base64");
     if (png.length < 8 || png.readUInt32BE(0) !== 0x89504e47) return c.json({ ok: false, reason: "PNG invalid" }, 400);
     if (png.length > maxBytes) return c.json({ ok: false, reason: "Certificat prea mare" }, 413);
-    const run = (deps.currentRunId() ?? "fara-rulare").replace(/[^\w.-]/g, "_").slice(0, 80) || "fara-rulare";
+    const authorized=deps.authorizeUpload?.(body);
+    if(deps.authorizeUpload&&authorized===null)return c.json({ok:false,reason:'Certificatul nu aparține acestei misiuni/post.'},409);
+    const run = (authorized??deps.currentRunId() ?? "fara-rulare").replace(/[^\w.-]/g, "_").slice(0, 80) || "fara-rulare";
     const dir = path.join(root, run);
     const file = `post-${post}.png`;
     try {
       await fs.mkdir(dir, { recursive: true });
-      await fs.writeFile(path.join(dir, file), png);
+      if(authorized){
+        try{const existing=await fs.readFile(path.join(dir,file));
+          if(createHash('sha256').update(existing).digest('hex')!==createHash('sha256').update(png).digest('hex'))return c.json({ok:false,reason:'Un certificat diferit este deja salvat.'},409);
+        }catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;
+          try{await fs.writeFile(path.join(dir,file),png,{flag:'wx'});}catch(error){
+            if((error as NodeJS.ErrnoException).code!=='EEXIST')throw error;
+            const winner=await fs.readFile(path.join(dir,file));
+            if(!winner.equals(png))return c.json({ok:false,reason:'Un certificat diferit este deja salvat.'},409);
+          }
+        }
+      }else await fs.writeFile(path.join(dir, file), png);
+      if(authorized)deps.recordArtifact?.(run,file,createHash('sha256').update(png).digest('hex'),path.join(dir,file));
     } catch (err) {
       deps.log("error", "certificates: write failed", { err: String(err) });
       return c.json({ ok: false, reason: "Nu am putut salva certificatul" }, 500);

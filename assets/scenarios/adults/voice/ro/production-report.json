@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2026-09-05T12:04:05.578Z",
+  "profile": "adults",
+  "expected": 40,
+  "available": 40,
+  "sourceSha256": "05e736b3f5fdc1c3244524c7886221c3a74b434f63fa5d0cecb3901d28803da3",
+  "missing": [],
+  "overBudget": [
+    {
+      "profile": "adults",
+      "cueId": "AD-R04",
+      "phase": "preshow",
+      "at": 40,
+      "durationSec": 9.84,
+      "budgetSec": 9
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R05",
+      "phase": "play",
+      "at": -8,
+      "durationSec": 7.04,
+      "budgetSec": 7
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R06",
+      "phase": "play",
+      "at": 12,
+      "durationSec": 11.52,
+      "budgetSec": 10
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R09",
+      "phase": "play",
+      "at": 79,
+      "durationSec": 10.16,
+      "budgetSec": 10
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R11",
+      "phase": "play",
+      "at": 125,
+      "durationSec": 7.68,
+      "budgetSec": 7
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R14",
+      "phase": "play",
+      "at": 165,
+      "durationSec": 10.64,
+      "budgetSec": 10
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R15",
+      "phase": "play",
+      "at": 179,
+      "durationSec": 8.48,
+      "budgetSec": 8
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R18",
+      "phase": "play",
+      "at": 236,
+      "durationSec": 8.32,
+      "budgetSec": 8
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R23",
+      "phase": "play",
+      "at": 299,
+      "durationSec": 9.04,
+      "budgetSec": 9
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R26",
+      "phase": "play",
+      "at": 363,
+      "durationSec": 9.92,
+      "budgetSec": 8
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R28",
+      "phase": "play",
+      "at": 405,
+      "durationSec": 8.32,
+      "budgetSec": 8
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R34",
+      "phase": "epilogue",
+      "at": 5,
+      "durationSec": 13.04,
+      "budgetSec": 12
+    },
+    {
+      "profile": "adults",
+      "cueId": "AD-R39",
+      "phase": "epilogue",
+      "at": 37,
+      "durationSec": 9.84,
+      "budgetSec": 9
+    }
+  ],
+  "failures": [],
+  "totalAudioMs": 327680,
+  "providerCharacterCost": 4095,
+  "postprocessTempo": 1
+}

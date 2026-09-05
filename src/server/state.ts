@@ -47,6 +47,7 @@ import { CueTracker } from "./cues";
 import { SCENE_THEMES } from "./features/show-validate";
 
 export interface DirectorHooks {
+  beforeCommand?(cmd:Command,source:string):DispatchResult|undefined;
   /** Broadcast `applyCmd` to all screens. */
   onApplyCmd(cmd: Command): void;
   /** The ShowState changed (state / scene / theme / lang / counts / readiness ...) — broadcast `state`. */
@@ -192,6 +193,7 @@ export function validateCommand(x: unknown): Command | null {
     case "setRate":
       return validRate(o.rate) ? { action: a, rate: Math.round(o.rate * 100) / 100 } : null;
     case "autoRun":
+    case "tabletSfx":
     case "ambient":
       return typeof o.enabled === "boolean" ? { action: a, enabled: o.enabled } : null;
     case "lights":
@@ -212,6 +214,25 @@ export function validateCommand(x: unknown): Command | null {
 }
 
 export class ShowDirector {
+  private suspended = false;
+  private missionIdentity: {runId?:string;serverEpoch?:string;timelineEpoch?:number} = {};
+
+  bindMission(identity: {runId:string;serverEpoch:string;timelineEpoch:number}): void { this.missionIdentity = identity; }
+  updateRequiredScreens(ids: string[]): void { this.configuredScreenIds.splice(0,this.configuredScreenIds.length,...ids); this.autoRunCfg.requireScreens=ids; }
+  suspend(): void {
+    const time=this.now(); this.suspended=true; this.anchor={phaseTime:time,serverTimeMs:this.clock(),rate:0};
+    this.cues.clearVoice(); this.hooks.onApplyCmd({action:'stopVoice'}); this.emitStateIfChanged('suspend');
+  }
+  resumeSuspended(): void {
+    this.suspended=false; this.anchor={...this.anchor,serverTimeMs:this.clock(),rate:this.nominalRate};
+    this.emitStateIfChanged('resume');
+  }
+  restoreCheckpoint(saved: ShowState): void {
+    this.state=saved.state; this.phase=phaseOf(saved.state); this.nominalRate=saved.rate>0?saved.rate:1;
+    this.anchor={phaseTime:saved.phaseTime,serverTimeMs:this.clock(),rate:0}; this.suspended=true;
+    this.lang=saved.lang; this.tabletSfxEnabled=saved.tabletSfx ?? true;
+    if(this.phase){this.cues.enterPhase(this.phase,saved.phaseTime+0.001);this.cues.clearVoice();}
+  }
   private show: ShowFile;
   private state: PlaybackState = "idle";
   /** Phase we are in (kept through `paused` and `ended`); null in idle. */
@@ -239,10 +260,12 @@ export class ShowDirector {
   private blockedReasonsKey = "";
   private variant: string | null;
   private ambientEnabled: boolean;
+  private tabletSfxEnabled: boolean;
   private readonly lightsDriver: LightsConfig["driver"];
   private preflight: PreflightProvider | null;
   private dynamicVoiceBuilder: DynamicVoiceBuilder | null;
   private pendingPhoto: { cueId: string | null; showSec: number } | null = null;
+  private photoEpoch=0;
   /** Last captured crew photo (dataURL) — for the debug page / late-joining tablets. */
   lastPhoto: { cueId: string | null; dataUrl: string; atMs: number } | null = null;
   private readonly clock: () => number;
@@ -269,6 +292,7 @@ export class ShowDirector {
     this.autoRunEnabled = !!this.autoRunCfg.enabled;
     this.variant = typeof config.variant === "string" && config.variant ? config.variant : null;
     this.ambientEnabled = config.ambient?.enabled ?? CONFIG_DEFAULTS_R4.ambient.enabled;
+    this.tabletSfxEnabled = config.tabletSfx ?? true;
     this.lightsDriver = config.lights?.driver ?? "none";
     this.preflight = opts.preflight ?? null;
     this.dynamicVoiceBuilder = opts.dynamicVoice ?? null;
@@ -338,7 +362,7 @@ export class ShowDirector {
   }
 
   private advancing(): boolean {
-    return this.state === "playing" || this.state === "preshow" || this.state === "epilogue";
+    return !this.suspended && (this.state === "playing" || this.state === "preshow" || this.state === "epilogue");
   }
 
   /** Extrapolated phase time (seconds; negative during the launch lead-in). */
@@ -421,6 +445,8 @@ export class ShowDirector {
   getState(atMs = this.clock()): ShowState {
     const t = this.now(atMs);
     return {
+      ...this.missionIdentity,
+      suspended: this.suspended,
       state: this.state,
       phaseTime: t,
       serverTimeMs: atMs,
@@ -437,6 +463,7 @@ export class ShowDirector {
       autoRun: this.autoRunEnabled,
       variant: this.variant,
       ambientEnabled: this.ambientEnabled,
+      tabletSfx: this.tabletSfxEnabled,
       lightsDriver: this.lightsDriver,
     };
   }
@@ -557,6 +584,7 @@ export class ShowDirector {
 
   /** Periodic tick (clockHz): advance cues, auto transitions, autoRun, state change detection. */
   tick(nowMs = this.clock()): void {
+    if(this.suspended)return;
     if (!this.advancing()) {
       if (this.autoRunIdleOrEnded(nowMs)) return;
       this.emitStateIfChanged("tick");
@@ -597,6 +625,7 @@ export class ShowDirector {
   // Commands
 
   dispatchCommand(cmd: Command, source = "control"): DispatchResult {
+    const intercepted=this.hooks.beforeCommand?.(cmd,source);if(intercepted)return intercepted;
     const res = this.apply(cmd, source);
     if (!res.ok) {
       this.hooks.onLog("cmd.rejected", { cmd, source, reason: res.reason });
@@ -662,6 +691,7 @@ export class ShowDirector {
         return { ok: true };
       }
       case "restart":
+        this.photoEpoch++;this.suspended=false;
         this.lastCmdAtMs = this.clock();
         this.cues.reset();
         this.phase = null;
@@ -713,6 +743,9 @@ export class ShowDirector {
       case "ambient":
         this.ambientEnabled = cmd.enabled;
         return { ok: true };
+      case "tabletSfx":
+        this.tabletSfxEnabled = cmd.enabled;
+        return { ok: true, broadcast: false };
       case "say": {
         const text = cmd.text.trim();
         if (!text || !(cmd.speaker in SPEAKERS)) return { ok: false, reason: "Text sau vorbitor invalid." };
@@ -796,10 +829,11 @@ export class ShowDirector {
   }
 
   private startPhoto(countdownSec: number, showSec: number, cueId: string | null): void {
+    const epoch=++this.photoEpoch;
     this.pendingPhoto = { cueId, showSec };
     this.hooks.onLog("photo.start", { cueId, countdownSec, showSec });
     this.hooks.onPhoto?.({ type: "photo", action: "countdown", countdownSec });
-    const capture = () => this.hooks.onPhoto?.({ type: "photo", action: "capture" });
+    const capture = () => {if(epoch===this.photoEpoch)this.hooks.onPhoto?.({ type: "photo", action: "capture" });};
     if (countdownSec > 0) this.schedule(capture, countdownSec * 1000);
     else capture();
   }
@@ -918,6 +952,7 @@ export class ShowDirector {
       s.autoRun,
       s.variant,
       s.ambientEnabled,
+      s.tabletSfx,
       r ? `${r.ready}:${r.assetsOk}:${r.screensMissing.join(",")}:${r.screensConnected.join(",")}:${r.reasons.join("|")}` : "",
     ].join("|");
     if (key === this.lastSnapshotKey) return;

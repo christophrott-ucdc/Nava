@@ -48,9 +48,8 @@ interface BackupInfo {
 const PHASES: readonly Phase[] = ["preshow", "play", "epilogue"];
 const PHASE_LABELS: Record<Phase, string> = { preshow: "PRE-SHOW", play: "FILM (cu lead-in T−)", epilogue: "EPILOG" };
 const SNAP = 0.1;
-const MAX_ROWS = 4;
-/** Markers closer than this (fraction of the lane width) are stacked on different rows. */
-const STACK_GAP = 0.012;
+/** Glass markers are 32px wide; reserve an 8px gap at every viewport width. */
+const STACK_GAP_PX = 40;
 const FRAME_WIDTH = 480;
 
 const byId = <T extends HTMLElement>(id: string): T => {
@@ -207,14 +206,15 @@ export function createTimelineEditor(deps: EditorDeps): TimelineEditor {
     // Markers, stacked by proximity.
     const sorted = [...cues].sort((a, b) => a.at - b.at);
     const rowLastPct: number[] = [];
+    const stackGapPct = STACK_GAP_PX / Math.max(320, dom.tracks.clientWidth) * 100;
     for (const cue of sorted) {
       const p = pct(cue.at);
-      let row = rowLastPct.findIndex((last) => p - last > STACK_GAP * 100);
-      if (row < 0) row = Math.min(rowLastPct.length, MAX_ROWS - 1);
+      let row = rowLastPct.findIndex((last) => p - last > stackGapPct);
+      if (row < 0) row = rowLastPct.length;
       rowLastPct[row] = p;
       lane.append(renderMarker(cue, p, row));
     }
-    lane.style.setProperty("--ed-rows", String(Math.max(1, Math.min(MAX_ROWS, rowLastPct.length))));
+    lane.style.setProperty("--ed-rows", String(Math.max(1, rowLastPct.length)));
 
     const ph = document.createElement("div");
     ph.className = "ed-playhead";
@@ -559,6 +559,13 @@ export function createTimelineEditor(deps: EditorDeps): TimelineEditor {
   // Wiring
 
   dom.save.addEventListener("click", () => void save());
+  let tracksWidth = 0;
+  new ResizeObserver(() => {
+    const width = dom.tracks.clientWidth;
+    if (width === tracksWidth) return;
+    tracksWidth = width;
+    render();
+  }).observe(dom.tracks);
   dom.cancel.addEventListener("click", () => {
     if (isDirty() && !window.confirm("Renunți la modificările nesalvate?")) return;
     void reloadFromServer();

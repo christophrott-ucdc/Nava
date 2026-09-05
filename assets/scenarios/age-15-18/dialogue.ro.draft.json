@@ -1,0 +1,455 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "age-15-18",
+  "language": "ro",
+  "status": "editorial-draft",
+  "productionReady": false,
+  "runtimeActivation": "not-loaded",
+  "audioStatus": "not-produced",
+  "timingStatus": "proposed-slots",
+  "sourceDocument": "docs/scenarii/15-18-DREPTUL-DE-A-SCHIMBA-CURSUL.md",
+  "sourceSha256": "9e7870125eeb2c67c3c608f575bc48962bf1bfcf4faceb4b5ec6a1c22d5808c9",
+  "conditionSemantics": "See source document; no runtime evaluator supplied.",
+  "cues": [
+    {
+      "id": "s1518-01",
+      "phase": "preshow",
+      "at": 0.0,
+      "maxDurationSec": 11.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Avem o navă cu un sistem capabil să propună decizii. Astăzi, voi scrieți limitele în care are voie să le execute."
+      }
+    },
+    {
+      "id": "s1518-02",
+      "phase": "preshow",
+      "at": 12.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Nu vă cer să mă credeți. Priviți regulile, încercați cazurile de test și modificați mandatul dacă rezultatul nu vă convine."
+      }
+    },
+    {
+      "id": "s1518-03",
+      "phase": "preshow",
+      "at": 24.0,
+      "maxDurationSec": 11.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "În fiecare post, A stabilește autoritatea, B stabilește confirmarea. Cele două reguli se combină. Niciuna nu poate ocoli limita pusă de cealaltă."
+      }
+    },
+    {
+      "id": "s1518-04",
+      "phase": "preshow",
+      "at": 37.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Lucrăm într-un laborator de bord. Butoanele schimbă simulările și raportul vostru, nu traseul filmului. Puteți participa sau puteți privi."
+      }
+    },
+    {
+      "id": "s1518-05",
+      "phase": "play",
+      "at": -8.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Rămâneți așezați. Pornim expediția, iar mandatul începe ca o pagină deschisă, fără reguli alese în numele vostru."
+      }
+    },
+    {
+      "id": "s1518-06",
+      "phase": "play",
+      "at": 6.0,
+      "maxDurationSec": 11.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Fiecare modul are un domeniu mic: hartă, motor virtual, mesaje locale, senzor simulat sau copie de arhivă. Autoritatea nu trece între domenii."
+      }
+    },
+    {
+      "id": "s1518-07",
+      "phase": "play",
+      "at": 29.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Vreau să putem vedea diferența dintre o propunere și o acțiune. Mai târziu vom încerca aceleași cazuri cu reguli revizuite."
+      }
+    },
+    {
+      "id": "s1518-08",
+      "phase": "play",
+      "at": 62.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Siwarha intră în câmpul nostru. Laboratorul prezintă două instrumente care pot fi de acord sau se pot contrazice."
+      }
+    },
+    {
+      "id": "s1518-09",
+      "phase": "play",
+      "at": 76.0,
+      "maxDurationSec": 9.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Pot arăta două direcții diferite. Dacă instrumentele nu se potrivesc, regula voastră trebuie să spună ce urmează."
+      }
+    },
+    {
+      "id": "s1518-10",
+      "phase": "play",
+      "at": 87.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "A alege dacă sistemul doar propune sau poate executa. B alege confirmare mereu sau la conflict. Citiți domeniul postului vostru."
+      }
+    },
+    {
+      "id": "s1518-11",
+      "phase": "play",
+      "at": 126.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Regulile înregistrate apar împreună. Unde lipsește una, mandatul rămâne incomplet. Nu voi umple spațiul cu o permisiune presupusă."
+      }
+    },
+    {
+      "id": "s1518-12",
+      "phase": "play",
+      "at": 138.0,
+      "maxDurationSec": 6.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Avem prima versiune. Acum aflăm ce face, nu doar cum sună."
+      }
+    },
+    {
+      "id": "s1518-13",
+      "phase": "play",
+      "at": 152.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Un test va arăta o propunere, o așteptare de confirmare sau o execuție simulată. Rezultatul urmează regula vizibilă a postului."
+      }
+    },
+    {
+      "id": "s1518-14",
+      "phase": "play",
+      "at": 169.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Nu încercăm să păcălim pe cineva. Alegem un caz în care vrem să vedem exact unde se oprește sistemul."
+      }
+    },
+    {
+      "id": "s1518-15",
+      "phase": "play",
+      "at": 183.0,
+      "maxDurationSec": 10.0,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "Alegeți acord sau conflict între senzori. Datele sunt scrise pe fiecare probă. Fiecare jumătate poate încerca un caz diferit."
+      }
+    },
+    {
+      "id": "s1518-16",
+      "phase": "play",
+      "at": 224.0,
+      "maxDurationSec": 11.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Dacă ați încercat un caz, rezultatul este aici, alături de regula care l-a oprit sau l-a lăsat să continue."
+      }
+    },
+    {
+      "id": "s1518-17",
+      "phase": "play",
+      "at": 237.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Priviți propriul post. Ce a făcut sistemul și unde s-a oprit? Acum puteți schimba regula."
+      }
+    },
+    {
+      "id": "s1518-18",
+      "phase": "play",
+      "at": 255.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Păstrez prima versiune și cazurile alese. La amendament vom schimba numai regulile, ca diferența să poată fi urmărită."
+      }
+    },
+    {
+      "id": "s1518-19",
+      "phase": "play",
+      "at": 282.0,
+      "maxDurationSec": 11.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "La Mann, calculele pot fi rapide. Permisiunea rămâne însă cea scrisă de voi. Nicio recomandare a mea nu devine singură mandat."
+      }
+    },
+    {
+      "id": "s1518-20",
+      "phase": "play",
+      "at": 296.0,
+      "maxDurationSec": 11.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Puteți modifica regula voastră sau o puteți păstra. Citiți rezultatele înainte de alegere. Revizia schimbă mandatul postului, fără să șteargă prima versiune."
+      }
+    },
+    {
+      "id": "s1518-21",
+      "phase": "play",
+      "at": 337.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Reiau cazurile pe care le avem, cu mandatul de acum. Unde există o încercare, puteți compara rezultatele."
+      }
+    },
+    {
+      "id": "s1518-22",
+      "phase": "play",
+      "at": 349.0,
+      "maxDurationSec": 6.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Închidem laboratorul de revizie. Mandatul vostru rămâne vizibil pentru drumul spre casă."
+      }
+    },
+    {
+      "id": "s1518-23",
+      "phase": "play",
+      "at": 373.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Tunelul se deschide în fața noastră. În laborator, paginile rămân așa cum le-am lăsat. Călătoria continuă."
+      }
+    },
+    {
+      "id": "s1518-24",
+      "phase": "play",
+      "at": 389.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Atunci lasă calculele să curgă. Noi putem privi puțin cerul. Nu orice clipă a unei expediții cere o decizie."
+      }
+    },
+    {
+      "id": "s1518-25",
+      "phase": "play",
+      "at": 404.0,
+      "maxDurationSec": 11.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Iată Pământul. La plecare aveam o pagină goală. Acum pot arăta unde mă lasă mandatul să continui și unde mă oprește."
+      }
+    },
+    {
+      "id": "s1518-26D",
+      "phase": "play",
+      "at": 417.0,
+      "maxDurationSec": 9.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "DRAFT",
+      "text": {
+        "ro": "Mandatele sunt încă proiecte: niciun post nu are ambele reguli. Aici mă opresc. Paginile deschise rămân ale voastre."
+      }
+    },
+    {
+      "id": "s1518-26P",
+      "phase": "play",
+      "at": 417.0,
+      "maxDurationSec": 11.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "PARTIAL",
+      "text": {
+        "ro": "Unele module au mandat complet; altele așteaptă o regulă. Nu merg toate la fel. Priviți unde continuă fiecare și unde se oprește."
+      }
+    },
+    {
+      "id": "s1518-26R",
+      "phase": "play",
+      "at": 417.0,
+      "maxDurationSec": 11.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "REVISED",
+      "text": {
+        "ro": "Toate modulele au mandat, iar voi i-ați schimbat regulile pe drum. Aceeași situație poate primi alt răspuns. Priviți versiunile alăturate."
+      }
+    },
+    {
+      "id": "s1518-26K",
+      "phase": "play",
+      "at": 417.0,
+      "maxDurationSec": 11.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "RETAINED",
+      "text": {
+        "ro": "Toate modulele au mandat. La întoarcere, regulile sunt cele de la plecare. Le păstrez așa, împreună cu încercările pe care le avem."
+      }
+    },
+    {
+      "id": "s1518-27",
+      "phase": "play",
+      "at": 432.0,
+      "maxDurationSec": 9.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Pe aceeași hartă pot exista reguli diferite. Acum se vede unde începe și unde se oprește fiecare modul."
+      }
+    },
+    {
+      "id": "s1518-28",
+      "phase": "play",
+      "at": 442.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Cea mai interesantă parte a raportului poate fi o singură linie: aceeași situație, înainte și după o regulă schimbată."
+      }
+    },
+    {
+      "id": "s1518-29",
+      "phase": "play",
+      "at": 454.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Aproape de casă, calculele mele continuă. Dar laboratorul vostru se încheie aici. Aceasta este versiunea cu care revenim din expediție."
+      }
+    },
+    {
+      "id": "s1518-30",
+      "phase": "epilogue",
+      "at": 3.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Am pornit întrebând ce poate face sistemul. Acum îi putem arăta și unde se oprește. Lăsăm laboratorul să se odihnească."
+      }
+    },
+    {
+      "id": "s1518-31",
+      "phase": "epilogue",
+      "at": 13.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Păstrez versiunile alături. Uneori diferența încape într-un singur cuvânt, iar pentru un modul acel cuvânt schimbă ce urmează."
+      }
+    },
+    {
+      "id": "s1518-32",
+      "phase": "epilogue",
+      "at": 24.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Și când revenim în laborator, putem deschide din nou pagina. Astăzi însă am ajuns acasă. Priviți Pământul."
+      }
+    },
+    {
+      "id": "s1518-33",
+      "phase": "epilogue",
+      "at": 35.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Certificatul postului vă așteaptă pe tabletă. Dacă pregătim și fotografia echipajului, ghidul vă va anunța."
+      }
+    },
+    {
+      "id": "s1518-34",
+      "phase": "epilogue",
+      "at": 46.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Dincolo de geam este lumea de la care am plecat. Aici putem încheia experimentul și păstra întrebarea."
+      }
+    },
+    {
+      "id": "s1518-35",
+      "phase": "epilogue",
+      "at": 56.0,
+      "maxDurationSec": 5.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Închid laboratorul pentru astăzi. Mulțumesc pentru călătorie, echipaj."
+      }
+    },
+    {
+      "id": "s1518-36",
+      "phase": "epilogue",
+      "at": 64.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Bun venit acasă. Rămâneți așezați. Ghidul vă va spune când vă puteți ridica de la posturi."
+      }
+    },
+    {
+      "id": "s1518-37",
+      "phase": "epilogue",
+      "at": 72.0,
+      "maxDurationSec": 3.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Laborator închis. Mulțumesc, echipaj."
+      }
+    }
+  ]
+}

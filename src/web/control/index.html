@@ -1,16 +1,19 @@
 <!doctype html>
-<html lang="ro">
+<html lang="ro" data-theme="prologue">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#fdfcf7" />
     <title>Nava · Consolă operator</title>
+    <link rel="stylesheet" href="/shared/glass.css" />
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./glass-layout.css" />
+    <link rel="stylesheet" href="./experience.css" />
   </head>
   <body>
-    <header class="topbar">
+    <header class="topbar glass">
       <div class="brand">
-        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-mark" data-icon="rocket" aria-hidden="true"></span>
         <div><strong>EXODUS-7</strong><span>Consolă operator</span></div>
       </div>
       <nav class="topnav" aria-label="Pagini">
@@ -25,9 +28,9 @@
     </header>
 
     <main>
-      <section class="hero panel" aria-labelledby="show-title">
+      <section class="hero glass panel" aria-labelledby="show-title">
         <div class="hero-copy">
-          <p class="eyebrow" id="show-version">SISTEM DE ZBOR</p>
+          <p class="eyebrow" id="show-version">BUN VENIT LA BORD</p>
           <h1 id="show-title">A Patra Lume</h1>
           <p class="scene" id="scene-label">În așteptare</p>
         </div>
@@ -48,9 +51,9 @@
         </div>
       </section>
 
-      <section class="panel transport" aria-labelledby="transport-title">
+      <section class="glass panel transport" aria-labelledby="transport-title">
         <div class="control-surface-note">
-          <div><strong>ACESTA ESTE DOAR PANOUL DE CONTROL</strong><span>Filmul și Căpitanul apar în fereastra separată „A Patra Lume — Nava”.</span></div>
+          <div><strong>Spectacolul e pregătit să prindă viață</strong><span>Filmul și Căpitanul apar în fereastra separată „A Patra Lume — Nava”.</span></div>
           <button class="button compact" id="focus-player" type="button">ARATĂ PLAYERUL</button>
         </div>
         <div class="section-heading">
@@ -74,8 +77,8 @@
         </div>
 
         <button class="experience-start" id="start-experience" type="button">
-          <span class="experience-start-icon" aria-hidden="true">▶</span>
-          <span><strong>START EXPERIENCE</strong><small id="start-hint">Test: T−10 acum · film la zero · Căpitanul la aproximativ 19 secunde</small></span>
+          <span class="experience-start-icon" data-icon="rocket" aria-hidden="true"></span>
+          <span><strong>PORNEȘTE EXPERIENȚA</strong><small id="start-hint">Începe numărătoarea de 10 secunde, apoi filmul.</small></span>
         </button>
         <div class="primary-actions">
           <button class="button button-preshow" data-command="preshow"><span>01</span> PRE-SHOW</button>
@@ -113,8 +116,10 @@
           <button class="button subtle" data-command="reloadShow">Reîncarcă scenariul</button>
         </div>
 
+        </section>
+      <section class="glass panel direction-panel" aria-label="Regie">
         <div class="section-heading r4-heading">
-          <div><p class="eyebrow">RUNDA 4</p><h2>Repetiție · ambianță · lumini · replici live</h2></div>
+          <div><p class="eyebrow">DETALIILE FAC MAGIA</p><h2>Regie</h2></div>
         </div>
         <div class="r4-grid">
           <div class="r4-group">
@@ -129,6 +134,7 @@
             <span class="r4-label">Ambianță și auto-run</span>
             <div class="r4-row">
               <button class="button toggle" id="ambient-toggle" type="button" aria-pressed="false">AMBIANȚĂ · —</button>
+              <button class="button toggle" id="tablet-sfx-toggle" type="button" aria-pressed="true" disabled>SUNETE TABLETE · PORNITE</button>
               <button class="button toggle" id="autorun-toggle" type="button" aria-pressed="false">AUTO-RUN · —</button>
             </div>
           </div>
@@ -167,7 +173,7 @@
         </div>
       </section>
 
-      <section class="panel editor-panel" aria-labelledby="editor-title">
+      <section class="glass panel editor-panel" aria-labelledby="editor-title">
         <div class="section-heading">
           <div><p class="eyebrow">TIMELINE EDITOR</p><h2 id="editor-title">Cue-uri pe cronologie <span class="editor-dirty" id="editor-dirty" hidden>· modificări nesalvate</span></h2></div>
           <div class="editor-actions">
@@ -196,7 +202,7 @@
       </section>
 
       <div class="workspace-grid">
-        <section class="panel cues-panel" aria-labelledby="cues-title">
+        <section class="glass panel cues-panel" aria-labelledby="cues-title">
           <div class="section-heading">
             <div><p class="eyebrow">TIMELINE</p><h2 id="cues-title">Cue-uri <span id="cue-count"></span></h2></div>
             <div class="filters">
@@ -208,7 +214,7 @@
         </section>
 
         <aside class="side-column">
-          <section class="panel perf-panel" aria-labelledby="perf-title">
+          <section class="glass panel perf-panel" aria-labelledby="perf-title">
             <div class="section-heading"><div><p class="eyebrow">PERFORMANȚĂ</p><h2 id="perf-title">Ecrane</h2></div><strong class="live-count" id="perf-count">0 raportează</strong></div>
             <div class="perf-table-wrap">
               <table class="perf-table" id="perf-table">
@@ -218,7 +224,7 @@
             </div>
           </section>
 
-          <section class="panel access-panel" aria-labelledby="access-title">
+          <section class="glass panel access-panel" aria-labelledby="access-title">
             <div class="section-heading"><div><p class="eyebrow">ACCES ECHIPAJ</p><h2 id="access-title">Tablete</h2></div><strong class="live-count" id="tablet-live-count">0 online</strong></div>
             <div class="qr-layout">
               <img id="tablet-qr" src="/api/qr?size=320" alt="Cod QR pentru aplicația tabletelor" width="200" height="200" />
@@ -227,12 +233,12 @@
             <div class="tablet-list" id="tablet-list"><p class="empty">Nicio tabletă conectată.</p></div>
           </section>
 
-          <section class="panel answers-panel" aria-labelledby="answers-title">
+          <section class="glass panel answers-panel" aria-labelledby="answers-title">
             <div class="section-heading"><div><p class="eyebrow">RĂSPUNSURI LIVE</p><h2 id="answers-title">Mesaje <span id="answer-count"></span></h2></div><button id="clear-answers" class="text-button">Șterge</button></div>
             <div class="answer-list" id="answer-list"><p class="empty">Răspunsurile copiilor vor apărea aici.</p></div>
           </section>
 
-          <section class="panel users-panel" id="users-panel" aria-labelledby="users-title" hidden>
+          <section class="glass panel users-panel" id="users-panel" aria-labelledby="users-title" hidden>
             <div class="section-heading"><div><p class="eyebrow">ADMINISTRARE</p><h2 id="users-title">Utilizatori</h2></div><span class="command-note" id="users-note"></span></div>
             <div class="users-list" id="users-list"></div>
             <form class="users-form" id="users-form">

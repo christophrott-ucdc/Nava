@@ -14,6 +14,7 @@ import { describeError, type Logger } from "./log";
 import type { Player } from "./player";
 
 export interface SyncOptions {
+  onMission?: (snapshot:import('../shared/mission').MissionSnapshot)=>void;
   wsUrl: string;
   screenId: string;
   screenName?: string;
@@ -55,6 +56,8 @@ export class SyncClient {
   private seekThresholdSec: number;
   private rateNudge: number;
   private clockHz: number;
+  private suspended=false;
+  private identity:{runId?:string;serverEpoch?:string;timelineEpoch?:number}={};
 
   constructor(private readonly opts: SyncOptions) {
     this.seekThresholdSec = opts.seekThresholdSec;
@@ -174,6 +177,10 @@ export class SyncClient {
 
   private handle(msg: ServerMessage): void {
     switch (msg.type) {
+      case 'mission':
+        this.identity={runId:msg.snapshot.runId,serverEpoch:msg.snapshot.serverEpoch,timelineEpoch:msg.snapshot.state.timelineEpoch};
+        this.suspended=msg.snapshot.suspended;
+        this.opts.onMission?.(msg.snapshot);break;
       case "welcome": {
         this.sampleOffset(msg.serverTimeMs);
         if (msg.config?.sync) {
@@ -188,7 +195,7 @@ export class SyncClient {
         if (!this.opts.isClockSource && msg.state) {
           const s = msg.state;
           const expected = this.extrapolate(s.phaseTime, s.serverTimeMs, s.rate);
-          this.driftSec = this.opts.player.follow(s.state, expected, s.rate, this.params());
+          this.driftSec = this.opts.player.follow(s.suspended&&s.state==='playing'?'paused':s.state, expected, s.rate, this.params());
         }
         this.emitStatus();
         break;
@@ -196,6 +203,7 @@ export class SyncClient {
       case "clock": {
         this.sampleOffset(msg.serverTimeMs);
         if (this.opts.isClockSource) return;
+        if(this.suspended)return;
         const expected = this.extrapolate(msg.phaseTime, msg.serverTimeMs, msg.rate);
         this.driftSec = this.opts.player.follow(msg.state, expected, msg.rate, this.params());
         this.emitStatus();
@@ -273,7 +281,7 @@ export class SyncClient {
   private report(): void {
     if (!this.isConnected()) return;
     const s = this.opts.player.getState();
-    this.send({ type: "report", state: s.state, phaseTime: s.phaseTime, rate: s.rate, videoReady: s.videoReady, sceneId: s.sceneId });
+    this.send({ type: "report", ...this.identity,state: s.state, phaseTime: s.phaseTime, rate: s.rate, videoReady: s.videoReady, sceneId: s.sceneId });
   }
 
   private scheduleReconnect(): void {

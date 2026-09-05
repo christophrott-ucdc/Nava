@@ -1,0 +1,48 @@
+{
+  "retrievedAt": "2026-09-05T13:00:37.501Z",
+  "source": "https://api.elevenlabs.io/v2/voices",
+  "voices": [
+    {
+      "voiceId": "0okaJWIq26j9LWMEOE8N",
+      "name": "Daniel Mihai | Native Romanian Voice – 30+ Years Broadcast Experience",
+      "category": "professional",
+      "labels": {
+        "age": "middle_aged",
+        "accent": "standard",
+        "use_case": "social_media",
+        "gender": "male",
+        "descriptive": "casual",
+        "language": "ro"
+      },
+      "description": "Warm, smiling, and instantly recognizable voice, with over 30 years of experience in television, radio, and online. Conveys confidence, professionalism, and emotion from the first seconds. Ideal for advertisements, product and event promotions, commercial descriptions, and storytelling that sells naturally and effectively. An excellent choice for brands that want to be heard, remembere,d and recognized!"
+    },
+    {
+      "voiceId": "jZnpFkNYb90WJdOz4bBb",
+      "name": "Nick - Professional Radio and TV Spots",
+      "category": "professional",
+      "labels": {
+        "age": "middle_aged",
+        "accent": "standard",
+        "use_case": "advertisement",
+        "gender": "male",
+        "descriptive": "deep",
+        "language": "ro"
+      },
+      "description": "Nick - Very versatile middle aged romanian male voice with deep crispy voice. Perfect for documentaries, narrations, tv spots and more."
+    },
+    {
+      "voiceId": "bgVGH727uJ1Qj9P9egUj",
+      "name": "Mihai - Voice That Inspires Confidence",
+      "category": "professional",
+      "labels": {
+        "age": "middle_aged",
+        "accent": "standard",
+        "use_case": "informative_educational",
+        "gender": "male",
+        "descriptive": "calm",
+        "language": "ro"
+      },
+      "description": "A deep, resonant male voice with a warm tone that conveys authority, calmness, and authenticity. Its rich baritone quality and natural expressiveness make it ideal for narration, documentaries, presentations, educational content, and motivational speeches. Every word is delivered with clarity and presence, capturing attention while inspiring trust and credibility.\n\nPerfect for: Professional voice-overs, documentaries, audiobooks, corporate presentations, educational content."
+    }
+  ]
+}

@@ -59,7 +59,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
 }
 
 function instrument(title: string): { root: HTMLElement; body: HTMLElement; value: HTMLElement } {
-  const root = el("div", "inst");
+  const root = el("div", "inst glass");
   const head = el("div", "inst-head");
   head.append(el("span", "inst-title", title));
   const value = el("strong", "inst-value", "—");
@@ -293,7 +293,8 @@ export function createTelemetry(container: HTMLElement): Telemetry {
         renderLog();
       }
       const nowMs = performance.now();
-      const dt = Math.min(0.5, (nowMs - lastFrame) / 1000);
+      const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const dt = reducedMotion ? 0 : Math.min(0.5, (nowMs - lastFrame) / 1000);
       lastFrame = nowMs;
       const t = input.phaseTime;
       const st = input.state?.state ?? "idle";
@@ -303,7 +304,7 @@ export function createTelemetry(container: HTMLElement): Telemetry {
       nodes.clock.textContent = active ? fmtClock(t) : st === "ended" ? "MISIUNE ÎNCHEIATĂ" : "ÎN AȘTEPTARE";
       const scene = input.sceneLabel.toUpperCase();
       nodes.status.textContent = `${prof.label}${scene && !prof.label.includes(scene) ? ` · ${scene}` : ""}${st === "paused" ? " · PAUZĂ" : ""}`;
-      const tt = t * (st === "paused" ? 0 : 1) + performance.now() / 1000;
+      const tt = reducedMotion ? 0 : t * (st === "paused" ? 0 : 1) + performance.now() / 1000;
 
       switch (input.post) {
         case 1: {

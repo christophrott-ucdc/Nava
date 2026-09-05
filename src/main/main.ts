@@ -27,6 +27,7 @@ import { closeLogger, initLogger, KEEP_APP_LOGS, log, rotateRunLogs } from "./lo
 import { createMasterLink, type MasterLink } from "./master-link";
 import { computePaths, resolveConfigPath, toDirFileUrl, toFileUrl } from "./paths";
 import { WindowManager } from "./windows";
+import { DisplayInventoryManager } from "./display-inventory";
 
 /** Chromium switches — must be appended before `ready`. */
 const CHROMIUM_SWITCHES: Array<[name: string, value?: string]> = [
@@ -116,6 +117,7 @@ async function main(): Promise<void> {
   let shuttingDown = false;
   let relaunching = false;
   let powerBlockerId: number | null = null;
+  let displayInventory: DisplayInventoryManager | null = null;
 
   const releasePowerBlocker = (): void => {
     if (powerBlockerId !== null && powerSaveBlocker.isStarted(powerBlockerId)) powerSaveBlocker.stop(powerBlockerId);
@@ -125,6 +127,7 @@ async function main(): Promise<void> {
   const shutdown = async (): Promise<void> => {
     log("info", "shutting down");
     windows?.setQuitting();
+    displayInventory?.stop();
     if (server) {
       try {
         await withTimeout(server.stop(), 3000);
@@ -246,7 +249,7 @@ async function main(): Promise<void> {
     resourcesRoot: paths.resourcesRoot,
     log,
   });
-  const displayMode = config.displayMode ?? "windows";
+  let displayMode = config.displayMode ?? "windows";
   log("info", `config ${created ? "created" : "loaded"}: ${configPath}`, {
     role: config.role,
     lang: config.lang,
@@ -265,6 +268,32 @@ async function main(): Promise<void> {
   const windowed = cli.kiosk ? false : cli.windowed || config.dev.windowed;
   const openDevTools = isDev || config.dev.openDevTools;
   if (cli.kiosk) log("info", "--kiosk: kiosk/fullscreen forced");
+
+  if (config.autoDisplays && !cli.wallPreview && !cli.screen) {
+    displayInventory = new DisplayInventoryManager({
+      config:config.autoDisplays,appRoot:paths.appRoot,resourcesRoot:paths.resourcesRoot,log,
+      onTopologyChanged:(reason)=>{
+        if (server?.onDisplayTopologyChanged) server.onDisplayTopologyChanged(reason);
+        else if (server) server.dispatchCommand({action:'pause'});
+        else if (link) link.dispatch({action:'pause'});
+      },
+      apply:async(candidate)=>{
+        const previous={screens:config.screens,videoWall:config.videoWall,displayMode,required:[...config.autoRun!.requireScreens]};
+        const restore=async()=>{
+          config.screens=previous.screens;config.videoWall=previous.videoWall;config.displayMode=previous.displayMode;displayMode=previous.displayMode;config.autoRun!.requireScreens=previous.required;
+          if(windows)await windows.reconfigure(config.screens,displayMode,config.videoWall);
+        };
+        config.screens=candidate.screens;config.videoWall=candidate.videoWall;config.displayMode=candidate.displayMode;displayMode=candidate.displayMode;
+        config.autoRun!.requireScreens=candidate.screens.map(s=>s.id);
+        try{if(windows)await windows.reconfigure(config.screens,displayMode,config.videoWall);}catch(err){config.screens=previous.screens;config.videoWall=previous.videoWall;config.displayMode=previous.displayMode;displayMode=previous.displayMode;config.autoRun!.requireScreens=previous.required;throw err;}
+        return restore;
+      },
+    });
+    const detected=await displayInventory.initialize();
+    if(config.autoDisplays.enabled&&detected.candidate?.canApply){
+      try{await displayInventory.apply();}catch(err){log('warn','Automatic display configuration was not applied',String(err));}
+    }
+  }
 
   applyAutostart(config.autostart === true);
 
@@ -301,6 +330,12 @@ async function main(): Promise<void> {
         runsDir: paths.runsDir,
         log: (level, msg, data) => log(level, msg, data, "server"),
         focusPlayer: () => windows?.focusFirst() ?? false,
+        wallRuntime: () => {
+          const runtime=windows?.wallRuntime(config.screens)??{preview:true,displays:[],issues:["Player în curs de pornire."],verifiedScreenIds:[]};
+          const issues=displayInventory?.readinessIssues()??[];
+          return {...runtime,issues:[...runtime.issues,...issues],verifiedScreenIds:issues.length?[]:runtime.verifiedScreenIds};
+        },
+        displayAutomation:displayInventory?{inventory:()=>displayInventory!.inventory(),detect:()=>displayInventory!.detect(),apply:(optical?:unknown)=>displayInventory!.apply(optical)}:undefined,
       });
       wsUrl = `ws://127.0.0.1:${server.port}/ws`;
       serverHttpUrl = `http://127.0.0.1:${server.port}`;
@@ -337,6 +372,8 @@ async function main(): Promise<void> {
     windowed,
     openDevTools,
     displayMode,
+    videoWall: config.videoWall,
+    wallPreview: cli.wallPreview,
     log,
     onCrashLoop: (crashes, windowMs) => relaunch(`${crashes} renderer crashes within ${Math.round(windowMs / 1000)} s`),
   });

@@ -161,9 +161,9 @@ Dacă masterul are `screenToken` gol (config vechi, ne-rescris), acceptă ecrane
 | **Variante pe vârstă** | `show.json > variants` (`7-9`, `10-12`, `13+`); `config.variant: "7-9"` sau `{ "action": "setVariant", "variant": "7-9" | null }`; textul din `VoiceCue.variants["7-9"].ro`; audio `assets/voice/<lang>/<id>.7-9.mp3` = `manifest.clips["<id>.7-9"]`; lipsa cade pe baza | contract + 3 replici cu text `7-9` (`v3-cap-0004`, `v3-ai-0206`, `v3-tech-0610`); **fără audio generat** și **fără `--variant` în `scripts/tts-generate.mjs`** la data actualizării (C-06 în lucru) |
 | **Fotografie de echipaj** | cue `photo { countdownSec?, showSec? }` sau `{ "action": "photo" }` → server trimite `photo` (countdown → capture → show → hide) → **doar ecranul-sursă de ceas** deschide webcam-ul, scalează la ≤ 1280 px, JPEG 0,82 și răspunde `photoCaptured` (≤ ~1,5 MB) → salvat în `runs/photos/`, afișat 12 s pe ecrane și tablete | **schelet** livrat (`src/renderer/photo.ts`); fără cameră sau fără permisiune: avertisment în log, numărătoarea se termină, nu se trimite nimic |
 | **Dialog live** | `POST /api/dialog { text }` → răspuns în personaj (Gemini `gemini-2.5-flash` dacă `GEMINI_API_KEY`, altfel replici pre-scrise pe cuvinte-cheie); 20 cereri/min | **schelet** (`src/server/features/dialog.ts`, `src/renderer/voice/live-dialog.ts`); Web Speech API de regulă indisponibil în Electron |
-| **Analitică** | `/analytics/` din `runs/show-*.jsonl` | pagina și routerul există (`src/web/analytics`, `src/server/features/analytics.ts`); `/api/analytics*` este protejat (`viewer`) dar **nemontat încă** în `index.ts` (integrare orchestrator, D-05) |
+| **Analitică** | `/analytics/` din `runs/show-*.jsonl` | pagina și routerul sunt montate; `/api/analytics*` este protejat (`viewer`); interfață Nava Glass R5, grafice și detaliile rulărilor |
 | **Editor de cue-uri** | `PUT/POST /api/show` (validare → backup în `assets/show/backups/`, păstrează 30 → scriere atomică → reload → `welcome` tuturor), `PATCH /api/show/cue/:id { at?, text?, manual?, note? }`, `GET /api/show/backups`, `POST /api/show/restore/:file`; în consolă: drag pe timeline + salvare | livrat (`features/show-editor.ts`, consolă D-04) |
-| **Certificat de misiune** | `POST /api/certificates { post, dataUrl }` → `runs/certificates/<run>/post-N.png` | server livrat; **necesită rol `operator`** în integrarea actuală, deci tabletele (anonime) nu pot posta încă (vezi raportul E) |
+| **Certificat de misiune** | `POST /api/certificates { post, dataUrl }` → `runs/certificates/<run>/post-N.png` | POST anonim pentru tablete; listarea și descărcarea prin API necesită `viewer`. Tableta afișează starea trimiterii, SALVEAZĂ local și REÎNCEARCĂ la eroare |
 
 ## 10. Depanare
 
@@ -188,3 +188,38 @@ Dacă masterul are `screenToken` gol (config vechi, ne-rescris), acceptă ecrane
 ## 12. Înainte de public
 
 Repetiție completă pe hardware-ul real: readiness verde, preflight verde, citirea subtitrărilor de la 17 m, volumul tuturor personajelor/SFX/ambianței, ordinea celor cinci display-uri, scanarea QR și interacțiunile pe cinci tablete, trecerea continuă la epilog. **PIN-ul `4078` schimbat**, `screenToken` copiat pe follower-e, SSID separat pentru sală (`docs/SECURITATE.md`). Ascultați cele trei montaje V3.3 (`assets/voice/ro/preview-*.mp3`).
+
+## 13. Nava Glass R5 — operare la 1920×1080 landscape
+
+Configurația autoritativă: **cinci tablete pentru copii, câte una pentru fiecare post, plus o tabletă separată pentru operator**. Toate sunt 1920×1080 landscape. Copilul A folosește jumătatea stângă, B jumătatea dreaptă, ambele cu text orientat normal. Vederile show-ului nu au scroll; cele șase opțiuni se așază 3×2 în fiecare jumătate. În portret este afișat „Rotește tableta”.
+
+În consolă, **Regie → Sunete tablete** comută sunetele locale pentru toate posturile. Setarea inițială vine din `tabletSfx` (boolean, implicit `true`) în config. Comanda autentificată modifică numai sesiunea; un viewer nu o poate trimite. Fiecare tabletă trebuie atinsă o dată pentru politica de autoplay. Volum local 35%, cinci sunete scurte: atingere/salvare, alegere, confirmarea perechii, start și certificat. Oprirea din consolă oprește și sunetele aflate în redare. Nu se redă sunet la erori.
+
+Temele prologue, launch, light, nature, tech, void, home și white sunt sincronizate pe tabletă, consolă, debug, analytics și TV. Loginul folosește prologue. Preferința sistemului „mișcare redusă” oprește gradientul animat, levitația, tranzițiile decorative și confetti; sunetul este controlat separat prin Sunete tablete.
+
+Căpitanul rămâne GLB-ul existent, numai pe ecranul TV configurat, fără interpret fizic în sală. „AVATARUL AI” este eticheta vizuală a vocii existente și are o mascotă separată; integrarea fizică viitoare Unitree H2 este în afara R5. Subtitrările TV evită coloana GLB-ului, inclusiv în modul windowed. Fotografia primită este ascunsă pe tabletă după durata `showSec`.
+
+Galerie dezvoltare: `/shared/preview.html`. Raportul verificărilor și capturile sunt în [DESIGN-REVIEW.md](DESIGN-REVIEW.md). Înainte de public rămâne repetiția pe cinci TV-uri și toate cele șase tablete: citire la distanța reală, două persoane la fiecare post, touch simultan, volume, cameră, sincronizare și încărcarea GPU/rețelei. Verificarea locală nu înlocuiește această repetiție.
+
+## 14. Prezentare ghidată și Samsung 98–98–115–98–98
+
+Configurație confirmată: toate cele cinci TV-uri sunt pe același PC, 115″ în centru, câte două 98″ pe laterale. Folosiți [VIDEO-WALL.md](VIDEO-WALL.md) pentru profilul separat, indici, grilă și calibrarea fizică. `/wall/` exportă profilul; importul și repornirea sunt necesare pentru aplicare. Previzualizarea locală nu face readiness verde pentru ieșiri absente. Grila activă blochează auto-start prin preflight.
+
+Consola se deschide în **Înainte de show**. Verificați filmul, vocile/avatarul și toate cinci posturile; **Primește echipajul** pornește pre-show-ul. **În show** oferă pauză/continuare/epilog și următoarele momente. **Instrumente → Regie → Sunete tablete** controlează SFX; editorul, utilizatorii și restul uneltelor rămân disponibile în același mod. Schimbarea modului de vedere nu pornește show-ul.
+
+Alegerea în așteptare și confirmarea sunt afișate diferit copiilor. Focusul copilului B rămâne stabil când A răspunde. La schimbarea grupului, verificați că toate tabletele au revenit la starea de început; protocolul existent nu identifică unic o misiune complet ratată în timpul unei deconectări. Certificatul folosește alegerile confirmate. Fotografiile rendererului autentificat de până la 1,5 MB sunt acceptate și peste 64 KB; afișarea pe tabletă expiră după 12 secunde.
+
+## Scenarii și automatizare — actualizare 5 septembrie 2026
+
+În „Înainte de show”, alege experiența și apasă Aplică. Pachetul este verificat înainte de selecție; așteaptă pregătirea vocilor pe renderer. „Misiune și instalație” conține confortul pe cele cinci posturi, recuperarea, editorul și verificările tehnice. Modificarea textului cere regenerarea audio înainte de următoarea selecție; editorul nu face apeluri TTS plătite.
+
+Profilul separat `config.auto.local.json` este pregătit pentru 98–98–115–98–98. Pornește cu `npm run auto:start`. Inventarul detectează display-urile Windows; desktopul clonat și ieșirile lipsă nu sunt acceptate ca panoramă completă. Pentru calibrarea optică urmează atelierul: marcaje pe toate TV-urile, imagine din poziția publicului, procesare locală, import și Aplică proiecția calibrată în pregătire. Python/OpenCV sunt necesare numai pentru procesarea calibrării.
+
+Misiunile sunt în `data/nava.sqlite`; certificatele și fotografiile rămân în `runs/`. Nu șterge baza pentru a rezolva o recuperare: continuă explicit sau pregătește un grup nou. Rulările tehnice sunt separate de public. Repetiția completă durează aproximativ zece minute și poate fi anulată din dialog; nu dovedește singură audibilitatea sau alinierea fizică.
+
+Ghidul complet și limitele de acceptare sunt în [IMPLEMENTARE-SCENARII-DISPLAY.md](IMPLEMENTARE-SCENARII-DISPLAY.md).
+## Tutorialul și încheierea interactivă
+
+Ghid complet: [TUTORIAL-FINAL.md](TUTORIAL-FINAL.md). Selectează profilul, deschide **Tutorial și echipaj**, aplică numai locurile ocupate și începe. La finalul probei, **Predă Căpitanului și pornește** lansează preshow-ul după explicație și verificarea readiness. Poți pune pauză, repeta explicația sau omite explicit tutorialul. Nu adăuga participanți după proba de recunoaștere. Vocea se aude numai pe ieșirea audio configurată; dacă un pas rămâne blocat, verifică rendererul și sunetul, apoi repetă explicația.
+
+În ultimele 15 secunde ale epilogului apar alegerile finale; invitația naratorului se aude numai după terminarea show-ului. Jurnalul trimis operatorului include alegerile finale ale locurilor active; descărcarea locală este disponibilă și înainte. „Prefer să privesc” este un răspuns valid. Înainte de public: audiție la volum de sală și probă completă pe cele șase tablete și cinci TV-uri.

@@ -1,3 +1,4 @@
+import { icon } from "../shared/glass";
 /**
  * PIN login page (/login/). On success the server sets the HttpOnly cookie `nava_session`; we also keep
  * the token in sessionStorage so the console can send it in the WS `hello`. Then redirect to `?next=`
@@ -52,7 +53,7 @@ async function submit(): Promise<void> {
     });
     const data = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string; token?: string; user?: { name: string; role: string } };
     if (!res.ok || !data.ok) {
-      setMsg(data.reason ?? `Eroare ${res.status}`);
+      setMsg(res.status === 401 ? "PIN-ul nu e bun, mai încearcă." : data.reason ?? `Eroare ${res.status}`);
       pin = "";
       renderDots();
       return;
@@ -74,7 +75,7 @@ async function submit(): Promise<void> {
 
 pad.addEventListener("click", (e) => {
   const btn = (e.target as HTMLElement).closest("button") as HTMLButtonElement | null;
-  if (!btn || btn.type === "submit") return;
+  if (!btn || busy || btn.type === "submit") return;
   const k = btn.dataset.k ?? "";
   if (k === "del") pin = pin.slice(0, -1);
   else if (/^\d$/.test(k) && pin.length < 8) pin += k;
@@ -83,6 +84,7 @@ pad.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
+  if (busy || e.ctrlKey || e.metaKey || e.altKey || e.target === pinInput) return;
   if (/^\d$/.test(e.key) && pin.length < 8) {
     pin += e.key;
     renderDots();
@@ -95,6 +97,8 @@ document.addEventListener("keydown", (e) => {
     void submit();
   }
 });
+
+pinInput.addEventListener("input", () => { pin = pinInput.value.replace(/\D/g, "").slice(0, 8); renderDots(); setMsg(""); });
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -124,3 +128,5 @@ void fetch("/api/auth/me", { credentials: "same-origin" })
   .catch(() => undefined);
 
 renderDots();
+
+document.querySelectorAll<HTMLElement>("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon!); });

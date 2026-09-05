@@ -1,0 +1,477 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "age-5-10",
+  "language": "ro",
+  "status": "editorial-draft",
+  "productionReady": false,
+  "runtimeActivation": "not-loaded",
+  "audioStatus": "not-produced",
+  "timingStatus": "proposed-slots",
+  "sourceDocument": "docs/scenarii/05-10-BUCATILE-DE-ACASA.md",
+  "sourceSha256": "afec95b335eafda8d0be8b183f8cb912aadf92447b48b88c9e676c26a2cdbcf3",
+  "conditionSemantics": "See source document; no runtime evaluator supplied.",
+  "cues": [
+    {
+      "id": "k510-001",
+      "phase": "preshow",
+      "at": 1.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Bun venit la bord! Eu sunt Căpitanul. Astăzi avem o valiză goală și un drum foarte lung."
+      }
+    },
+    {
+      "id": "k510-002",
+      "phase": "preshow",
+      "at": 11.0,
+      "maxDurationSec": 7.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "În valiză încape un felinar. Dar bucățile lui sunt împrăștiate prin trei lumi."
+      }
+    },
+    {
+      "id": "k510-003",
+      "phase": "preshow",
+      "at": 20.0,
+      "maxDurationSec": 7.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Le căutăm împreună. Nu sunt cioburi care taie. Sunt bucăți moi de lumină!"
+      }
+    },
+    {
+      "id": "k510-004",
+      "phase": "preshow",
+      "at": 29.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "A folosește partea stângă a tabletei. B folosește partea dreaptă. Fiecare are locul lui."
+      }
+    },
+    {
+      "id": "k510-005",
+      "phase": "preshow",
+      "at": 39.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Puteți atinge formele sau puteți doar privi. Eu rămân cu voi. Călătoria începe în ambele feluri."
+      }
+    },
+    {
+      "id": "k510-006",
+      "phase": "play",
+      "at": -9.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Valiza e la bord. Ochii spre stele! Plecăm să vedem ce putem găsi."
+      }
+    },
+    {
+      "id": "k510-007",
+      "phase": "play",
+      "at": 5.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Pământul rămâne în urmă. Am păstrat drumul de întoarcere. Acum putem privi în jur."
+      }
+    },
+    {
+      "id": "k510-008",
+      "phase": "play",
+      "at": 28.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Uite câte lumini! Dacă aș avea buzunare cât nava, tot n-ar încăpea toate."
+      }
+    },
+    {
+      "id": "k510-009",
+      "phase": "play",
+      "at": 76.0,
+      "maxDurationSec": 8.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Bun venit pe Siwarha! Am găsit bucăți pentru felinarul vostru. Fiecare poartă o formă."
+      }
+    },
+    {
+      "id": "k510-010",
+      "phase": "play",
+      "at": 87.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Privește forma mare de sus. Atinge bucata care seamănă cu ea. Poți încerca pe îndelete."
+      }
+    },
+    {
+      "id": "k510-011",
+      "phase": "play",
+      "at": 110.0,
+      "maxDurationSec": 7.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Eu țin valiza deschisă. Bucățile găsite vor apărea lângă mine, pe rând."
+      }
+    },
+    {
+      "id": "k510-012-C",
+      "phase": "play",
+      "at": 122.0,
+      "maxDurationSec": 8.0,
+      "speaker": "LUMINA",
+      "condition": "find_complete",
+      "text": {
+        "ro": "Toate cele zece bucăți sunt în valiză. Cercuri, aripi, frunze: ce colecție luminoasă!"
+      }
+    },
+    {
+      "id": "k510-012-P",
+      "phase": "play",
+      "at": 122.0,
+      "maxDurationSec": 8.0,
+      "speaker": "LUMINA",
+      "condition": "find_partial",
+      "text": {
+        "ro": "În valiză sunt bucățile găsite. Celelalte locuri rămân libere. Avem loc și pentru lumină simplă."
+      }
+    },
+    {
+      "id": "k510-012-Z",
+      "phase": "play",
+      "at": 122.0,
+      "maxDurationSec": 8.0,
+      "speaker": "LUMINA",
+      "condition": "find_none",
+      "text": {
+        "ro": "Valiza a rămas goală. Vă ofer eu un cerc de lumină pentru drum."
+      }
+    },
+    {
+      "id": "k510-013",
+      "phase": "play",
+      "at": 133.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Mulțumim! Închidem valiza cu grijă. Următoarea oprire are un atelier cum n-am mai văzut."
+      }
+    },
+    {
+      "id": "k510-014",
+      "phase": "play",
+      "at": 183.0,
+      "maxDurationSec": 8.0,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "Aduceți piesele găsite. Dacă vă lipsește o piesă, vă ofer una din atelierul meu."
+      }
+    },
+    {
+      "id": "k510-015",
+      "phase": "play",
+      "at": 194.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Pune piesa găsită sau primită în contur. Poți glisa, ori atinge piesa și apoi locul."
+      }
+    },
+    {
+      "id": "k510-016",
+      "phase": "play",
+      "at": 216.0,
+      "maxDurationSec": 8.0,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "Fiecare fereastră are două locuri. Piesele voastre rămân întregi, una lângă alta."
+      }
+    },
+    {
+      "id": "k510-017-C",
+      "phase": "play",
+      "at": 226.0,
+      "maxDurationSec": 8.0,
+      "speaker": "NATURA",
+      "condition": "fit_complete",
+      "text": {
+        "ro": "Cele cinci ferestre sunt gata. Piesele așezate rămân în ele, fiecare cu forma ei."
+      }
+    },
+    {
+      "id": "k510-017-P",
+      "phase": "play",
+      "at": 226.0,
+      "maxDurationSec": 8.0,
+      "speaker": "NATURA",
+      "condition": "fit_partial",
+      "text": {
+        "ro": "Păstrăm fiecare piesă așezată. Printre ele rămân locuri deschise, prin care poate trece lumina."
+      }
+    },
+    {
+      "id": "k510-017-Z",
+      "phase": "play",
+      "at": 226.0,
+      "maxDurationSec": 8.0,
+      "speaker": "NATURA",
+      "condition": "fit_none",
+      "text": {
+        "ro": "Piesele au rămas pe masă. Adaug în valiză o frunză, amintire din grădină."
+      }
+    },
+    {
+      "id": "k510-018",
+      "phase": "play",
+      "at": 236.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Felinarul are deja ceva de povestit. Mai trebuie să-i prindem lumina, ca să călătorească."
+      }
+    },
+    {
+      "id": "k510-019",
+      "phase": "play",
+      "at": 284.0,
+      "maxDurationSec": 8.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "Atelierul Mann, deschis! Reparăm felinare, umbrele și câteodată umbre. Ce ați adus în valiză?"
+      }
+    },
+    {
+      "id": "k510-020",
+      "phase": "play",
+      "at": 295.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Fiecare atinge capătul lui de fir. Lumina ține minte ambele atingeri. Nu trebuie deodată."
+      }
+    },
+    {
+      "id": "k510-021",
+      "phase": "play",
+      "at": 317.0,
+      "maxDurationSec": 8.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "Un capăt ține minte atingerea. Celălalt poate veni după el. Firul nu se supără."
+      }
+    },
+    {
+      "id": "k510-022-C",
+      "phase": "play",
+      "at": 333.0,
+      "maxDurationSec": 8.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "link_complete",
+      "text": {
+        "ro": "Toate cele cinci fire sunt legate. Felinarul vostru are acum cinci mânere de lumină."
+      }
+    },
+    {
+      "id": "k510-022-P",
+      "phase": "play",
+      "at": 333.0,
+      "maxDurationSec": 8.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "link_partial",
+      "text": {
+        "ro": "Păstrez capetele atinse și firele legate. Pun eu mânerul de călătorie. Felinarul poate veni cu noi."
+      }
+    },
+    {
+      "id": "k510-022-Z",
+      "phase": "play",
+      "at": 333.0,
+      "maxDurationSec": 8.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "link_none",
+      "text": {
+        "ro": "Firele au rămas pe masă. Adaug eu mânerul de călătorie. Felinarul este pregătit de drum."
+      }
+    },
+    {
+      "id": "k510-023",
+      "phase": "play",
+      "at": 344.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Un felinar cu mâner de călătorie! Exact ce ne trebuia. Îl țin aici, lângă mine."
+      }
+    },
+    {
+      "id": "k510-024",
+      "phase": "play",
+      "at": 360.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Intrăm într-un tunel de stele. Tabletele se odihnesc acum. Felinarul ne însoțește până la capăt."
+      }
+    },
+    {
+      "id": "k510-025",
+      "phase": "play",
+      "at": 382.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Dincolo de tunel este drumul cunoscut. Puteți urmări lumina sau puteți privi numai stelele."
+      }
+    },
+    {
+      "id": "k510-026",
+      "phase": "play",
+      "at": 405.0,
+      "maxDurationSec": 7.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Pământul! Uite cât de albastru este. Acesta era drumul nostru spre casă."
+      }
+    },
+    {
+      "id": "k510-027",
+      "phase": "play",
+      "at": 419.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Pun felinarul lângă fereastră. Nu aprinde planeta. Luminează doar micul nostru colț de navă."
+      }
+    },
+    {
+      "id": "k510-028",
+      "phase": "play",
+      "at": 435.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Am adus cu noi o lumină de la depărtare. Acum avem unde să o păstrăm."
+      }
+    },
+    {
+      "id": "k510-029",
+      "phase": "play",
+      "at": 451.0,
+      "maxDurationSec": 9.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Când vă veți aminti de stele, poate vă veți aminti și de valiza aceasta mică."
+      }
+    },
+    {
+      "id": "k510-030",
+      "phase": "epilogue",
+      "at": 5.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Călătoria s-a încheiat. Pe ecran rămâne felinarul și drumul prin cele trei lumi vizitate."
+      }
+    },
+    {
+      "id": "k510-031-C",
+      "phase": "epilogue",
+      "at": 19.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "final_complete",
+      "text": {
+        "ro": "Aici sunt toate bucățile găsite, ferestrele asamblate și firele legate de voi. Acesta este felinarul echipajului."
+      }
+    },
+    {
+      "id": "k510-031-P",
+      "phase": "epilogue",
+      "at": 19.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "final_partial",
+      "text": {
+        "ro": "Aici sunt urmele atingerilor voastre, alături de ajutorul atelierelor. Acesta este felinarul acestei călătorii."
+      }
+    },
+    {
+      "id": "k510-031-Z",
+      "phase": "epilogue",
+      "at": 19.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "final_none",
+      "text": {
+        "ro": "Acesta este felinarul primit pe drum: cercul, frunza și mânerul. Îl păstrăm ca amintire a călătoriei."
+      }
+    },
+    {
+      "id": "k510-032",
+      "phase": "epilogue",
+      "at": 34.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Nu mai este nimic de apăsat. Puteți privi felinarul sau puteți povesti încet cu vecinul."
+      }
+    },
+    {
+      "id": "k510-033",
+      "phase": "epilogue",
+      "at": 48.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Închid valiza, dar las felinarul la vedere. Mulțumesc pentru călătorie, echipaj. Bun venit acasă!"
+      }
+    },
+    {
+      "id": "k510-034",
+      "phase": "epilogue",
+      "at": 60.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Rămâneți la posturi. Ghidul din sală vă va spune când vă puteți ridica și pe unde mergem."
+      }
+    }
+  ]
+}

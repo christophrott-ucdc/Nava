@@ -1,3 +1,5 @@
+import { applyTheme, icon } from "../shared/glass";
+import { createMissionDebug } from "./mission-debug";
 /**
  * /debug — operator/engineer diagnostics page. Polls /api/debug/summary (viewer role) every 2 s.
  * Redirects to /login/?next=/debug/ on 401. Admins additionally manage users here.
@@ -78,6 +80,7 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
 
 function render(s: Summary): void {
   const st = s.state;
+  applyTheme(st.theme);
   const badge = $("conn");
   badge.textContent = `v${s.version} · uptime ${Math.floor(s.uptimeSec / 60)}m · ${s.host.hostname}`;
   badge.className = "badge ok";
@@ -99,7 +102,7 @@ function render(s: Summary): void {
   const rEl = $("readiness");
   if (rd) {
     rEl.className = `readiness ${rd.ready ? "ok" : "bad"}`;
-    rEl.innerHTML = `<b>READINESS: ${rd.ready ? "GATA" : "NU E GATA"}</b> · ecrane ${esc(rd.screensConnected.join(", ") || "—")}${rd.screensMissing.length ? ` · <span class="issue">lipsesc: ${esc(rd.screensMissing.join(", "))}</span>` : ""} · tablete ${rd.tabletsConnected}/${rd.tabletsRequired} · video ${rd.videoReady ? "ok" : "NU"} · active ${rd.assetsOk === null ? "neverificate" : rd.assetsOk ? "ok" : "PROBLEME"}${rd.reasons.length ? `<br>${esc(rd.reasons.join(" · "))}` : ""}`;
+    rEl.innerHTML = `${icon(rd.ready ? "check" : "warning")} <b>READINESS: ${rd.ready ? "GATA" : "NU E GATA"}</b> · ecrane ${esc(rd.screensConnected.join(", ") || "—")}${rd.screensMissing.length ? ` · <span class="issue">lipsesc: ${esc(rd.screensMissing.join(", "))}</span>` : ""} · tablete ${rd.tabletsConnected}/${rd.tabletsRequired} · video ${rd.videoReady ? "ok" : "NU"} · active ${rd.assetsOk === null ? "neverificate" : rd.assetsOk ? "ok" : "PROBLEME"}${rd.reasons.length ? `<br>${esc(rd.reasons.join(" · "))}` : ""}`;
   } else {
     rEl.className = "readiness";
     rEl.textContent = "Readiness: neimplementat încă în server/state.ts (pachet D-01).";
@@ -188,6 +191,7 @@ function render(s: Summary): void {
 }
 
 async function refresh(): Promise<void> {
+  void refreshMissionDebug();
   try {
     const s = await api<Summary>("/api/debug/summary");
     render(s);
@@ -197,6 +201,8 @@ async function refresh(): Promise<void> {
     b.className = "badge bad";
   }
 }
+
+const refreshMissionDebug=createMissionDebug(api);
 
 async function loadUsers(): Promise<void> {
   const el = $("users");
@@ -309,3 +315,8 @@ $("logout").addEventListener("click", async (e) => {
   await loadUsers();
   timer = window.setInterval(() => void refresh(), 2000);
 })();
+
+// Theme remains live even when the technical summary auto-refresh is paused.
+window.setInterval(() => {
+  void api<{ theme?: string }>("/api/state").then(state => applyTheme(state.theme)).catch(() => undefined);
+}, 500);

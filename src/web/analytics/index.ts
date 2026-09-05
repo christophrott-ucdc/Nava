@@ -1,3 +1,5 @@
+import { applyTheme, icon } from "../shared/glass";
+import { createMissionAnalytics } from "./missions";
 /**
  * /analytics — tabloul de bord al rularilor (D-05). Citeste GET /api/analytics/summary (rol viewer) si
  * GET /api/analytics/run/:id; fara biblioteci, graficele sunt desenate pe <canvas>. La 401 → /login/?next=/analytics/.
@@ -72,7 +74,7 @@ const COMMAND_LABELS: Record<string, string> = {
   preshow: "Pre-show", start: "Start", play: "Redă", pause: "Pauză", seek: "Salt", skipToScene: "Scenă", restart: "Restart",
   epilogue: "Epilog", fireCue: "Cue manual", stopVoice: "Stop voce", setVolume: "Volum", setLang: "Limbă", reloadShow: "Reîncarcă",
   testAvatar: "Test avatar", identifyScreens: "Identifică", rehearse: "Repetiție", setRate: "Viteză", autoRun: "Auto-run",
-  lights: "Lumini", ambient: "Ambianță", say: "Spune", setVariant: "Variantă", photo: "Foto", preflight: "Preflight",
+  lights: "Lumini", tabletSfx: "Sunete tablete", ambient: "Ambianță", say: "Spune", setVariant: "Variantă", photo: "Foto", preflight: "Preflight",
 };
 const STATE_LABELS: Record<string, string> = { idle: "idle", preshow: "pre-show", playing: "redare", paused: "pauză", epilogue: "epilog", ended: "încheiat" };
 
@@ -142,11 +144,11 @@ function drawBars(canvas: HTMLCanvasElement, labels: string[], values: number[],
   ctx.clearRect(0, 0, cssW, cssH);
   const muted = cssVar("--muted");
   const text = cssVar("--text");
-  const line = "rgba(132,190,226,0.18)";
+  const line = "rgba(60,80,120,0.09)";
   const colorAt = (i: number): string => (typeof opts.color === "function" ? opts.color(i) : opts.color ?? cssVar("--cyan"));
   const fmt = opts.format ?? ((v: number) => String(Math.round(v * 10) / 10));
   const max = Math.max(1, ...values);
-  ctx.font = "11px ui-monospace, monospace";
+  ctx.font = "13px Segoe UI, sans-serif";
   ctx.textBaseline = "middle";
 
   if (opts.horizontal) {
@@ -161,7 +163,10 @@ function drawBars(canvas: HTMLCanvasElement, labels: string[], values: number[],
       ctx.textAlign = "right";
       ctx.fillText(truncate(ctx, label, labelW - 12), labelW - 8, y + rowH / 2);
       const w = (values[i] / max) * barW;
-      ctx.fillStyle = i === opts.highlight ? cssVar("--amber") : colorAt(i);
+      const gradient = ctx.createLinearGradient(0, 0, cssW, cssH);
+      gradient.addColorStop(0, i === opts.highlight ? cssVar("--amber") : colorAt(i));
+      gradient.addColorStop(1, cssVar("--violet"));
+      ctx.fillStyle = gradient;
       roundRect(ctx, barX, y + rowH * 0.2, Math.max(2, w), rowH * 0.6, 3);
       ctx.fillStyle = text;
       ctx.textAlign = "left";
@@ -170,8 +175,8 @@ function drawBars(canvas: HTMLCanvasElement, labels: string[], values: number[],
     return;
   }
 
-  const padL = 44;
-  const padB = 34;
+  const padL = Math.ceil(Math.max(...Array.from({length:5},(_,i)=>ctx.measureText(fmt(max*i/4)).width))) + 16;
+  const padB = labels.length > 8 ? 64 : 34;
   const padT = 12;
   const plotW = cssW - padL - 10;
   const plotH = cssH - padT - padB;
@@ -196,7 +201,10 @@ function drawBars(canvas: HTMLCanvasElement, labels: string[], values: number[],
     const h = (v / max) * plotH;
     const x = padL + i * slot + (slot - barW) / 2;
     const y = padT + plotH - h;
-    ctx.fillStyle = i === opts.highlight ? cssVar("--amber") : colorAt(i);
+    const gradient = ctx.createLinearGradient(0, 0, cssW, cssH);
+      gradient.addColorStop(0, i === opts.highlight ? cssVar("--amber") : colorAt(i));
+      gradient.addColorStop(1, cssVar("--violet"));
+      ctx.fillStyle = gradient;
     roundRect(ctx, x, y, barW, Math.max(1, h), 3);
     ctx.fillStyle = muted;
     ctx.textAlign = "center";
@@ -433,6 +441,7 @@ function setStatus(text: string, error = false): void {
 }
 
 async function refresh(): Promise<void> {
+  void refreshMissionHistory();
   setStatus("Se încarcă…");
   try {
     summary = await api<Summary>("/api/analytics/summary");
@@ -446,6 +455,8 @@ async function refresh(): Promise<void> {
     setStatus(error instanceof Error ? error.message : String(error), true);
   }
 }
+
+const refreshMissionHistory=createMissionAnalytics(api);
 
 $("refresh").addEventListener("click", () => void refresh());
 $("only-started").addEventListener("change", () => {
@@ -477,3 +488,10 @@ window.addEventListener("resize", () => {
 
 void refresh();
 window.setInterval(() => void refresh(), 30_000);
+
+async function syncTheme(): Promise<void> {
+  try { const live = await api<{ theme?: string }>("/api/state"); const before = document.documentElement.dataset.theme; applyTheme(live.theme); if (before !== document.documentElement.dataset.theme && summary) { renderDurations(summary.runs); renderCommands(summary.aggregate); renderChoices(summary.aggregate); } } catch { /* Existing page status reports API failures. */ }
+}
+void syncTheme();
+window.setInterval(() => void syncTheme(), 500);
+document.querySelectorAll<HTMLElement>("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon!); });

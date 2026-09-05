@@ -16,6 +16,11 @@ const cdpPort = Number(process.env.NAVA_CDP_PORT ?? 19191);
 const serverPort = Number(process.env.NAVA_SERVER_PORT ?? 4321);
 const cdpBase = `http://127.0.0.1:${cdpPort}`;
 const serverBase = `http://127.0.0.1:${serverPort}`;
+// Use the normal login path; never weaken production authentication for a smoke test.
+const cfg=JSON.parse(await fs.readFile(path.join(root,process.env.NAVA_CONFIG??'config.json'),'utf8'));
+const authResponse=await fetch(`${serverBase}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:process.env.NAVA_TEST_PIN??cfg.security?.operatorPin??'4078'})});
+assert.equal(authResponse.status,200,'renderer smoke requires a valid operator login');
+const authToken=(await authResponse.json()).token;
 const deadline = (ms) => Date.now() + ms;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -37,7 +42,7 @@ async function waitFor(read, accept, timeoutMs, label) {
 async function command(action) {
   const response = await fetch(`${serverBase}/api/cmd`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
     body: JSON.stringify({ cmd: { action } }),
   });
   assert.equal(response.status, 200, `${action} command must be accepted`);
@@ -100,6 +105,9 @@ async function capture(file, clip) {
 try {
   await cdp("Runtime.enable");
   await cdp("Page.enable");
+  if (process.env.NAVA_VIEWPORT_WIDTH && process.env.NAVA_VIEWPORT_HEIGHT) {
+    await cdp("Emulation.setDeviceMetricsOverride", {width:Number(process.env.NAVA_VIEWPORT_WIDTH),height:Number(process.env.NAVA_VIEWPORT_HEIGHT),deviceScaleFactor:1,mobile:false});
+  }
   await command("restart");
   await sleep(500);
 

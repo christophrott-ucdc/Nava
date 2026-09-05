@@ -1,0 +1,4 @@
+import {THEMES,applyTheme,icon,ICON_NAMES,MASCOTS,confetti} from './glass';
+const nav=document.querySelector('.themes')!;for(const theme of THEMES){const b=document.createElement('button');b.textContent=theme;b.onclick=()=>{applyTheme(theme);for(const n of nav.children)n.setAttribute('aria-pressed',String(n===b))};nav.append(b)}
+document.querySelector('.icons')!.innerHTML=ICON_NAMES.map(n=>`<span title="${n}">${icon(n)}</span>`).join('');document.querySelector('#mascots')!.innerHTML=MASCOTS.map(n=>`<img class="mascot" alt="${n}" src="mascots/${n}-256.png">`).join('');
+document.querySelector('#dialog-open')!.addEventListener('click',()=>document.querySelector<HTMLDialogElement>('#demo-dialog')!.showModal());document.querySelector('#celebrate')!.addEventListener('click',e=>confetti(e.currentTarget as HTMLElement));

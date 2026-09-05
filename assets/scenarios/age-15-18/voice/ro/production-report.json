@@ -1,0 +1,150 @@
+{
+  "generatedAt": "2026-09-05T12:04:03.058Z",
+  "profile": "age-15-18",
+  "expected": 40,
+  "available": 40,
+  "sourceSha256": "62b2e21252d4fedb95f9d371ec2083da563cc4a7f6ac41af9c064db990c722bd",
+  "missing": [],
+  "overBudget": [
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-02",
+      "phase": "preshow",
+      "at": 12,
+      "durationSec": 10.56,
+      "budgetSec": 10
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-03",
+      "phase": "preshow",
+      "at": 24,
+      "durationSec": 11.52,
+      "budgetSec": 11
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-04",
+      "phase": "preshow",
+      "at": 37,
+      "durationSec": 12.96,
+      "budgetSec": 10
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-06",
+      "phase": "play",
+      "at": 6,
+      "durationSec": 13.04,
+      "budgetSec": 11
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-08",
+      "phase": "play",
+      "at": 62,
+      "durationSec": 10.48,
+      "budgetSec": 9
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-10",
+      "phase": "play",
+      "at": 87,
+      "durationSec": 11.44,
+      "budgetSec": 10
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-11",
+      "phase": "play",
+      "at": 126,
+      "durationSec": 11.2,
+      "budgetSec": 9
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-13",
+      "phase": "play",
+      "at": 152,
+      "durationSec": 11.12,
+      "budgetSec": 10
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-18",
+      "phase": "play",
+      "at": 255,
+      "durationSec": 9.68,
+      "budgetSec": 9
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-20",
+      "phase": "play",
+      "at": 296,
+      "durationSec": 11.76,
+      "budgetSec": 11
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-22",
+      "phase": "play",
+      "at": 349,
+      "durationSec": 6.08,
+      "budgetSec": 6
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-26D",
+      "phase": "play",
+      "at": 417,
+      "durationSec": 9.12,
+      "budgetSec": 9
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-29",
+      "phase": "play",
+      "at": 454,
+      "durationSec": 12.24,
+      "budgetSec": 10
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-31",
+      "phase": "epilogue",
+      "at": 13,
+      "durationSec": 10.4,
+      "budgetSec": 9
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-33",
+      "phase": "epilogue",
+      "at": 35,
+      "durationSec": 9.04,
+      "budgetSec": 8
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-35",
+      "phase": "epilogue",
+      "at": 56,
+      "durationSec": 5.36,
+      "budgetSec": 5
+    },
+    {
+      "profile": "age-15-18",
+      "cueId": "s1518-37",
+      "phase": "epilogue",
+      "at": 72,
+      "durationSec": 3.76,
+      "budgetSec": 3
+    }
+  ],
+  "failures": [],
+  "totalAudioMs": 359600,
+  "providerCharacterCost": 4539,
+  "postprocessTempo": 1
+}

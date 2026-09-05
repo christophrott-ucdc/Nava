@@ -11,6 +11,9 @@ import type { Command, NavaBridge } from "../shared/protocol";
 import { CONFIG_DEFAULTS_R4, type AppConfig, type ScreenConfig, type ShowFile } from "../shared/types";
 import { createAvatarController } from "./avatar/index";
 import { createVoiceEngine, setTtsAuthToken } from "./voice/index";
+import {createMissionOverlay} from "./ui/mission";
+import {createExperienceOverlay} from "./ui/experience";
+import type {RateAwareVoiceEngine} from "./voice/index";
 import { createAmbient } from "./voice/ambient";
 import { getAudioOutputLabel, routeAudioOutput } from "./voice/context";
 import { createNullAvatar, createNullVoiceEngine } from "./fallbacks";
@@ -19,7 +22,7 @@ import { createPerfMonitor } from "./perf";
 import { createPhoto } from "./photo";
 import { Player } from "./player";
 import { createRoomMic, roomMicRequested } from "./room-mic";
-import { createSpan, type SpanController } from "./span";
+import { createSpan, pickFocusViewport, scaleViewports, rendererClockSource, type SpanController } from "./span";
 import { SyncClient, type SyncStatus } from "./sync";
 import { createCountdown } from "./ui/countdown";
 import { createEntities } from "./ui/entities";
@@ -150,9 +153,12 @@ async function main(): Promise<void> {
   }
   const { config, screen } = boot;
   const isMaster = config.role === "master";
-  const isClockSource = isMaster && (config.screens[0]?.id ?? screen.id) === screen.id;
   const showOsd = boot.isDev || config.dev.openDevTools;
   const spanMode = boot.displayMode === "span" && Array.isArray(boot.viewports) && boot.viewports.length > 0;
+  const wallMode = !!config.videoWall;
+  const isClockSource = rendererClockSource(isMaster, spanMode, screen.id, config.screens);
+  const wallViewports = spanMode ? boot.viewports! : [{ screenId: screen.id, x: 0, y: 0, width: window.innerWidth, height: window.innerHeight, scaleFactor: window.devicePixelRatio || 1 }];
+  const focusWidth = () => pickFocusViewport(scaleViewports(wallViewports, window.innerWidth, window.innerHeight), config.screens, screen.id)?.width ?? window.innerWidth;
   log("info", `boot: screen=${screen.id} role=${config.role} clockSource=${isClockSource} ws=${boot.wsUrl} mode=${spanMode ? `span(${boot.viewports!.length})` : "windows"} v${boot.appVersion}`);
 
   // ---- OSD with the real screen
@@ -165,7 +171,7 @@ async function main(): Promise<void> {
   // ---- UI modules
   const theme = createTheme(document.body, $("white-fade"));
   const subtitles = createSubtitles($("subtitles"), { enabled: screen.showSubtitles });
-  const countdown = createCountdown($("countdown"), { enabled: true });
+  const countdown = createCountdown($("countdown"), { enabled: !wallMode || screen.showAvatar || screen.showSubtitles });
   const launchControls = $("launch-controls");
 
   // ---- Voice engine (Agent C) — never audible on screens with playAudio=false
@@ -211,10 +217,11 @@ async function main(): Promise<void> {
   // ---- Avatar (Agent C)
   const avatarEl = $("avatar");
   const root = document.documentElement.style;
-  root.setProperty("--avatar-width", `${config.avatar.widthPercent}vw`);
+  root.setProperty("--avatar-width", `${config.avatar.widthPercent}cqw`);
   root.setProperty("--avatar-margin", `${config.avatar.marginPx}px`);
   avatarEl.classList.toggle("right", config.avatar.corner === "bottom-right");
-  const avatarWidthPx = () => Math.round((window.innerWidth * config.avatar.widthPercent) / 100);
+  // Small commissioning previews scale a coherent 1080p surface; real 4K uses native pixels.
+  const avatarWidthPx = () => Math.round(((spanMode || wallMode ? Math.max(1920, focusWidth()) : focusWidth()) * config.avatar.widthPercent) / 100);
 
   let avatar: AvatarController = createNullAvatar();
   if (screen.showAvatar) {
@@ -280,7 +287,7 @@ async function main(): Promise<void> {
     ambient,
     osd: osdReal,
     log,
-    perspective: !spanMode,
+    perspective: !spanMode && !wallMode,
     onPhotoCue: (cue) => photo.setCueId(cue.id),
     loadShow: () => fetchShow(boot.showUrl),
     onAutoplayBlocked: () => {
@@ -298,18 +305,23 @@ async function main(): Promise<void> {
   player.attach(boot.videoUrl);
   launchControls.hidden = !isClockSource || player.getPlaybackState() !== "idle";
 
+  const missionOverlay=createMissionOverlay($("stage"));
+  const experienceOverlay=createExperienceOverlay($("stage"),{audio:screen.playAudio,visual:screen.showAvatar,baseUrl:boot.serverHttpUrl??boot.wsUrl.replace(/^ws/, 'http'),volume:config.audio.voiceVolume,outputDeviceId:config.audio.outputDeviceId,clockOffset:()=>syncStatus.offsetMs,onNarration:(instance,status)=>sync.sendRaw({type:'experienceAudio',instance,status})});
+  let missionRun="";let missionSuspended=false;
   // ---- R4 / B-07 — span mode: one <video>, one canvas per viewport, overlays in the focus viewport
   let span: SpanController | null = null;
-  if (spanMode) {
+  if (spanMode || wallMode) {
     try {
       span = createSpan({
         stage: $("stage"),
         video,
-        viewports: boot.viewports!,
+        viewports: wallViewports,
         screens: config.screens,
         fit: config.video.fit,
         centerScreenId: screen.id,
-        overlays: [$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl],
+        overlays: [missionOverlay.element,experienceOverlay.element,$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl, $("osd"), $("rehearse"), $("identify"), $("spinner"), $("error-banner"), launchControls, veil, ...Array.from(document.querySelectorAll<HTMLElement>("#photo"))],
+        wall: config.videoWall,
+        getTime: () => player.phaseTime(),
         log,
       });
       span.start();
@@ -336,7 +348,12 @@ async function main(): Promise<void> {
       syncStatus = s;
     },
     onWelcome: (msg) => {
-      if (isShowFile(msg.show) && (!isMaster || show === EMPTY_SHOW)) {
+      if (isShowFile(msg.show)) {
+        const base=msg.show.scenario ? new URL(`../scenarios/${msg.show.scenario.id}/voice/`,new URL(boot.voiceBaseUrl,location.href)).href : boot.voiceBaseUrl;
+        const engine=voice as Partial<RateAwareVoiceEngine>;
+        void engine.setVoiceBaseUrl?.(base).then(()=>{
+          if(msg.show.scenario)sync.sendRaw({type:'packageReady',contentHash:msg.show.scenario.contentHash,ok:engine.isPrepared?.('ro')===true});
+        });
         player.setShow(msg.show);
         osdReal.setError(null);
         log("info", `show preluat din welcome (${msg.show.cues.length} cues)`);
@@ -346,6 +363,16 @@ async function main(): Promise<void> {
       if (typeof msg.state?.rate === "number" && msg.state.rate > 0 && Math.abs(msg.state.rate - player.nominalRate()) > 1e-3) player.setRate(msg.state.rate);
       if (msg.state?.variant !== undefined && (msg.state.variant ?? null) !== player.timeline.getVariant()) player.timeline.setVariant(msg.state.variant);
       if (typeof msg.state?.ambientEnabled === "boolean") ambient.setEnabled(msg.state.ambientEnabled);
+    },
+    onMission: s=>{
+      experienceOverlay.update(s);
+      if(s.experience?.active)launchControls.hidden=true;
+      if(screen.showAvatar)missionOverlay.update(s);
+      if(s.runId!==missionRun||s.suspended!==missionSuspended){
+        player.apply({action:'stopVoice'});
+        player.follow(s.suspended&&s.state.state==='playing'?'paused':s.state.state,s.state.phaseTime,s.suspended?0:s.state.rate,{seekThresholdSec:.1,rateNudge:0});
+        missionRun=s.runId;missionSuspended=s.suspended;
+      }
     },
     onPhoto: (msg) => photo.handle(msg),
   });
@@ -481,13 +508,13 @@ async function main(): Promise<void> {
   });
 
   window.addEventListener("resize", () => {
+    span?.refresh();
     try {
       avatar.resize(avatarWidthPx());
     } catch {
       /* ignore */
     }
     player.refreshLayout();
-    span?.refresh();
   });
 
   window.addEventListener("error", (ev) => log("error", `uncaught: ${ev.message}`, { file: ev.filename, line: ev.lineno }));

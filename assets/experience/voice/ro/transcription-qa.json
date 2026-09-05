@@ -1,0 +1,7 @@
+{
+  "expectedWords": 216,
+  "actualWords": 216,
+  "editDistance": 0,
+  "wordErrorRate": 0,
+  "humanListeningRequired": true
+}

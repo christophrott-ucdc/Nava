@@ -595,3 +595,145 @@ Tabletele și consola trebuie să fie în aceeași rețea cu PC-ul master (port 
 | **Run-log** | `runs/show-<stamp>.jsonl`, un eveniment pe linie |
 | **HANDOFF-LIVE / HEARTBEAT** | jurnalul live al rundei / pulsul mecanic la 60 s (§0.2) |
 | **Exodus** | proiectul-sursă (`docs/reference/EXODUS_SUMMARY.md`) al avatarului și al codului de referință |
+
+---
+
+## 18. Addendum 2026-09-05 — brief autonom GPT-6 Astra pentru Nava Glass R5
+
+### 18.1 Ce s-a adăugat
+
+- A fost creat `docs/ASTRA-IMPLEMENTARE-GLASS.md`, document autonom de execuție pentru GPT-6 Astra, astfel încât un agent fără istoricul conversației să poată prelua și termina redesignul R5.
+- Brief-ul leagă cerințele din `docs/DESIGN-SPEC-GLASS.md` de arhitectura reală Electron/TypeScript/Hono/WebSocket, de suprafețele proiectului, de responsabilități pe fișiere, de ordinea implementării, de testele automate și de matricea de verificare vizuală.
+- Au fost stabilite explicit granițele funcționale: se păstrează scenariul, vocile, timpii, state machine-ul, autentificarea, rolurile, editorul, telemetria, analitica, debugul, video-ul și Căpitanul GLB. Singura extensie minimă de protocol autorizată de brief este `tabletSfx`.
+- Au fost rezolvate pentru agent două ambiguități: cele șase opțiuni de pe tabletă folosesc grilă 3×2, iar setarea SFX ajunge la tablete prin extensia minimă descrisă în document.
+
+### 18.2 Integrarea brief-ului vizual suplimentar al utilizatorului
+
+Textul suplimentar despre redesign premium Apple/Liquid Glass a fost integrat semantic în documentul Astra, nu copiat ca un al doilea prompt generic. Cerințele specifice Nava rămân autoritative.
+
+Au fost adăugate:
+
+- mandatul unei transformări vizuale complete și evidente, cu un before/after de două generații;
+- bara de calitate „produs premium, Apple-adjacent”, fără clonare Apple și fără aspect generic de admin dashboard;
+- reguli clare pentru atmosferă, materiale glass, niveluri de profunzime, fallbackuri CSS și folosirea restrânsă a blurului;
+- contracte pentru navigație, header, carduri, butoane, formulare, tabele, badge-uri, dialoguri, meniuri, grafice existente, stări goale/eroare/loading și iconografie;
+- reguli pentru tipografie, spațiere, mișcare, reduced-motion, accesibilitate și dimensiunile reale ale tabletelor, suprafețelor operatorului și TV-ului;
+- disciplina de execuție: audit scurt, implementare directă, propagare pe toate suprafețele, verificare după fiecare etapă și pass final de consistență;
+- inventarierea stackului, rutelor, stilurilor, tokenurilor, layouturilor, componentelor reutilizate și id-urilor DOM în baseline.
+
+Cerințele generice incompatibile au fost adaptate: nu se introduce framework, Tailwind, shadcn, bibliotecă UI sau font extern; nu se inventează grafice; nu se forțează un breakpoint mobil generic peste instalație; rendererul TV nu primește `backdrop-filter`; valorile normative din specificația Nava au prioritate față de intervalele orientative din textul primit.
+
+### 18.3 Verificare și stare git
+
+- `git diff --no-index --check -- NUL docs/ASTRA-IMPLEMENTARE-GLASS.md` — fără erori de whitespace; codul de ieșire 1 este cel așteptat deoarece fișierul nou diferă de `NUL`.
+- Au fost verificate prezența tuturor secțiunilor integrate și structura heading-urilor Markdown.
+- Schimbarea este exclusiv de documentație; suita aplicației nu a fost rulată pentru această editare.
+- La momentul acestei intrări, HEAD este `e20c506`; `docs/ASTRA-IMPLEMENTARE-GLASS.md` este necomis, iar acest addendum din `HANDOFF.md` este de asemenea necomis.
+- Nu s-a făcut commit sau push.
+
+---
+
+## 19. Corecție 2026-09-05 11:26 — toate tabletele sunt 1080p landscape
+
+Christoph a corectat explicit orientarea dispozitivelor. Afirmația „portret” din versiunea R5 a `docs/DESIGN-SPEC-GLASS.md` era greșită și contrazicea deja descrierea instalației din §1 al acestui document și `docs/SCENARIU-REGIZORAL-10-MIN.md`.
+
+Configurația autoritativă este:
+
+- cinci tablete pentru copii, câte una pentru fiecare post;
+- o tabletă separată pentru operator;
+- toate cele șase dispozitive sunt 1080p landscape, cu rezoluția țintă 1920×1080;
+- pe tabletele copiilor, zona A este jumătatea din stânga și zona B jumătatea din dreapta; ambele se citesc normal, fără rotirea textului;
+- consola și loginul operatorului sunt proiectate prioritar pentru 1920×1080 landscape;
+- la orientarea accidentală portret, tableta copiilor afișează un mesaj prietenos de rotire, fără să înghesuie interacțiunea.
+
+Au fost corectate toate cerințele afectate din `docs/DESIGN-SPEC-GLASS.md` și `docs/ASTRA-IMPLEMENTARE-GLASS.md`: rezumat, decizii, componente, layout A/B, alegerea postului, paired-choice, plan, matrice vizuală și definiția de „gata”. Istoricul anterior nu a fost rescris; această secțiune îl invalidează explicit numai în privința orientării și rezoluției tabletelor.
+
+Schimbările sunt necomise. Nu s-a făcut commit sau push.
+
+---
+
+## 20. Nava Glass R5 — implementare și verificare software, 2026-09-05
+
+Redesignul este implementat în toate suprafețele: cele cinci posturi pentru copii, consola operatorului, login, debug, analytics și renderer TV. Fundația comună include glass.css, glass-tv.css, opt teme, preview, iconografie, șase mascote RGBA în 1024/256, confetti și cinci SFX originale. Tabletele sunt 1920×1080 landscape: A în stânga, B în dreapta, fără rotirea textului și fără scroll în vederile show-ului. Operatorul are o tabletă separată, aceeași rezoluție.
+
+Căpitanul rămâne exclusiv GLB-ul pe TV-ul configurat. Eticheta AVATAR_AI este „AVATARUL AI”; robotul Unitree H2 nu este integrat. Filmul, GLB-ul, replicile, vocile și timingul show-ului sunt neatinse. Singura extensie de contract este tabletSfx, implicit true, comutabilă de operator prin mecanismul existent de comandă/stare, testată pentru validare, serializare și autorizare.
+
+Fundația a precedat agenții T/R/K cu domenii de fișiere separate. Livrările au fost inspectate și integrate. QA a corectat suprapunerea MEMORIE/subtitrare, subtitrările TV în dreptul GLB-ului, contrastul void/tech, axele analytics și stivuirea markerilor editorului. Editorul a fost exercitat prin modificare locală și anulare; show.json a rămas identic.
+
+Verificări finale trecute: npm run check (typecheck, validare show/voci, build, 90 teste unitare, smoke core/auth/platform/media) și npm run smoke:renderer cu film real, cadre în avans, GLB vizibil, context WebGL activ și veil ascuns cu suprafață zero. Matricea vizuală acoperă tabletele la 1920×1080, operatorul/login/debug/analytics și la 1440×900, TV la 3840×2160 și 1600×900, toate temele, focus, reduced-motion, SFX/confetti o singură dată, certificat/reîncercare și fotografie cu ascundere la termen.
+
+Raportul complet: docs/DESIGN-REVIEW.md. Capturi înainte/după și loguri: runs/debug/glass-r5/; galerie: runs/debug/glass-r5/index.html. README și OPERARE reflectă starea reală, inclusiv rutele analytics/certificate deja montate și operarea tabletSfx.
+
+Rămâne repetiția pe hardware: cinci TV-uri și toate cele șase tablete, două persoane per post, atingere simultană, cameră, volum, autoplay, rețea/sincronizare, performanță susținută și citirea subtitrărilor la distanța reală. Validarea software locală nu certifică instalația fizică. Modificările sunt necomise; nu s-a făcut commit, push, merge, release sau deploy.
+
+---
+
+## 21. Samsung panoramic și finisare pentru prezentare — 2026-09-05
+
+Cererea ulterioară a utilizatorului confirmă un singur PC cu 4 TV-uri Samsung QN90F de 98″ și unul 115″ central. Implementate direct: spațiu fizic comun videoWall în mm, cropuri coordonate și corecția scării 115″, cinema central cu ambient lateral, un decoder span, clock central corect, overlay-uri relative la panoul central, grilă și diagnostic native/readiness. `/wall/` permite previzualizarea filmului real, geometrie, indici și export. Importul este validat, atomic și păstrează baza/credentialele. Profilul local `config.wall.local.json` este separat și ignorat de Git; implicit cinema pentru păstrarea cadrului original.
+
+Consola are modurile Înainte de show/În show/Instrumente, cinci posturi și momente descrise pentru operator. Tabletele adaugă orientare permanentă A/stânga B/dreapta, focus independent, pending vs. confirmat, reconectare și protecția rezultatelor asincrone la restart. Certificatele folosesc răspunsuri confirmate. Fotografiile autentificate de peste 64 KB sunt acum transportate până la limita existentă 1,5 MB, păstrând limita mică pentru celelalte mesaje.
+
+Agenții T/R/K au avut domenii separate; livrările au fost inspectate. Review-ul a corectat protecția căilor Windows, validarea indicilor/modurilor, import BOM/atomic, diagnosticul reactualizat și blocarea auto-start în calibrare. Verificări trecute: npm run check (109 teste+smoke core/auth/platform/media), npm run smoke:renderer (span și individual 4K), npm run smoke:wall, 11 cazuri import, SFX/confetti/certificat/foto, toate 5 posturile 1920×1080 și opt teme. Pe rendererul real, toate cinci canvas-urile panoramice au pixeli identici cu decupajele așteptate (eroare maximă 0).
+
+Ghidul complet și limitele sunt în docs/VIDEO-WALL.md. Filmul local este 3840×2052/60 fps, raport~1,87:1, iar peretele nominal~7,84:1. Cropul cover păstrează aproximativ 21% din cadrul original; cinema păstrează filmul integral central. O panoramă fără crop necesită altă sursă adaptată peretelui. Fișierele show/voice/avatar/media și timingul nu au fost modificate.
+
+Galerie: runs/debug/final-wall/index.html; verificările copiilor: runs/debug/children-final/; comparația R5: runs/debug/glass-r5/index.html. Rămân calibrarea efectivă (goluri, unghiuri, scaling, overscan), 5 ieșiri 4K simultane pe PC, GPU/refresh/sincronizare/temperaturi, sunet, citire la distanță, touch A/B, rețea și cameră. Limită păstrată: fără ID unic de rulare, o tabletă deconectată peste întreaga tranziție între grupuri nu poate distinge sigur același cue repetat. Unitree H2 nu este integrat.
+
+HANDOFF.md a primit numai această secțiune nouă. Nu s-a făcut commit, push, merge, release sau deploy.
+
+---
+
+## 22. Plan tehnic pentru automatizare și scenarii pe vârste — 2026-09-05
+
+Cererea curentă a lui Christoph este exclusiv planificare și un document Markdown. Livrabil: [docs/PLAN-TEHNIC-AUTOMATIZARE-SCENARII.md](docs/PLAN-TEHNIC-AUTOMATIZARE-SCENARII.md). Acesta acoperă detecția/împărțirea automată a display-urilor, calibrarea automată, upgrade-urile 3/4/6/7/8/9/10 din lista discutată și scheletul tehnic separat pentru 5–10, 10–15, 15–18 ani și adulți. Modulele, contractele, API-urile și testele noi din plan sunt propuneri, nu implementări existente.
+
+Au fost citite integral cele două surse din Downloads: `A Patra Lume Scenariu (1).docx` și `A_PATRA_LUME_SMOOTH_APPROACH_MANN_NO_TEXT.txt`. Indicațiile din documente sunt material de referință, nu autorizație pentru roboți, VR sau modificarea timingului. Ruta finală din TXT include Mann/Gargantua/Saturn; cele 61 de instrucțiuni explicite Wait însumează 625,5 s, fără a certifica durata exportului. Show-ul actual păstrează cele 465 s de film și totalul de 600 s. Planul păstrează separat pista actuală aliniată și un import provizoriu, cu verificare viitoare pe cadre reale.
+
+Arhitectura propune un runId înainte de preshow, profil rezolvat și fixat pentru fiecare misiune, confirmări/deduplicare pentru alegeri și efecte, checkpoint durabil și reluare suspendată, cooperare deterministă, accesibilitate pe post și rezumat final comun pentru certificate/foto/analytics. Cele patru profiluri pornesc ca drafturi fără replici/scenografie nouă; nu sunt declarate scenarii gata pentru public. Adaptorul legacy păstrează show-ul și asseturile existente.
+
+Detecția logică folosește Electron și date native Windows; calibrarea fizică automată a îmbinărilor și unghiurilor cere observație prin cameră sau un profil măsurat anterior. Datele estimate nu devin calibrare validată. Configurația confirmată 98–98–115–98–98, un singur GLB central și cele cinci tablete A stânga/B dreapta rămân autoritative. Hardware-ul necesită calificare separată.
+
+Această tură modifică numai documentația: planul nou și adăugiri la finalul celor două handoff-uri. Au fost verificate structura, referințele locale, codificarea și whitespace-ul; testele aplicației nu au fost rerulate pentru această editare. Worktree-ul existent este păstrat. Nu s-a făcut commit, push, merge, release sau deploy.
+
+
+---
+
+## 23. Patru experiențe și dialoguri pe vârste — 2026-09-05
+
+Cererea ulterioară autorizează explicit replicile și experiențele distincte. Livrabile: docs/scenarii/README.md, patru scenarii integrale, REVIZIE-SCENOGRAFICA.md, VALIDARE-EDITORIALA.md și exporturi JSON draft în assets/scenarios/. Perspectivele pentru copii, adolescenți și adulți au fost lucrate separat de agenți AI, apoi inspectate de un agent de scenografie și de orchestrator. Nu reprezintă consultații cu experți umani.
+
+5–10: caută bucăți de lumină, montează aceleași piese și leagă felinarul. 10–15: investighează un semnal, construiește probe temporale și atașează dovezi verdictului. 15–18: stabilește mandatul unui AI, testează cazuri și revizuiește reguli cu comparație înainte/după. Adulți: configurează observația, gestionează rezerva sondei și selectează documentul transmis. Fiecare are trei etape, roluri pentru toate posturile A/B, feedback și finaluri care păstrează contribuțiile reale, inclusiv observare/timeout. Revizia a reparat continuitatea pieselor, independența A/B, accesul tuturor la probe, vocea prea administrativă și afirmațiile false în cazurile fără contribuții.
+
+163 replici/variante: 42 + 41 + 40 + 40. Scriptul docs/scenarii/validate_export.py verifică ID-uri, vorbitori, faze, sloturi, ramuri exclusive/exhaustive pe 1815 stări editoriale și JSON-ul exportat. Plafon textual120 cuvinte/minut pentru5–10,130 pentru restul; fără suprapuneri. Nu sunt durate audio măsurate sau teste ale mecanicilor runtime. Verificare de integritate:256fișiere din worktree rămân identice cu începutul turei; istoricul handoff păstrat prin append binar. git diff --check și referințele locale verificate.
+
+Pachetele sunt explicit editoriale, productionReady=false, fără activare în player și fără MP3-uri noi. Filmul, show.json, vocile actuale, GLB-ul și timpii existenți rămân neatinse. Sunt necesare implementarea mecanicilor, probe cu public reprezentativ, producție vocală și verificare pe film/hardware. Testele aplicației nu au fost rerulate pentru această livrare editorială; nu se declară gata de prezentat publicului. Fără commit/push/merge/release/deploy.
+
+---
+
+## 24. Scenarii executabile, ElevenLabs, SQLite și display-uri automate — 2026-09-05
+
+Cererea ulterioară a autorizat producția vocală și implementarea planului. Sunt integrate cele patru experiențe complete: piese/felinar pentru5–10, probe și dovezi pentru10–15, mandate testate/revizuite pentru15–18, observație/rezervă/arhivă pentruadulți. Cele cinci posturi păstrează A stânga/B dreapta la1920×1080. Rezultatele nu inventează contribuții. Căpitanul GLB rămâne pe un singur TV; Unitree H2 nu este integrat.
+
+163 MP3 ElevenLabs reale, patru manifeste, receipt-uri, hashuri, aliniere,14.466viseme, patru reels și transcrieri independente. Reluarea producției a reutilizat163clipuri fără cereri noi. WER0,27–0,33%. Resolverul ajustează șapte momente de replică în spațiile tăcute, pe baza duratelor măsurate; nu accelerează vocile și nu modifică filmul465s/preshow50s/lansare10s/epilog75s. Originalul show.json, vocile legacy, GLB și media au rămas fără diff. Cheia este doar în.env ignorat.
+
+SQLite nativ în data/nava.sqlite: WAL/FULL, stare+eveniment în aceeași tranzacție înainte de ACK, deduplicare, checkpoint-uri și artefacte. Identitate run/server/timeline/cue, refuz evenimente vechi, certificate idempotente și foto legată de solicitarea activă. Recuperare suspendată după restart; continuare numai după verificare. Editor cu hash/backup și invalidare audio; confort pe cinci posturi, debug/analytics și repetiție tehnică cu anulare și statistici separate.
+
+Inventarul nativ detectează1–16display-uri, exclude rolul operator, tratează DPI/clone/hotplug și păstrează profilul instalației. config.auto.local.json a fost creat separat pentru98–98–115–98–98; pornire npm run auto:start. Calibrarea ArUco citește fotografie/video local, verifică patru markere/display și generează homografii proiective. Atelierul verifică din nou topologia; aplicarea în pregătire persistă profilul și redeschide ferestrele. Shaderul WebGL folosește spațiul comun al peretelui. Geometria proiectată nu este prezentată ca milimetri sau reconstrucție3D.
+
+Verificări trecute: npm run check (147teste + core/auth/platform/media), smoke:scenarios (4profiluri×10zone×3etape, SQLite cold recovery, duplicate/certificate), smoke:wall (inclusiv foto>64KB legată de solicitare), smoke:renderer cu film/GLB real.140stări tabletă în browser la1920×1080, text1,3×, contrast/reduced-motion/subtitrări; consolă/debug/analytics la1920 și1440. Toate4profilurile TV cu pregătirea audio reală, film în mișcare, GLB/subtitrări și finaluri4K/windowed. Optică:12testeOpenCV,8testeTS, import/persistență nativă și5cropuri GPU cu eroare0. Defectul seek din numărătoare în film a fost reparat și reverificat.
+
+Repetiția reală la ritm normal (adulți):601,116s,597mostre,27.965cadre,1cadru pierdut (0,0036%), încheiere automată. Test pe un renderer local și tablete de test; nu este calificarea întregii instalații. Raport în runs/debug/scenarios-new/rehearsal-real.json. Galerie166capturi: runs/debug/scenarios-new/index.html; operator: runs/debug/scenario-upgrade-operator/index.html. Documentație: docs/IMPLEMENTARE-SCENARII-DISPLAY.md, docs/DISPLAY-AUTOMATION.md, docs/OPTICAL-CALIBRATION.md, docs/scenarii/VOICE-PRODUCTION.md; README/OPERARE actualizate.
+
+Rămân probele fizice: cinci Samsung simultan, GPU/cabluri/desktop extins, imaginea reală de calibrare/overscan/unghiuri, audibilitate și lip-sync perceput, șase tablete reale, camera și trei misiuni consecutive. Nu există observare live permanentă a camerei sau genlock TV. Sunt necesare audiție regizorală și probe cu public pe categorii. Perspectivele de specialitate au fost oferite de agenți AI, nu de consultanți umani. Worktree-ul existent a fost păstrat; fără commit, push, merge, release sau deploy.
+## 25. Tutorial vocal interactiv și final colectiv — 2026-09-05
+
+Implementată cererea de tutorial complet, logică și design, cu final mai interactiv. „Nava vă recunoaște”: atingere, probă specifică profilului, legătură A/B și predare către Căpitan. Serverul păstrează directorul în idle până la predare; nu schimbă show.json, filmul465s sau timpii50+10+465+75. Start pentru cele patru profiluri noi intră în tutorial; legacy păstrează pornirea existentă și tutorial explicit. Consola configurează locurile ocupate și oferă pauză, continuare, repetare, pas următor validat, omiterea explicită și predarea cu readiness.
+
+12MP3 de producție și3probe ElevenLabs, narator român Mihai distinct de Căpitan/Avatar, fără clonarea unei personalități. Manifest SHA256, decodare reală și transcriere216/216cuvinte. Pachetul vocal este servit prin HTTP numai pentru fișiere validate, inclusiv fallback resources la împachetare. Gating pe durata măsurată și ACK-ul rendererului de referință. Fără generare plătită la runtime. Nu este o audiție umană.
+
+Interfețe tabletă Glass landscape A stânga/B dreapta, patru mecanici fără punctaj, opțiune de observare, confirmări reale și efecte deduplicate. Finalul apare în ultimele15s ale epilogului: alegeri diferite pe categorii, constelație construită numai din contribuții, locuri libere și observatori distincți. Naratorul final pornește doar după ended. Jurnalul trimis operatorului așteaptă alegerile locurilor active, pentru a include contribuția finală. Starea și evenimentele sunt persistate tranzacțional în SQLite; recuperarea rămâne suspendată până la readiness și reia explicația curentă.
+
+Verificări: npm run check157teste+core/auth/platform/media; smoke:scenarios4profiluri×10zone×3etape; smoke:experience cu protocol/SQLite/recovery/deduplicare și hashHTTP; interfață conectată la server1920×1080 și consolă1440×900;20vederi tabletă cu text1,3×/contrast/reducedmotion/ținte64px, fărăoverflow; TV3840×2160/windowed, tutorial narat real și predare la preshow; npm run smoke:renderer cu filmul/GLB reale. ACK-urile sintetice din smoke:experience sunt delimitate de proba audio reală Electron. Capturi/rapoarte în runs/debug/tutorial-final și runs/debug/tutorial-tablet, galerie combinată în runs/debug/tutorial-final/index.html. Ghid docs/TUTORIAL-FINAL.md, casting docs/TUTORIAL-VOICE-PRODUCTION.md, README și OPERARE actualizate.
+
+Rămân pe hardware: audiție umană și balans audio, cinciSamsung simultan, șase tablete tactile, lizibilitate de la4–5m, reconectareWi-Fi și trei sesiuni consecutive. Nu s-a făcut commit/push/merge/release/deploy. Modificările anterioare din worktree și istoricul HANDOFF sunt păstrate.

@@ -31,7 +31,7 @@ export interface SpeakerProfile {
 }
 
 export const SPEAKERS: Record<Speaker, SpeakerProfile> = {
-  AVATAR_AI: { id: "AVATAR_AI", label: "VOCEA NAVEI", color: "#7dd3fc", lipsyncAvatar: false, fx: "hologram" },
+  AVATAR_AI: { id: "AVATAR_AI", label: "AVATARUL AI", color: "#7cc4ff", lipsyncAvatar: false, fx: "hologram" },
   CAPITANUL: { id: "CAPITANUL", label: "CĂPITANUL", color: "#e2e8f0", lipsyncAvatar: true, fx: "clean" },
   LUMINA: { id: "LUMINA", label: "AVATAR LUMINĂ", color: "#fcd34d", lipsyncAvatar: false, fx: "choir" },
   NATURA: { id: "NATURA", label: "AVATAR NATURĂ", color: "#86efac", lipsyncAvatar: false, fx: "forest" },
@@ -81,6 +81,8 @@ export interface CueBase {
 
 export interface VoiceCue extends CueBase {
   kind: "voice";
+  /** Measured offline duration supplied by a resolved scenario package. */
+  audioDurationMs?: number;
   speaker: Speaker;
   /** Textul pe limbi. `ro` este obligatoriu. */
   text: Partial<Record<Lang, string>> & { ro: string };
@@ -255,6 +257,8 @@ export interface Scene {
 }
 
 export interface ShowFile {
+  /** Complete, immutable scenario package; legacy has no scenario metadata. */
+  scenario?: { id: string; revision: string; voiceRoot: string; contentHash: string };
   $schema?: string;
   title: string;
   version: string;
@@ -353,6 +357,7 @@ export interface AutoRunConfig {
 }
 
 export interface AppConfig {
+  autoDisplays?: { enabled: boolean; installationId?: string; expectedAudienceCount?: number; operatorDisplayIds?: number[]; audienceDisplayIds?: number[]; centerDisplayId?: number; layout?: "generic" | "samsung-5"; allowEstimatedGeometry?: boolean };
   role: "master" | "follower";
   /** Folosit doar de follower: ws://<ip-master>:<port>/ws */
   masterUrl?: string;
@@ -379,14 +384,33 @@ export interface AppConfig {
    * ecranele, un singur <video> decodat si desenat pe cate un canvas per viewport (economie GPU).
    */
   displayMode?: "windows" | "span";
+  /** Coordinated physical-space video wall; omitted preserves legacy per-screen video. */
+  videoWall?: VideoWallConfig;
   /** R4 — porneste aplicatia la logon (Task Scheduler / setLoginItemSettings). */
   autostart?: boolean;
   security?: SecurityConfig;
   ambient?: AmbientConfig;
   lights?: LightsConfig;
   autoRun?: AutoRunConfig;
+  /** R5: local tablet interaction sounds; defaults to true. */
+  tabletSfx?: boolean;
   /** R4 — varianta de scenariu activa (cheie din ShowFile.variants); lipsa = textul de baza. */
   variant?: string;
+}
+
+/** Visible panel rectangles in one common physical plane (mm or any consistent unit). */
+export interface WallPanel { screenId: string; x: number; y: number; width: number; height: number }
+export interface VideoWallConfig {
+  /** Projective mapping observed from the audience reference position, never millimetres. */
+  optical?: import('./optical-calibration').OpticalCalibration;
+  /** panorama = one coordinated source crop; cinema = full film on centre with continuous ambient surround. */
+  mode: "panorama" | "cinema";
+  fit: "cover" | "contain";
+  focusX: number;
+  focusY: number;
+  panels: WallPanel[];
+  /** Persistent alignment grid, for commissioning only. */
+  calibration?: boolean;
 }
 
 export const CONFIG_DEFAULTS_R4 = {
@@ -506,6 +530,10 @@ export interface Readiness {
 export type PlaybackState = "idle" | "preshow" | "playing" | "paused" | "epilogue" | "ended";
 
 export interface ShowState {
+  runId?: string;
+  serverEpoch?: string;
+  timelineEpoch?: number;
+  suspended?: boolean;
   state: PlaybackState;
   /** Secunde in faza curenta (pentru playing/paused = video.currentTime). */
   phaseTime: number;
@@ -527,6 +555,7 @@ export interface ShowState {
   autoRun?: boolean;
   variant?: string | null;
   ambientEnabled?: boolean;
+  tabletSfx?: boolean;
   lightsDriver?: LightsConfig["driver"];
 }
 

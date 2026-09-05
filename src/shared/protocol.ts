@@ -57,6 +57,8 @@ export interface PerfMsg {
 
 /** R4 — fotografia de echipaj capturata de ecranul `center` (JPEG dataURL, max ~1 MB). */
 export interface PhotoCapturedMsg {
+  runId?:string;
+  photoRequestId?:string;
   type: "photoCaptured";
   cueId: string | null;
   dataUrl: string;
@@ -64,6 +66,9 @@ export interface PhotoCapturedMsg {
 
 /** Ecranul-sursa de ceas raporteaza pozitia video (4 Hz). */
 export interface ReportMsg {
+  runId?:string;
+  serverEpoch?:string;
+  timelineEpoch?:number;
   type: "report";
   state: PlaybackState;
   phaseTime: number;
@@ -95,6 +100,7 @@ export type Command =
   | { action: "autoRun"; enabled: boolean } // mod operator absent on/off
   | { action: "lights"; theme: SceneTheme } // scena de lumina manuala
   | { action: "ambient"; enabled: boolean } // pat sonor on/off
+  | { action: "tabletSfx"; enabled: boolean } // R5: local tablet sounds only
   | { action: "say"; speaker: Speaker; text: string } // un personaj rosteste textul acum (TTS live prin /api/tts)
   | { action: "setVariant"; variant: string | null } // varianta de scenariu (grupa de varsta)
   | { action: "photo" } // fotografie de echipaj acum
@@ -121,7 +127,7 @@ export interface TabletEventMsg {
     | { kind: "ping" };
 }
 
-export type ClientMessage = HelloMsg | ReportMsg | CmdMsg | TabletEventMsg | PerfMsg | PhotoCapturedMsg;
+export type ClientMessage = HelloMsg | ReportMsg | CmdMsg | TabletEventMsg | PerfMsg | PhotoCapturedMsg | import('./mission').MissionEvent | {type:'packageReady';contentHash:string;ok:boolean} | {type:'experienceAudio';instance:string;status:'ended'|'error'};
 
 // ---------------------------------------------------------------------------
 // server -> client
@@ -231,6 +237,9 @@ export interface DynamicVoiceMsg {
 
 /** R4 — fotografia de echipaj, retransmisa ecranelor si tabletelor. */
 export interface PhotoMsg {
+  runId?:string;
+  photoRequestId?:string;
+  expiresAt?:number;
   type: "photo";
   action: "countdown" | "capture" | "show" | "hide";
   countdownSec?: number;
@@ -245,6 +254,8 @@ export interface PerfSummaryMsg {
 }
 
 export type ServerMessage =
+  | {type:'mission'; snapshot:import('./mission').MissionSnapshot}
+  | {type:'missionAck';eventId:string;ok:boolean;status:string}
   | WelcomeMsg
   | ClockMsg
   | ApplyCmdMsg

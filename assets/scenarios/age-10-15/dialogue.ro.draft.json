@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "age-10-15",
+  "language": "ro",
+  "status": "editorial-draft",
+  "productionReady": false,
+  "runtimeActivation": "not-loaded",
+  "audioStatus": "not-produced",
+  "timingStatus": "proposed-slots",
+  "sourceDocument": "docs/scenarii/10-15-SEMNALUL-FARA-SEMNATURA.md",
+  "sourceSha256": "0dac42b96a41f916019c0b86297e95fca0cc6aaf7ce32b9724291c3121f4f93d",
+  "conditionSemantics": "See source document; no runtime evaluator supplied.",
+  "cues": [
+    {
+      "id": "s1015-01",
+      "phase": "preshow",
+      "at": 0.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Avem un semnal fără semnătură. Astăzi, voi conduceți investigația. Eu țin jurnalul, iar nava ne duce între lumi."
+      }
+    },
+    {
+      "id": "s1015-02",
+      "phase": "preshow",
+      "at": 10.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Cinci posturi, zece perspective. În stânga este zona A, în dreapta zona B. Fiecare poate alege separat sau poate privi."
+      }
+    },
+    {
+      "id": "s1015-03",
+      "phase": "preshow",
+      "at": 21.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Mai întâi propunem o explicație. Apoi alegem ce măsurăm. La sfârșit putem schimba explicația, dacă datele ne dau motive."
+      }
+    },
+    {
+      "id": "s1015-04",
+      "phase": "preshow",
+      "at": 33.0,
+      "maxDurationSec": 11.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Dosarul compară două modele: un far care repetă același ritm și un releu care copiază ce primește. Identitatea sursei rămâne necunoscută."
+      }
+    },
+    {
+      "id": "s1015-05",
+      "phase": "play",
+      "at": -8.0,
+      "maxDurationSec": 7.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Posturile sunt pregătite. Rămâneți așezați. Lăsăm întrebarea deschisă și pornim pe urmele semnalului."
+      }
+    },
+    {
+      "id": "s1015-06",
+      "phase": "play",
+      "at": 5.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Pământul rămâne în urmă. Pe tablete apare dosarul; imaginile din față arată drumul, iar dosarul arată investigația noastră."
+      }
+    },
+    {
+      "id": "s1015-07",
+      "phase": "play",
+      "at": 27.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Semnalul revine, mereu la fel. Aș vrea să știu dacă ascultăm un început de mesaj sau ecoul lui."
+      }
+    },
+    {
+      "id": "s1015-08",
+      "phase": "play",
+      "at": 61.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Ne apropiem de Siwarha. Prima recepție are intervale egale. Pare ordonată, dar ordinea singură nu ne spune cine a produs-o."
+      }
+    },
+    {
+      "id": "s1015-09",
+      "phase": "play",
+      "at": 76.0,
+      "maxDurationSec": 10.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Mă vedeți repetându-mă. Poate sunt începutul unui mesaj. Poate doar îl duc mai departe. Ce ați măsura ca să aflați?"
+      }
+    },
+    {
+      "id": "s1015-10",
+      "phase": "play",
+      "at": 88.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Citiți observația postului vostru. Alegeți far, releu sau încă nu aleg. Acum propuneți o explicație; încă nu dați un verdict."
+      }
+    },
+    {
+      "id": "s1015-11",
+      "phase": "play",
+      "at": 126.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Primele explicații pot rămâne la vedere. Sunt curios ce vom afla când trimitem ceva neașteptat."
+      }
+    },
+    {
+      "id": "s1015-12",
+      "phase": "play",
+      "at": 138.0,
+      "maxDurationSec": 6.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Păstrați întrebarea. Următoarea măsurătoare poate schimba felul în care mă înțelegeți."
+      }
+    },
+    {
+      "id": "s1015-13",
+      "phase": "play",
+      "at": 151.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Acum pregătim probele. Unele instrumente arată direcția. Altele verifică ritmul sau limitele dosarului. Niciun post nu vede singur totul."
+      }
+    },
+    {
+      "id": "s1015-14",
+      "phase": "play",
+      "at": 169.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Construiți un ritm din piesele unu, doi și trei. Trimiteți-l, apoi încercați altă ordine. Să vedem ce se întoarce."
+      }
+    },
+    {
+      "id": "s1015-15",
+      "phase": "play",
+      "at": 183.0,
+      "maxDurationSec": 10.0,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "Întâi alegeți măsurătoarea postului. Apoi puteți construi probele împreună. Toate posturile pot trimite un ritm, în ordinea aleasă de voi."
+      }
+    },
+    {
+      "id": "s1015-16",
+      "phase": "play",
+      "at": 225.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Dacă ați trimis un ritm, priviți ce s-a întors. Emisia și recepția apar alături, gata de comparat."
+      }
+    },
+    {
+      "id": "s1015-17",
+      "phase": "play",
+      "at": 236.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Uitați-vă mai ales la probele noi și la repetare. O bănuială poate merita urmărită fără să fie deja demonstrată."
+      }
+    },
+    {
+      "id": "s1015-18",
+      "phase": "play",
+      "at": 253.0,
+      "maxDurationSec": 11.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Părăsim această lume cu dosarul deschis. Alegerile de început rămân lângă măsurători; puteți vedea dacă explicația voastră mai stă în picioare."
+      }
+    },
+    {
+      "id": "s1015-19",
+      "phase": "play",
+      "at": 282.0,
+      "maxDurationSec": 11.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "La Mann putem compara modelele. Copierea exactă a două probe noi verifică releul în acest dosar. Fără ambele probe, păstrăm rezerva."
+      }
+    },
+    {
+      "id": "s1015-20",
+      "phase": "play",
+      "at": 296.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Alegeți verdictul, apoi legați de el o dovadă sau o limită din dosar. Ce anume vă susține explicația acum?"
+      }
+    },
+    {
+      "id": "s1015-21N",
+      "phase": "play",
+      "at": 336.0,
+      "maxDurationSec": 10.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "N",
+      "text": {
+        "ro": "Niciun verdict nu a fost trimis. Lăsăm pagina concluziei deschisă, alături de ce am măsurat. Întrebarea merge cu noi acasă."
+      }
+    },
+    {
+      "id": "s1015-21V",
+      "phase": "play",
+      "at": 336.0,
+      "maxDurationSec": 11.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "V",
+      "text": {
+        "ro": "Ambele probe noi au fost copiate. Releul este verificat în modelele dosarului, iar majoritatea verdictelor îl susține. Cine îl operează rămâne necunoscut."
+      }
+    },
+    {
+      "id": "s1015-21D",
+      "phase": "play",
+      "at": 336.0,
+      "maxDurationSec": 10.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "D",
+      "text": {
+        "ro": "Cele două probe verifică releul, dar concluziile voastre nu se adună într-o majoritate pentru el. Diferența rămâne la vedere."
+      }
+    },
+    {
+      "id": "s1015-21O",
+      "phase": "play",
+      "at": 336.0,
+      "maxDurationSec": 10.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "O",
+      "text": {
+        "ro": "Nu avem încă două probe diferite care să verifice explicația. Dosarul rămâne deschis. Știm ce probă ne-ar trebui mai departe."
+      }
+    },
+    {
+      "id": "s1015-22",
+      "phase": "play",
+      "at": 350.0,
+      "maxDurationSec": 6.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Închideți etapa, nu întrebările. Dosarul pleacă împreună cu noi spre casă."
+      }
+    },
+    {
+      "id": "s1015-23",
+      "phase": "play",
+      "at": 373.0,
+      "maxDurationSec": 11.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "În tunel, semnalul rămâne în dosar, alături de probe. Nici stelele întinse în fața noastră nu pot răspunde în locul lor."
+      }
+    },
+    {
+      "id": "s1015-24",
+      "phase": "play",
+      "at": 388.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Priviți drumul. Pentru câteva clipe, lăsăm instrumentele în pace. Întrebarea poate călători cu noi fără să o grăbim."
+      }
+    },
+    {
+      "id": "s1015-25",
+      "phase": "play",
+      "at": 404.0,
+      "maxDurationSec": 12.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Pământul. De aici întrebarea părea mică: cine trimite? Acum avem și alta: cum putem afla fără să confundăm o bănuială cu o probă?"
+      }
+    },
+    {
+      "id": "s1015-26",
+      "phase": "play",
+      "at": 416.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "În jurnal se vede ce am presupus, ce am măsurat și ce am încheiat. Sunt trei lucruri diferite."
+      }
+    },
+    {
+      "id": "s1015-27",
+      "phase": "play",
+      "at": 427.0,
+      "maxDurationSec": 8.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Numele meu poate lipsi. Urmele măsurate pot rămâne, împreună cu întrebările pe care încă le purtați."
+      }
+    },
+    {
+      "id": "s1015-28",
+      "phase": "play",
+      "at": 436.0,
+      "maxDurationSec": 7.0,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "O limită scrisă limpede este utilă celui care vine după voi cu un instrument."
+      }
+    },
+    {
+      "id": "s1015-29",
+      "phase": "play",
+      "at": 445.0,
+      "maxDurationSec": 9.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "Pot compara ritmurile. Încă nu pot pune un nume expeditorului. Semnalul și semnătura sunt două întrebări diferite."
+      }
+    },
+    {
+      "id": "s1015-30",
+      "phase": "play",
+      "at": 456.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Expediția se încheie aici. Dosarul vostru are propria istorie. Următoarea întrebare poate aștepta până ajungem acasă."
+      }
+    },
+    {
+      "id": "s1015-31",
+      "phase": "epilogue",
+      "at": 3.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Instrumentele pot lua o pauză. Dosarul rămâne pe tablete. Ce am aflat și întrebările deschise călătoresc împreună."
+      }
+    },
+    {
+      "id": "s1015-32",
+      "phase": "epilogue",
+      "at": 13.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Ați păstra explicația de la plecare? Nu trebuie să răspundeți acum. Unele întrebări sună altfel după ce te întorci."
+      }
+    },
+    {
+      "id": "s1015-33",
+      "phase": "epilogue",
+      "at": 24.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Certificatul postului păstrează firul acestei investigații. Îl puteți privi mai târziu, când vă amintiți călătoria."
+      }
+    },
+    {
+      "id": "s1015-34",
+      "phase": "epilogue",
+      "at": 35.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Dacă pregătim o fotografie de echipaj, ghidul vă anunță. Dosarul și încheierea rămân disponibile și fără fotografie."
+      }
+    },
+    {
+      "id": "s1015-35",
+      "phase": "epilogue",
+      "at": 45.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Voi închide dosarul aici. Poate că data viitoare vom întâlni și semnătura. Deocamdată, locul ei rămâne liber."
+      }
+    },
+    {
+      "id": "s1015-36",
+      "phase": "epilogue",
+      "at": 54.0,
+      "maxDurationSec": 7.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Am revenit cu întrebări mai precise. Și acesta este un loc bun de încheiere."
+      }
+    },
+    {
+      "id": "s1015-37",
+      "phase": "epilogue",
+      "at": 62.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Bun venit acasă. Rămâneți așezați la posturi. Ghidul vă va spune când vă puteți ridica."
+      }
+    },
+    {
+      "id": "s1015-38",
+      "phase": "epilogue",
+      "at": 70.0,
+      "maxDurationSec": 4.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Dosar închis pentru această misiune. Mulțumesc, echipaj."
+      }
+    }
+  ]
+}

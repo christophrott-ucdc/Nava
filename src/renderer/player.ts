@@ -489,6 +489,7 @@ export class Player {
   }
 
   private cmdSeek(time: number): void {
+    const wasLeadIn=this.playLeadIn;
     if (!Number.isFinite(time)) return;
     switch (this.phase()) {
       case "play": {
@@ -499,6 +500,7 @@ export class Player {
           this.playLeadIn = false;
           this.clock.pause();
           this.seekVideo(t);
+          if(wasLeadIn&&this.state==='playing')this.tryPlay();
         }
         this.timeline.seek(t);
         if (resume && this.playLeadIn) {

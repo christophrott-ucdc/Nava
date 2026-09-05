@@ -99,7 +99,7 @@ export function createPhoto(opts: {
     window.setTimeout(() => flash.classList.remove("on"), 700);
   };
 
-  const capture = async () => {
+  const capture = async (request:PhotoMsg) => {
     clearCountdown();
     doFlash();
     if (!opts.canCapture || capturing) return;
@@ -140,7 +140,7 @@ export function createPhoto(opts: {
       cam.pause();
       cam.srcObject = null;
       log("info", `photo: captură ${width}x${height} (${Math.round(dataUrl.length / 1024)} kB)`);
-      opts.send({ type: "photoCaptured", cueId, dataUrl });
+      if(!request.expiresAt||Date.now()<=request.expiresAt)opts.send({ type: "photoCaptured", cueId, dataUrl,runId:request.runId,photoRequestId:request.photoRequestId });
     } catch (err) {
       log("warn", `photo: captura a eșuat — ${err instanceof Error ? err.message : String(err)}`);
     } finally {
@@ -171,7 +171,7 @@ export function createPhoto(opts: {
             countdown(msg.countdownSec ?? 3);
             break;
           case "capture":
-            void capture();
+            void capture(msg);
             break;
           case "show":
             show(msg.dataUrl, msg.showSec);

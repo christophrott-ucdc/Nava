@@ -28,14 +28,14 @@ export const CERT_H = 1700;
 export const CLOSING_LINE = "Ați plecat ca să găsiți alte lumi. V-ați întors cu a voastră, văzută pentru prima dată.";
 
 const THEME_INK: Record<SceneTheme, string> = {
-  prologue: "#6ee7ff",
-  launch: "#8edfff",
-  light: "#ffd875",
-  nature: "#82e6a3",
-  tech: "#8cecff",
-  void: "#bd92ff",
-  home: "#68c9ff",
-  white: "#2f7184",
+  prologue: "#72539b",
+  launch: "#a74338",
+  light: "#826216",
+  nature: "#256e50",
+  tech: "#296986",
+  void: "#72539b",
+  home: "#98602b",
+  white: "#826216",
 };
 
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
@@ -76,17 +76,17 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   const W = CERT_W;
   const H = CERT_H;
 
-  // Background: deep space gradient + stars.
+  // Warm pearl paper, gentle theme light and the original certificate content.
   const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, "#071a2e");
-  bg.addColorStop(0.55, "#04101c");
-  bg.addColorStop(1, "#020609");
+  bg.addColorStop(0, "#fdfcf7");
+  bg.addColorStop(0.55, "#edf3fb");
+  bg.addColorStop(1, "#fff7ed");
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = "#ffffff";
-  for (let i = 0; i < 260; i += 1) star(ctx, rnd(i) * W, rnd(i + 1000) * H, 0.6 + rnd(i + 2000) * 1.8, 0.25 + rnd(i + 3000) * 0.6);
+  ctx.fillStyle = "#1f2440";
+  for (let i = 0; i < 48; i += 1) star(ctx, rnd(i) * W, rnd(i + 1000) * H, 0.6 + rnd(i + 2000) * 1.8, 0.04 + rnd(i + 3000) * 0.06);
   const glow = ctx.createRadialGradient(W / 2, 360, 20, W / 2, 360, 520);
-  glow.addColorStop(0, `${ink}55`);
+  glow.addColorStop(0, `${ink}18`);
   glow.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
@@ -102,7 +102,7 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(Math.PI / 4);
-    ctx.fillStyle = "#04101c";
+    ctx.fillStyle = "#edf3fb";
     ctx.fillRect(-16, -16, 32, 32);
     ctx.strokeStyle = ink;
     ctx.lineWidth = 3;
@@ -128,7 +128,7 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   ctx.lineWidth = 2.5;
   ctx.strokeRect(-24, -24, 48, 48);
   ctx.rotate(-Math.PI / 4);
-  ctx.fillStyle = "#eef8ff";
+  ctx.fillStyle = "#1f2440";
   ctx.font = "700 30px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -148,23 +148,23 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   ctx.fillStyle = ink;
   ctx.font = "700 26px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText("A  P A T R A  L U M E", W / 2, 395);
-  ctx.fillStyle = "#eef8ff";
+  ctx.fillStyle = "#1f2440";
   ctx.font = "800 58px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText("CERTIFICAT DE MISIUNE", W / 2, 470);
   ctx.fillStyle = ink;
   ctx.font = "700 40px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText("· EXODUS-7 ·", W / 2, 525);
 
-  ctx.fillStyle = "#9bb2c1";
+  ctx.fillStyle = "#5b6182";
   ctx.font = "500 24px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText("se atestă că echipajul de la", W / 2, 615);
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = "#1f2440";
   ctx.font = "800 64px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText(TABLET_POSTS[input.post].label, W / 2, 695);
   ctx.fillStyle = ink;
   ctx.font = "700 34px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText(`LENTILA: ${input.lens.toUpperCase()}`, W / 2, 745);
-  ctx.fillStyle = "#9bb2c1";
+  ctx.fillStyle = "#5b6182";
   ctx.font = "500 24px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText("a ținut semnalul navei până la capăt și a ales, în pereche, ce ia cu sine.", W / 2, 800);
 
@@ -173,7 +173,7 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   let y = 880;
   ctx.textAlign = "left";
   if (!input.choices.length) {
-    ctx.fillStyle = "#9bb2c1";
+    ctx.fillStyle = "#5b6182";
     ctx.font = "italic 500 26px 'Segoe UI', Inter, system-ui, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Acest post a privit și a ascultat — și asta face parte din misiune.", W / 2, y + 30);
@@ -184,16 +184,16 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
       ctx.fillRect(120, y - 34, W - 240, 132);
       ctx.fillStyle = ink;
       ctx.fillRect(120, y - 34, 6, 132);
-      ctx.fillStyle = "#c8d7e1";
+      ctx.fillStyle = "#3c4562";
       ctx.font = "600 24px 'Segoe UI', Inter, system-ui, sans-serif";
       const promptLines = wrap(ctx, choice.prompt, W - 300).slice(0, 2);
       promptLines.forEach((line, i) => ctx.fillText(line, 150, y + i * 30));
       const rowY = y + 30 * promptLines.length + 32;
       ctx.font = "700 20px 'Segoe UI', Inter, system-ui, sans-serif";
-      ctx.fillStyle = "#9bb2c1";
+      ctx.fillStyle = "#5b6182";
       ctx.fillText(`A · ${pA}`, 150, rowY);
       ctx.fillText(`B · ${pB}`, W / 2 + 20, rowY);
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = "#1f2440";
       ctx.font = "800 30px 'Segoe UI', Inter, system-ui, sans-serif";
       ctx.fillText(choice.A ?? "—", 150, rowY + 38);
       ctx.fillText(choice.B ?? "—", W / 2 + 20, rowY + 38);
@@ -203,14 +203,14 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
 
   // Closing line.
   ctx.textAlign = "center";
-  const closeY = Math.max(y + 60, H - 380);
+  const closeY = Math.min(Math.max(y + 32, H - 380), H - 290);
   ctx.strokeStyle = `${ink}66`;
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(200, closeY - 50);
   ctx.lineTo(W - 200, closeY - 50);
   ctx.stroke();
-  ctx.fillStyle = "#eef8ff";
+  ctx.fillStyle = "#1f2440";
   ctx.font = "italic 500 30px 'Segoe UI', Inter, system-ui, sans-serif";
   wrap(ctx, CLOSING_LINE, W - 280).forEach((line, i) => ctx.fillText(line, W / 2, closeY + i * 42));
 
@@ -219,10 +219,10 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   ctx.fillStyle = ink;
   ctx.font = "700 24px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText(dateText.toUpperCase(), W / 2, H - 200);
-  ctx.fillStyle = "#87a4b8";
+  ctx.fillStyle = "#5b6182";
   ctx.font = "500 20px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText("A Patra Lume · UCDC HUB AI · Nava EXODUS-7", W / 2, H - 160);
-  ctx.fillStyle = "#5c7688";
+  ctx.fillStyle = "#5b6182";
   ctx.font = "500 16px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText("Certificat anonim: aparține postului, nu unui nume.", W / 2, H - 125);
 }

@@ -1,0 +1,455 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "adults",
+  "language": "ro",
+  "status": "editorial-draft",
+  "productionReady": false,
+  "runtimeActivation": "not-loaded",
+  "audioStatus": "not-produced",
+  "timingStatus": "proposed-slots",
+  "sourceDocument": "docs/scenarii/ADULTI-CE-LASAM-DESCHIS.md",
+  "sourceSha256": "4e18272ad7acd5186bacddf836ba22a130a0fe381c9389884edd98cda72c82c9",
+  "conditionSemantics": "See source document; no runtime evaluator supplied.",
+  "cues": [
+    {
+      "id": "AD-R01",
+      "phase": "preshow",
+      "at": 2.0,
+      "maxDurationSec": 12.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Bun venit la bord. Dincolo de Pământ ne așteaptă lumi despre care știm puțin. Ce vom putea aduce înapoi?"
+      }
+    },
+    {
+      "id": "AD-R02",
+      "phase": "preshow",
+      "at": 15.0,
+      "maxDurationSec": 12.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Fiecare jumătate de tabletă are un instrument, două unități de energie și un loc în arhivă. Resursele sunt independente."
+      }
+    },
+    {
+      "id": "AD-R03",
+      "phase": "preshow",
+      "at": 29.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Mai întâi măsurați. Apoi decideți dacă interveniți. La final alegeți ce document trimiteți mai departe. Nu vom putea trimite tot."
+      }
+    },
+    {
+      "id": "AD-R04",
+      "phase": "preshow",
+      "at": 40.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Puteți participa sau puteți privi. Instrumentele vă așteaptă; comenzile lor rămân în mâinile voastre."
+      }
+    },
+    {
+      "id": "AD-R05",
+      "phase": "play",
+      "at": -8.0,
+      "maxDurationSec": 7.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Navigație, păstrează ruta. Pregătiți instrumentele. Pământul ne va pierde curând din vedere."
+      }
+    },
+    {
+      "id": "AD-R06",
+      "phase": "play",
+      "at": 12.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Zece canale sunt pregătite. Fiecare urmărește altceva: un contur, un consum, o emisie, un ritm sau o schimbare."
+      }
+    },
+    {
+      "id": "AD-R07",
+      "phase": "play",
+      "at": 40.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Nu putem opri călătoria la fiecare întrebare. Va trebui să alegem unde privim mai atent."
+      }
+    },
+    {
+      "id": "AD-R08",
+      "phase": "play",
+      "at": 65.0,
+      "maxDurationSec": 10.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "De departe, suprafața mea pare uniformă. Apropiați instrumentul de un singur loc și veți pierde imaginea întregului."
+      }
+    },
+    {
+      "id": "AD-R09",
+      "phase": "play",
+      "at": 79.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Observația largă costă o unitate. Cea fină costă două. Rezerva rămasă va putea proteja sonda la următoarea oprire."
+      }
+    },
+    {
+      "id": "AD-R10",
+      "phase": "play",
+      "at": 92.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Priviți obiectul de pe tabletă. Cât din el vreți să cercetați? Configurați instrumentul."
+      }
+    },
+    {
+      "id": "AD-R11",
+      "phase": "play",
+      "at": 125.0,
+      "maxDurationSec": 7.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Instrumentele au oprit citirea. Pe ecran vedeți cât am păstrat și ce rezervă ne însoțește."
+      }
+    },
+    {
+      "id": "AD-R12",
+      "phase": "play",
+      "at": 134.0,
+      "maxDurationSec": 8.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Păstrați lângă fiecare imagine și marginea ei. Acolo începe ceea ce încă nu ați văzut."
+      }
+    },
+    {
+      "id": "AD-R13",
+      "phase": "play",
+      "at": 151.0,
+      "maxDurationSec": 11.0,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "Instrumentele voastre sunt acum în zona mea. Un nor de particule le va traversa. Puteți urmări trecerea sau puteți proteja sonda."
+      }
+    },
+    {
+      "id": "AD-R14",
+      "phase": "play",
+      "at": 165.0,
+      "maxDurationSec": 10.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Protecția costă o unitate și lasă trei secunde fără citire. Observarea pasivă păstrează continuitatea, cu mai mult zgomot."
+      }
+    },
+    {
+      "id": "AD-R15",
+      "phase": "play",
+      "at": 179.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Norul se apropie de sondă. Verificați rezerva. O citire întreruptă și una tulburată vor spune povești diferite."
+      }
+    },
+    {
+      "id": "AD-R16",
+      "phase": "play",
+      "at": 189.0,
+      "maxDurationSec": 7.5,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "Puteți închide ochiul sondei pentru o clipă. Sau îl puteți lăsa deschis prin nor."
+      }
+    },
+    {
+      "id": "AD-R17",
+      "phase": "play",
+      "at": 225.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Norul a trecut. Dacă ați păstrat o înregistrare, pe ecran se vede și urma comenzii voastre."
+      }
+    },
+    {
+      "id": "AD-R18",
+      "phase": "play",
+      "at": 236.0,
+      "maxDurationSec": 8.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Păstrăm și intervalele fără date. Altfel, următorul echipaj ar putea confunda liniștea instrumentului cu liniștea lumii."
+      }
+    },
+    {
+      "id": "AD-R19",
+      "phase": "play",
+      "at": 252.0,
+      "maxDurationSec": 10.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "Pot păstra totul la bord. Dar fiecare canal poate trimite acasă un singur document. Ce va reprezenta expediția voastră?"
+      }
+    },
+    {
+      "id": "AD-R20",
+      "phase": "play",
+      "at": 267.0,
+      "maxDurationSec": 11.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Pe tabletă găsiți documentele păstrate: observația, raportul sondei sau locurile rămase goale. Fiecare spune altceva."
+      }
+    },
+    {
+      "id": "AD-R21",
+      "phase": "play",
+      "at": 284.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Următorul echipaj va avea aceste documente înainte să vadă lumile. Alegeți ce i-ar fi mai de folos."
+      }
+    },
+    {
+      "id": "AD-R22",
+      "phase": "play",
+      "at": 299.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "all_channels_have_document",
+      "text": {
+        "ro": "Fiecare instrument are ceva de trimis. Priviți documentele și alegeți unul. Puteți lăsa locul liber."
+      }
+    },
+    {
+      "id": "AD-R23",
+      "phase": "play",
+      "at": 299.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "some_channels_have_no_document",
+      "text": {
+        "ro": "Unele instrumente nu au nimic de trimis. Unde există documente, alegeți unul. Puteți lăsa locul liber."
+      }
+    },
+    {
+      "id": "AD-R24",
+      "phase": "play",
+      "at": 337.0,
+      "maxDurationSec": 8.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "Așez documentele alese în pachetul de întoarcere. Restul rămân în memoria navei."
+      }
+    },
+    {
+      "id": "AD-R25",
+      "phase": "play",
+      "at": 347.0,
+      "maxDurationSec": 7.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Lasă vizibile și locurile goale. Poate că de acolo va porni următoarea expediție."
+      }
+    },
+    {
+      "id": "AD-R26",
+      "phase": "play",
+      "at": 363.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Transmisia este pregătită. Instrumentele se odihnesc. Priviți înainte: intrăm în traversare."
+      }
+    },
+    {
+      "id": "AD-R27",
+      "phase": "play",
+      "at": 390.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Undeva, dincolo de trecerea aceasta, este casa noastră. Încerc să-mi amintesc cât de mare părea când am plecat."
+      }
+    },
+    {
+      "id": "AD-R28",
+      "phase": "play",
+      "at": 405.0,
+      "maxDurationSec": 8.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Pământul, în față. Deschid legătura de întoarcere și pregătesc ceea ce ați ales să trimiteți."
+      }
+    },
+    {
+      "id": "AD-R29",
+      "phase": "play",
+      "at": 418.0,
+      "maxDurationSec": 6.0,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "Arătați și întinderea privirii voastre. O imagine îngustă nu este lumea întreagă."
+      }
+    },
+    {
+      "id": "AD-R30",
+      "phase": "play",
+      "at": 427.0,
+      "maxDurationSec": 7.0,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "Păstrați lângă citire și urma sondei. Și instrumentul vostru a trecut prin această lume."
+      }
+    },
+    {
+      "id": "AD-R31",
+      "phase": "play",
+      "at": 436.0,
+      "maxDurationSec": 7.0,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "Memoria navei rămâne deschisă. Ce lipsește va avea locul său, până la o nouă călătorie."
+      }
+    },
+    {
+      "id": "AD-R32",
+      "phase": "play",
+      "at": 447.0,
+      "maxDurationSec": 9.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Am privit trei lumi fără să le epuizăm misterul. Acum se apropie lumea despre care credeam că știm totul."
+      }
+    },
+    {
+      "id": "AD-R33",
+      "phase": "play",
+      "at": 458.0,
+      "maxDurationSec": 6.0,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Legătura cu Pământul este pregătită. Iată bagajul expediției."
+      }
+    },
+    {
+      "id": "AD-R34",
+      "phase": "epilogue",
+      "at": 5.0,
+      "maxDurationSec": 12.0,
+      "speaker": "AVATAR_AI",
+      "condition": "archive_both_types",
+      "text": {
+        "ro": "În transmisie se întâlnesc două priviri: observațiile lumilor și urmele sondei. Următorul echipaj le va putea cerceta împreună."
+      }
+    },
+    {
+      "id": "AD-R35",
+      "phase": "epilogue",
+      "at": 5.0,
+      "maxDurationSec": 12.0,
+      "speaker": "AVATAR_AI",
+      "condition": "archive_one_type",
+      "text": {
+        "ro": "Ați trimis un singur fel de document. Va fi prima fereastră a următorului echipaj către călătoria noastră."
+      }
+    },
+    {
+      "id": "AD-R36",
+      "phase": "epilogue",
+      "at": 5.0,
+      "maxDurationSec": 12.0,
+      "speaker": "AVATAR_AI",
+      "condition": "archive_empty",
+      "text": {
+        "ro": "Niciun document nu pleacă spre Pământ. Ce există în memoria navei rămâne aici. Drumul poate fi cercetat din nou."
+      }
+    },
+    {
+      "id": "AD-R37",
+      "phase": "epilogue",
+      "at": 23.0,
+      "maxDurationSec": 10.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Acesta este locul pentru bagajul expediției. Ce am ales să păstrăm poate deveni începutul altui drum."
+      }
+    },
+    {
+      "id": "AD-R38",
+      "phase": "epilogue",
+      "at": 37.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "archive_full",
+      "text": {
+        "ro": "Zece locuri, zece documente. Transmisia este completă. Dincolo de ea, lumile au încă multe de arătat."
+      }
+    },
+    {
+      "id": "AD-R39",
+      "phase": "epilogue",
+      "at": 37.0,
+      "maxDurationSec": 9.0,
+      "speaker": "AVATAR_AI",
+      "condition": "archive_partial",
+      "text": {
+        "ro": "În transmisie au rămas locuri libere. Le păstrăm așa. Următoarea călătorie va avea propriile întrebări."
+      }
+    },
+    {
+      "id": "AD-R40",
+      "phase": "epilogue",
+      "at": 58.0,
+      "maxDurationSec": 12.0,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "De aici, drumul nostru poate deveni începutul altuia. Mulțumesc, echipaj. Rămâneți la posturi; ghidul vă va spune când vă puteți ridica."
+      }
+    }
+  ]
+}

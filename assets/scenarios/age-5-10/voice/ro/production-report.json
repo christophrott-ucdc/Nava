@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-09-05T12:03:57.955Z",
+  "profile": "age-5-10",
+  "expected": 42,
+  "available": 42,
+  "sourceSha256": "f54e12dd874e0f1ea40a77f0e6d1d37bbd54fb27f349eac3b0c120af6f61585e",
+  "missing": [],
+  "overBudget": [
+    {
+      "profile": "age-5-10",
+      "cueId": "k510-002",
+      "phase": "preshow",
+      "at": 11,
+      "durationSec": 7.76,
+      "budgetSec": 7
+    },
+    {
+      "profile": "age-5-10",
+      "cueId": "k510-003",
+      "phase": "preshow",
+      "at": 20,
+      "durationSec": 7.04,
+      "budgetSec": 7
+    },
+    {
+      "profile": "age-5-10",
+      "cueId": "k510-004",
+      "phase": "preshow",
+      "at": 29,
+      "durationSec": 9.44,
+      "budgetSec": 8
+    },
+    {
+      "profile": "age-5-10",
+      "cueId": "k510-019",
+      "phase": "play",
+      "at": 284,
+      "durationSec": 8.24,
+      "budgetSec": 8
+    },
+    {
+      "profile": "age-5-10",
+      "cueId": "k510-025",
+      "phase": "play",
+      "at": 382,
+      "durationSec": 8.56,
+      "budgetSec": 8
+    },
+    {
+      "profile": "age-5-10",
+      "cueId": "k510-027",
+      "phase": "play",
+      "at": 419,
+      "durationSec": 8.24,
+      "budgetSec": 8
+    },
+    {
+      "profile": "age-5-10",
+      "cueId": "k510-031-C",
+      "phase": "epilogue",
+      "at": 19,
+      "durationSec": 9.04,
+      "budgetSec": 9
+    }
+  ],
+  "failures": [],
+  "totalAudioMs": 290000,
+  "providerCharacterCost": 3599,
+  "postprocessTempo": 1
+}

@@ -41,6 +41,23 @@ function makeShow(overrides: Partial<ShowFile> = {}): ShowFile {
   };
 }
 
+test('recovered checkpoints freeze every active phase and resume without replaying past cues',()=>{
+  for(const state of ['preshow','playing','paused','epilogue'] as const){
+    const h=harness();
+    h.director.restoreCheckpoint({...h.director.getState(),state,phaseTime:12,rate:state==='paused'?0:1});
+    h.clock.advance(9000);h.director.tick();
+    assert.equal(h.director.now(),12);assert.equal(h.director.getState().suspended,true);assert.equal(h.fired.length,0);
+    h.director.resumeSuspended();h.clock.advance(1000);h.director.tick();
+    assert.equal(h.director.now(),state==='paused'?12:13);assert.equal(h.fired.length,0);
+  }
+});
+
+test('suspension freezes the negative launch lead-in until explicit resume',()=>{
+  const h=harness();h.director.dispatchCommand({action:'start'},'test');
+  runFor(h,1000);h.director.suspend();const at=h.director.now();runFor(h,2000);assert.equal(h.director.now(),at);
+  h.director.resumeSuspended();runFor(h,1000);assert.equal(h.director.now(),at+1);
+});
+
 function makeConfig(overrides: Partial<AppConfig> = {}): AppConfig {
   return {
     role: "master",
@@ -110,6 +127,13 @@ function runFor(h: Harness, ms: number, step = 250): void {
     left -= d;
   }
 }
+
+test('R5 tabletSfx defaults, validation, state broadcast and serialization', () => {
+ const h=harness();assert.equal(h.director.getState().tabletSfx,true);
+ for(const enabled of [false,true]){assert.deepEqual(validateCommand({action:'tabletSfx',enabled}),{action:'tabletSfx',enabled});const count=h.states.length;assert.equal(h.director.dispatchCommand({action:'tabletSfx',enabled}).ok,true);assert.equal(JSON.parse(JSON.stringify(h.director.getState())).tabletSfx,enabled);assert.ok(h.states.length>count);assert.equal(h.applied.length,0)}
+ for(const enabled of [null,undefined,0,1,'true','false'])assert.equal(validateCommand({action:'tabletSfx',enabled}),null);
+ assert.equal(harness(makeShow(),makeConfig({tabletSfx:false})).director.getState().tabletSfx,false);
+});
 
 /** Simulate the reference screen reporting a loaded video (sets videoReady). */
 function reportVideoReady(h: Harness): void {

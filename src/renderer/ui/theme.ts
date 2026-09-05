@@ -13,14 +13,14 @@ export interface ThemePalette {
 }
 
 export const THEME_PALETTES: Record<SceneTheme, ThemePalette> = {
-  prologue: { accent: "oklch(0.72 0.14 250)", glow: "oklch(0.82 0.12 255)", vignette: "oklch(0.16 0.07 262 / 0.8)", vignetteStrength: 1 },
-  launch: { accent: "oklch(0.86 0.1 228)", glow: "oklch(0.96 0.04 220)", vignette: "oklch(0.3 0.09 240 / 0.55)", vignetteStrength: 0.8 },
-  light: { accent: "#fcd34d", glow: "#fde68a", vignette: "oklch(0.35 0.1 80 / 0.55)", vignetteStrength: 0.8 },
-  nature: { accent: "#86efac", glow: "#22c55e", vignette: "oklch(0.28 0.09 150 / 0.65)", vignetteStrength: 0.9 },
-  tech: { accent: "#a5f3fc", glow: "#67e8f9", vignette: "oklch(0.3 0.06 232 / 0.6)", vignetteStrength: 0.85 },
-  void: { accent: "oklch(0.7 0.2 300)", glow: "oklch(0.62 0.24 305)", vignette: "oklch(0.08 0.07 300 / 0.9)", vignetteStrength: 1 },
-  home: { accent: "oklch(0.78 0.16 215)", glow: "oklch(0.85 0.18 200)", vignette: "oklch(0.22 0.08 240 / 0.6)", vignetteStrength: 0.8 },
-  white: { accent: "oklch(0.75 0.08 75)", glow: "oklch(0.98 0.02 80)", vignette: "oklch(0.98 0.02 80 / 0)", vignetteStrength: 0 },
+  prologue: { accent: "#c2a8ff", glow: "#e6dbff", vignette: "#8975b84d", vignetteStrength: 0.8 },
+  launch: { accent: "#7cc4ff", glow: "#d4ecff", vignette: "#6597c04d", vignetteStrength: 0.8 },
+  light: { accent: "#ffd166", glow: "#fff0b9", vignette: "#c6a5574d", vignetteStrength: 0.8 },
+  nature: { accent: "#7be0b5", glow: "#c3f2dc", vignette: "#579e7d4d", vignetteStrength: 0.8 },
+  tech: { accent: "#7cc4ff", glow: "#ceeaff", vignette: "#7298c24d", vignetteStrength: 0.8 },
+  void: { accent: "#c2a8ff", glow: "#d2bfee", vignette: "#65589059", vignetteStrength: 1 },
+  home: { accent: "#ffcfa8", glow: "#ffddc3", vignette: "#bd9b814d", vignetteStrength: 0.8 },
+  white: { accent: "#ffd166", glow: "#fff8e9", vignette: "#fff8e900", vignetteStrength: 0 },
 };
 
 export const ALL_THEMES: readonly SceneTheme[] = ["prologue", "launch", "light", "nature", "tech", "void", "home", "white"];
@@ -58,6 +58,7 @@ export function createTheme(root: HTMLElement, whiteFade: HTMLElement | null, in
     style.setProperty("--theme-vignette", p.vignette);
     style.setProperty("--theme-vignette-strength", String(p.vignetteStrength));
     root.dataset.theme = theme;
+    document.documentElement.dataset.theme = theme;
     setWhite(theme === "white", !!opts?.fast);
     const previous = cur;
     cur = theme;

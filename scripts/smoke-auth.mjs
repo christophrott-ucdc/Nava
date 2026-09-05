@@ -131,6 +131,12 @@ try {
   r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "1234" }) });
   const opTok = (await r.json()).token;
   const asOp = { Authorization: `Bearer ${opTok}`, "Content-Type": "application/json" };
+  r = await fetch(`${base}/api/cmd`, {method:'POST',headers:asOp,body:JSON.stringify({cmd:{action:'tabletSfx',enabled:false}})});
+  assert.equal(r.status,200);
+  assert.equal((await fetch(`${base}/api/state`).then(r=>r.json())).tabletSfx,false);
+  r = await fetch(`${base}/api/cmd`, {method:'POST',headers:asOp,body:JSON.stringify({cmd:{action:'tabletSfx',enabled:'false'}})});
+  assert.equal(r.status,400);
+  step('tabletSfx: operator change and invalid boolean rejection');
   r = await fetch(`${base}/api/users`, { headers: asOp });
   assert.equal(r.status, 403);
   step("operator GET /api/users -> 403");
@@ -150,6 +156,8 @@ try {
   r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "5555" }) });
   const viewTok = (await r.json()).token;
   const asView = { Authorization: `Bearer ${viewTok}`, "Content-Type": "application/json" };
+  for(const headers of [asView,{'Content-Type':'application/json'}]){r=await fetch(`${base}/api/cmd`,{method:'POST',headers,body:JSON.stringify({cmd:{action:'tabletSfx',enabled:true}})});assert.equal(r.status,headers===asView?403:401)}
+  step('tabletSfx: viewer and anonymous changes rejected');
   r = await fetch(`${base}/api/cmd`, { method: "POST", headers: asView, body: JSON.stringify({ cmd: { action: "pause" } }) });
   assert.equal(r.status, 403);
   step("viewer POST /api/cmd -> 403");
@@ -212,6 +220,7 @@ try {
   assert.ok(w.messages.some((m) => m.type === "welcome"));
   step("WS screen hello with screenToken -> welcome");
   w = await wsHello({ type: "hello", client: "tablet", id: "t1" });
+  assert.equal(w.messages.find(m=>m.type==='welcome')?.state.tabletSfx,false,'tablet welcome carries operator tabletSfx setting');
   assert.ok(w.messages.some((m) => m.type === "welcome"));
   step("WS tablet hello anonymous -> welcome");
 

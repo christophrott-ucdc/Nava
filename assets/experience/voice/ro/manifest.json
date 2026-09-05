@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "lang": "ro",
+  "voiceId": "bgVGH727uJ1Qj9P9egUj",
+  "voiceName": "Mihai - Voice That Inspires Confidence",
+  "clips": {
+    "intro": {
+      "file": "intro.mp3",
+      "durationSec": 7.76,
+      "text": "Bine ați venit la bord. Înainte să pornim, nava trebuie să vă cunoască. Nu vă faceți griji. Nu cere parole.",
+      "sha256": "aed05141a1f74ee0a8fa03ca032c4d9ecc6fa1359932b0deae42fb54672ce936"
+    },
+    "touch": {
+      "file": "touch.mp3",
+      "durationSec": 7.68,
+      "text": "Fiecare are propria jumătate de ecran. Atingeți lumina din fața voastră. Dacă preferați, puteți și să priviți.",
+      "sha256": "9377eab6a12e6e7732d93067beddb75703914e168053e1317b396288d11d16db"
+    },
+    "age-5-10-practice": {
+      "file": "age-5-10-practice.mp3",
+      "durationSec": 8,
+      "text": "Nava a rătăcit o piesă. Are obiceiul ăsta înainte de musafiri. Găsiți forma potrivită pe ecran, apoi confirmați alegerea.",
+      "sha256": "b43ea4f9631813ba00f164c3d9c878a9b8cc3a1df15caa147d074fcbb9c28f14"
+    },
+    "age-10-15-practice": {
+      "file": "age-10-15-practice.mp3",
+      "durationSec": 8.72,
+      "text": "Un semnal se repetă. Ce ne spune, de fapt? Priviți intervalele de pe ecran, alegeți observația susținută de date și confirmați.",
+      "sha256": "80fde9861694de7a34d8baee45a64325b846abade1e68956b45aba9e5167948b"
+    },
+    "age-15-18-practice": {
+      "file": "age-15-18-practice.mp3",
+      "durationSec": 8.16,
+      "text": "O decizie începe cu o propunere. Citiți situația de pe ecran și confirmați alegerea voastră. Apoi vom vedea cum lucrăm împreună.",
+      "sha256": "c7910a1fa11ad390e6417487efc52417de5cb3a41ba749da6b571ea811526c0e"
+    },
+    "adults-practice": {
+      "file": "adults-practice.mp3",
+      "durationSec": 10.96,
+      "text": "O alegere bună începe cu o întrebare. Priviți informația și costul afișat. Alegeți, apoi confirmați. Această probă nu consumă resursele misiunii.",
+      "sha256": "4af6327c0ed52a2d3d79cea3ee15ff1d7ee88607ca85fdbcc86bed3e8ea09c55"
+    },
+    "legacy-v3-practice": {
+      "file": "legacy-v3-practice.mp3",
+      "durationSec": 5.76,
+      "text": "Priviți indiciul de pe ecran. Găsiți steaua, apoi confirmați. Aceasta este doar o probă.",
+      "sha256": "e054e6903612c0b37363b2b6a3f6b5367a17392715f4a8a3ee2c12a2b74c3652"
+    },
+    "cooperate": {
+      "file": "cooperate.mp3",
+      "durationSec": 10.64,
+      "text": "Acum, împreună. Atingeți semnalul de pe jumătatea voastră de ecran. Priviți în față: fiecare contribuție aprinde o parte din navă.",
+      "sha256": "b578e3a1632fa6b03b748864b7530bc04af9a8bf676c85230557a91061c89157"
+    },
+    "ready": {
+      "file": "ready.mp3",
+      "durationSec": 8.16,
+      "text": "Comenzile răspund. Luați-vă o clipă. Priviți în față. Călătoria noastră este gata să înceapă.",
+      "sha256": "e0d33efa25176406640707bf1619f1b7046ed608c185fcc6e8fd4de94b3be2de"
+    },
+    "handoff": {
+      "file": "handoff.mp3",
+      "durationSec": 3.92,
+      "text": "Echipajul este pregătit. Căpitane... sunt ai dumneavoastră.",
+      "sha256": "2e62a07d71d9984a7b2f7a05cab0c95677c9eb1769e75a89dda5447de569d7b4"
+    },
+    "hint": {
+      "file": "hint.mp3",
+      "durationSec": 9.76,
+      "text": "Priviți locul luminos de pe jumătatea voastră de ecran. Încercați în ritmul vostru. Dacă aveți nevoie, operatorul vă poate ajuta.",
+      "sha256": "3611ae7c0dd1994a2eef52e7f94e9377cbf88964f996d8ed8ee23b27063a53f9"
+    },
+    "finale": {
+      "file": "finale.mp3",
+      "durationSec": 10.16,
+      "text": "Călătoria rămâne în alegerile voastre. Priviți ce ați construit împreună. Alegeți pe ecran ce luați cu voi și trimiteți ultima lumină.",
+      "sha256": "2b664d08b43d124e91916acd2274c9ee0751e5f3744321112b387e407c735575"
+    }
+  }
+}

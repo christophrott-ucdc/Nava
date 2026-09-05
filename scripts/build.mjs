@@ -82,6 +82,8 @@ const COMMON = {
 };
 
 const TARGETS = [
+  { name: "web/wall", entry: abs("src/web/wall/index.ts"), outfile: abs("dist/web/wall/app.js"), options: { platform: "browser", format: "iife", target: WEB_TARGETS } },
+  { name: "web/preview", entry: abs("src/web/shared/preview.ts"), outfile: abs("dist/web/shared/preview.js"), options: { platform: "browser", format: "iife", target: WEB_TARGETS } },
   {
     name: "main",
     entry: abs("src/main/main.ts"),
@@ -140,6 +142,9 @@ const TARGETS = [
 
 /** Static (non-TS) files copied verbatim. */
 const STATIC_DIRS = [
+  { from: abs("src/web/wall"), to: abs("dist/web/wall") },
+  { from: abs("src/web/shared"), to: abs("dist/web/shared") },
+  { from: abs("src/web/shared"), to: abs("dist/renderer/shared") },
   { from: abs("src/renderer"), to: abs("dist/renderer") },
   { from: abs("src/web/control"), to: abs("dist/web/control") },
   { from: abs("src/web/tablet"), to: abs("dist/web/tablet") },

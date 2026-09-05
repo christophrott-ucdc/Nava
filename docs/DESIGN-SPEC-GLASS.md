@@ -1,14 +1,14 @@
 # SPEC SHEET DESIGN — „Nava Glass” (runda 5)
 
 > Redesign complet al interfețelor NavaPlayer în stil **Apple Liquid Glass**: vesel, colorat, luminos, făcut pentru copii de 7–12 ani, fără să piardă lizibilitatea pentru operator. Înlocuiește HUD-ul întunecat actual („cavoul”: fundal `oklch(0.13 0.03 250)`, cyan, monospace).
-> **Decizii luate de Christoph (2026-09-05):** tabletele sunt toate în **portret**; fiecare post are o **mascotă desenată** (descrieri pentru generare în §9); **confetti + sunete de bucurie: DA**; consola operatorului este la fel de veselă și glass ca restul, nimic sobru; vorbitorul `CAPITANUL` rămâne „CĂPITANUL”, iar `AVATAR_AI` devine **„AVATARUL AI”** (în sală va fi întruchipat de un robot Unitree H2, vezi §10).
+> **Decizii confirmate de Christoph (2026-09-05, corecție la 11:26):** cele cinci tablete ale copiilor și tableta operatorului sunt toate **1080p landscape (1920×1080)**; fiecare post are o **mascotă desenată** (descrieri pentru generare în §9); **confetti + sunete de bucurie: DA**; consola operatorului este la fel de veselă și glass ca restul, nimic sobru; vorbitorul `CAPITANUL` rămâne „CĂPITANUL”, iar `AVATAR_AI` devine **„AVATARUL AI”** (în sală va fi întruchipat de un robot Unitree H2, vezi §10).
 > Document de aprobat ÎNAINTE de implementare. Nimic din protocol, state machine sau `show.json` nu se schimbă; se schimbă doar stratul vizual (HTML/CSS + mici ajustări de markup în TS).
 
 ---
 
 ## 0. Rezumat în trei fraze
 
-Toate cele șase suprafețe (tablete, ecrane TV, consolă, login, depanare, analitică) primesc **un singur sistem de design**: carduri de sticlă translucidă cu blur, margini rotunjite mari, o linie de lumină pe muchia de sus, umbre moi colorate, pe **fundaluri luminoase cu gradiente vii** care își schimbă culoarea după tema scenei (prolog, lansare, lumină, natură, tehnologie, vid, casă, alb). Tabletele copiilor (toate în portret) sunt **suprafața principală**: butoane mari cât degetul mare, două zone clar colorate pentru cei doi copii (A sus, B jos), mascota postului, iconițe și cuvinte puține. Ecranele TV rămân cinematice (filmul e întunecat), dar overlay-urile devin sticlă luminoasă, caldă, nu HUD militar.
+Toate cele șase suprafețe (tablete, ecrane TV, consolă, login, depanare, analitică) primesc **un singur sistem de design**: carduri de sticlă translucidă cu blur, margini rotunjite mari, o linie de lumină pe muchia de sus, umbre moi colorate, pe **fundaluri luminoase cu gradiente vii** care își schimbă culoarea după tema scenei (prolog, lansare, lumină, natură, tehnologie, vid, casă, alb). Cele cinci tablete ale copiilor, toate 1920×1080 landscape, sunt **suprafața principală**: butoane mari cât degetul mare, două zone clar colorate pentru cei doi copii (A în stânga, B în dreapta), mascota postului, iconițe și cuvinte puține. Tableta operatorului este tot 1920×1080 landscape. Ecranele TV rămân cinematice (filmul e întunecat), dar overlay-urile devin sticlă luminoasă, caldă, nu HUD militar.
 
 ## 1. Principii
 
@@ -106,7 +106,7 @@ Set propriu de ~24 iconițe SVG inline, linie 2.5 px, capete rotunde (rachetă, 
 | **Buton primar** | pill, 64 px înălțime pe tabletă (48 consolă), fundal `--accent`, text `--accent-ink`, umbră colorată, iconiță stânga; stări: hover (luminozitate +4 %), apăsat (scale .97), dezactivat (alb 40 %, text 45 %) |
 | **Buton secundar** | `.glass` cu text `--ink`, contur 1 px |
 | **Tile de alegere** (tabletă) | card sticlă 1:1 sau 4:3, ≥ 160 px, iconiță/culoare mare sus, etichetă jos (≤ 3 cuvinte), selectat = contur 3 px `--accent` + bifă în colț + bump |
-| **Zonă A / Zonă B** | tableta e în portret: A este **jumătatea de sus** cu `--coral`, B este **jumătatea de jos** cu `--sky`, despărțite de o linie de lumină; fiecare cu eticheta perspectivei (ex. „DIRECȚIE” / „TRASEU”) + iconiță; opțiunile stau pe un rând de 3–4 tile-uri late (înălțime ≥ 120 px); „Doar privesc” ca tile gri deschis cu ochi la capătul rândului |
+| **Zonă A / Zonă B** | tableta este 1920×1080 landscape: A este **jumătatea din stânga** cu `--coral`, B este **jumătatea din dreapta** cu `--sky`, despărțite de o linie verticală de lumină; fiecare are eticheta perspectivei (ex. „DIRECȚIE” / „TRASEU”) + iconiță; opțiunile folosesc un rând pentru maximum 4 sau o grilă 3×2 pentru 5–6; „Doar privesc” este un tile gri deschis cu ochi |
 | **Card de post** | sticlă `--accent`, **mascota postului** (PNG cu fundal transparent, §9) mare, numele (NAVIGAȚIE…), lentila (DIRECȚIE · TRASEU) |
 | **Subtitrare (TV)** | `.glass-dark` pill jos-centru, text alb 48 px, eticheta vorbitorului ca pastilă colorată deasupra (culoarea din `SPEAKERS`) |
 | **Subtitrare (tabletă)** | card sticlă luminos, text `--ink` 24 px, eticheta vorbitorului ca pastilă |
@@ -123,21 +123,21 @@ Set propriu de ~24 iconițe SVG inline, linie 2.5 px, capete rotunde (rachetă, 
 
 ### 4.1 Tableta copiilor (`/tablet/`) — prioritate 1
 
-Orientare: **portret, blocată** (rotația e ignorată prin layout fluid, fără mesaj „rotește tableta”). Ecran împărțit în: **bara de sus** (sigla navei + numele postului + semnal), **conținut** (o singură idee pe ecran; mascota postului apare în vederile de așteptare și mulțumiri), **bara de jos** (starea misiunii: scena curentă cu iconiță și culoare).
+Orientare: **landscape, 1920×1080, blocată**. Dacă dispozitivul ajunge în portret, afișează un mesaj prietenos „Rotește tableta” în loc să înghesui interfața. Ecranul este împărțit în: **bara de sus** (sigla navei + numele postului + semnal), **conținut** (o singură idee pe ecran; mascota postului apare în vederile de așteptare și mulțumiri), **bara de jos** (starea misiunii: scena curentă cu iconiță și culoare). În interacțiunile pereche, conținutul are două jumătăți egale: A în stânga, B în dreapta; ambele se citesc în aceeași orientare.
 
 | Vedere | Design |
 |---|---|
-| Alegerea postului (`post-assign`) | coloană de 5 carduri late (portret: unul sub altul, ~150 px fiecare) cu mascota, nume și lentilă; la atingere: bump + confetti + sunet `pick`; textul „Atinge postul vostru” |
+| Alegerea postului (`post-assign`) | rând sau grilă aerisită cu 5 carduri mari, câte unul pentru fiecare post, cu mascota, nume și lentilă; la atingere: bump + confetti + sunet `pick`; textul „Atinge postul vostru” |
 | Așteptare | mascota postului plutind ușor (PNG + animație CSS de levitație 4 s), text mare „Așteptăm decolarea…”, respirație lentă a fundalului; fără „loading spinner” |
 | Numărătoare | cifre uriașe colorate, inel de progres, fundal `launch` |
 | Consola de post (telemetrie) | 4 instrumente ca „gadgeturi” rotunde de sticlă (nu voltmetre): busolă, baterie-inimă, undă, puls; MEMORIE = carduri-notițe cu replicile |
 | Subtitrare | card sticlă sus, apare cu fade; pastilă cu vorbitorul |
-| Alegere în pereche (`paired-choice`) | întrebarea sus (≤ 12 cuvinte, 28 px), zona A în jumătatea de sus și zona B în jumătatea de jos, 3–4 tile-uri late per zonă pe un rând, „Doar privesc” la final; confirmare = bifă mare + „Mulțumim!” + confetti + sunet `confirm`; cronometru discret ca inel dacă `timeoutSec` |
+| Alegere în pereche (`paired-choice`) | întrebarea sus, comună (≤ 12 cuvinte, 28 px), zona A în jumătatea stângă și zona B în jumătatea dreaptă; fiecare jumătate are propriile tile-uri și propria confirmare; maximum 4 opțiuni pe un rând, 5–6 în grilă 3×2, inclusiv „Doar privesc”; confirmare = bifă mare + „Mulțumim!” + confetti + sunet `confirm`; cronometru discret ca inel dacă `timeoutSec` |
 | Butonul de start (postul 1, autoRun) | pill uriaș `--coral` „PORNEȘTE MISIUNEA” cu rachetă; dedesubt lista de readiness ca bife verzi/portocalii |
 | Mulțumiri + certificat | card certificat pe sticlă cu sigiliu colorat, buton „SALVEAZĂ” și „TRIMIS OPERATORULUI” ca badge mint; confetti la apariție |
 | Fotografie | fotografia într-o ramă sticlă rotunjită, cu text „Echipajul EXODUS-7” |
 
-Reguli: doar portret (lățimi 768–834 px, înălțimi 1024–1194 px), zoom blocat, fără scroll în vederi (totul încape), textul nu se rotește pentru niciun copil (ambii citesc din același sens; zonele diferă doar prin poziție sus/jos și culoare).
+Reguli: 1920×1080 landscape, zoom blocat, fără scroll în vederile de show (totul încape), textul nu se rotește pentru niciun copil; ambii citesc din același sens, iar zonele diferă prin poziție stânga/dreapta și culoare. Țintele interactive rămân de minimum 64×64 CSS px și nu se micșorează pentru a înghesui conținutul.
 
 ### 4.2 Ecranele TV (renderer overlays) — prioritate 2
 
@@ -153,11 +153,12 @@ Reguli: doar portret (lățimi 768–834 px, înălțimi 1024–1194 px), zoom b
 
 ### 4.3 Consola operatorului (`/control/`) — prioritate 3
 
+- Dispozitivul țintă este tableta operatorului, **1920×1080 landscape**. Loginul și consola trebuie să încapă fără scroll orizontal la această rezoluție; paginile lungi de administrare pot avea scroll vertical controlat.
 - Aceeași bucurie ca pe tablete: fundal gradient pe temă la aceeași saturație, bule moi, carduri sticlă albe 70 %, butoane colorate, mascotele posturilor pe cardurile de tablete. Nimic „sobru”: consola e prima impresie a operatorului și trebuie să zâmbească și el.
 - **Antet**: sigla, numele show-ului, ceasul mare, badge-uri (Ecrane, Tablete, Video, Readiness) ca pastile colorate; utilizatorul + ieșire.
 - **Transport**: butoane mari pill: PRE-SHOW (lavandă), START (coral, uriaș), PAUZĂ/REDĂ (cer), EPILOG (piersică), RESTART (secundar); sub ele bara de timeline sticlă cu playhead colorat și scenele ca segmente colorate pe temă.
 - **Panouri**: Readiness (inel + bife), Cue-uri (listă cu pastile de stare: gri/mint/soare), Editor timeline (piste colorate pe temă, marcatori ca perle), Ecrane/Perf (carduri per ecran cu inele), Tablete (5 carduri de post cu stare și alegeri), Mesaje, Utilizatori, Repetiție/Ambianță/Lumini/Spune/Variantă/Foto (grup „Regie”).
-- Densitate: 2–3 coloane pe ≥ 1400 px, 1 coloană pe tabletă; textele tehnice rămân monospace.
+- Densitate: 3 coloane la 1920×1080, 2 coloane în ferestre mai înguste și 1 coloană numai sub breakpointul compact; textele tehnice rămân monospace.
 
 ### 4.4 Login (`/login/`)
 
@@ -169,7 +170,7 @@ Aceleași tokens și aceeași veselie (fundal gradient pe temă, nu alb plat), c
 
 ## 5. Ce NU se schimbă
 
-Protocolul WS/HTTP, `show.json`, state machine, id-urile DOM folosite de TypeScript (se păstrează sau se migrează cu grijă), textele replicilor, comportamentul comenzilor, testele existente. Redesign-ul este CSS + markup, plus TS doar unde structura vederii se schimbă (zone A/B sus/jos, gadgeturi telemetrie, confetti, sunete).
+Protocolul WS/HTTP, `show.json`, state machine, id-urile DOM folosite de TypeScript (se păstrează sau se migrează cu grijă), textele replicilor, comportamentul comenzilor, testele existente. Redesign-ul este CSS + markup, plus TS doar unde structura vederii se schimbă (zone A/B stânga/dreapta, gadgeturi telemetrie, confetti, sunete).
 
 **Singura schimbare de date:** eticheta vorbitorului `AVATAR_AI` din `SPEAKERS` (`src/shared/types.ts`) trece de la „VOCEA NAVEI” la **„AVATARUL AI”**, cu culoarea `--sky`; id-ul `AVATAR_AI` și clipurile vocale rămân neschimbate. Etichetele apar pe pastilele de subtitrare de pe TV și tablete.
 
@@ -179,11 +180,11 @@ Protocolul WS/HTTP, `show.json`, state machine, id-urile DOM folosite de TypeScr
 |---|---|---|
 | 0 | Mascotele (5 PNG-uri + 1 pentru Avatarul AI) generate de Codex după §9, în `src/web/shared/mascots/` | Codex |
 | 1 | `src/web/shared/glass.css` + `src/renderer/glass-tv.css` (tokens, `.glass`, butoane, teme) și un fișier de previzualizare `src/web/shared/preview.html` cu toate componentele | orchestrator |
-| 2 | Tableta (markup portret + CSS + confetti + sunete + gadgeturi + mascote) | agent T |
+| 2 | Tableta copiilor (markup 1920×1080 landscape + CSS + confetti + sunete + gadgeturi + mascote) | agent T |
 | 3 | Overlay-uri TV (subtitrări, numărătoare, avatar, OSD, veil, fade) | agent R |
 | 4 | Consola + login | agent K |
 | 5 | Depanare + analitică | agent K (după 4) |
-| 6 | Verificare vizuală pe 3 lățimi (tabletă 768/1024, consolă 1440, TV 3840) + capturi în `runs/debug/` + `docs/DESIGN-REVIEW.md` | orchestrator |
+| 6 | Verificare vizuală: tablete copii 1920×1080, tabletă operator 1920×1080, TV 3840×2160, plus ferestre de dezvoltare + capturi în `runs/debug/` + `docs/DESIGN-REVIEW.md` | orchestrator |
 
 Estimare: 1 rundă de agenți (4–6 ore de agent), fără dependențe noi.
 
@@ -196,14 +197,14 @@ Estimare: 1 rundă de agenți (4–6 ore de agent), fără dependențe noi.
 5. `prefers-reduced-motion` oprește gradientul animat, confetti și spring-urile.
 6. `npm run check` rămâne verde; smoke-renderer trece; nicio schimbare în protocol.
 7. Un copil de 8 ani înțelege fiecare ecran de tabletă fără explicații (test cu 2 copii, notat în `docs/DESIGN-REVIEW.md`).
-8. Toate vederile de tabletă încap în portret 768×1024 fără scroll; mascota postului este vizibilă în așteptare și la mulțumiri.
+8. Toate vederile tabletelor copiilor încap în 1920×1080 landscape fără scroll, cu A în stânga și B în dreapta; mascota postului este vizibilă în așteptare și la mulțumiri. Consola operatorului este verificată separat la 1920×1080 landscape.
 9. Sunetele se aud la alegere și confirmare, nu se aud la erori, și pot fi oprite din consolă.
 
 ## 8. Decizii luate (Christoph, 2026-09-05)
 
 | Întrebare | Decizie |
 |---|---|
-| Orientarea tabletelor | **Portret, toate.** Zona A sus, zona B jos. |
+| Orientarea tabletelor | **Corectat la 11:26: toate sunt 1080p landscape (1920×1080).** Sunt 5 tablete pentru copii, cu zona A în stânga și zona B în dreapta, plus o tabletă separată pentru operator. |
 | Mascotă | **Da, desenată**, una per post + una pentru Avatarul AI. Codex generează imaginile după descrierile din §9. |
 | Confetti + sunete | **Da**, ambele (specificate în 2.6 și 2.7). |
 | Consola operatorului | **La fel de veselă și glass** ca tabletele. Nimic sobru, nicăieri. |
