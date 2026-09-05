@@ -88,14 +88,14 @@ Variante: `.glass-strong` (alb 78 %, pentru text lung), `.glass-tint` (colorat c
 
 - Curbă „spring”: `cubic-bezier(.34,1.56,.64,1)` pentru apariții (280 ms), `ease-out` 180 ms pentru hover/press.
 - Apariția cardurilor: scale .96→1 + opacitate; butonul apăsat: scale .97.
-- Feedback la alegere pe tabletă: bump + 12 particule confetti în culoarea zonei (600 ms), o singură dată, plus un **sunet scurt de bucurie** (vezi 2.8).
+- Feedback la alegere pe tabletă: bump + 12 particule confetti în culoarea zonei (600 ms), o singură dată, plus un **sunet scurt de bucurie** (vezi 2.7).
 - Fundalul respiră (gradient mesh 40 s). Totul oprit la `prefers-reduced-motion: reduce`.
 
-### 2.8 Sunete de interfață (tabletă)
+### 2.7 Sunete de interfață (tabletă)
 
 Redate de tabletă (nu în sală), volum 35 %, durată ≤ 400 ms, fișiere OGG/MP3 în `src/web/tablet/sfx/`: `tap` (clic moale de sticlă), `pick` (clopoțel ascendent, 2 note, la alegerea unei opțiuni), `confirm` (acord vesel de 3 note, la confirmarea perechii), `start` (fanfară scurtă la butonul de start), `thanks` (sclipire la certificat). Fără sunet la erori. Sunetul se poate opri din consolă (opțiune `tabletSfx` în config, implicit pornit). Sunetele se redau numai după prima atingere (politica de autoplay a browserului).
 
-### 2.7 Iconografie
+### 2.8 Iconografie
 
 Set propriu de ~24 iconițe SVG inline, linie 2.5 px, capete rotunde (rachetă, planetă, stea, inimă/puls, undă, ochi, mână, cronometru, difuzor, lumină, tabletă, ecran, steag, check, avertizare). Fără emoji în UI-ul de producție (randare inconsistentă pe TV/tablete), cu excepția confetti-ului decorativ.
 
@@ -205,7 +205,7 @@ Estimare: 1 rundă de agenți (4–6 ore de agent), fără dependențe noi.
 |---|---|
 | Orientarea tabletelor | **Portret, toate.** Zona A sus, zona B jos. |
 | Mascotă | **Da, desenată**, una per post + una pentru Avatarul AI. Codex generează imaginile după descrierile din §9. |
-| Confetti + sunete | **Da**, ambele (specificate în 2.6 și 2.8). |
+| Confetti + sunete | **Da**, ambele (specificate în 2.6 și 2.7). |
 | Consola operatorului | **La fel de veselă și glass** ca tabletele. Nimic sobru, nicăieri. |
 | Nume pe pastile | „CĂPITANUL” rămâne. „VOCEA NAVEI” devine **„AVATARUL AI”**. |
 
