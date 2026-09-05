@@ -301,7 +301,8 @@ export function createTelemetry(container: HTMLElement): Telemetry {
       const prof = THEME_PROFILE[input.theme] ?? THEME_PROFILE.prologue;
       const progress = st === "idle" ? 0 : st === "epilogue" || st === "ended" ? 1 : Math.max(0, Math.min(1, (t + 10) / MISSION_LENGTH_SEC));
       nodes.clock.textContent = active ? fmtClock(t) : st === "ended" ? "MISIUNE ÎNCHEIATĂ" : "ÎN AȘTEPTARE";
-      nodes.status.textContent = `${prof.label}${input.sceneLabel ? ` · ${input.sceneLabel.toUpperCase()}` : ""}${st === "paused" ? " · PAUZĂ" : ""}`;
+      const scene = input.sceneLabel.toUpperCase();
+      nodes.status.textContent = `${prof.label}${scene && !prof.label.includes(scene) ? ` · ${scene}` : ""}${st === "paused" ? " · PAUZĂ" : ""}`;
       const tt = t * (st === "paused" ? 0 : 1) + performance.now() / 1000;
 
       switch (input.post) {
