@@ -43,3 +43,9 @@ data/nava.sqlite*
 data/diagnostics/
 data/installations/
 .venv-optical/
+
+# Audio production intermediates: WAV masters, QA renders and raw API responses stay local (runtime uses the MP3s in assets/music/)
+assets/music/masters/
+assets/music/qa/
+*.api-pcm
+data/audit*.jsonl
