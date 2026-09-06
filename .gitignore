@@ -53,3 +53,6 @@ data/audit*.jsonl
 # AI-authored process documentation and retired development files: kept on disk, out of git
 AI/
 Old/
+
+# Test/distribution archives built from dist-app
+*.zip

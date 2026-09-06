@@ -49,6 +49,11 @@ extraResources:
       - "!**/production-report.json"
   - from: config.example.json
     to: config.example.json
+  # Shipped beside the executable so the venue always has them, even without the archive.
+  - from: README-INSTALARE.md
+    to: README-INSTALARE.md
+  - from: MANUAL-UTILIZARE.docx
+    to: MANUAL-UTILIZARE.docx
 
 asar: true
 electronFuses:
