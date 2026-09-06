@@ -34,7 +34,19 @@ extraResources:
   - from: assets
     to: assets
     filter:
+      # The show reads show.json, the voice/music manifests and the MP3s they name. Everything else
+      # under assets/ is production material (WAV masters, QA renders, audition reels, provenance
+      # receipts) that used to add ~440 MB to the installer for nothing.
       - "**/*"
+      - "!music/masters/**"
+      - "!music/qa/**"
+      - "!**/*.api-pcm"
+      - "!**/auditions/**"
+      - "!**/preview-*.mp3"
+      - "!**/preview-*.ffconcat"
+      - "!**/preview-transcription.json"
+      - "!**/*.receipt.json"
+      - "!**/production-report.json"
   - from: config.example.json
     to: config.example.json
 
