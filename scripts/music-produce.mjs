@@ -14,7 +14,7 @@ const args=new Set(process.argv.slice(2)),check=args.has('--check');
 if([...args].some(a=>!['--check','--only=M08'].includes(a)))throw Error('Use --check or --only=M08');
 try{process.loadEnvFile(path.join(root,'.env'));}catch(e){if(e.code!=='ENOENT')throw e;}
 const safe=x=>String(x).replaceAll(process.env.ELEVENLABS_API_KEY||'NO_KEY','[redacted]').replace(/sk_[\w]+/g,'[redacted]').slice(0,800);
-const brief=await fs.readFile(path.join(root,'docs/PROMPT-CODEX-MUZICA.md'),'utf8');
+const brief=await fs.readFile(path.join(root,'AI/docs/PROMPT-CODEX-MUZICA.md'),'utf8');
 const specs=[
  ['M01','prolog','intro','preshow',0,60,50,true,-26],
  ['M02','numaratoare','launch','play',-10,12,10,false,-20],

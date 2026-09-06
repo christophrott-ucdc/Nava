@@ -49,3 +49,7 @@ assets/music/masters/
 assets/music/qa/
 *.api-pcm
 data/audit*.jsonl
+
+# AI-authored process documentation and retired development files: kept on disk, out of git
+AI/
+Old/

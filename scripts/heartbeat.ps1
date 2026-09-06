@@ -12,7 +12,7 @@ New-Item -ItemType Directory -Force -Path $runs | Out-Null
 $pidFile = Join-Path $runs "heartbeat.pid"
 Set-Content -Path $pidFile -Value $PID -Encoding ascii
 
-$watch = @("src", "scripts", "docs", "assets\show", "assets\voice\ro\manifest.json", "HANDOFF.md", "HANDOFF-LIVE.md", "package.json", "config.example.json")
+$watch = @("src", "scripts", "docs", "assets\show", "assets\voice\ro\manifest.json", "AI\HANDOFF.md", "AI\HANDOFF-LIVE.md", "package.json", "config.example.json")
 Add-Content -Path $log -Value ("[{0}] heartbeat START pid={1} interval={2}s" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $PID, $IntervalSec) -Encoding utf8
 
 while ($true) {
@@ -31,7 +31,7 @@ while ($true) {
   $porcelain = @(git -C $root status --porcelain 2>$null)
   $changed = $porcelain.Count
   $head = (git -C $root rev-parse --short HEAD 2>$null)
-  $last = (Get-Content (Join-Path $root "HANDOFF-LIVE.md") -Tail 1 -Encoding utf8)
+  $last = (Get-Content (Join-Path $root "AI\HANDOFF-LIVE.md") -Tail 1 -Encoding utf8)
   $recentTxt = if ($recent.Count -gt 0) { ($recent | Select-Object -Unique | Select-Object -First 25) -join ", " } else { "-" }
   $line = "[{0}] head={1} uncommitted={2} modified<{3}s: {4} | last-live: {5}" -f $ts, $head, $changed, ($IntervalSec + 15), $recentTxt, $last
   Add-Content -Path $log -Value $line -Encoding utf8
