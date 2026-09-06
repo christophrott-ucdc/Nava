@@ -3,7 +3,7 @@ const dir='runs/debug/final-wall',r=await renderer();
 const info=await r.eval(`window.nava.getBoot().then(b=>({wall:b.config.videoWall,mode:b.displayMode,screen:b.screen.id,viewports:b.viewports}))`);
 assert.equal(info.mode,'span');assert.equal(info.viewports.length,5);const mode=info.wall.calibration?'calibration':info.wall.mode;
 const cfg=JSON.parse(await fs.readFile('config.json','utf8'));
-const login=await fetch('http://127.0.0.1:4321/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:cfg.security?.operatorPin??'4078'})});assert.equal(login.status,200);const token=(await login.json()).token;
+const login=await fetch('http://127.0.0.1:4321/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:cfg.security?.operatorPin??'4078'})});assert.equal(login.status,200);const token=/nava_session=([0-9a-f]+)/.exec(login.headers.get('set-cookie')??'')?.[1];assert.ok(token,'session token comes from Set-Cookie');
 const command=async cmd=>{const response=await fetch('http://127.0.0.1:4321/api/cmd',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({cmd})});assert.equal(response.status,200);};
 await r.size(7680,980);await command({action:'restart'});await command({action:'start'});await sleep(300);await command({action:'seek',time:105});await command({action:'pause'});await sleep(700);
 const math=await build({entryPoints:['src/shared/video-wall.ts'],bundle:true,write:false,format:'iife',globalName:'WallMath',platform:'browser'});await r.eval(math.outputFiles[0].text);

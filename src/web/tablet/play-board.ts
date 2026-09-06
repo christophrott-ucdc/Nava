@@ -51,7 +51,7 @@ export function createPlayPanel(zone: 'A' | 'B', send: (value: string) => void) 
       lesson.textContent = view.lesson;
       feedback.textContent = next.offline ? 'Refacem legătura cu nava…' : next.blocked ? 'Facem o pauză. Continuăm în curând.' : next.pending ? 'Trimitem…' : view.feedback;
       observe.disabled = next.blocked || next.pending || view.observed;
-      observe.textContent = view.observed ? 'Privesc' : 'Doar privesc';
+      observe.textContent = 'Doar privesc';
       toy!.update(view, { blocked: next.blocked || next.pending, reduced: next.reduced || next.blocked });
       guide.update(view,{blocked:next.blocked||next.pending,reduced:next.reduced});
       insight.hidden=!view.solved||view.observed;

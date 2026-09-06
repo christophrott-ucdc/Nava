@@ -46,6 +46,7 @@ export function sayCueId(speaker: string, lang: string, text: string): string {
 }
 
 export interface PlayerDeps {
+  isClockSource?: boolean;
   video: HTMLVideoElement;
   show: ShowFile;
   config: AppConfig;
@@ -140,9 +141,13 @@ export class Player {
   private nominal = 1;
   private perspectiveWarned = false;
   private musicManifest:MusicManifest|null=null;
+  private lastFollowAt = 0;
+  private videoFrame = 0;
+  private presentedFrame: { mediaTime: number; displayTime: number } | null = null;
 
   constructor(private readonly deps: PlayerDeps) {
     this.video = deps.video;
+    if (typeof this.video.requestVideoFrameCallback === "function") this.videoFrame = this.video.requestVideoFrameCallback(this.onVideoFrame);
     this.lang = deps.config.lang;
     this.sfxVolume = deps.config.audio.sfxVolume;
     this.videoUrlLabel = deps.config.video.path;
@@ -214,6 +219,7 @@ export class Player {
   dispose(): void {
     this.disposed = true;
     if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.videoFrame) this.video.cancelVideoFrameCallback(this.videoFrame);
     this.timeline.reset();
   }
 
@@ -641,6 +647,8 @@ export class Player {
   private handleEnded(): void {
     if (this.phase() !== "play") return;
     this.applyVideoRate();
+    // Only the clock source may advance the show. Followers hold the final frame until the server changes phase.
+    if (this.deps.isClockSource === false) return;
     if (this.getShow().epilogueOnVideoEnd) {
       this.deps.log("info", "video cut — intrare locală imediată în epilog");
       this.enterEpilogue(0, true);
@@ -702,6 +710,7 @@ export class Player {
   }
 
   private seekVideo(t: number): void {
+    this.presentedFrame = null;
     if (this.video.readyState >= HTMLMediaElement.HAVE_METADATA) {
       this.pendingSeek = null;
       try {
@@ -859,6 +868,7 @@ export class Player {
    * in seconds for the OSD, or null when not applicable.
    */
   follow(master: PlaybackState, expected: number, masterRate: number, opts: { seekThresholdSec: number; rateNudge: number }): number | null {
+    this.lastFollowAt = performance.now();
     const thr = Math.max(0.05, opts.seekThresholdSec);
     switch (master) {
       case "idle":
@@ -903,6 +913,11 @@ export class Player {
           return d;
         }
         if (this.state !== "playing") this.tryPlay();
+        if (expected >= this.duration() - 0.02 && this.video.currentTime >= this.duration() - 0.02) {
+          this.video.pause();
+          this.applyVideoRate();
+          return expected - this.video.currentTime;
+        }
         return this.correctVideo(expected, thr, opts.rateNudge, true);
       }
       case "paused": {
@@ -974,7 +989,10 @@ export class Player {
   /** Drift correction in the play phase. Big jumps use timeline seek semantics (skip cues). */
   private correctVideo(expected: number, thr: number, nudge: number, playing: boolean): number {
     if (!this.videoReady) return 0;
-    const cur = this.video.currentTime;
+    const frame = this.presentedFrame, now = performance.now();
+    const cur = playing && !this.video.paused && !this.video.seeking && frame && now - frame.displayTime >= 0 && now - frame.displayTime < 250
+      ? frame.mediaTime + (now - frame.displayTime) / 1000 * this.video.playbackRate
+      : this.video.currentTime;
     const d = expected - cur;
     if (Math.abs(d) > thr) {
       const target = this.clampPlayTime(expected);
@@ -995,15 +1013,24 @@ export class Player {
 
   // ---------------------------------------------------------------- frame loop
 
+  resetSyncRate(): void { this.applyVideoRate(); this.lastFollowAt = 0; }
+
+  private readonly onVideoFrame: VideoFrameRequestCallback = (_now, metadata) => {
+    if (this.disposed) return;
+    this.presentedFrame = { mediaTime: metadata.mediaTime, displayTime: metadata.expectedDisplayTime };
+    this.videoFrame = this.video.requestVideoFrameCallback(this.onVideoFrame);
+  };
+
   private readonly tick = (now: number): void => {
     if (this.disposed) return;
     this.raf = requestAnimationFrame(this.tick);
+    if (this.lastFollowAt && now - this.lastFollowAt > 1000) this.resetSyncRate();
     if (this.isClockAdvancing()) this.timeline.update(this.phaseTime());
     this.deps.ambient?.syncFiles(this.phaseMode,this.phaseTime(),this.rate());
     if (this.playLeadIn && this.state === "playing" && this.clock.now() >= 0) this.finishLeadIn();
     if (!this.playLeadIn && this.state === "playing" && this.phaseMode === "play" && this.phaseTime() >= this.duration() - 0.02) {
       this.video.pause();
-      this.seekVideo(this.duration());
+      if (this.deps.isClockSource !== false) this.seekVideo(this.duration());
       this.handleEnded();
       return;
     }

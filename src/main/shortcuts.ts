@@ -15,7 +15,7 @@
 import { app, type BrowserWindow } from "electron";
 import type { LogFn } from "./logger";
 
-export function installWindowShortcuts(win: BrowserWindow, opts: { log: LogFn; fullscreenToggle?: boolean }): void {
+export function installWindowShortcuts(win: BrowserWindow, opts: { log: LogFn; fullscreenToggle?: boolean; allowQuit?: boolean }): void {
   const fullscreenToggle = opts.fullscreenToggle ?? true;
   win.webContents.on("before-input-event", (event, input) => {
     if (input.type !== "keyDown") return;
@@ -23,6 +23,7 @@ export function installWindowShortcuts(win: BrowserWindow, opts: { log: LogFn; f
 
     if (mod && !input.alt && !input.shift && input.key.toLowerCase() === "q") {
       event.preventDefault();
+      if (opts.allowQuit === false) { opts.log("info", "shortcut: Ctrl+Q ignored in kiosk"); return; }
       opts.log("info", "shortcut: Ctrl+Q -> quit");
       app.quit();
       return;

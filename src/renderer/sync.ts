@@ -111,6 +111,7 @@ export class SyncClient {
       if (ws !== this.ws) return;
       this.opts.log("warn", `ws closed (${ev.code}) — reconectare`);
       this.ws = null;
+      this.opts.player.resetSyncRate();
       this.stopReporting();
       this.driftSec = null;
       this.emitStatus();
@@ -124,6 +125,7 @@ export class SyncClient {
 
   dispose(): void {
     this.disposed = true;
+    this.opts.player.resetSyncRate();
     this.clearReconnect();
     this.stopReporting();
     const ws = this.ws;

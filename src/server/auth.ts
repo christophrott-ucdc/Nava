@@ -66,7 +66,7 @@ export interface Auth {
   /** Accepts a screen token OR a user with at least `minRole`. */
   requireScreenOrRole(minRole: UserRole): MiddlewareHandler<AuthEnv>;
   /** WS hello authentication. */
-  authenticateHello(msg: HelloMsg): { ok: true; principal: Principal | null } | { ok: false; code: number; reason: string };
+  authenticateHello(msg: HelloMsg, cookieToken?:string): { ok: true; principal: Principal | null } | { ok: false; code: number; reason: string };
   principalOf(c: Context<AuthEnv>): Principal | null;
   /** Best-effort client address for logs and audit (X-Forwarded-For, then the socket). */
   clientIp(c: Context<AuthEnv>): string;
@@ -251,8 +251,13 @@ export function createAuth(deps: AuthDeps): Auth {
   };
 
   // ---- login rate limit -----------------------------------------------------
+  let globalAttempts={count:0,resetAt:0};
   const loginAllowed = (ip: string): boolean => {
     const now = Date.now();
+    for(const [key,value] of loginAttempts)if(value.resetAt<=now)loginAttempts.delete(key);
+    if(globalAttempts.resetAt<=now)globalAttempts={count:0,resetAt:now+LOGIN_WINDOW_MS};
+    if(++globalAttempts.count>80)return false;
+    if(!loginAttempts.has(ip)&&loginAttempts.size>=1024)return false;
     const rec = loginAttempts.get(ip);
     if (!rec || rec.resetAt <= now) {
       loginAttempts.set(ip, { count: 1, resetAt: now + LOGIN_WINDOW_MS });
@@ -262,13 +267,13 @@ export function createAuth(deps: AuthDeps): Auth {
     return rec.count <= LOGIN_MAX_ATTEMPTS;
   };
   const clientIp = (c: Context<AuthEnv>): string =>
-    c.req.header("x-forwarded-for")?.split(",")[0]?.trim() || (c.env as { incoming?: { socket?: { remoteAddress?: string } } })?.incoming?.socket?.remoteAddress || "?";
+    (c.env as { incoming?: { socket?: { remoteAddress?: string } } })?.incoming?.socket?.remoteAddress || "unknown-peer";
 
   // ---- same-origin guard for mutations ----------------------------------------
   const sameOrigin: MiddlewareHandler<AuthEnv> = async (c, next) => {
     if (c.req.method === "GET" || c.req.method === "HEAD" || c.req.method === "OPTIONS") return next();
     const site = c.req.header("sec-fetch-site");
-    if (site && site !== "same-origin" && site !== "same-site" && site !== "none") {
+    if (site && site !== "same-origin" && site !== "none") {
       return deny(c, 403, "Cererea vine din alt site");
     }
     const origin = c.req.header("origin");
@@ -300,7 +305,7 @@ export function createAuth(deps: AuthDeps): Auth {
       return c.json({ ok: false, reason: "Prea multe încercări. Așteaptă 5 minute." }, 429);
     }
     const pin = typeof body.pin === "string" ? body.pin.trim() : typeof body.pin === "number" ? String(body.pin) : "";
-    const user = users.verifyPin(pin);
+    const user = await users.verifyPin(pin);
     if (!user) {
       log("warn", "auth: bad PIN", { ip });
       return c.json({ ok: false, reason: "PIN incorect" }, 401);
@@ -315,7 +320,7 @@ export function createAuth(deps: AuthDeps): Auth {
     });
     log("info", `auth: login ${user.role} "${user.name}"`, { ip });
     void audit({ actor: { id: user.id, name: user.name, role: user.role }, action: "auth.login", ok: true, ip });
-    return c.json({ ok: true, token: s.token, user: toPublicUser(user), expiresAt: s.expiresAt });
+    return c.json({ ok: true, user: toPublicUser(user), expiresAt: s.expiresAt });
   });
   router.post("/logout", async (c) => {
     const p = principalOf(c);
@@ -331,13 +336,13 @@ export function createAuth(deps: AuthDeps): Auth {
     if (!p) return c.json({ ok: false, authenticated: false, reason: "Neautentificat", code: 4401 }, 401);
     if (p.kind === "screen") return c.json({ ok: true, authenticated: true, kind: "screen", role: "screen" });
     const u = users.get(p.userId);
-    // The console needs the session token for the WS `hello` (the cookie is HttpOnly), so /me returns it
-    // to an already-authenticated caller. LAN/HTTP show network; see docs/SECURITATE.md.
+    // WebSocket authentication uses the HttpOnly cookie; do not expose the bearer secret.
+    // Native screen clients continue to use their dedicated screen token.
     return c.json({
       ok: true,
       authenticated: true,
       kind: "user",
-      token: p.token,
+
       user: u ? toPublicUser(u) : { id: p.userId, name: p.name, role: p.role },
     });
   });
@@ -434,14 +439,14 @@ export function createAuth(deps: AuthDeps): Auth {
   });
 
   // ---- WS -------------------------------------------------------------------
-  const authenticateHello: Auth["authenticateHello"] = (msg) => {
+  const authenticateHello: Auth["authenticateHello"] = (msg,cookieToken) => {
     if (msg.client === "tablet") return { ok: true, principal: null };
     if (msg.client === "screen") {
       if (screenTokenOk(msg.token)) return { ok: true, principal: { kind: "screen", role: "screen" } };
       return { ok: false, code: 4401, reason: "token de ecran invalid (security.screenToken)" };
     }
     // control
-    const s = sessionByToken(msg.token);
+    const s = sessionByToken(cookieToken) ?? sessionByToken(msg.token);
     if (!s) return { ok: false, code: 4401, reason: "sesiune invalidă — autentifică-te cu PIN" };
     if (ROLE_RANK[s.role] < ROLE_RANK.viewer) return { ok: false, code: 4403, reason: "rol insuficient" };
     return { ok: true, principal: { kind: "user", userId: s.userId, name: s.name, role: s.role, token: s.token } };

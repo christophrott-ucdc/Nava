@@ -1,3 +1,6 @@
+import { latestSessionRead } from "../shared/session";
+import { ROLE_LABELS } from "@shared/ui-labels";
+import { sessionFetch as fetch } from "../shared/session";
 import { applyTheme, icon } from "../shared/glass";
 import { createMissionDebug } from "./mission-debug";
 /**
@@ -127,7 +130,7 @@ function render(s: Summary): void {
     pfEl.innerHTML =
       `<div class="kv">` +
       `<div class="k">rezultat</div><div class="v ${pf.ok ? "ok" : "bad"}">${pf.ok ? "OK" : "PROBLEME"} · ${new Date(pf.checkedAt).toLocaleTimeString("ro-RO")} · ${pf.durationMs} ms</div>` +
-      `<div class="k">voci</div><div class="v ${pf.voice.ok === pf.voice.total ? "ok" : "bad"}">${pf.voice.ok}/${pf.voice.total} valide · ${pf.voice.withVisemes} cu viseme · ${pf.lang}${pf.variant ? ` · varianta ${pf.variant}` : ""}</div>` +
+      `<div class="k">voci</div><div class="v ${pf.voice.ok === pf.voice.total ? "ok" : "bad"}">${pf.voice.ok}/${pf.voice.total} valide · ${pf.voice.withVisemes} cu viseme · ${esc(pf.lang)}${pf.variant ? ` · varianta ${esc(pf.variant)}` : ""}</div>` +
       `<div class="k">film</div><div class="v ${pf.video.exists ? "ok" : "bad"}">${pf.video.exists ? fmtBytes(pf.video.bytes) : "LIPSEȘTE"} · ${esc(pf.video.path)}</div>` +
       `<div class="k">avatar</div><div class="v ${pf.avatar.exists ? "ok" : "bad"}">${pf.avatar.exists ? fmtBytes(pf.avatar.bytes) : "LIPSEȘTE"} · ${esc(pf.avatar.path)}</div>` +
       `</div>` +
@@ -172,7 +175,7 @@ function render(s: Summary): void {
     const counts: Record<string, number> = {};
     for (const c of statusList) counts[c.status] = (counts[c.status] ?? 0) + 1;
     cuesEl.innerHTML =
-      `<div class="dim" style="margin-bottom:6px">${Object.entries(counts).map(([k, v]) => `${k}: ${v}`).join(" · ")} · ultima voce: ${esc(cues.lastVoiceCueId ?? "—")}</div>` +
+      `<div class="dim" style="margin-bottom:6px">${Object.entries(counts).map(([k, v]) => `${esc(k)}: ${v}`).join(" · ")} · ultima voce: ${esc(cues.lastVoiceCueId ?? "—")}</div>` +
       `<div class="cuelist">${statusList.map((c) => `<span class="cue ${esc(c.status)}${c.id === cues.lastVoiceCueId ? " current" : ""}" title="${esc(c.status)}">${esc(c.id)}</span>`).join("")}</div>`;
   } else cuesEl.textContent = JSON.stringify(s.cues).slice(0, 500);
 
@@ -190,12 +193,16 @@ function render(s: Summary): void {
     .join("\n");
 }
 
+const summaryRead = latestSessionRead();
+window.addEventListener("pagehide", () => summaryRead.cancel());
 async function refresh(): Promise<void> {
+  const request = summaryRead.begin();
   void refreshMissionDebug();
   try {
-    const s = await api<Summary>("/api/debug/summary");
-    render(s);
+    const s = await api<Summary>("/api/debug/summary", { signal: request.signal });
+    if (request.current()) render(s);
   } catch (err) {
+    if (!request.current()) return;
     const b = $("conn");
     b.textContent = `eroare: ${String(err).slice(0, 80)}`;
     b.className = "badge bad";
@@ -204,78 +211,13 @@ async function refresh(): Promise<void> {
 
 const refreshMissionDebug=createMissionDebug(api);
 
-async function loadUsers(): Promise<void> {
-  const el = $("users");
-  if (!me || me.role !== "admin") {
-    el.innerHTML = `<span class="dim">Vizibil doar pentru admin.</span>`;
-    ($("user-form") as HTMLFormElement).style.display = "none";
-    return;
-  }
-  try {
-    const data = await api<{ users: Array<{ id: string; name: string; role: string; createdAt: string; lastLoginAt?: string; disabled?: boolean }> }>("/api/users");
-    el.innerHTML =
-      `<table class="tbl"><thead><tr><th>Nume</th><th>Rol</th><th>Creat</th><th>Ultimul login</th><th>Stare</th><th></th></tr></thead><tbody>` +
-      data.users
-        .map(
-          (u) =>
-            `<tr><td>${esc(u.name)}</td><td>${esc(u.role)}</td><td>${new Date(u.createdAt).toLocaleString("ro-RO")}</td><td>${u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("ro-RO") : "—"}</td><td class="${u.disabled ? "bad" : "ok"}">${u.disabled ? "dezactivat" : "activ"}</td>` +
-            `<td><button class="btn small" data-pin="${esc(u.id)}">PIN NOU</button> <button class="btn small" data-toggle="${esc(u.id)}" data-disabled="${u.disabled ? "1" : "0"}">${u.disabled ? "ACTIVEAZĂ" : "DEZACTIVEAZĂ"}</button> <button class="btn small danger" data-del="${esc(u.id)}">ȘTERGE</button></td></tr>`,
-        )
-        .join("") +
-      `</tbody></table>`;
-  } catch (err) {
-    el.textContent = String(err);
-  }
-}
-
-document.addEventListener("click", async (e) => {
-  const t = e.target as HTMLElement;
-  const btn = t.closest("button") as HTMLButtonElement | null;
-  if (!btn) return;
-  const msg = $("user-msg");
-  try {
-    if (btn.dataset.close) {
-      await api(`/api/debug/clients/${encodeURIComponent(btn.dataset.close)}/close`, { method: "POST" });
-      await refresh();
-    } else if (btn.dataset.del) {
-      if (!confirm("Ștergi utilizatorul?")) return;
-      await api(`/api/users/${btn.dataset.del}`, { method: "DELETE" });
-      await loadUsers();
-    } else if (btn.dataset.pin) {
-      const pin = prompt("PIN nou (4–8 cifre):");
-      if (!pin) return;
-      await api(`/api/users/${btn.dataset.pin}/pin`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin }) });
-      msg.textContent = "PIN schimbat.";
-      await loadUsers();
-    } else if (btn.dataset.toggle) {
-      await api(`/api/users/${btn.dataset.toggle}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ disabled: btn.dataset.disabled !== "1" }) });
-      await loadUsers();
-    }
-  } catch (err) {
-    msg.textContent = String(err);
-  }
-});
-
-$("user-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const msg = $("user-msg");
-  try {
-    const res = await fetch("/api/users", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: ($("u-name") as HTMLInputElement).value, role: ($("u-role") as HTMLSelectElement).value, pin: ($("u-pin") as HTMLInputElement).value }),
-    });
-    const data = (await res.json()) as { ok: boolean; reason?: string };
-    msg.textContent = data.ok ? "Utilizator creat." : data.reason ?? `eroare ${res.status}`;
-    if (data.ok) {
-      ($("u-name") as HTMLInputElement).value = "";
-      ($("u-pin") as HTMLInputElement).value = "";
-      await loadUsers();
-    }
-  } catch (err) {
-    msg.textContent = String(err);
-  }
+document.addEventListener("click", async (event) => {
+ const button = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-close]");
+ if (!button?.dataset.close || button.disabled) return;
+ button.disabled = true;
+ try { await api('/api/debug/clients/' + encodeURIComponent(button.dataset.close) + '/close', { method: "POST" }); await refresh(); }
+ catch (error) { $("conn").textContent = String(error); }
+ finally { button.disabled = false; }
 });
 
 $("run-preflight").addEventListener("click", async () => {
@@ -283,19 +225,21 @@ $("run-preflight").addEventListener("click", async () => {
   try {
     await api("/api/debug/preflight", { method: "POST" });
     await refresh();
+  } catch (error) {
+    $("conn").textContent = error instanceof Error ? error.message : String(error);
   } finally {
     ($("run-preflight") as HTMLButtonElement).disabled = false;
   }
 });
 $("rotate").addEventListener("click", async () => {
-  await api("/api/debug/rotate-runs", { method: "POST" });
-  await refresh();
+  try { await api("/api/debug/rotate-runs", { method: "POST" }); await refresh(); }
+  catch (error) { $("conn").textContent = error instanceof Error ? error.message : String(error); }
 });
 $("refresh").addEventListener("click", () => void refresh());
 $("logout").addEventListener("click", async (e) => {
   e.preventDefault();
-  await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-  location.assign("/login/?next=%2Fdebug%2F");
+  try { await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); location.assign("/login/?next=%2Fdebug%2F"); }
+  catch (error) { $("conn").textContent = String(error); }
 });
 ($("auto") as HTMLInputElement).addEventListener("change", (e) => {
   const on = (e.target as HTMLInputElement).checked;
@@ -307,12 +251,12 @@ $("logout").addEventListener("click", async (e) => {
   try {
     const m = await api<{ authenticated: boolean; user?: { name: string; role: string } }>("/api/auth/me");
     me = m.user ?? null;
-    $("who").textContent = me ? `${me.name} · ${me.role}` : "—";
+    $("who").textContent = me ? `${me.name} · ${ROLE_LABELS[me.role] ?? me.role}` : "—";
   } catch {
     return;
   }
   await refresh();
-  await loadUsers();
+  $("p-users").hidden = me?.role !== "admin";
   timer = window.setInterval(() => void refresh(), 2000);
 })();
 

@@ -134,8 +134,6 @@ const TARGETS = [
     name: `web/${name}`,
     entry: abs(`src/web/${name}/index.ts`),
     outfile: abs(`dist/web/${name}/app.js`),
-    // optional: a missing entry is skipped (not a build failure) — analytics lands with package D-05.
-    optional: true,
     options: { platform: "browser", format: "iife", target: WEB_TARGETS, define: NODE_ENV_DEFINE, sourcemap: WATCH ? "linked" : false },
   })),
 ];

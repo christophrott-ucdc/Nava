@@ -25,6 +25,7 @@ import type {
   SecurityConfig,
 } from "./types";
 
+export const PROTOCOL_VERSION=1;
 export type ClientKind = "screen" | "control" | "tablet";
 
 // ---------------------------------------------------------------------------
@@ -33,6 +34,7 @@ export type ClientKind = "screen" | "control" | "tablet";
 
 export interface HelloMsg {
   type: "hello";
+  protocolVersion?:number;
   client: ClientKind;
   /** screen: id-ul ecranului din config; tablet: id persistent (localStorage); control: "control". */
   id: string;
@@ -61,6 +63,7 @@ export interface PhotoCapturedMsg {
   photoRequestId?:string;
   type: "photoCaptured";
   cueId: string | null;
+
   dataUrl: string;
 }
 
@@ -136,6 +139,7 @@ export type ClientMessage = HelloMsg | ReportMsg | CmdMsg | TabletEventMsg | Per
 /** Confirmare hello + snapshot complet. */
 export interface WelcomeMsg {
   type: "welcome";
+  protocolVersion?:number;
   serverTimeMs: number;
   state: ShowState;
   /** Show-ul curent (cue-uri + scene), ca renderer-ele/follower-ii sa nu depinda de fisiere locale. */
@@ -183,6 +187,8 @@ export interface TabletViewMsg {
   subtitle: { speaker: string; text: string; color: string } | null;
   /** Cue-ul este transmis explicit; clientul nu îl mai deduce din timp/text. */
   cueId: string | null;
+  /** Cue start in authoritative phase seconds. */
+  cueStartedAt?: number;
   interaction: TabletCue["interaction"] | null;
   post: TabletPost | null;
   lens: string | null;

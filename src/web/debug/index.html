@@ -77,17 +77,7 @@
       <pre id="config"></pre>
     </section>
 
-    <section class="glass panel span2" id="p-users">
-      <h2>UTILIZATORI <span class="dim">(doar admin)</span></h2>
-      <div id="users"></div>
-      <form id="user-form" class="row">
-        <input id="u-name" placeholder="nume" maxlength="32" />
-        <select id="u-role"><option value="operator">operator</option><option value="viewer">viewer</option><option value="admin">admin</option></select>
-        <input id="u-pin" type="password" aria-label="PIN nou" placeholder="PIN 4–8 cifre" inputmode="numeric" maxlength="8" />
-        <button class="btn" type="submit">CREEAZĂ</button>
-        <span id="user-msg" class="dim"></span>
-      </form>
-    </section>
+    <section class="glass panel span2" id="p-users" hidden><h2>Administrare</h2><p>Conturile, PIN-urile, rolurile și sesiunile se gestionează într-un singur loc.</p><a class="button" href="/admin/">Deschide administrarea</a></section>
 
     <section class="glass panel span2" id="p-logs">
       <h2>JURNAL (ultimele evenimente) <button class="btn small" id="rotate">ROTEȘTE JURNALELE</button> <span id="runlog-path" class="dim"></span></h2>

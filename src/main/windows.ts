@@ -144,6 +144,37 @@ export class WindowManager {
   }
 
   /** The ScreenConfig a renderer belongs to (span: the primary screen — see spanPrimaryScreen). */
+  restoreDisplayBounds(screens: ScreenConfig[]): void {
+    if (this.quitting || this.opts.windowed || this.opts.wallPreview) return;
+    const displays = WindowManager.sortedDisplays();
+    const mapped = screens.map(sc => {
+      const id = this.openedDisplayIds.get(sc.id);
+      const index = id === undefined ? sc.displayIndex : displays.findIndex(d => d.id === id);
+      if (index >= 0 && displays[index] && id === undefined) this.openedDisplayIds.set(sc.id, displays[index].id);
+      return { ...sc, displayIndex: index };
+    });
+    if (this.opts.displayMode === "span") {
+      const win = this.all()[0];
+      if (!win || win.isDestroyed()) return;
+      if (mapped.some(sc => sc.displayIndex < 0 || !displays[sc.displayIndex])) { win.hide(); return; }
+      const layout = this.computeSpanLayout(mapped);
+      const changed = JSON.stringify(layout.viewports) !== JSON.stringify(this.spanLayout?.viewports);
+      this.spanLayout = layout;
+      win.setBounds(layout.bounds);
+      win.show();
+      if (changed) win.webContents.reload(); // getBoot supplies the new viewport geometry while the show is paused.
+      return;
+    }
+    for (const sc of mapped) {
+      const win = this.byScreenId.get(sc.id), display = displays[sc.displayIndex];
+      if (!win || win.isDestroyed() || !sc.kiosk) continue;
+      if (!display) { win.hide(); continue; }
+      win.setBounds(display.bounds);
+      win.setFullScreen(true);
+      win.show();
+    }
+  }
+
   screenFor(webContentsId: number): ScreenConfig | undefined {
     return this.byWebContents.get(webContentsId);
   }
@@ -212,7 +243,8 @@ export class WindowManager {
   private create(sc: ScreenConfig): BrowserWindow {
     const { log } = this.opts;
     const displays = WindowManager.sortedDisplays();
-    let display: Display | undefined = displays[sc.displayIndex];
+    const originalId = this.openedDisplayIds.get(sc.id);
+    let display: Display | undefined = originalId === undefined ? displays[sc.displayIndex] : displays.find(d => d.id === originalId);
     if (!display) {
       display = electronScreen.getPrimaryDisplay();
       log(
@@ -417,7 +449,7 @@ export class WindowManager {
       preload: this.opts.preloadJs,
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
       backgroundThrottling: false,
       spellcheck: false,
     };
@@ -466,10 +498,16 @@ export class WindowManager {
       event.preventDefault();
       log("warn", `${p.label}: blocked renderer navigation`, { url });
     });
-    installWindowShortcuts(win, { log, fullscreenToggle: p.fullscreenToggle });
+    installWindowShortcuts(win, { log, fullscreenToggle: p.fullscreenToggle && !p.kiosk, allowQuit: !p.kiosk });
+    let hangTimer: ReturnType<typeof setTimeout> | null = null;
+    const clearHang = (): void => { if (hangTimer) clearTimeout(hangTimer); hangTimer = null; };
 
     win.once("ready-to-show", () => {
       if (win.isDestroyed()) return;
+      if (p.kiosk && p.screenIds.some(id => {
+        const display = this.openedDisplayIds.get(id);
+        return display !== undefined && !electronScreen.getAllDisplays().some(d => d.id === display);
+      })) return;
       win.show();
       if (p.kiosk) win.focus();
       p.onShown?.();
@@ -481,9 +519,19 @@ export class WindowManager {
     win.webContents.on("did-fail-load", (_event, code, description, url, isMainFrame) => {
       if (isMainFrame) log("error", `${p.label}: renderer failed to load (${code} ${description})`, { url });
     });
-    win.webContents.on("unresponsive", () => log("warn", `${p.label}: renderer unresponsive`));
-    win.webContents.on("responsive", () => log("info", `${p.label}: renderer responsive again`));
+    win.webContents.on("unresponsive", () => {
+      log("warn", `${p.label}: renderer unresponsive; recovery in 10 s unless it responds`);
+      if (hangTimer) return;
+      hangTimer = setTimeout(() => {
+        hangTimer = null;
+        if (this.quitting || this.crashLoop || generation !== this.layoutGeneration || win.isDestroyed()) return;
+        log("error", `${p.label}: sustained renderer hang; invoking crash recovery`);
+        win.webContents.forcefullyCrashRenderer();
+      }, 10_000);
+    });
+    win.webContents.on("responsive", () => { clearHang(); log("info", `${p.label}: renderer responsive again`); });
     win.webContents.on("render-process-gone", (_event, details) => {
+      clearHang();
       log("error", `${p.label}: renderer process gone (${details.reason}, exit code ${details.exitCode})`);
       this.byWebContents.delete(wcId);
       if (this.quitting || generation !== this.layoutGeneration || details.reason === "clean-exit") return;
@@ -497,6 +545,7 @@ export class WindowManager {
       }, RESPAWN_DELAY_MS);
     });
     win.on("closed", () => {
+      clearHang();
       this.byWebContents.delete(wcId);
       this.forget(win, p.screenIds);
     });

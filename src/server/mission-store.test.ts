@@ -1,3 +1,4 @@
+import {activeCrew} from './active-crew.fixture';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,rmSync} from 'node:fs';
@@ -11,7 +12,7 @@ test('SQLite persists an accepted action before ACK, deduplicates and rejects ol
   const dir=mkdtempSync(path.join(os.tmpdir(),'nava-store-')),file=path.join(dir,'runs.sqlite');
   let store=new MissionStore(file);
   try{
-    const session=new MissionSession(store);session.reset('adults','hash');
+    const session=new MissionSession(store);session.reset('adults','hash');activeCrew(session);
     const state={state:'playing',phaseTime:110,rate:1,lang:'ro'} as ShowState;
     const view=session.snapshot(state,1);
     const value=view.view!.zones.A.options.find(o=>!o.disabled)!.value;
@@ -44,7 +45,7 @@ test('SQLite transaction rolls back state when duplicate ledger insert fails',()
 test('shared probe builder opens after a measurement or the observation window, and comfort survives a new group',()=>{
   const dir=mkdtempSync(path.join(os.tmpdir(),'nava-gate-')),store=new MissionStore(path.join(dir,'db.sqlite'));
   try{
-    const s=new MissionSession(store);s.reset('age-10-15','hash');
+    const s=new MissionSession(store);s.reset('age-10-15','hash');activeCrew(s);
     const state={state:'playing',phaseTime:194,rate:1,lang:'ro'} as ShowState;
     const event=(value:string,n:number)=>({type:'missionAction' as const,runId:s.record.runId,cueInstanceId:s.instance(state),eventId:`gate-event-${n}`,zone:'A' as const,value});
     assert.equal(s.accept(event('construct',1),1,state).status,'expired');

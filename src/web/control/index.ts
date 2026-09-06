@@ -1,3 +1,6 @@
+import {PROTOCOL_VERSION} from '@shared/protocol';
+import { ROLE_LABELS, PLAYBACK_LABELS, THEME_LABELS, OPTIONAL_TABLETS_LABEL } from "@shared/ui-labels";
+import { SessionError, sessionFetch as fetch } from "../shared/session";
 import { createPresentation } from "./presentation";
 import { createMissionControl } from "./mission-control";
 import { createExperienceControl } from "./experience-control";
@@ -87,14 +90,6 @@ const dom = {
   answerCount: byId<HTMLSpanElement>("answer-count"),
   answerList: byId<HTMLDivElement>("answer-list"),
   clearAnswers: byId<HTMLButtonElement>("clear-answers"),
-  // users (admin)
-  usersPanel: byId<HTMLElement>("users-panel"),
-  usersNote: byId<HTMLSpanElement>("users-note"),
-  usersList: byId<HTMLDivElement>("users-list"),
-  usersForm: byId<HTMLFormElement>("users-form"),
-  userName: byId<HTMLInputElement>("user-name"),
-  userRole: byId<HTMLSelectElement>("user-role"),
-  userPin: byId<HTMLInputElement>("user-pin"),
   toast: byId<HTMLDivElement>("toast"),
   playButton: byId<HTMLButtonElement>("play-button"),
   pauseButton: byId<HTMLButtonElement>("pause-button"),
@@ -117,14 +112,7 @@ let volumeTimer: number | null = null;
 let perfSamples: PerfSample[] = [];
 let perfSeenAt = 0;
 
-const stateLabels: Record<PlaybackState, string> = {
-  idle: "IDLE",
-  preshow: "PRE-SHOW",
-  playing: "ÎN REDARE",
-  paused: "PAUZĂ",
-  epilogue: "EPILOG",
-  ended: "ÎNCHEIAT",
-};
+const stateLabels: Record<PlaybackState, string> = PLAYBACK_LABELS;
 
 function wsUrl(): string {
   const scheme = location.protocol === "https:" ? "wss:" : "ws:";
@@ -148,8 +136,7 @@ function setCommandNote(message: string, error = false): void {
   dom.commandNote.classList.toggle("error", error);
 }
 
-/** R4 — session token for the WS hello (the cookie is HttpOnly, so /api/auth/me hands it back). */
-let sessionToken: string | null = null;
+/** The browser authenticates HTTP and WebSocket with its HttpOnly session cookie. */
 let sessionUser: { name: string; role: string } | null = null;
 
 function goToLogin(): void {
@@ -164,26 +151,26 @@ async function ensureSession(): Promise<boolean> {
       return false;
     }
     if (!res.ok) return true; // auth endpoint unavailable (older server) — try connecting anyway
-    const data = (await res.json()) as { authenticated?: boolean; token?: string; user?: { name: string; role: string } };
+    const data = (await res.json()) as { authenticated?: boolean; user?: { name: string; role: string } };
     if (!data.authenticated) {
       goToLogin();
       return false;
     }
-    sessionToken = data.token ?? null;
     sessionUser = data.user ?? null;
     applyRole();
     return true;
-  } catch {
+  } catch (error) {
+    if (error instanceof SessionError) { setConnection("offline", error.message); return false; }
     return true;
   }
 }
 
 function applyRole(): void {
   const admin = sessionUser?.role === "admin";
-  dom.usersPanel.hidden = !admin;
+
   // Presentation only: /admin/ and /api/admin/* are guarded on the server by requireRole("admin").
   dom.adminLink.hidden = !admin;
-  if (admin) void loadUsers();
+
   const viewer = sessionUser?.role === "viewer";
   document.body.classList.toggle("is-viewer", viewer);
 }
@@ -198,8 +185,8 @@ function connect(): void {
 
     ws.addEventListener("open", () => {
       reconnectAttempt = 0;
-      setConnection("online", sessionUser ? `Conectat · ${sessionUser.name} (${sessionUser.role})` : "Conectat");
-      ws.send(JSON.stringify({ type: "hello", client: "control", id: "control", ...(sessionToken ? { token: sessionToken } : {}) }));
+      setConnection("online", sessionUser ? `Conectat · ${sessionUser.name} (${ROLE_LABELS[sessionUser.role] ?? sessionUser.role})` : "Conectat");
+      ws.send(JSON.stringify({ type: "hello", protocolVersion:PROTOCOL_VERSION, client: "control", id: "control" }));
     });
     attachSocketHandlers(ws);
   });
@@ -222,6 +209,7 @@ function attachSocketHandlers(ws: WebSocket): void {
         return;
       }
     }
+    if (ev.code === 4403) return;
     reconnectAttempt += 1;
     const delay = Math.min(10_000, 700 * 1.7 ** Math.min(reconnectAttempt, 7));
     setConnection("offline", `Deconectat · reîncerc în ${Math.ceil(delay / 1000)}s`);
@@ -287,18 +275,15 @@ function onMessage(message: ServerMessage): void {
   }
 }
 
+let commandInFlight = false;
 async function dispatch(cmd: Command): Promise<void> {
+  if (commandInFlight) { setCommandNote("Așteaptă confirmarea comenzii în curs."); return; }
+  if (!sessionUser || sessionUser.role === "viewer") { notify("Ai nevoie de rolul Operator pentru această acțiune.", true); return; }
   if (cmd.action === "restart" && !window.confirm("Resetezi show-ul la început? Rolurile tabletelor vor fi eliberate.")) return;
+  if (cmd.action === "start" && state?.readiness && !state.readiness.ready && !window.confirm(`Nava nu este pregătită:\n${state.readiness.reasons.join("\n")}\n\nPornești oricum?`)) return;
+  commandInFlight = true;
   const label = commandLabel(cmd.action);
   setCommandNote(`${label} trimis…`);
-  if (socket?.readyState === WebSocket.OPEN) {
-    socket.send(JSON.stringify({ type: "cmd", cmd }));
-    setCommandNote(`${label} · ${new Date().toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`);
-    if (cmd.action === "seek" || cmd.action === "skipToScene" || cmd.action === "restart") {
-      window.setTimeout(() => void refreshCueStatuses(), 250);
-    }
-    return;
-  }
   try {
     const response = await fetch("/api/cmd", {
       method: "POST",
@@ -316,12 +301,13 @@ async function dispatch(cmd: Command): Promise<void> {
       state = result.state;
       renderState();
     }
-    setCommandNote(`${label} · trimis prin conexiunea de rezervă`);
+    setCommandNote(`${label} · confirmat`);
+    if (["seek", "skipToScene", "restart"].includes(cmd.action)) void refreshCueStatuses();
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     setCommandNote(reason, true);
     notify(reason, true);
-  }
+  } finally { commandInFlight = false; }
 }
 
 async function focusPlayer(): Promise<void> {
@@ -484,6 +470,7 @@ function renderReadiness(readiness: Readiness | undefined, idle: boolean): void 
   dom.readinessMissing.textContent = readiness.screensMissing.length ? readiness.screensMissing.join(", ") : "niciunul";
   dom.readinessMissing.className = readiness.screensMissing.length ? "bad" : "ok";
   dom.readinessTablets.textContent = `${readiness.tabletsConnected}${readiness.tabletsRequired ? ` / ${readiness.tabletsRequired}` : ""}`;
+  dom.readinessTablets.title = readiness.tabletsRequired ? `${readiness.tabletsRequired} tablete obligatorii` : OPTIONAL_TABLETS_LABEL;
   dom.readinessTablets.className = readiness.tabletsConnected < readiness.tabletsRequired ? "bad" : "ok";
   dom.readinessVideo.textContent = readiness.videoReady ? "ÎNCĂRCAT" : "NEÎNCĂRCAT";
   dom.readinessVideo.className = readiness.videoReady ? "ok" : "bad";
@@ -506,16 +493,16 @@ function renderR4Header(): void {
   if (!state) return;
   const variantMeta = state.variant && show?.variants ? show.variants[state.variant] : undefined;
   dom.variantLabel.textContent = state.variant ? (variantMeta?.label ?? state.variant).toUpperCase() : "BAZĂ";
-  dom.autorunLabel.textContent = state.autoRun === undefined ? "—" : state.autoRun ? "ON" : "OFF";
+  dom.autorunLabel.textContent = state.autoRun === undefined ? "—" : state.autoRun ? "Pornit" : "Oprit";
   dom.autorunLabel.style.color = state.autoRun ? "var(--green)" : "";
-  dom.ambientLabel.textContent = state.ambientEnabled === undefined ? "—" : state.ambientEnabled ? "ON" : "OFF";
+  dom.ambientLabel.textContent = state.ambientEnabled === undefined ? "—" : state.ambientEnabled ? "Pornit" : "Oprit";
   dom.ambientLabel.style.color = state.ambientEnabled ? "var(--green)" : "";
   dom.lightsLabel.textContent = (state.lightsDriver ?? "—").toUpperCase();
 
-  dom.ambientToggle.textContent = `AMBIANȚĂ · ${state.ambientEnabled === undefined ? "—" : state.ambientEnabled ? "ON" : "OFF"}`;
+  dom.ambientToggle.textContent = `Ambianță · ${state.ambientEnabled === undefined ? "—" : state.ambientEnabled ? "Pornit" : "Oprit"}`;
   dom.ambientToggle.setAttribute("aria-pressed", String(!!state.ambientEnabled));
   dom.ambientToggle.disabled = state.ambientEnabled === undefined;
-  dom.autorunToggle.textContent = `AUTO-RUN · ${state.autoRun === undefined ? "—" : state.autoRun ? "ON" : "OFF"}`;
+  dom.autorunToggle.textContent = `Pornire automată · ${state.autoRun === undefined ? "—" : state.autoRun ? "Pornit" : "Oprit"}`;
   dom.autorunToggle.setAttribute("aria-pressed", String(!!state.autoRun));
   dom.autorunToggle.disabled = state.autoRun === undefined;
   dom.lightsApply.disabled = state.lightsDriver === "none";
@@ -543,7 +530,7 @@ function renderState(): void {
   dom.sceneLabel.textContent = currentScene?.label ?? (state.state === "idle" ? "În așteptare" : "Fără scenă activă");
   dom.screensCount.textContent = String(state.screensConnected);
   dom.tabletsCount.textContent = String(state.tabletsConnected);
-  dom.themeLabel.textContent = state.theme.toUpperCase();
+  dom.themeLabel.textContent = THEME_LABELS[state.theme] ?? state.theme;
   dom.language.value = state.lang;
 
   const phase = phaseFor(state.state);
@@ -704,7 +691,7 @@ function renderTablets(): void {
       role.textContent = tablet.role ?? "Rol neales";
       copy.append(name, role);
       const status = document.createElement("span");
-      status.textContent = tablet.connected ? "LIVE" : "OFFLINE";
+      status.textContent = tablet.connected ? "Conectată" : "Deconectată";
       if (tablet.post) {
         const mascot = document.createElement("img"); mascot.src = mascotPath(tablet.post, true); mascot.alt = ""; mascot.className = "post-mascot"; item.append(mascot);
       } else { item.append(dot); }
@@ -803,119 +790,6 @@ async function loadAuxiliaryData(): Promise<void> {
 // ---------------------------------------------------------------------------
 // Users (admin only) — /api/users
 
-interface UserRow {
-  id: string;
-  name: string;
-  role: string;
-  createdAt: string;
-  lastLoginAt?: string;
-  disabled?: boolean;
-}
-
-async function usersApi<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, { credentials: "same-origin", cache: "no-store", ...init });
-  if (res.status === 401) {
-    goToLogin();
-    throw new Error("Sesiune expirată");
-  }
-  const data = (await res.json().catch(() => ({}))) as T & { ok?: boolean; reason?: string };
-  if (!res.ok || data.ok === false) throw new Error(data.reason ?? `Eroare ${res.status}`);
-  return data;
-}
-
-async function loadUsers(): Promise<void> {
-  if (sessionUser?.role !== "admin") return;
-  try {
-    const data = await usersApi<{ users: UserRow[] }>("/api/users");
-    dom.usersList.replaceChildren();
-    for (const user of data.users) {
-      const row = document.createElement("div");
-      row.className = `user-row${user.disabled ? " disabled" : ""}`;
-      const copy = document.createElement("div");
-      const name = document.createElement("strong");
-      name.textContent = user.name;
-      const meta = document.createElement("span");
-      meta.textContent = `${user.role}${user.disabled ? " · dezactivat" : ""}${user.lastLoginAt ? ` · ultimul login ${new Date(user.lastLoginAt).toLocaleString("ro-RO", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}` : ""}`;
-      copy.append(name, meta);
-      const actions = document.createElement("div");
-      actions.className = "user-actions";
-      const pin = document.createElement("button");
-      pin.type = "button";
-      pin.className = "text-button";
-      pin.textContent = "PIN";
-      pin.title = "Schimbă PIN-ul";
-      pin.addEventListener("click", () => void changePin(user));
-      const toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "text-button";
-      toggle.textContent = user.disabled ? "Activează" : "Dezactivează";
-      toggle.addEventListener("click", () => void toggleUser(user));
-      const del = document.createElement("button");
-      del.type = "button";
-      del.className = "text-button danger";
-      del.textContent = "Șterge";
-      del.addEventListener("click", () => void deleteUser(user));
-      actions.append(pin, toggle, del);
-      row.append(copy, actions);
-      dom.usersList.append(row);
-    }
-    dom.usersNote.textContent = `${data.users.length} ${data.users.length === 1 ? "utilizator" : "utilizatori"}`;
-    dom.usersNote.classList.remove("error");
-  } catch (error) {
-    dom.usersNote.textContent = error instanceof Error ? error.message : String(error);
-    dom.usersNote.classList.add("error");
-  }
-}
-
-async function changePin(user: UserRow): Promise<void> {
-  const pin = window.prompt(`PIN nou pentru ${user.name} (4–8 cifre):`);
-  if (!pin) return;
-  try {
-    await usersApi(`/api/users/${encodeURIComponent(user.id)}/pin`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin }) });
-    notify(`PIN schimbat pentru ${user.name}.`);
-    await loadUsers();
-  } catch (error) {
-    notify(error instanceof Error ? error.message : String(error), true);
-  }
-}
-
-async function toggleUser(user: UserRow): Promise<void> {
-  try {
-    await usersApi(`/api/users/${encodeURIComponent(user.id)}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ disabled: !user.disabled }) });
-    await loadUsers();
-  } catch (error) {
-    notify(error instanceof Error ? error.message : String(error), true);
-  }
-}
-
-async function deleteUser(user: UserRow): Promise<void> {
-  if (!window.confirm(`Ștergi utilizatorul „${user.name}”?`)) return;
-  try {
-    await usersApi(`/api/users/${encodeURIComponent(user.id)}`, { method: "DELETE" });
-    notify(`Utilizatorul ${user.name} a fost șters.`);
-    await loadUsers();
-  } catch (error) {
-    notify(error instanceof Error ? error.message : String(error), true);
-  }
-}
-
-dom.usersForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  try {
-    await usersApi("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: dom.userName.value.trim(), role: dom.userRole.value, pin: dom.userPin.value }),
-    });
-    dom.userName.value = "";
-    dom.userPin.value = "";
-    notify("Utilizator creat.");
-    await loadUsers();
-  } catch (error) {
-    notify(error instanceof Error ? error.message : String(error), true);
-  }
-});
-
 dom.logout.addEventListener("click", async () => {
   try {
     await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
@@ -952,10 +826,6 @@ document.querySelectorAll<HTMLButtonElement>("[data-command]").forEach((button) 
 });
 
 dom.startExperience.addEventListener("click", () => {
-  if (dom.startExperience.classList.contains("not-ready")) {
-    const reasons = state?.readiness?.reasons.join("\n") ?? "";
-    if (!window.confirm(`Nava nu este pregătită:\n${reasons}\n\nPornești oricum?`)) return;
-  }
   void dispatch({ action: "start" }).then(focusPlayer);
 });
 dom.focusPlayer.addEventListener("click", () => void focusPlayer());
@@ -1047,16 +917,7 @@ dom.clearAnswers.addEventListener("click", async () => {
   }
 });
 
-window.addEventListener("keydown", (event) => {
-  const target = event.target as HTMLElement | null;
-  if (target?.matches("input, select, textarea, button")) return;
-  if (event.code === "Space" || event.code === "Enter") {
-    event.preventDefault();
-    if (state?.state === "idle" || state?.state === "preshow") void dispatch({ action: "start" }).then(focusPlayer);
-    else if (state?.state === "playing") void dispatch({ action: "pause" });
-    else if (state?.state === "paused") void dispatch({ action: "play" });
-  }
-});
+// Space and Enter only activate the focused native control.
 
 // --- D-04 timeline editor -------------------------------------------------------------
 const editor = createTimelineEditor({

@@ -36,7 +36,7 @@
           <p class="scene" id="scene-label">În așteptare</p>
         </div>
         <div class="clock-block">
-          <span class="state-pill" id="playback-state" data-state="idle">IDLE</span>
+          <span class="state-pill" id="playback-state" data-state="idle">În așteptare</span>
           <time id="main-clock">00:00</time>
           <span id="duration-label">/ 12:22</span>
         </div>
@@ -44,9 +44,9 @@
           <div><span>Ecrane</span><strong id="screens-count">0</strong></div>
           <div><span>Tablete</span><strong id="tablets-count">0</strong></div>
           <div><span>Video</span><strong id="video-status">—</strong></div>
-          <div><span>Temă</span><strong id="theme-label">PROLOGUE</strong></div>
+          <div><span>Temă</span><strong id="theme-label">Îmbarcare</strong></div>
           <div><span>Variantă</span><strong id="variant-label">BAZĂ</strong></div>
-          <div><span>Auto-run</span><strong id="autorun-label">OFF</strong></div>
+          <div><span>Pornire automată</span><strong id="autorun-label">Oprit</strong></div>
           <div><span>Ambianță</span><strong id="ambient-label">—</strong></div>
           <div><span>Lumini</span><strong id="lights-label">—</strong></div>
         </div>
@@ -82,8 +82,7 @@
           <span><strong>PORNEȘTE EXPERIENȚA</strong><small id="start-hint">Începe numărătoarea de 10 secunde, apoi filmul.</small></span>
         </button>
         <div class="primary-actions">
-          <button class="button button-preshow" data-command="preshow"><span>01</span> PRE-SHOW</button>
-          <button class="button button-start" data-command="start"><span>02</span> START</button>
+          <button class="button button-preshow" data-command="preshow"><span>01</span> Primirea echipajului</button>
           <button class="button" data-command="play" id="play-button">REDĂ</button>
           <button class="button" data-command="pause" id="pause-button">PAUZĂ</button>
           <button class="button button-epilogue" data-command="epilogue">EPILOG</button>
@@ -168,7 +167,7 @@
             <span class="r4-label">Echipaj și verificări</span>
             <div class="r4-row">
               <button class="button" id="photo-button" type="button">FOTO</button>
-              <button class="button" id="preflight-button" type="button">PREFLIGHT</button>
+              <button class="button" id="preflight-button" type="button">Verifică înainte de pornire</button>
             </div>
           </div>
         </div>
@@ -235,20 +234,11 @@
           </section>
 
           <section class="glass panel answers-panel" aria-labelledby="answers-title">
-            <div class="section-heading"><div><p class="eyebrow">RĂSPUNSURI LIVE</p><h2 id="answers-title">Mesaje <span id="answer-count"></span></h2></div><button id="clear-answers" class="text-button">Șterge</button></div>
+            <div class="section-heading"><div><p class="eyebrow">Răspunsuri în timp real</p><h2 id="answers-title">Mesaje <span id="answer-count"></span></h2></div><button id="clear-answers" class="text-button">Șterge</button></div>
             <div class="answer-list" id="answer-list"><p class="empty">Răspunsurile copiilor vor apărea aici.</p></div>
           </section>
 
-          <section class="glass panel users-panel" id="users-panel" aria-labelledby="users-title" hidden>
-            <div class="section-heading"><div><p class="eyebrow">ADMINISTRARE</p><h2 id="users-title">Utilizatori</h2></div><span class="command-note" id="users-note"></span></div>
-            <div class="users-list" id="users-list"></div>
-            <form class="users-form" id="users-form">
-              <input id="user-name" type="text" placeholder="nume" maxlength="32" required aria-label="Nume utilizator" />
-              <select id="user-role" aria-label="Rol"><option value="operator">operator</option><option value="viewer">viewer</option><option value="admin">admin</option></select>
-              <input id="user-pin" type="password" inputmode="numeric" placeholder="PIN 4–8 cifre" minlength="4" maxlength="8" required aria-label="PIN" />
-              <button class="button compact" type="submit">CREEAZĂ</button>
-            </form>
-          </section>
+
         </aside>
       </div>
     </main>

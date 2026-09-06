@@ -560,7 +560,8 @@ export class ShowDirector {
     this.pendingPhoto = null;
     this.hooks.onLog("photo.captured", { cueId: this.lastPhoto.cueId, bytes: msg.dataUrl.length, showSec });
     this.hooks.onPhoto?.({ type: "photo", action: "show", dataUrl: msg.dataUrl, showSec });
-    if (showSec > 0) this.schedule(() => this.hooks.onPhoto?.({ type: "photo", action: "hide" }), showSec * 1000);
+    const displayed=this.lastPhoto;
+    if (showSec > 0) this.schedule(() => {if(this.lastPhoto===displayed)this.hooks.onPhoto?.({ type: "photo", action: "hide" });}, showSec * 1000);
   }
 
   /** Report from the clock-source screen (~4 Hz). */

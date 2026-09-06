@@ -403,6 +403,7 @@ export class TabletRegistry {
       sceneLabel: input.sceneLabel,
       subtitle: input.subtitle,
       cueId: input.tabletCue?.id ?? null,
+      cueStartedAt: input.tabletCue?.at,
       interaction: input.tabletCue?.interaction ?? null,
       post: null,
       lens: null,

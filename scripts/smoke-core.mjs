@@ -34,7 +34,7 @@ try {
     "renderer overlays with hidden=true must never remain visible above video/avatar",
   );
   const tabletSource = fs.readFileSync(path.join(root, "src/web/tablet/index.ts"), "utf8");
-  assert.match(tabletSource, /DOAR PRIVESC/, "tablet observation copy must use natural Romanian");
+  assert.match(tabletSource, /Doar privesc/, "tablet observation copy must use natural Romanian (sentence case, no shouting caps)");
   const { TABLET_POSTS } = await bundle("src/shared/types.ts", "types");
   assert.deepEqual(
     Object.values(TABLET_POSTS).map((post) => post.perspectives),

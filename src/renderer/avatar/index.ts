@@ -347,7 +347,10 @@ class AvatarControllerImpl implements NavaAvatarController {
     if (!head) return;
     try {
       if (this.attention === "camera") head.lookAtCamera(450);
-      else head.lookAt(Math.round(window.innerWidth * 0.58), Math.round(window.innerHeight * 0.46), 650);
+      else {
+        const bounds = this.opts.container.getBoundingClientRect();
+        head.lookAt(Math.round(bounds.left + bounds.width * 0.58), Math.round(bounds.top + bounds.height * 0.46), 650);
+      }
     } catch {
       /* ignored while the avatar is not fully initialized */
     }

@@ -1,3 +1,4 @@
+import { sessionFetch as fetch } from "../shared/session";
 import { DEFAULT_ACCESSIBILITY, type MissionSnapshot, type PostAccessibility } from '@shared/mission';
 import type { DisplayAutomationStatus } from '@shared/display-topology';
 import type { Command, } from '@shared/protocol';

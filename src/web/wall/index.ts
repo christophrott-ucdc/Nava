@@ -1,3 +1,4 @@
+import { sessionFetch as fetch } from "../shared/session";
 import type {ScreenConfig,VideoWallConfig} from '../../shared/types';
 import { createOpticalWorkshop } from './optical';
 import {samsungWallPreset,validateVideoWall,wallBounds,wallSourceRect,type WallRuntimeInfo} from '../../shared/video-wall';
@@ -100,7 +101,7 @@ $('apply-gap').addEventListener('click',()=>{const gap=Number(input('gap').value
 async function init():Promise<void>{
   try{
     const response=await fetch('/api/wall');
-    if(response.status===401||response.status===403){location.href='/login/?next=%2Fwall%2F';return;}
+
     if(!response.ok)throw new Error('Atelierul nu se poate conecta la player. Reîncarcă pagina.');
     const data=await response.json() as {videoWall:VideoWallConfig|null;screens:Array<{id:string;displayIndex:number;showAvatar:boolean}>;runtime:WallRuntimeInfo};
     if(data.videoWall&&validateVideoWall(data.videoWall).ok){wall=data.videoWall;indices=wall.panels.map(p=>data.screens.find(s=>s.id===p.screenId)?.displayIndex??0);centralId=data.screens.find(s=>s.showAvatar)?.id??'center';}
@@ -114,6 +115,6 @@ let refreshing=false;
 window.setInterval(async()=>{
   if(refreshing||document.hidden)return;refreshing=true;
   try{const r=await fetch('/api/wall');if(!r.ok)throw new Error('disconnected');const d=await r.json();showRuntime(d.runtime,!!d.videoWall?.calibration);}
-  catch{showRuntime({preview:true,displays:[],verifiedScreenIds:[],issues:['Conexiunea cu playerul s-a întrerupt; verificarea hardware trebuie refăcută.']},false)}
+  catch(error){showRuntime({preview:true,displays:[],verifiedScreenIds:[],issues:[error instanceof Error?error.message:'Conexiunea cu playerul s-a întrerupt; verificarea hardware trebuie refăcută.']},false)}
   finally{refreshing=false}
 },5000);

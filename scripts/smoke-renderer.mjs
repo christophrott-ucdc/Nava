@@ -20,7 +20,7 @@ const serverBase = `http://127.0.0.1:${serverPort}`;
 const cfg=JSON.parse(await fs.readFile(path.join(root,process.env.NAVA_CONFIG??'config.json'),'utf8'));
 const authResponse=await fetch(`${serverBase}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:process.env.NAVA_TEST_PIN??cfg.security?.operatorPin??'4078'})});
 assert.equal(authResponse.status,200,'renderer smoke requires a valid operator login');
-const authToken=(await authResponse.json()).token;
+const authToken=/nava_session=([0-9a-f]+)/.exec(authResponse.headers.get('set-cookie')??'')?.[1];assert.ok(authToken,'session token comes from Set-Cookie');
 const deadline = (ms) => Date.now() + ms;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

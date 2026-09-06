@@ -96,7 +96,11 @@ try {
   const cookie = r.headers.get("set-cookie");
   assert.ok(cookie && cookie.includes("nava_session="), "cookie set");
   assert.ok(cookie.includes("HttpOnly"));
-  const adminTok = login.token;
+  // Sessions are cookie-only now: the token never appears in JSON bodies. Bearer auth still accepts the same value.
+  const tokenOf = (res) => /nava_session=([0-9a-f]+)/.exec(res.headers.get("set-cookie") ?? "")?.[1];
+  const adminTok = tokenOf(r);
+  assert.ok(adminTok, "session token comes from Set-Cookie");
+  assert.equal(login.token, undefined, "login body must not expose the token");
   step("login PIN 4078 -> admin session + HttpOnly cookie");
 
   const asAdmin = { Authorization: `Bearer ${adminTok}`, "Content-Type": "application/json" };
@@ -129,7 +133,7 @@ try {
 
   // --- operator
   r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "1234" }) });
-  const opTok = (await r.json()).token;
+  const opTok = tokenOf(r);
   const asOp = { Authorization: `Bearer ${opTok}`, "Content-Type": "application/json" };
   r = await fetch(`${base}/api/cmd`, {method:'POST',headers:asOp,body:JSON.stringify({cmd:{action:'tabletSfx',enabled:false}})});
   assert.equal(r.status,200);
@@ -154,7 +158,7 @@ try {
 
   // --- viewer
   r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "5555" }) });
-  const viewTok = (await r.json()).token;
+  const viewTok = tokenOf(r);
   const asView = { Authorization: `Bearer ${viewTok}`, "Content-Type": "application/json" };
   for(const headers of [asView,{'Content-Type':'application/json'}]){r=await fetch(`${base}/api/cmd`,{method:'POST',headers,body:JSON.stringify({cmd:{action:'tabletSfx',enabled:true}})});assert.equal(r.status,headers===asView?403:401)}
   step('tabletSfx: viewer and anonymous changes rejected');

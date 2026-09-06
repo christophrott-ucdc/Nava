@@ -87,8 +87,13 @@ interface Layers {
   ctx: AudioContext;
   out: GainNode;
   nodes: Array<{ stop(when?: number): void }>;
-  timers: number[];
+  timers: Set<number>;
   disposed: boolean;
+}
+
+function scheduleLayer(l: Layers, action: () => void, delay: number): void {
+  const timer = window.setTimeout(() => { l.timers.delete(timer); if (!l.disposed) action(); }, delay);
+  l.timers.add(timer);
 }
 
 function osc(l: Layers, type: OscillatorType, freq: number, detuneCents = 0): OscillatorNode {
@@ -263,9 +268,9 @@ function pings(l: Layers, s: PingSpec): void {
     o.start(t);
     o.stop(t + a + s.decay + 0.05);
     const next = s.intervalMs * (1 + (Math.random() - 0.5) * 2 * s.jitter);
-    l.timers.push(window.setTimeout(fire, Math.max(150, next)));
+    scheduleLayer(l, fire, Math.max(150, next));
   };
-  l.timers.push(window.setTimeout(fire, 400 + Math.random() * s.intervalMs));
+  scheduleLayer(l, fire, 400 + Math.random() * s.intervalMs);
 }
 
 /** Gated sub: a sine whose gain is pulsed by a slow LFO (launch heartbeat). */
@@ -293,9 +298,9 @@ function breath(l: Layers, everyMs: number, gain: number, lenSec: number): void 
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(gain, t + lenSec * 0.45);
     g.gain.exponentialRampToValueAtTime(0.0001, t + lenSec);
-    l.timers.push(window.setTimeout(swell, everyMs * (0.7 + Math.random() * 0.6)));
+    scheduleLayer(l, swell, everyMs * (0.7 + Math.random() * 0.6));
   };
-  l.timers.push(window.setTimeout(swell, 1500 + Math.random() * 2000));
+  scheduleLayer(l, swell, 1500 + Math.random() * 2000);
 }
 
 /** Rain: band-limited pink noise with wobble + sparse droplet clicks (light version of sfx.ts rain). */
@@ -326,7 +331,7 @@ function rain(l: Layers, gain: number): void {
       src.stop(cursor + len + 0.01);
       cursor += 0.05 + Math.random() * 0.25;
     }
-    l.timers.push(window.setTimeout(schedule, 180));
+    scheduleLayer(l, schedule, 180);
   };
   schedule();
 }
@@ -500,7 +505,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
       return;
     }
     const prev = current;
-    const layers: Layers = { ctx: g.ctx, out: g.ctx.createGain(), nodes: [], timers: [], disposed: false };
+    const layers: Layers = { ctx: g.ctx, out: g.ctx.createGain(), nodes: [], timers: new Set(), disposed: false };
     const bedGain = g.ctx.createGain();
     bedGain.gain.value = 0.0001;
     layers.out.connect(bedGain).connect(g.duck);
@@ -555,7 +560,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
       showPhase=phase;
       // Stop reception before the first show source can start, including local launch commands.
       waiting?.sync(waitingRun,enabled&&waitingEligible&&!waitingPaused&&phase===null);
-      silenceGain=musicSilenceGain(phase,time);if(silence)silence.gain.value=silenceGain;
+      silenceGain=musicSilenceGain(phase,time);if(silence)silence.gain.setTargetAtTime(silenceGain,ctx!.currentTime,.025);
       if(audible&&enabled&&fileCues.length&&!files)graph();
       files?.sync(fileCues,phase,time,rate,enabled);
     },

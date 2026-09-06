@@ -1,4 +1,4 @@
-:root { --text:var(--ink); --muted:var(--ink-soft); --cyan:#426797; --cyan-2:#354d87; --green:#226244; --amber:#73521b; --red:#983b42; --violet:#a88adf; --line:#c9cede80; --line-strong:#9eaaca; --panel:#ffffffb3; }
+body { --text:var(--ink); --muted:var(--ink-soft); --cyan:var(--ink-soft); --cyan-2:var(--ink); --green:var(--ink); --amber:var(--ink); --red:var(--danger); --violet:var(--lavender); --line:color-mix(in srgb,var(--ink-soft) 22%,transparent); --line-strong:var(--ink-soft); --panel:color-mix(in srgb,var(--paper) 76%,transparent); }
 .topbar {
   position: sticky; z-index: 20; top: 0; display: flex; align-items: center; justify-content: space-between;
   min-height: 68px; padding: 10px clamp(18px, 3vw, 42px); border-bottom: 1px solid var(--line);
@@ -288,3 +288,6 @@ body.is-viewer .button:not(#focus-player), body.is-viewer .experience-start, bod
   .users-form { grid-template-columns: 1fr 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+
+/* Shared Glass typography and tactile minimums also apply in dense operator views. */
+.eyebrow{font-size:16px}.button,.btn,.text-button,.nav-link{min-height:48px}.brand-mark{box-shadow:var(--glass-shadow)}

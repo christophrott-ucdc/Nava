@@ -19,6 +19,7 @@ import { pathToFileURL } from "node:url";
 export interface AppPaths {
   isPackaged: boolean;
   appRoot: string;
+  dataRoot: string;
   resourcesRoot: string;
   distRoot: string;
   rendererHtml: string;
@@ -47,6 +48,15 @@ export function computePaths(): AppPaths {
     const cwd = process.cwd();
     appRoot = looksLikeProjectRoot(cwd) ? cwd : appPath;
   }
+  const dataRoot=isPackaged&&!process.env.PORTABLE_EXECUTABLE_DIR?app.getPath('userData'):appRoot;
+  fs.mkdirSync(dataRoot,{recursive:true});
+  // Copy once; never delete or overwrite the original installation's data.
+  if(dataRoot!==appRoot){
+    for(const name of ['data','runs','config.json']){
+      const source=path.join(appRoot,name),target=path.join(dataRoot,name);
+      if(fs.existsSync(source)&&!fs.existsSync(target))fs.cpSync(source,target,{recursive:true,errorOnExist:true,force:false});
+    }
+  }
   const resourcesRoot = isPackaged ? process.resourcesPath : appRoot;
   const distRoot = path.join(isPackaged ? appPath : appRoot, "dist");
 
@@ -60,13 +70,14 @@ export function computePaths(): AppPaths {
   return {
     isPackaged,
     appRoot,
+    dataRoot,
     resourcesRoot,
     distRoot,
     rendererHtml: path.join(distRoot, "renderer", "index.html"),
     preloadJs: path.join(distRoot, "preload", "preload.js"),
     webDir,
-    runsDir: path.join(appRoot, "runs"),
-    cacheDir: path.join(appRoot, "cache"),
+    runsDir: path.join(dataRoot, "runs"),
+    cacheDir: path.join(dataRoot, "cache"),
   };
 }
 

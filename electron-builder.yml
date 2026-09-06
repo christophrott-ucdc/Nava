@@ -39,6 +39,11 @@ extraResources:
     to: config.example.json
 
 asar: true
+electronFuses:
+  runAsNode: false
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  onlyLoadAppFromAsar: true
 # asarUnpack: nothing needed — Electron's fs patches read dist/** from the asar (renderer via loadFile, dist/web via
 # the Hono static server). If static serving from the asar ever misbehaves, add: asarUnpack: ["dist/web/**"]
 # (src/main/paths.ts already prefers app.asar.unpacked/dist/web when it exists).

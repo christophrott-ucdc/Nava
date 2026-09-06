@@ -35,6 +35,8 @@ export class VoicePlayer {
   private readonly analyser: AnalyserNode;
   private readonly timeData: Float32Array<ArrayBuffer>;
   private readonly decoded = new Map<string, AudioBuffer>();
+  private readonly pinned = new Set<string>();
+  private cacheEpoch = 0;
   private current: { fx: FxChain; stop(): void } | null = null;
   private amp = 0;
   private lastAmpAt = 0;
@@ -72,16 +74,30 @@ export class VoicePlayer {
   }
 
   /** Decode (and cache by key). The input buffer is copied; the caller keeps ownership. */
-  async decode(bytes: ArrayBuffer, key: string): Promise<AudioBuffer> {
-    const hit = this.decoded.get(key);
+  async decode(bytes: ArrayBuffer, key: string, pinned = false): Promise<AudioBuffer> {
+    const epoch = this.cacheEpoch;
+    if (pinned) this.pinned.add(key);
+    const hit = this.getDecoded(key);
     if (hit) return hit;
     const buf = await this.ctx.decodeAudioData(bytes.slice(0));
-    this.decoded.set(key, buf);
+    if (epoch === this.cacheEpoch) {
+      this.decoded.set(key, buf);
+      let bytes = 0, count = 0;
+      for (const [id, buffer] of [...this.decoded].reverse()) {
+        if (this.pinned.has(id)) continue;
+        bytes += buffer.length * buffer.numberOfChannels * 4;
+        if (++count > 32 || bytes > 64 * 1024 * 1024) this.decoded.delete(id);
+      }
+    }
     return buf;
   }
 
+  clearDecoded(): void { this.cacheEpoch++; this.decoded.clear(); this.pinned.clear(); }
+
   getDecoded(key: string): AudioBuffer | undefined {
-    return this.decoded.get(key);
+    const hit = this.decoded.get(key);
+    if (hit) { this.decoded.delete(key); this.decoded.set(key, hit); }
+    return hit;
   }
 
   isPlaying(): boolean {
@@ -116,6 +132,7 @@ export class VoicePlayer {
     const finish = () => {
       if (finished) return;
       finished = true;
+      resolveStarted(Number.NaN); // Settle cancelled/failed decodes without leaving waiting lip-sync callbacks alive.
       if (safety !== null) window.clearTimeout(safety);
       try {
         source.onended = null;
@@ -141,8 +158,14 @@ export class VoicePlayer {
       if (finished) return;
       source.buffer = buf;
       source.onended = finish;
-      source.start(ctx.currentTime);
-      resolveStarted(performance.now());
+      const startAt = ctx.currentTime + 0.05;
+      const outputLatency = Math.max(0, ctx.outputLatency || 0);
+      source.start(startAt);
+      const stamp = ctx.getOutputTimestamp();
+      const audibleAt = stamp.performanceTime && stamp.contextTime
+        ? stamp.performanceTime + (startAt - stamp.contextTime) * 1000
+        : performance.now() + (0.05 + ctx.baseLatency + outputLatency) * 1000;
+      resolveStarted(audibleAt);
       // In case `ended` never fires (context suspended...), close out anyway.
       safety = window.setTimeout(finish, buf.duration * 1000 + 2500);
     };
@@ -199,6 +222,7 @@ export class VoicePlayer {
     const finish = () => {
       if (finished) return;
       finished = true;
+      resolveStarted(Number.NaN);
       if (safety !== null) window.clearTimeout(safety);
       try {
         el.onended = null;
@@ -226,7 +250,7 @@ export class VoicePlayer {
       console.warn("[voice] element playback error (rehearse path)");
       finish();
     };
-    el.onplaying = () => resolveStarted(performance.now());
+    el.onplaying = () => resolveStarted(performance.now() + (ctx.baseLatency + (ctx.outputLatency || 0)) * 1000);
     safety = window.setTimeout(finish, effectiveMs + 2500);
     el.play().catch((err: unknown) => {
       console.warn("[voice] element play() rejected:", err);

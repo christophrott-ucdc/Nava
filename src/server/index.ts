@@ -1,3 +1,6 @@
+import {parseClientMessage,isPerfSample} from './client-message';
+import {PROTOCOL_VERSION} from '../shared/protocol';
+import {guardedCommand,guardedCheckpoint} from './guarded-work';
 /**
  * Nava server: Hono HTTP API + static web apps + one WebSocket hub (/ws) for screens, the operator
  * console and the kids' tablets. Started by the Electron main process when role = master
@@ -78,6 +81,7 @@ export interface StartServerOptions {
   config: AppConfig;
   /** Folder with assets/ and media/ (dev: repo root; packaged: dirname(exe) or resourcesPath). */
   appRoot: string;
+  dataRoot?: string;
   /** dist/web (contains control/ and tablet/). */
   webDir: string;
   /** Absolute path to show.json. */
@@ -104,6 +108,7 @@ interface Client {
   remote: string;
   /** R4 — user session (control) or screen token principal; null for tablets. */
   principal: Principal | null;
+  sessionCookie?:string;
 }
 
 /** Resolve a config-relative asset path: appRoot first (user override), then the packaged resources dir. */
@@ -119,24 +124,6 @@ async function resolveAssetPath(appRoot: string, rel: string): Promise<string> {
     }
   }
   return candidates[0];
-}
-
-function isPerfSample(x: unknown): x is Omit<PerfSample, "screenId"> & { screenId?: string } {
-  if (!x || typeof x !== "object") return false;
-  const s = x as Record<string, unknown>;
-  const num = (v: unknown) => typeof v === "number" && Number.isFinite(v);
-  const numOrNull = (v: unknown) => v === null || num(v);
-  return (
-    num(s.videoDropped) &&
-    num(s.videoTotal) &&
-    numOrNull(s.videoFps) &&
-    numOrNull(s.avatarFps) &&
-    numOrNull(s.lipsyncLatencyMs) &&
-    numOrNull(s.driftSec) &&
-    numOrNull(s.roomLevel) &&
-    numOrNull(s.heapMb) &&
-    (s.audioOutput === null || typeof s.audioOutput === "string")
-  );
 }
 
 const HELLO_TIMEOUT_MS = 5000;
@@ -186,162 +173,6 @@ async function loadShowFile(showPath: string): Promise<ShowFile> {
   const v = validateShowFile(parsed);
   if (!v.ok || !v.show) throw new Error(`show.json invalid: ${v.errors.slice(0, 5).join("; ")}`);
   return v.show;
-}
-
-/** Previous hand-written validator (kept for reference / diffing; superseded by show-validate.ts). */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function loadShowFileLegacy(showPath: string): Promise<ShowFile> {
-  const raw = await fs.readFile(showPath, "utf8");
-  const parsed: unknown = JSON.parse(raw);
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("show.json trebuie să fie un obiect");
-  const json = parsed as Record<string, unknown>;
-  if (!Array.isArray(json.scenes) || !Array.isArray(json.cues)) {
-    throw new Error("show.json invalid: lipsesc `scenes` sau `cues`");
-  }
-
-  const sceneIds = new Set<string>();
-  for (const value of json.scenes) {
-    if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("show.json invalid: scenă malformată");
-    const scene = value as Record<string, unknown>;
-    if (typeof scene.id !== "string" || !scene.id.trim() || sceneIds.has(scene.id)) {
-      throw new Error(`show.json invalid: id de scenă lipsă sau duplicat "${String(scene.id)}"`);
-    }
-    if (
-      typeof scene.label !== "string" ||
-      !PHASES.has(String(scene.phase)) ||
-      typeof scene.start !== "number" ||
-      !Number.isFinite(scene.start) ||
-      typeof scene.end !== "number" ||
-      !Number.isFinite(scene.end) ||
-      scene.end < scene.start ||
-      !THEMES.has(String(scene.theme))
-    ) {
-      throw new Error(`show.json invalid: scena "${scene.id}" are câmpuri invalide`);
-    }
-    sceneIds.add(scene.id);
-  }
-
-  const ids = new Set<string>();
-  for (const value of json.cues) {
-    if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("show.json invalid: cue malformat");
-    const cue = value as Record<string, unknown>;
-    if (
-      typeof cue.id !== "string" ||
-      !cue.id.trim() ||
-      cue.id.length > 128 ||
-      typeof cue.at !== "number" ||
-      !Number.isFinite(cue.at) ||
-      !PHASES.has(String(cue.phase)) ||
-      typeof cue.kind !== "string" ||
-      (cue.manual !== undefined && typeof cue.manual !== "boolean")
-    ) {
-      throw new Error(`show.json invalid: cue malformat ${JSON.stringify(cue).slice(0, 100)}`);
-    }
-    if (ids.has(cue.id)) throw new Error(`show.json invalid: id duplicat "${cue.id}"`);
-    ids.add(cue.id);
-
-    switch (cue.kind) {
-      case "voice": {
-        const text = cue.text;
-        if (
-          typeof cue.speaker !== "string" ||
-          !(cue.speaker in SPEAKERS) ||
-          !text ||
-          typeof text !== "object" ||
-          Array.isArray(text) ||
-          typeof (text as Record<string, unknown>).ro !== "string" ||
-          !(text as Record<string, string>).ro.trim()
-        ) {
-          throw new Error(`show.json invalid: cue vocal "${cue.id}"`);
-        }
-        break;
-      }
-      case "countdown":
-        if (typeof cue.from !== "number" || !Number.isFinite(cue.from) || typeof cue.to !== "number" || !Number.isFinite(cue.to)) {
-          throw new Error(`show.json invalid: countdown "${cue.id}"`);
-        }
-        break;
-      case "sfx":
-        if (!SFX.has(String(cue.sfx))) throw new Error(`show.json invalid: sfx "${cue.id}"`);
-        break;
-      case "entity":
-        if (!ENTITIES.has(String(cue.entity)) || (cue.action !== "show" && cue.action !== "hide")) {
-          throw new Error(`show.json invalid: entitate "${cue.id}"`);
-        }
-        break;
-      case "tablet": {
-        const interaction = cue.interaction;
-        if (!interaction || typeof interaction !== "object" || Array.isArray(interaction)) {
-          throw new Error(`show.json invalid: interacțiune tabletă "${cue.id}"`);
-        }
-        const inter = interaction as Record<string, unknown>;
-        const type = inter.type;
-        const simple = type === "waiting" || type === "thanks";
-        const prompted =
-          (type === "question" || type === "message") && typeof inter.prompt === "string" && inter.prompt.trim().length > 0;
-        const rolePick = type === "role-pick" && Array.isArray(inter.roles) && inter.roles.length > 0 && inter.roles.every((x) => typeof x === "string" && x.trim());
-        const vote =
-          type === "vote" &&
-          typeof inter.prompt === "string" &&
-          inter.prompt.trim().length > 0 &&
-          Array.isArray(inter.options) &&
-          inter.options.length > 0 &&
-          inter.options.every((x) => typeof x === "string" && x.trim());
-        const postAssign =
-          type === "post-assign" &&
-          Array.isArray(inter.posts) &&
-          inter.posts.length === 5 &&
-          inter.posts.every((x) => typeof x === "string" && x.trim());
-        const optionValid = (option: unknown): boolean =>
-          (typeof option === "string" && !!option.trim()) ||
-          (!!option &&
-            typeof option === "object" &&
-            !Array.isArray(option) &&
-            typeof (option as Record<string, unknown>).value === "string" &&
-            !!String((option as Record<string, unknown>).value).trim() &&
-            typeof (option as Record<string, unknown>).label === "string" &&
-            !!String((option as Record<string, unknown>).label).trim());
-        const pairedChoice =
-          type === "paired-choice" &&
-          typeof inter.prompt === "string" &&
-          inter.prompt.trim().length > 0 &&
-          Array.isArray(inter.options) &&
-          inter.options.length > 0 &&
-          inter.options.every(optionValid) &&
-          inter.allowObserve === true &&
-          (inter.mode === "color" || inter.mode === "pulse" || inter.mode === "perspective") &&
-          (inter.timeoutSec === undefined ||
-            (typeof inter.timeoutSec === "number" && Number.isFinite(inter.timeoutSec) && inter.timeoutSec > 0));
-        if (!simple && !prompted && !rolePick && !vote && !postAssign && !pairedChoice) {
-          throw new Error(`show.json invalid: interacțiune tabletă "${cue.id}"`);
-        }
-        break;
-      }
-      case "theme":
-        if (!THEMES.has(String(cue.theme))) throw new Error(`show.json invalid: temă "${cue.id}"`);
-        break;
-      case "marker":
-        if (typeof cue.label !== "string" || !cue.label.trim()) throw new Error(`show.json invalid: marker "${cue.id}"`);
-        break;
-      default:
-        throw new Error(`show.json invalid: tip de cue necunoscut "${String(cue.kind)}"`);
-    }
-  }
-  return {
-    title: typeof json.title === "string" ? json.title : "(fără titlu)",
-    version: typeof json.version === "string" ? json.version : "0",
-    videoDurationSec:
-      typeof json.videoDurationSec === "number" && Number.isFinite(json.videoDurationSec) && json.videoDurationSec >= 0
-        ? json.videoDurationSec
-        : 0,
-    timingStatus: json.timingStatus === "aligned" ? "aligned" : "provisional",
-    preshowAutoStart: !!json.preshowAutoStart,
-    launchLeadInSec: typeof json.launchLeadInSec === "number" && json.launchLeadInSec >= 0 ? json.launchLeadInSec : 10,
-    epilogueOnVideoEnd: json.epilogueOnVideoEnd !== false,
-    scenes: json.scenes as ShowFile["scenes"],
-    cues: json.cues as Cue[],
-    ...(typeof json.$schema === "string" && json.$schema ? { $schema: json.$schema } : {}),
-  };
 }
 
 async function readAppVersion(appRoot: string): Promise<string> {
@@ -408,7 +239,10 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   let rehearsal:TechnicalRehearsal|undefined;
   let topologyApplying=false;
   let recoveryIssue:string|null=null;
-  let photoRequest:{runId:string;photoRequestId:string;expiresAt:number}|null=null;
+  type PhotoRequest = { runId: string; photoRequestId: string; expiresAt: number };
+  /** Outstanding capture request (20 s window) and the photo currently displayed on screens. */
+  let photoRequest: PhotoRequest | null = null;
+  let photoDisplay: PhotoRequest | null = null;
   if(mission.recovery){
     try {
       const recovered=await loadScenario(opts.appRoot,mission.recovery.scenarioId,legacyShow);
@@ -427,10 +261,10 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   // --- auth (PIN sessions for the console, shared token for screens) ------------
   // Audit log lives next to users.json / sessions.json (data/ by default).
   const usersFile = config.security?.usersFile ?? "data/users.json";
-  const auditLog = new AuditLog(path.resolve(opts.appRoot, path.dirname(usersFile), "audit.jsonl"), log);
+  const auditLog = new AuditLog(path.resolve(opts.dataRoot ?? opts.appRoot, path.dirname(usersFile), "audit.jsonl"), log);
   const auth = createAuth({
     config,
-    appRoot: opts.appRoot,
+    appRoot: opts.dataRoot ?? opts.appRoot,
     log,
     audit: auditLog,
     // An open console keeps the principal from its `hello`; close it so the change applies immediately.
@@ -516,7 +350,10 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       const e=mission.record.experience;
       if(['preshow','start'].includes(cmd.action)&&director.getState().state==='idle'){
         if(e?.crew?.open&&source.startsWith('autoRun'))return {ok:false,reason:'Operatorul confirmă încheierea îmbarcării înainte de plecare.'};
-        const crew=crewReadiness();if(crew?.reasons.length)return {ok:false,reason:crew.reasons.join(' ')};
+        // The legacy show runs with anonymous posts: an empty crew must not block it. Once characters
+        // were confirmed, the reconnect check still applies to every package.
+        const crew=crewReadiness();
+        if(crew?.reasons.length&&!(activePackage.id==='legacy-v3'&&crew.required===0))return {ok:false,reason:crew.reasons.join(' ')};
         if(e?.status==='pending'&&activePackage.id!=='legacy-v3'&&!narrator)return {ok:false,reason:'Vocile tutorialului lipsesc. Verifică pachetul sau omite explicit tutorialul din consolă.'};
         if(e?.crew?.open){e.crew.open=false;mission.record.progress.participants=[...e.participants];mission.store.save(mission.record);}
       }
@@ -541,8 +378,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     },
     onPhoto: (msg) => {
       if(msg.action==='countdown')photoRequest={runId:mission.record.runId,photoRequestId:randomBytes(16).toString('hex'),expiresAt:Date.now()+20000};
-      if(!photoRequest||photoRequest.runId!==mission.record.runId||Date.now()>photoRequest.expiresAt)return;
-      broadcast(['screen','tablet','control'],{...msg,...photoRequest});
+      // countdown/capture belong to the outstanding request; show/hide to the photo being displayed.
+      const context=msg.action==='countdown'||msg.action==='capture'?photoRequest:photoDisplay;
+      if(!context||context.runId!==mission.record.runId)return;
+      broadcast(['screen','tablet','control'],{...msg,...context});
+      if(msg.action==='hide')photoDisplay=null;
     },
     onLights: (theme, fadeSec, source) => lights.apply(theme, fadeSec, source),
     onPreflightRequest: () => void runPreflightNow().catch((err) => log("warn", "preflight failed", { err: String(err) })),
@@ -623,6 +463,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
 
   const makeWelcome = (): WelcomeMsg => ({
     type: "welcome",
+      protocolVersion:PROTOCOL_VERSION,
     serverTimeMs: Date.now(),
     state: director.getState(),
     show: director.getShow(),
@@ -664,7 +505,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   };
 
   /** Single entry point for commands from console / keyboard / HTTP. */
-  const handleCommand = async (cmd: Command, source: string): Promise<DispatchResult> => {
+  const executeCommand = async (cmd: Command, source: string): Promise<DispatchResult> => {
     if (stopped) return { ok: false, reason: "Serverul se oprește." };
     if(rehearsal?.running)return {ok:false,reason:'Repetiția tehnică este în curs. Folosește Anulează repetiția.'};
     if(config.autoDisplays?.enabled&&['start','preshow','play','rehearse'].includes(cmd.action)){
@@ -682,7 +523,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       if(mission.recovery&&mission.recovery.runId!==mission.record.runId){mission.store.save({...mission.recovery,status:'interrupted'});}
       director.resumeSuspended();mission.recovery=null;recoveryIssue=null;
     }
-    if(cmd.action==='seek'||cmd.action==='skipToScene'){mission.seek();director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:mission.record.timelineEpoch});}
+
     if (cmd.action === "preflight") {
       const r = await runPreflightNow();
       return r.ok ? { ok: true } : { ok: false, reason: `Preflight cu probleme: ${r.reasons.join("; ")}` };
@@ -692,21 +533,32 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       if (!r.ok) return r;
     }
     const res = director.dispatchCommand(cmd, source);
+    if(res.ok&&(cmd.action==='seek'||cmd.action==='skipToScene')){mission.seek();director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:mission.record.timelineEpoch});}
     if (cmd.action === "restart") {
       tablets.resetRoles();
       tablets.clearAnswers();
       broadcastTablets();
       pushTabletView(true);
     }
-    mission.checkpoint(director.getState());
+    guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Mission checkpoint failed; show retained',{error:String(error)}));
     pushMission();
     return res;
   };
+
+  const handleCommand=(cmd:Command,source:string):Promise<DispatchResult>=>guardedCommand(
+    ()=>executeCommand(cmd,source),
+    error=>{log('error','Command failed',{source,action:cmd.action,error:String(error)});return {ok:false,reason:'Comanda nu a putut fi aplicată. Verifică starea navei înainte să reîncerci.'};},
+  );
 
   // --- HTTP -------------------------------------------------------------------
   const app = new Hono<AuthEnv>();
   app.use("*", cors({ origin: "*", allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], allowHeaders: ["Content-Type", "Authorization"] }));
   app.use("*", auth.identify);
+  app.use('/api/*',async(c,next)=>{
+    // Native renderers authenticate with a bearer token; browser mutations must be same-origin.
+    if(auth.principalOf(c)?.kind==='screen')return next();
+    return auth.sameOrigin(c,next);
+  });
   app.use("/api/*", async (c, next) => {
     const t0 = Date.now();
     await next();
@@ -769,9 +621,9 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       delete mission.record.progress.participants;
       mission.record.experience={...freshExperience(),crew:undefined,participants:Array.from({length:10},(_,i)=>`${Math.floor(i/2)+1}${i%2?'B':'A'}`),status:'skipped'};
       director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:0});
-      director.dispatchCommand({action:'setRate',rate:1},'diagnostic');director.dispatchCommand({action:'preshow'},'diagnostic');mission.checkpoint(director.getState());pushMission();
+      director.dispatchCommand({action:'setRate',rate:1},'diagnostic');director.dispatchCommand({action:'preshow'},'diagnostic');guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Mission checkpoint failed; show retained',{error:String(error)}));pushMission();
     },
-    finish:()=>{mission.checkpoint(director.getState());director.dispatchCommand({action:'restart'},'diagnostic');pushMission();},
+    finish:()=>{guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Mission checkpoint failed; show retained',{error:String(error)}));director.dispatchCommand({action:'restart'},'diagnostic');pushMission();},
   });
   app.post('/api/diagnostics/cancel',operator,async c=>{await rehearsal?.cancel();return c.json({ok:true});});
   app.get('/api/diagnostics/latest',viewer,async c=>{
@@ -846,10 +698,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       if(!e.crew?.open||e.status!=='pending'||typeof body.seat!=='string'||! /^[1-5][AB]$/.test(body.seat))return fail('Redeschide alegerea personajelor înainte de a elibera un loc.');
       delete e.crew.characters[body.seat];e.participants=e.participants.filter(seat=>seat!==body.seat);
     }else if(body.action==='participants'){
-      if(e.crew)return fail('Participanții își confirmă personajele pe tablete. Folosește Redeschide alegerea pentru modificări.');
+      // The operator may fix the roster manually until the first character is confirmed on a tablet; doing so closes registration.
+      if(e.crew&&Object.keys(e.crew.characters).length)return fail('Participanții își confirmă personajele pe tablete. Folosește Redeschide alegerea pentru modificări.');
       if(e.status==='tutorial'&&e.step!=='touch')return fail('Lista se fixează la recunoaștere. Repornește tutorialul pentru a adăuga participanți mai târziu.');
       if(!validParticipants(body.participants)||e.launchRequested)return fail('Selectează între unu și zece participanți, fără dubluri.');
-      e.participants=[...body.participants];e.epoch++;
+      e.participants=[...body.participants];e.epoch++;if(e.crew)e.crew.open=false;
     }else if(body.action==='reopenCrew'){
       if(!e.crew)return fail('Pregătește un grup nou pentru selecția personajelor.');
       const crew={...e.crew,open:true},participants=[...e.participants];Object.assign(e,freshExperience(),{crew,participants,epoch:e.epoch+1});
@@ -970,7 +823,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   app.get("/api/show", (c) => c.json(director.getShow()));
   app.post("/api/show/reload", async (c) => {
     const r = await handleCommand({ action: "reloadShow" }, "http");
-    return c.json({ ...r, show: director.getShow() }, r.ok ? 200 : 500);
+    return c.json({ ...r, show: director.getShow() }, r.ok ? 200 : 409);
   });
   app.get("/api/cues", (c) => c.json({ statuses: director.cues.statuses(), lastVoiceCueId: director.cues.voice?.cue.id ?? null }));
   app.get("/api/config", (c) =>
@@ -1126,6 +979,12 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       socket.destroy();
       return;
     }
+    // Browser clients must come from this server's own origin. The Electron renderers load from file://
+    // (Origin "file://" or "null") and authenticate with the screen token instead, so they are let through here.
+    const origin=req.headers.origin;
+    if(origin&&origin!=='null'&&!origin.startsWith('file:')){
+      try{if(new URL(origin).host!==req.headers.host){socket.destroy();return;}}catch{socket.destroy();return;}
+    }
     wss.handleUpgrade(req, socket, head, (ws) => wss.emit("connection", ws, req));
   });
   await new Promise<void>((resolve, reject) => {
@@ -1161,6 +1020,8 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   };
 
   const onHello = (client: Client, msg: HelloMsg): void => {
+    if(msg.protocolVersion!==undefined&&msg.protocolVersion!==PROTOCOL_VERSION){send(client,{type:'error',reason:'Versiune incompatibilă. Actualizează aplicația.',code:4406});client.ws.close(4406,'protocol mismatch');return;}
+    if(msg.protocolVersion===undefined)log('warn','Legacy client without protocol version',{id:msg.id});
     if (client.kind !== null) {
       send(client, { type: "error", reason: "hello a fost deja trimis" });
       client.ws.close(1008, "duplicate hello");
@@ -1171,7 +1032,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       client.ws.close(1008, "bad hello");
       return;
     }
-    const authResult = auth.authenticateHello(msg);
+    const authResult = auth.authenticateHello(msg,client.sessionCookie);
     if (!authResult.ok) {
       log("warn", `ws hello rejected (${authResult.code}) for ${msg.client}`, { id: msg.id, remote: client.remote, reason: authResult.reason });
       send(client, { type: "error", reason: authResult.reason, code: authResult.code });
@@ -1212,7 +1073,8 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       return;
     }
     if(activePackage.id!=='legacy-v3'&&!['set-post','ping'].includes(msg.event.kind))return;
-    if(msg.event.kind==='choice'&&mission.record.experience?.crew){
+    // Legacy show with no confirmed characters keeps anonymous seats open; registered crews are enforced everywhere.
+    if(msg.event.kind==='choice'&&mission.record.experience?.crew&&!(activePackage.id==='legacy-v3'&&mission.record.experience.participants.length===0)){
       const post=tablets.tablets.get(client.id)?.post,e=mission.record.experience;
       if(e.crew?.open||!post||!e.participants.includes(`${post}${msg.event.zone}`)){send(client,{type:'error',reason:'Acest loc nu are un personaj confirmat pentru misiune.'});return;}
     }
@@ -1250,6 +1112,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       connectedAt: Date.now(),
       remote: req.socket.remoteAddress ?? "?",
       principal: null,
+      sessionCookie: req.headers.origin==='null'?undefined:req.headers.cookie?.split(';').map(v=>v.trim()).find(v=>v.startsWith('nava_session='))?.slice('nava_session='.length),
     };
     clients.add(client);
     const helloTimer = setTimeout(() => {
@@ -1270,9 +1133,9 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       }
       let msg: ClientMessage;
       try {
-        msg = JSON.parse(data.toString()) as ClientMessage;
+        const parsed=parseClientMessage(data.toString());if(!parsed)throw new Error('Invalid message');msg=parsed;
       } catch {
-        send(client, { type: "error", reason: "JSON invalid" });
+        send(client, { type: "error", reason: "mesaj invalid sau incomplet" });
         return;
       }
       if (!msg || typeof msg !== "object" || typeof msg.type !== "string") {
@@ -1384,7 +1247,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
             .then(() => fs.writeFile(path.join(photosDir, `${acceptedPhoto.runId}-${stamp}.${ext}`), Buffer.from(dataUrl.split(",")[1] ?? "", "base64")))
             .then(() => runlog.write("photo.saved", { file: `${acceptedPhoto.runId}-${stamp}.${ext}` }))
             .catch((err) => log("warn", "photo save failed", { err: String(err) }));
-          broadcast(["screen", "tablet", "control"], { type: "photo", action: "show", dataUrl, showSec: 12,...acceptedPhoto });
+          photoDisplay=acceptedPhoto;director.onPhotoCaptured({...msg,dataUrl});
           break;
         }
         default:
@@ -1438,7 +1301,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     pushTabletView();
   }, Math.round(1000 / clockHz));
   const stateTimer = setInterval(() => {
-    if(!recoveryIssue)mission.checkpoint(director.getState());
+    if(!recoveryIssue)guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Mission checkpoint failed; show retained',{error:String(error)}));
     if (config.displayMode === "span") updateCounts();
     broadcast(["control", "tablet"], { type: "state", state: director.getState() });
     const samples = perf.snapshot();
@@ -1489,7 +1352,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       await rehearsal?.cancel('Serverul se oprește.');
       if (stopped) return;
       stopped = true;
-      if(!recoveryIssue)mission.checkpoint(director.getState());
+      if(!recoveryIssue)guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Mission checkpoint failed; show retained',{error:String(error)}));
       mission.store.close();
       clearInterval(clockTimer);
       clearInterval(stateTimer);

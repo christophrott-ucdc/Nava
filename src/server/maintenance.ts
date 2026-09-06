@@ -10,11 +10,11 @@ import type { LogFn } from "./runlog";
 export interface RotateResult {
   deleted: string[];
   moved: string[];
-  kept: { show: number; app: number };
+  kept: { show: number; app: number; diagnostic: number };
 }
 
 export async function rotateRuns(runsDir: string, keep: number, protect: Array<string | null | undefined>, log: LogFn): Promise<RotateResult> {
-  const result: RotateResult = { deleted: [], moved: [], kept: { show: 0, app: 0 } };
+  const result: RotateResult = { deleted: [], moved: [], kept: { show: 0, app: 0, diagnostic: 0 } };
   let entries: string[];
   try {
     entries = await fs.readdir(runsDir);
@@ -37,7 +37,7 @@ export async function rotateRuns(runsDir: string, keep: number, protect: Array<s
     }
   }
 
-  for (const family of ["show", "app"] as const) {
+  for (const family of ["show", "app", "diagnostic"] as const) {
     const files = entries
       .filter((n) => n.startsWith(`${family}-`) && n.endsWith(".jsonl"))
       .map((n) => path.join(runsDir, n))

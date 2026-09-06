@@ -1,3 +1,4 @@
+import { OPTIONAL_TABLETS_LABEL } from "@shared/ui-labels";
 import { SPEAKERS, type Cue, type SceneTheme, type ShowFile, type ShowState } from "@shared/types";
 import type { Command, TabletsMsg } from "@shared/protocol";
 import { icon, mascotPath } from "../shared/glass";
@@ -78,7 +79,7 @@ export function createPresentation(deps: {
     <div class="present-checks" id="present-checks" aria-live="polite"></div>
     <div class="present-actions">
       <button type="button" class="present-primary" data-present-command="preshow">${icon("rocket")} Primește echipajul</button>
-      <button type="button" data-present-command="start">${icon("play")} Sari la lansare</button>
+      <button type="button" data-present-command="start">${icon("play")} Pornește călătoria</button>
       <button type="button" data-present-command="pause">${icon("pause")} Pauză</button>
       <button type="button" data-present-command="play">${icon("play")} Continuă</button>
       <button type="button" data-present-command="epilogue">${icon("flag")} Treci la epilog</button>
@@ -121,7 +122,7 @@ export function createPresentation(deps: {
     const closing = ended || state?.state === "epilogue";
     el("present-stage").textContent = closing ? "ÎNCHEIEM ÎMPREUNĂ" : mode === "live" ? "MISIUNEA ESTE ÎN MÂINILE TALE" : "PREGĂTIM CĂLĂTORIA";
     el("present-title").textContent = ended ? "O călătorie de ținut minte." : closing ? "Înapoi acasă, împreună." : mode === "live" ? "Privește echipajul. Ascultă povestea." : "Un echipaj. O singură navă.";
-    el("present-guidance").textContent = ended ? "Lasă echipajul să salveze certificatele și fotografia. Apoi pregătește următorul grup." : closing ? "Lasă ultimele replici să se încheie. Certificatele și fotografia rămân parte din experiența echipajului." : mode === "live" ? "Urmărește cele cinci perechi. Pune pauză când echipajul are nevoie de tine." : "Verifică ecranele și cele cinci perechi. „Primește echipajul” pornește pre-show-ul.";
+    el("present-guidance").textContent = ended ? "Lasă echipajul să salveze certificatele și fotografia. Apoi pregătește următorul grup." : closing ? "Lasă ultimele replici să se încheie. Certificatele și fotografia rămân parte din experiența echipajului." : mode === "live" ? "Urmărește participanții prezenți. Pune pauză când echipajul are nevoie de tine." : "Verifică ecranele și participanții prezenți. „Primește echipajul” deschide primirea la bord.";
     const checks = [
       { ok: !!readiness && readiness.screensConnected.length>0 && readiness.screensMissing.length === 0, text: readiness ? `${readiness.screensConnected.length} ${readiness.screensConnected.length === 1 ? "ecran conectat" : "ecrane conectate"}${readiness.screensMissing.length ? ` · lipsesc ${readiness.screensMissing.join(", ")}` : ""}` : "Așteptăm ecranele" },
       { ok: !!state?.videoReady, text: state?.videoReady ? "Filmul este pregătit" : "Filmul nu este încă pregătit" },
@@ -138,8 +139,13 @@ export function createPresentation(deps: {
       const action = button.dataset.presentCommand;
       const allowed = action === "preshow" || action === "start" ? state?.state === "idle" || state?.state === "preshow" : action === "pause" ? state?.state === "playing" : action === "play" ? state?.state === "paused" : action === "restart" ? !!state && state.state !== "idle" : !!state;
       button.disabled = disabled || !allowed;
+      button.classList.toggle("present-primary", action === (state?.state === "idle" ? "preshow" : state?.state === "preshow" ? "start" : state?.state === "paused" ? "play" : closing ? "restart" : "pause"));
       button.hidden = mode === "before" && !closing ? action === "pause" || action === "play" || action === "epilogue" || action === "restart" : closing ? action !== "restart" : action === "preshow" || action === "start" || action === "restart";
     });
+    if (mode === "before" && !closing) {
+      panel.querySelector<HTMLButtonElement>('[data-present-command="preshow"]')!.hidden = state?.state !== "idle";
+      panel.querySelector<HTMLButtonElement>('[data-present-command="start"]')!.hidden = state?.state !== "preshow";
+    }
     const names = ["NAVIGAȚIE", "PROPULSIE", "COMUNICAȚII", "BIOSEMNALE", "MEMORIE"];
     let connected = 0;
     el("present-posts").replaceChildren(...([1, 2, 3, 4, 5] as const).map(post => {
@@ -151,7 +157,9 @@ export function createPresentation(deps: {
       const status = document.createElement("span"); status.textContent = tablet?.connected ? `Conectat${tablet.name ? ` · ${tablet.name}` : ""}` : "Așteaptă conectarea"; copy.append(title, status);
       const mark = document.createElement("span"); mark.innerHTML = icon(tablet?.connected ? "check" : "tablet"); card.append(image, copy, mark); return card;
     }));
-    el("present-post-count").textContent = `${connected} / 5 gata`;
+    el("present-post-count").textContent = `${connected} conectate`;
+    const crewNote = panel.querySelector<HTMLElement>(".present-crew-note")!;
+    crewNote.textContent = readiness?.tabletsRequired === 0 ? OPTIONAL_TABLETS_LABEL : `Sunt necesare ${readiness?.tabletsRequired ?? "…"} tablete pentru configurația curentă. A citește din stânga, B din dreapta.`;
     const phase = state?.state === "preshow" || state?.state === "idle" ? "preshow" : closing ? "epilogue" : "play";
     const upcoming = (show?.cues ?? []).filter(cue => cue.phase === phase && !cue.manual && cue.at >= (state?.state === "idle" ? 0 : time) && statuses[cue.id] !== "fired" && statuses[cue.id] !== "skipped").sort((a, b) => a.at - b.at).slice(0, 3);
     el("present-phase").textContent = phase === "play" ? "FILM" : phase === "preshow" ? "PRE-SHOW" : "EPILOG";

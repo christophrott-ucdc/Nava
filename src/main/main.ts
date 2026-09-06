@@ -16,8 +16,9 @@
  *
  * CLI:  --config <path>  --dev  --role master|follower  --screen <id>  --windowed  --kiosk
  */
-import { app, dialog, Menu, powerSaveBlocker } from "electron";
+import { app, crashReporter, dialog, Menu, powerSaveBlocker, screen as electronScreen, session } from "electron";
 import path from "node:path";
+import fs from "node:fs";
 import type { Command } from "../shared/protocol";
 import { startServer, type ServerHandle } from "../server/index";
 import { loadConfig, parseArgs } from "./config";
@@ -35,10 +36,11 @@ const CHROMIUM_SWITCHES: Array<[name: string, value?: string]> = [
   ["ignore-gpu-blocklist"],
   ["enable-gpu-rasterization"],
   ["disable-renderer-backgrounding"],
-  ["force_high_performance_gpu"],
+  ["force-high-performance-gpu"],
 ];
 
 const cli = parseArgs(process.argv.slice(1));
+app.disableDomainBlockingFor3DAPIs();
 
 for (const [name, value] of CHROMIUM_SWITCHES) {
   if (value === undefined) app.commandLine.appendSwitch(name);
@@ -57,7 +59,7 @@ function fatal(context: string, err: unknown): void {
   const message = err instanceof Error ? (err.stack ?? err.message) : String(err);
   log("error", context, err);
   try {
-    dialog.showErrorBox("NavaPlayer", `${context}\n\n${message}`);
+    if (!cli.kiosk && (!app.isPackaged || cli.windowed || cli.dev)) dialog.showErrorBox("NavaPlayer", `${context}\n\n${message}`);
   } catch {
     /* no display */
   }
@@ -118,6 +120,9 @@ async function main(): Promise<void> {
   let relaunching = false;
   let powerBlockerId: number | null = null;
   let displayInventory: DisplayInventoryManager | null = null;
+  let displayTimer: ReturnType<typeof setTimeout> | null = null;
+  let removeDisplayListeners: (() => void) | null = null;
+  let gpuFailures: number[] = [];
 
   const releasePowerBlocker = (): void => {
     if (powerBlockerId !== null && powerSaveBlocker.isStarted(powerBlockerId)) powerSaveBlocker.stop(powerBlockerId);
@@ -128,6 +133,8 @@ async function main(): Promise<void> {
     log("info", "shutting down");
     windows?.setQuitting();
     displayInventory?.stop();
+    if (displayTimer) clearTimeout(displayTimer);
+    removeDisplayListeners?.();
     if (server) {
       try {
         await withTimeout(server.stop(), 3000);
@@ -187,11 +194,16 @@ async function main(): Promise<void> {
   app.on("window-all-closed", () => app.quit());
   app.on("child-process-gone", (_event, details) => {
     if (details.type === "GPU") {
+      if (shuttingDown || details.reason === "clean-exit") return;
+      const now = Date.now();
+      gpuFailures = gpuFailures.filter(at => now - at < 60_000);
+      gpuFailures.push(now);
       log(
         "error",
         `GPU process gone (${details.reason}, exit code ${details.exitCode}) - Chromium restarts it; renderers may flicker or fall back to software`,
         details,
       );
+      if (gpuFailures.length >= 2) relaunch("repeated GPU process failure within 60 s");
     } else {
       log("warn", `child process gone: ${details.type} (${details.reason}, exit code ${details.exitCode})`, details);
     }
@@ -208,6 +220,12 @@ async function main(): Promise<void> {
   // --- paths + logging (+ rotation of app-*.jsonl) -------------------------------------------------
   const paths = computePaths();
   const logFile = initLogger(paths.runsDir);
+  try {
+    const dumps = path.join(paths.runsDir, "crashes");
+    fs.mkdirSync(dumps, { recursive: true });
+    app.setPath("crashDumps", dumps);
+    crashReporter.start({ uploadToServer: false, compress: true });
+  } catch (err) { log("warn", "local crash reporter unavailable", err); }
   const rotation = rotateRunLogs(paths.runsDir, KEEP_APP_LOGS);
   log("info", "NavaPlayer starting", {
     version: app.getVersion(),
@@ -246,6 +264,7 @@ async function main(): Promise<void> {
   const { config, configPath, created, screenTokenGenerated } = loadConfig({
     cli,
     appRoot: paths.appRoot,
+    dataRoot: paths.dataRoot,
     resourcesRoot: paths.resourcesRoot,
     log,
   });
@@ -324,6 +343,7 @@ async function main(): Promise<void> {
       server = await startServer({
         config,
         appRoot: paths.appRoot,
+        dataRoot: paths.dataRoot,
         webDir: paths.webDir,
         showPath: show.abs,
         cacheDir: paths.cacheDir,
@@ -350,6 +370,7 @@ async function main(): Promise<void> {
         ].join("\n"),
       );
     } catch (err) {
+      if (cli.kiosk || (app.isPackaged && !windowed)) throw err;
       wsUrl = `ws://127.0.0.1:${config.server.port}/ws`;
       serverHttpUrl = null;
       log(
@@ -378,6 +399,34 @@ async function main(): Promise<void> {
     onCrashLoop: (crashes, windowMs) => relaunch(`${crashes} renderer crashes within ${Math.round(windowMs / 1000)} s`),
   });
   windows = wm;
+  // Only the bundled player may request its existing photo/microphone media features.
+  const trustedPlayer = (contents: Electron.WebContents | null): boolean => !!contents && !!wm.screenFor(contents.id)
+    && contents.getURL().split("?")[0] === toFileUrl(paths.rendererHtml);
+  const playerPermissions = new Set(["media", "speaker-selection", "local-network", "local-network-access", "loopback-network"]);
+  session.defaultSession.setPermissionRequestHandler((contents, permission, callback, details) => {
+    callback(playerPermissions.has(permission) && details.isMainFrame && trustedPlayer(contents));
+  });
+  session.defaultSession.setPermissionCheckHandler((contents, permission) => playerPermissions.has(permission) && trustedPlayer(contents));
+  {
+    const topologyChanged = (): void => {
+      if (shuttingDown) return;
+      if (!displayInventory) {
+        if (server?.onDisplayTopologyChanged) server.onDisplayTopologyChanged("Display connection or geometry changed");
+        else if (server) server.dispatchCommand({ action: "pause" });
+        else link?.dispatch({ action: "pause" });
+      }
+      if (displayTimer) clearTimeout(displayTimer);
+      displayTimer = setTimeout(() => { displayTimer = null; wm.restoreDisplayBounds(config.screens); }, 800);
+    };
+    electronScreen.on("display-added", topologyChanged);
+    electronScreen.on("display-removed", topologyChanged);
+    electronScreen.on("display-metrics-changed", topologyChanged);
+    removeDisplayListeners = () => {
+      electronScreen.removeListener("display-added", topologyChanged);
+      electronScreen.removeListener("display-removed", topologyChanged);
+      electronScreen.removeListener("display-metrics-changed", topologyChanged);
+    };
+  }
 
   const dispatchCommand = (cmd: Command): void => {
     if (server) server.dispatchCommand(cmd);
@@ -387,6 +436,7 @@ async function main(): Promise<void> {
 
   const security = config.security;
   registerIpc({
+    allowQuit: windowed || isDev,
     getBoot: (webContentsId): BootInfo => {
       const screen = wm.screenFor(webContentsId);
       if (!screen) throw new Error(`getBoot from unknown webContents #${webContentsId}`);

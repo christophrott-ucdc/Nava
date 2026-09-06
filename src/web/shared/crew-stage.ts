@@ -22,6 +22,9 @@ export function createCrewStage(host: HTMLElement) {
   const arrivals = new Map<string, number>();
   let frame = 0, reduced = false, paused = false, flatOnly = false, unsupported = false, lost = false, disposed = false;
   const forceFlat = new URLSearchParams(location.search).get('graphics') === '2d';
+  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  let slowFrames = 0, qualityLow = memory !== undefined && memory <= 4;
+  if (qualityLow) document.documentElement.dataset.glassQuality = 'low';
   const motion = matchMedia('(prefers-reduced-motion: reduce)'), abort = new AbortController();
   const camera = new THREE.OrthographicCamera(-6, 6, 2.6, -2.6, .1, 40); camera.position.z = 12;
   const resize = new ResizeObserver(() => invalidate()); resize.observe(host);
@@ -30,7 +33,7 @@ export function createCrewStage(host: HTMLElement) {
   function stop() { cancelAnimationFrame(frame); frame = 0; }
   function invalidate() { if (!disposed && views.length && !document.hidden && !frame) frame = requestAnimationFrame(draw); }
   function ensureRenderer() {
-    if (renderer || forceFlat || flatOnly || unsupported || disposed) return;
+    if (renderer || forceFlat || flatOnly || qualityLow || unsupported || disposed) return;
     try {
       canvas = document.createElement('canvas'); canvas.className = 'crew-stage-canvas'; canvas.setAttribute('aria-hidden', 'true');
       renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'low-power' });
@@ -133,6 +136,7 @@ export function createCrewStage(host: HTMLElement) {
     v.scene.traverse(object => { const mesh = object as THREE.Mesh; mesh.geometry?.dispose(); if (mesh.material) for (const m of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) m.dispose(); }); v.scene.clear();
   }
   function draw(now: number) {
+    const started = performance.now();
     frame = 0; markMode();
     if (!renderer || lost || flatOnly || forceFlat || document.hidden || !views.length) return;
     const bounds = host.getBoundingClientRect(); if (!bounds.width || !bounds.height) return;
@@ -164,6 +168,12 @@ export function createCrewStage(host: HTMLElement) {
       renderer.setScissor(Math.max(0, r.left - bounds.left), Math.max(0, bounds.bottom - r.bottom), Math.max(0, Math.min(r.right, bounds.right) - Math.max(r.left, bounds.left)), Math.max(0, Math.min(r.bottom, bounds.bottom) - Math.max(r.top, bounds.top)));
       renderer.render(v.scene, camera);
     }
+    if (performance.now() - started > 28) slowFrames++; else slowFrames = Math.max(0, slowFrames - 1);
+    if (slowFrames >= 8) {
+      qualityLow = true; flatOnly = true; arrivals.clear();
+      document.documentElement.dataset.glassQuality = 'low';
+      markMode(); return;
+    }
     for (const [id, time] of arrivals) if (!moving || now - time >= 1100) arrivals.delete(id);
     if (arrivals.size) invalidate();
   }
@@ -172,7 +182,7 @@ export function createCrewStage(host: HTMLElement) {
       if (disposed) return;
       const settingsChanged=reduced!==settings.reduced||paused!==settings.paused||flatOnly!==(settings.flat===true||forceFlat);
       reduced = settings.reduced; paused = settings.paused;
-      const wasFlat = flatOnly; flatOnly = settings.flat === true || forceFlat;
+      const wasFlat = flatOnly; flatOnly = settings.flat === true || forceFlat || qualityLow;
       const confirmed = new Set(next.seats.filter(s => s.state === 'confirmed').map(s => s.id));
       if (epoch !== next.epoch) { arrivals.clear(); epoch = next.epoch; }
       else if (!reduced && !paused && !motion.matches && !document.hidden) for (const id of confirmed) if (!previous.has(id)) arrivals.set(id, performance.now());

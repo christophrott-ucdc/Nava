@@ -7,7 +7,7 @@ import type { MissionSnapshot } from '../../shared/mission';
 import type { ScenarioId } from '../../shared/scenario-engine';
 
 function snapshot(profile: ScenarioId = 'age-5-10'): MissionSnapshot {
-  return { scenarioId: profile, post: 1, experience: { ...freshExperience(), status: 'tutorial',
+  return { scenarioId: profile, post: 1, experience: { ...freshExperience(), participants: ['1A', '1B'], status: 'tutorial',
     active: true, finaleActive: false, canContinue: false, paused: false } } as MissionSnapshot;
 }
 

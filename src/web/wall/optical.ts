@@ -1,3 +1,4 @@
+import { sessionFetch as fetch } from "../shared/session";
 import { createOpticalMarkerMap, opticalMarkerSvg, validateOpticalCalibration } from '../../shared/optical-calibration';
 import type { DisplayAutomationStatus } from '../../shared/display-topology';
 

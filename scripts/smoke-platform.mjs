@@ -24,6 +24,7 @@ function socketClient(url, hello) {
   const waiters = new Set();
   ws.on("message", (raw) => {
     const msg = JSON.parse(raw.toString());
+    if (process.env.SMOKE_LOG && msg.type === "error") console.error(`[ws error] ${hello.id}:`, msg.reason, msg.code ?? "");
     for (const waiter of waiters) {
       if (waiter.predicate(msg)) {
         waiters.delete(waiter);
@@ -178,7 +179,8 @@ async function main() {
       showPath,
       cacheDir: path.join(temp, "cache"),
       runsDir: path.join(temp, "runs"),
-      log: () => {},
+      // SMOKE_LOG=1 prints server logs to stderr for diagnosis.
+      log: process.env.SMOKE_LOG ? (level, msg, data) => console.error(`[server:${level}] ${msg}`, data ?? "") : () => {},
       focusPlayer: () => {
         focusCalls += 1;
         return true;
@@ -190,7 +192,8 @@ async function main() {
     // R4: operator session (PIN 4078) for protected HTTP routes and the control WS hello.
     const loginResponse = await fetch(`${http}/api/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pin: "4078" }) });
     assert.equal(loginResponse.status, 200, "PIN login");
-    const sessionToken = (await loginResponse.json()).token;
+    const sessionToken = /nava_session=([0-9a-f]+)/.exec(loginResponse.headers.get("set-cookie") ?? "")?.[1];
+    assert.ok(sessionToken, "session token comes from Set-Cookie");
     const authHeaders = { authorization: `Bearer ${sessionToken}` };
     assert.equal((await fetch(`${http}/api/player/focus`, { method: "POST" })).status, 401, "focus without session is rejected");
 
@@ -278,7 +281,8 @@ async function main() {
     // A bad hot-reload must be rejected without replacing the currently running show.
     await writeFile(showPath, JSON.stringify({ title: "Broken", scenes: [], cues: [{ id: "bad", kind: "voice" }] }));
     const badReload = await fetch(`${http}/api/show/reload`, { method: "POST", headers: authHeaders });
-    assert.equal(badReload.status, 500);
+    // Invalid show data is a rejected request (409), not a server fault (500); the running show stays untouched.
+    assert.equal(badReload.status, 409);
     assert.equal((await fetch(`${http}/api/show`, { headers: authHeaders }).then((r) => r.json())).title, "Smoke");
     assert.ok((await fetch(`${http}/api/health`).then((r) => r.json())).showError);
 

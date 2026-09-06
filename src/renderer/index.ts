@@ -280,6 +280,7 @@ async function main(): Promise<void> {
   // ---- Player
   const veil = $("veil");
   const player = new Player({
+    isClockSource,
     video,
     show,
     config,
@@ -386,7 +387,10 @@ async function main(): Promise<void> {
       if(screen.showAvatar)missionOverlay.update(s);
       if(s.runId!==missionRun||s.suspended!==missionSuspended){
         player.apply({action:'stopVoice'});
-        player.follow(s.suspended&&s.state.state==='playing'?'paused':s.state.state,s.state.phaseTime,s.suspended?0:s.state.rate,{seekThresholdSec:.1,rateNudge:0});
+        const elapsed = !s.suspended && s.state.rate > 0 ? Math.max(0, Math.min(1, (sync.serverNow() - s.state.serverTimeMs) / 1000)) : 0;
+        const expected = s.state.phaseTime + elapsed * s.state.rate;
+        // Run/recovery boundaries are authoritative, but snapshots must be aged to the receiver's clock.
+        player.follow(s.suspended&&s.state.state==='playing'?'paused':s.state.state,expected,s.suspended?0:s.state.rate,{seekThresholdSec:.1,rateNudge:0});
         missionRun=s.runId;missionSuspended=s.suspended;
       }
     },

@@ -15,11 +15,11 @@ export function crewSelection(snapshot:MissionSnapshot,zone:'A'|'B',online:boole
   const stage=el('div','crew-preview-stage');
   const podium=el('div','crew-preview-podium');podium.setAttribute('aria-hidden','true');stage.append(podium);
   const hero=el('img','crew-preview-hero');hero.src=characterPortrait(preview?.id||'dori');hero.alt=preview?.name||'Dori te invită să alegi un personaj';hero.draggable=false;stage.append(hero);
-  const info=el('div','crew-preview-info');info.append(el('span','crew-preview-kicker',own?'ECHIPAJ CONFIRMAT':preview?'EXPLORATORUL TĂU':'ALEGE-ȚI EXPLORATORUL'),el('strong','crew-preview-name',preview?.name||'Cine vine la bord?'),el('span','crew-preview-role',preview?.role||'12 personaje · aventura ta'));
+  const info=el('div','crew-preview-info');info.append(el('span','crew-preview-kicker',own?'Echipaj confirmat':preview?'Exploratorul tău':'Alege-ți exploratorul'),el('strong','crew-preview-name',preview?.name||'Cine vine la bord?'),el('span','crew-preview-role',preview?.role||'12 personaje · aventura ta'));
   stage.append(info);panel.append(stage);
   if(own){
     panel.style.setProperty('--crew-accent',own.color);
-    const badge=el('div','crew-lock-badge','✓ LA BORD');badge.setAttribute('role','status');
+    const badge=el('div','crew-lock-badge','✓ La bord');badge.setAttribute('role','status');
     const change=el('button','crew-change','Schimbă personajul');change.type='button';change.disabled=blocked;change.dataset.value='crew:release';change.onclick=()=>send(zone,'crew:release');
     panel.append(badge,el('p','crew-select-wait','Privește ecranul central. Ghidul ne spune când pornim.'),change);
   }else{

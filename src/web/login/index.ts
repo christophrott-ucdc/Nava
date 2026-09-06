@@ -1,9 +1,6 @@
+import { ROLE_LABELS } from "@shared/ui-labels";
 import { icon } from "../shared/glass";
-/**
- * PIN login page (/login/). On success the server sets the HttpOnly cookie `nava_session`; we also keep
- * the token in sessionStorage so the console can send it in the WS `hello`. Then redirect to `?next=`
- * (same-origin path only) or /control/.
- */
+/** Authentication uses the server-owned HttpOnly cookie only. */
 
 const form = document.getElementById("form") as HTMLFormElement;
 const pinInput = document.getElementById("pin") as HTMLInputElement;
@@ -51,19 +48,14 @@ async function submit(): Promise<void> {
       body: JSON.stringify({ pin }),
       credentials: "same-origin",
     });
-    const data = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string; token?: string; user?: { name: string; role: string } };
+    const data = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string; user?: { name: string; role: string } };
     if (!res.ok || !data.ok) {
       setMsg(res.status === 401 ? "PIN-ul nu e bun, mai încearcă." : data.reason ?? `Eroare ${res.status}`);
       pin = "";
       renderDots();
       return;
     }
-    try {
-      if (data.token) sessionStorage.setItem("nava_session", data.token);
-      if (data.user) sessionStorage.setItem("nava_user", JSON.stringify(data.user));
-    } catch {
-      /* storage may be blocked */
-    }
+
     setMsg(`Bun venit, ${data.user?.name ?? "operator"}.`, true);
     location.assign(safeNext());
   } catch (err) {
@@ -110,10 +102,14 @@ void fetch("/api/auth/me", { credentials: "same-origin" })
   .then((r) => (r.ok ? r.json() : null))
   .then((data: { authenticated?: boolean; user?: { name: string; role: string } } | null) => {
     if (data?.authenticated && data.user) {
-      who.innerHTML = `Ești autentificat ca <b>${data.user.name}</b> (${data.user.role}). <a href="${safeNext()}">Continuă</a> · <a href="#" id="logout">Ieși</a>`;
+      const name = document.createElement('strong'); name.textContent = data.user.name;
+      const next = document.createElement('a'); next.href = safeNext(); next.textContent = 'Continuă';
+      const logout = document.createElement('a'); logout.href = '#'; logout.id = 'logout'; logout.textContent = 'Ieși';
+      who.replaceChildren('Ești autentificat ca ', name, ' (' + (ROLE_LABELS[data.user.role] ?? data.user.role) + '). ', next, ' · ', logout);
       document.getElementById("logout")?.addEventListener("click", async (e) => {
         e.preventDefault();
-        await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+        try { const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }); if (!response.ok) throw new Error(); }
+        catch { setMsg("Deconectarea nu a fost confirmată. Încearcă din nou."); return; }
         try {
           sessionStorage.removeItem("nava_session");
           sessionStorage.removeItem("nava_user");

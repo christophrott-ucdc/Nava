@@ -26,7 +26,8 @@ async function screen(id,token='wall-test-screen-token'){
 try{
  assert.equal((await fetch(base+'/api/wall')).status,401);
  const auth=await fetch(base+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:config.security.operatorPin})});assert.equal(auth.status,200);
- const headers={Authorization:`Bearer ${(await auth.json()).token}`,'Content-Type':'application/json'};
+ const sessionToken=/nava_session=([0-9a-f]+)/.exec(auth.headers.get('set-cookie')??'')?.[1];assert.ok(sessionToken,'session token comes from Set-Cookie');
+ const headers={Authorization:`Bearer ${sessionToken}`,'Content-Type':'application/json'};
  const wallText=await fetch(base+'/api/wall',{headers}).then(r=>r.text());assert.equal(wallText.includes(config.security.screenToken),false);assert.equal(wallText.includes('operatorPin'),false);
  await screen('center','incorrect-token');assert.equal((await fetch(base+'/api/health').then(r=>r.json())).screens,0);
  const ws=await screen('center');let health=await fetch(base+'/api/health').then(r=>r.json());assert.equal(health.clockSource,'center');assert.equal(health.screens,1);

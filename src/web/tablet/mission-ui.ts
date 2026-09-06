@@ -13,7 +13,7 @@ import { crewRelay, crewMark } from '../shared/crew-relay';
 import { crewSelection, attachCrewIdentity } from './crew-selection';
 
 type Zone = 'A' | 'B';
-type Pending = { event: MissionEvent; epoch: string; sentAt: number };
+type Pending = { event: MissionEvent; epoch: string; sentAt: number; attempts?: number; exhausted?: boolean };
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, className: string, text?: string): HTMLElementTagNameMap[K] => {
   const el = document.createElement(tag); el.className = className; if (text !== undefined) el.textContent = text; return el;
 };
@@ -54,7 +54,7 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
     if (!snapshot || !online || snapshot.suspended || snapshot.experience?.paused || pending[zone]) return;
     if (value.startsWith('play:') && snapshot.state.state !== 'playing') return;
     const event: MissionEvent = { type: 'missionAction', runId: snapshot.runId, cueInstanceId: snapshot.cueInstanceId, eventId: crypto.randomUUID(), zone, value };
-    pending[zone] = { event, epoch: snapshot.serverEpoch, sentAt: Date.now() }; save();
+    pending[zone] = { event, epoch: snapshot.serverEpoch, sentAt: Date.now(), attempts: 1 }; save();
     options.send(event); render();
   }
   async function certificate(current: MissionSnapshot): Promise<HTMLCanvasElement | null> {
@@ -308,6 +308,24 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
       crew.update(crewRelay(snapshot), views, { reduced: a.reducedMotion || a.reducedStimuli, paused: snapshot.suspended || !!snapshot.experience?.paused || !online, flat: a.showVisualGuidance === false || a.reducedStimuli });
     } else crew.clear();
     education.update({ reduced: a.reducedMotion || a.reducedStimuli, paused: snapshot.suspended || !!snapshot.experience?.paused || !online });
+    for (const zone of ['A', 'B'] as const) {
+      const panel = options.host.querySelector<HTMLElement>(`[data-zone="${zone}"]`);
+      const existing = panel?.querySelector<HTMLButtonElement>('.mission-delivery-retry');
+      const item = pending[zone];
+      if (!item?.exhausted) { existing?.remove(); continue; }
+      const retry = existing ?? node('button', 'mission-delivery-retry', 'Încearcă din nou');
+      retry.textContent = 'Încearcă din nou'; retry.type = 'button';
+      retry.disabled = !online || !!snapshot.suspended || !!snapshot.experience?.paused;
+      if (!existing) {
+        retry.addEventListener('click', () => {
+          if (!online || !snapshot || snapshot.suspended || snapshot.experience?.paused || pending[zone] !== item) return;
+          // A deliberate retry reuses the same idempotency key, never creates a second answer.
+          item.attempts = 1; item.sentAt = Date.now(); item.exhausted = false;
+          options.send(item.event); save(); render();
+        });
+        panel?.append(retry);
+      }
+    }
   }
   return {
     update(next: MissionSnapshot, connected: boolean) {
@@ -320,7 +338,15 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
       for (const zone of ['A', 'B'] as const) {
         const item = pending[zone]; if (!item) continue;
         if (item.event.runId !== next.runId || item.event.cueInstanceId !== next.cueInstanceId || item.epoch !== next.serverEpoch || (next.stage === 0 && !next.experience?.crew?.open && !next.experience?.active && !next.experience?.finaleActive)) delete pending[zone];
-        else if (connected && !next.suspended && !next.experience?.paused && (!item.event.value.startsWith('play:') || next.state.state === 'playing') && Date.now() - item.sentAt > 1200) { item.sentAt = Date.now(); options.send(item.event); }
+        else if (connected && !next.suspended && !next.experience?.paused && (!item.event.value.startsWith('play:') || next.state.state === 'playing')) {
+          const attempts = item.attempts ?? 1;
+          if (attempts < 6 && Date.now() - item.sentAt >= Math.min(20000, 1500 * 2 ** (attempts - 1))) {
+            item.sentAt = Date.now(); item.attempts = attempts + 1; options.send(item.event);
+          } else if (attempts >= 6 && !item.exhausted && Date.now() - item.sentAt >= 20000) {
+            item.exhausted = true;
+            options.notice('Nava confirmă greu alegerea. Cheamă ghidul; alegerea ta rămâne păstrată.');
+          }
+        }
       }
       save(); render();
     },
@@ -344,3 +370,4 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
     hide() { if(journalTimer)clearTimeout(journalTimer);journalTimer=undefined; education.clear(); crew.clear(); clearPlay(); snapshot = null; signature = ''; drafts = {}; draftScope = ''; pending = {}; save(); delete document.body.dataset.mission; delete document.body.dataset.missionContrast; delete document.body.dataset.missionQuiet; delete document.body.dataset.missionGuidance; delete document.body.dataset.missionMotion; delete document.body.dataset.missionSimple; },
   };
 }
+

@@ -68,6 +68,7 @@ class VoiceEngineImpl implements RateAwareVoiceEngine {
   async setVoiceBaseUrl(url:string):Promise<void> {
     if(this.opts.voiceBaseUrl===url){await this.prepare('ro');return;}
     this.sourceEpoch++;this.opts.voiceBaseUrl=url;
+    this.player.clearDecoded();this.pinnedClips.clear();
     this.manifests.clear();this.preparing.clear();this.clips.clear();this.inflight.clear();this.preloadFailures.clear();
     await this.prepare('ro');
   }
@@ -76,6 +77,16 @@ class VoiceEngineImpl implements RateAwareVoiceEngine {
   private readonly manifests = new Map<Lang, VoiceManifest | null>();
   private readonly preparing = new Map<Lang, Promise<void>>();
   private readonly clips = new Map<string, VoiceClip>();
+  private readonly pinnedClips = new Set<string>();
+  private cacheClip(key: string, clip: VoiceClip): void {
+    this.clips.delete(key); this.clips.set(key, clip);
+    let bytes = 0, count = 0;
+    for (const [id, value] of [...this.clips].reverse()) {
+      if (this.pinnedClips.has(id)) continue;
+      bytes += value.audio?.byteLength ?? 0;
+      if (++count > 64 || bytes > 16 * 1024 * 1024) this.clips.delete(id);
+    }
+  }
   /** Manifest entries that failed readiness; never retry their I/O on the live cue boundary. */
   private readonly preloadFailures = new Set<string>();
   private readonly inflight = new Map<string, Promise<VoiceClip | null>>();
@@ -115,15 +126,17 @@ class VoiceEngineImpl implements RateAwareVoiceEngine {
   async getClip(cueId: string, speaker: Speaker, text: string, lang: Lang): Promise<VoiceClip | null> {
     const key = requestKey(lang, cueId, speaker, text);
     const cached = this.clips.get(key);
-    if (cached) return cached;
+    if (cached) { this.cacheClip(key, cached); return cached; }
     const pending = this.inflight.get(key);
     if (pending) return pending;
+    const epoch = this.sourceEpoch;
     const request = this.resolveClip(cueId, speaker, text, lang)
       .then((clip) => {
-        if (clip) this.clips.set(key, clip);
+        if (epoch !== this.sourceEpoch) return null;
+        if (clip) this.cacheClip(key, clip);
         return clip;
       })
-      .finally(() => this.inflight.delete(key));
+      .finally(() => { if (epoch === this.sourceEpoch) this.inflight.delete(key); });
     this.inflight.set(key, request);
     return request;
   }
@@ -153,9 +166,11 @@ class VoiceEngineImpl implements RateAwareVoiceEngine {
           const audio = await fetchClipBytes(clipFileUrl(base, manifest.lang, meta.file));
           if (!audio.byteLength) throw new Error("empty audio file");
           const clip: VoiceClip = { ...meta, audio };
-          await this.player.decode(audio, clipKey(clip));
           if(epoch!==this.sourceEpoch)return;
-          this.clips.set(key, clip);
+          await this.player.decode(audio, clipKey(clip), true);
+          if(epoch!==this.sourceEpoch)return;
+          this.pinnedClips.add(key);
+          this.cacheClip(key, clip);
           this.preloadFailures.delete(key);
         } catch (err) {
           if(epoch!==this.sourceEpoch)return;

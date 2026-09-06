@@ -1,3 +1,4 @@
+import { sessionFetch as fetch } from "../shared/session";
 /**
  * D-04 — TIMELINE EDITOR panel of the operator console.
  *

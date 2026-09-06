@@ -19,6 +19,7 @@ export interface IpcDeps {
   screenIdFor(webContentsId: number): string | undefined;
   log(level: LogLevel, msg: string, data: unknown, src: string): void;
   dispatchCommand(cmd: Command): void;
+  allowQuit?: boolean;
 }
 
 const LEVELS: ReadonlySet<string> = new Set<LogLevel>(["info", "warn", "error"]);
@@ -40,6 +41,7 @@ export function registerIpc(deps: IpcDeps): void {
   });
 
   ipcMain.on(IPC.sendCommand, (event, cmd: unknown) => {
+    if (!deps.screenIdFor(event.sender.id)) return;
     const src = `renderer:${deps.screenIdFor(event.sender.id) ?? `wc${event.sender.id}`}`;
     if (!isCommand(cmd)) {
       deps.log("warn", "ignored malformed command from renderer", cmd, src);
@@ -50,6 +52,7 @@ export function registerIpc(deps: IpcDeps): void {
   });
 
   ipcMain.on(IPC.quit, (event) => {
+    if (!deps.allowQuit || !deps.screenIdFor(event.sender.id)) return;
     deps.log("info", "quit requested by renderer", undefined, `renderer:${deps.screenIdFor(event.sender.id) ?? "?"}`);
     app.quit();
   });

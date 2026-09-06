@@ -9,7 +9,7 @@ import {createOpticalMarkerMap,validateOpticalCalibration,type OpticalMarkerMap}
 
 interface NativeDisplay {sourcePath:string;devicePath:string;label:string;serial:string;manufacturer:string;pixelBounds:{x:number;y:number;width:number;height:number};physicalWidthMm:number;physicalHeightMm:number;technology:number}
 interface InventoryOptions {
-  config:AutoDisplaysConfig; appRoot:string;resourcesRoot:string;log:LogFn;
+  config:AutoDisplaysConfig; appRoot:string;dataRoot?:string;resourcesRoot:string;log:LogFn;
   /** Caller holds the server's idle-only transaction lock. Returns rollback for a failed disk commit. */
   apply(candidate:DisplayTopologyCandidate):Promise<()=>Promise<void>>;
   onTopologyChanged(reason:string):void;
@@ -62,7 +62,7 @@ export class DisplayInventoryManager {
     this.timer=setTimeout(()=>{if(!this.stopped)void this.detect().catch(err=>this.opts.log('warn','display re-detection failed',String(err)));},1000);
   };
   constructor(private readonly opts:InventoryOptions){
-    this.profilePath=path.join(opts.appRoot,'data','installations',opts.config.installationId??'default','wall-profile.json');
+    this.profilePath=path.join(opts.dataRoot??opts.appRoot,'data','installations',opts.config.installationId??'default','wall-profile.json');
     this.status={enabled:opts.config.enabled,inventory:[],provider:'electron',candidate:null,profileRevision:null,state:opts.config.enabled?'detected':'disabled',issues:[],physicalCalibration:{status:'blocked-no-camera',reason:'Nu există provider optic/cameră calibrată; geometria fizică nu poate fi certificată automat.'}};
   }
   async initialize():Promise<DisplayAutomationStatus>{

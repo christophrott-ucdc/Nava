@@ -326,7 +326,15 @@ export class Timeline {
     try {
       if (clip) {
         handle = voice.play(clip, req.speaker);
-        if (lipsync) avatar.lipsync(clip, performance.now());
+        if (lipsync) {
+          const speakingClip = clip;
+          const timed = handle as PlaybackHandle & { started?: Promise<number> };
+          let finished = false;
+          void handle.done.finally(() => { finished = true; }).catch(() => undefined);
+          void (timed.started ?? Promise.resolve(performance.now())).then(startAt => {
+            if (!finished && Number.isFinite(startAt) && token === this.voiceSeq) avatar.lipsync(speakingClip, startAt);
+          }).catch(err => log("warn", `lipsync clock failed: ${describeError(err)}`));
+        }
       } else if (req.fallback === "silent") {
         const ms = estimateSpeechMs(req.text);
         log("error", `asset vocal de producție lipsă pentru ${req.id}; fallback browser blocat`);

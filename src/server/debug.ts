@@ -40,6 +40,7 @@ export class PerfStore {
 
   forget(screenId: string): void {
     this.latest.delete(screenId);
+    this.history.delete(screenId);
   }
 
   snapshot(): PerfSample[] {
@@ -108,7 +109,7 @@ export function createFrameExtractor(videoPath: string, cacheDir: string, log: L
       if (ffmpegOk !== null) return resolve(ffmpegOk);
       const p = spawn("ffmpeg", ["-version"], { windowsHide: true });
       p.on("error", () => resolve((ffmpegOk = false)));
-      p.on("exit", (code) => resolve((ffmpegOk = code === 0)));
+      p.on("close", (code) => resolve((ffmpegOk = code === 0)));
     });
 
   const extract = async (tSec: number, width: number): Promise<Buffer | null> => {
@@ -131,7 +132,7 @@ export function createFrameExtractor(videoPath: string, cacheDir: string, log: L
         clearTimeout(timer);
         resolve(null);
       });
-      p.on("exit", (code) => {
+      p.on("close", (code) => {
         clearTimeout(timer);
         resolve(code === 0 && chunks.length ? Buffer.concat(chunks) : null);
       });

@@ -28,7 +28,7 @@ export function experienceHeader(snapshot:MissionSnapshot, finale:boolean) {
     heading.classList.add('experience-illustrated-heading');
     heading.prepend(illustration('tutorial-pair-v1','experience-tutorial-pair'));
   }
-  head.append(el('p','eyebrow',finale?'JURNALUL ECHIPAJULUI':'BUN VENIT LA BORD'),heading);
+  head.append(el('p','eyebrow',finale?'Jurnalul echipajului':'Bun venit la bord'),heading);
   if(!finale) {
     const steps=el('ol','experience-steps'); const current=['touch','practice','cooperate','ready'].indexOf(snapshot.experience!.step);
     ['Salută nava','Încearcă','Împreună','Echipaj pregătit'].forEach((label,i)=>{const item=el('li',i===current?'current':i<current?'done':'',label); if(i===current)item.setAttribute('aria-current','step'); steps.append(item);}); head.append(steps);
@@ -69,8 +69,8 @@ export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boole
       }
     }
     if(chosen!=='observe')beacon(chosen?'Simbolul tău este la bord':pending?'Trimitem simbolul…':'Trimite simbolul meu',`finale:${chosen||draft||''}`,!!chosen,!!chosen||!draft);
-    if(chosen==='observe')button('Prefer să privesc','finale:observe','mission-observe',true);
-    if(!chosen)button('Prefer să privesc','finale:observe','mission-observe');
+    if(chosen==='observe')button('Doar privesc','finale:observe','mission-observe',true);
+    if(!chosen)button('Doar privesc','finale:observe','mission-observe');
     status=chosen==='observe'?'Poți păstra momentul pentru tine.':chosen?`Primit la bord · ${key}. Alegerea este păstrată în jurnal.`:draft?'Poți schimba simbolul înainte să-l trimiți.':'Alege ce contează pentru tine.';
     panel.dataset.complete=String(!!chosen);
   } else if(observer) {
@@ -90,6 +90,6 @@ export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boole
     beacon(ready?'Pregătit de călătorie':done?'Lumina este aprinsă':'Aprinde lumina mea','tutorial:link',done,done||ready);status=ready?'Rămâi la postul tău. Pornim împreună.':done?'Lumina ta rămâne aprinsă. Privește ecranul central.':paired?'Puteți apăsa pe rând.':'O singură atingere este suficientă.';panel.dataset.complete=String(done);
   }
   panel.append(detail,options);
-  if(!finale&&included&&!observer&&exp.step!=='ready') { const b=el('button','mission-option mission-observe experience-observe','Prefer să privesc');b.dataset.value='tutorial:observe';b.disabled=blocked;b.addEventListener('click',()=>send(zone,'tutorial:observe'));panel.append(b); }
+  if(!finale&&included&&!observer&&exp.step!=='ready') { const b=el('button','mission-option mission-observe experience-observe','Doar privesc');b.dataset.value='tutorial:observe';b.disabled=blocked;b.addEventListener('click',()=>send(zone,'tutorial:observe'));panel.append(b); }
   const delivery=el('p','mission-delivery',!online?'Refacem legătura cu nava. Așteaptă puțin.':snapshot.suspended||exp.paused?'Facem o pauză. Continuăm împreună.':pending?'Trimitem răspunsul…':status);delivery.setAttribute('role','status');panel.append(delivery);return panel;
 }

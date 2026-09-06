@@ -357,9 +357,9 @@ export interface LoadedConfig {
   screenTokenGenerated: boolean;
 }
 
-export function loadConfig(opts: { cli: CliArgs; appRoot: string; resourcesRoot: string; log: LogFn }): LoadedConfig {
+export function loadConfig(opts: { cli: CliArgs; appRoot: string; dataRoot?: string; resourcesRoot: string; log: LogFn }): LoadedConfig {
   const { cli, appRoot, resourcesRoot, log } = opts;
-  const configPath = cli.configPath ? path.resolve(appRoot, cli.configPath) : path.join(appRoot, "config.json");
+  const configPath = cli.configPath ? path.resolve(appRoot, cli.configPath) : path.join(opts.dataRoot ?? appRoot, "config.json");
 
   let created = false;
   if (!fs.existsSync(configPath)) {

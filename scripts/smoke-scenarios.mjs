@@ -37,14 +37,26 @@ export async function createHarness({ webDir = path.join(ROOT, 'dist/web'), conn
   const serverOptions = { config, appRoot: ROOT, webDir, showPath: path.resolve(ROOT, config.show), cacheDir: path.join(temp, 'cache'), runsDir: path.join(temp, 'runs'), log: (level, message) => { if (level === 'error') logs.push(message); } };
   let handle = await require(bundle).startServer(serverOptions);
   let base = `http://127.0.0.1:${handle.port}`, token;
-  async function authenticate() { const login = await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: '9384' }) }); assert.equal(login.status, 200); token = (await login.json()).token; }
+  async function authenticate() { const login = await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: '9384' }) }); assert.equal(login.status, 200); token = /nava_session=([0-9a-f]+)/.exec(login.headers.get("set-cookie") ?? "")?.[1]; assert.ok(token, "session token from Set-Cookie"); }
   await authenticate();
   async function api(url, body) { const r = await fetch(base + url, { method: body === undefined ? 'GET' : 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: body === undefined ? undefined : JSON.stringify(body) }); return { status: r.status, body: await r.json() }; }
   const tablets = connectTablets ? Array.from({ length: 5 }, (_, n) => client(`ws://127.0.0.1:${handle.port}/ws`, `scenario-qa-${n + 1}`, n + 1)) : [];
   await Promise.all(tablets.map(t => t.opened));
   await Promise.all(tablets.map((t, n) => waitFor(() => t.snapshot, s => s?.post === n + 1, 'personalized tablet')));
   async function command(action) { const r = await api('/api/cmd', action); assert.equal(r.status, 200, JSON.stringify(r.body)); assert.equal(r.body.ok, true, JSON.stringify(r.body)); }
-  async function select(profile) { const r = await api('/api/scenarios/select', { id: profile }); assert.equal(r.status, 200, `${profile}: ${JSON.stringify(r.body)}`); if(!tutorial){const skipped=await api('/api/experience/control',{action:'skip'});assert.equal(skipped.status,200);} return r.body; }
+  // Skipping the tutorial requires confirmed characters; the smoke seats all ten places (5 tablets × A/B).
+  const CREW_IDS = ['nova','nia','luca','mira','leo','iris','arin','tara','radu','zori'];
+  async function lockCrew() {
+    let n = 0;
+    for (const t of tablets) for (const zone of ['A', 'B']) {
+      const s = await waitFor(() => t.snapshot, s => s?.experience?.crew?.open === true, 'crew registration open');
+      const event = { type: 'missionAction', runId: s.runId, cueInstanceId: s.cueInstanceId, eventId: randomUUID(), zone, value: `crew:lock:${CREW_IDS[n++]}` };
+      t.send(event); const ack = await t.next(m => m.type === 'missionAck' && m.eventId === event.eventId, 'crew lock ACK');
+      assert.equal(ack.ok, true, `crew lock ${zone}: ${ack.status}`);
+      await waitFor(() => t.snapshot, v => v.revision > s.revision, 'crew snapshot');
+    }
+  }
+  async function select(profile) { const r = await api('/api/scenarios/select', { id: profile }); assert.equal(r.status, 200, `${profile}: ${JSON.stringify(r.body)}`); if(!tutorial){await lockCrew();const skipped=await api('/api/experience/control',{action:'skip'});assert.equal(skipped.status,200,`skip: ${JSON.stringify(skipped.body)}`);} return r.body; }
   return { temp, get base() { return base; }, get token() { return token; }, tablets, logs, api, command, select,
     async restartServer() {
       for (const t of tablets) t.ws.close(); await handle.stop();

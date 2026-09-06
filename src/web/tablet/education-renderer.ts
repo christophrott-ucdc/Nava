@@ -32,7 +32,8 @@ export function createEducationRenderer(host: HTMLElement) {
   let views: View[] = [];
   let frame = 0, last = 0, until = 0, quiet = false, paused = false, lost = false;
   let quality = 1, slow = 0, drawCount = 0;
-  let permanentFallback = new URLSearchParams(location.search).get('graphics') === '2d';
+  // CrewStage owns the tablet WebGL context. Educational diagrams retain their accessible SVG artwork.
+  let permanentFallback = true;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const camera = new THREE.OrthographicCamera(-5, 5, 1.65, -1.65, .1, 50);
   camera.position.set(0, 0, 12);
@@ -167,7 +168,7 @@ export function createEducationRenderer(host: HTMLElement) {
     drawCount++; if (canvas) { canvas.dataset.frames = String(drawCount); canvas.dataset.triangles = String(renderer.info.render.triangles); }
     if (moving && now < until) {
       if ((last && now - last > 45) || performance.now() - start > 24) slow++; else slow = Math.max(0, slow - 1);
-      if (slow >= 8 && quality > .6) { quality = .6; slow = 0; }
+      if (slow >= 8 && quality > .6) { quality = .6; slow = 0; document.documentElement.dataset.glassQuality = 'low'; }
       last = now; invalidate();
     } else last = 0;
   }

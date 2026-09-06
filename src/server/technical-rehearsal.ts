@@ -22,6 +22,7 @@ export class TechnicalRehearsal {
   report:RehearsalReport|null=null;
   private timer:ReturnType<typeof setInterval>|null=null;
   private started=0;
+  private lastSavedBucket=-1;
   private first=new Map<string,PerfSample>();
   private last=new Map<string,PerfSample>();
   private busy=false;
@@ -46,7 +47,7 @@ export class TechnicalRehearsal {
       if(state.suspended){await this.cancel('Topologia sau misiunea a fost suspendată.');return;}
       if(state.state==='ended'){await this.complete();return;}
       if(this.report.elapsedSec>650){await this.cancel('Misiunea nu s-a încheiat în intervalul maxim.');return;}
-      if(Math.floor(this.report.elapsedSec)%5===0)await this.save();
+      const bucket=Math.floor(this.report.elapsedSec/5);if(bucket!==this.lastSavedBucket){await this.save();this.lastSavedBucket=bucket;}
     }finally{this.busy=false;}
   }
   private async complete():Promise<void>{

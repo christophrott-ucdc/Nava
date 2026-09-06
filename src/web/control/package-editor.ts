@@ -1,3 +1,4 @@
+import { sessionFetch as fetch } from "../shared/session";
 import { SCENARIO_LABELS } from '@shared/mission';
 
 interface DraftCue{id:string;phase:string;at:number;maxDurationSec:number;speaker:string;condition:string;text:{ro:string}}

@@ -216,7 +216,7 @@ export function createTtsRouter(opts: { cacheDir: string; log: LogFn }): { route
       inflight.set(key, p);
     }
     const res = await p;
-    return c.json<TtsResponse>(res, res.ok ? 200 : 502);
+    return c.json<TtsResponse>(res, res.ok ? 200 : res.reason?.startsWith("Limita TTS") ? 429 : 502);
   });
 
   const stats = async (): Promise<TtsStats> => {
