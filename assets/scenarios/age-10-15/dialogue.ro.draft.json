@@ -14,453 +14,781 @@
     {
       "id": "s1015-01",
       "phase": "preshow",
-      "at": 0.0,
-      "maxDurationSec": 9.0,
+      "at": 0,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Avem un semnal fără semnătură. Astăzi, voi conduceți investigația. Eu țin jurnalul, iar nava ne duce între lumi."
-      }
+        "ro": "Avem un semnal fără semnătură. Azi voi conduceți căutarea. Eu scriu în jurnal, nava ne duce între lumi."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "curious",
+          "warmly"
+        ]
+      },
+      "direction": "Accent pe „fără semnătură”; pauză scurtă înainte de „voi conduceți”."
     },
     {
       "id": "s1015-02",
       "phase": "preshow",
-      "at": 10.0,
-      "maxDurationSec": 10.0,
+      "at": 10,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Cinci posturi, zece perspective. În stânga este zona A, în dreapta zona B. Fiecare poate alege separat sau poate privi."
-      }
+        "ro": "Cinci posturi. Zona A în stânga, zona B în dreapta. Fiecare alege sau doar privește."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "brief",
+          "precise"
+        ]
+      },
+      "direction": "Informativ, aproape tehnic; „sau doar privește” spus fără reproș."
     },
     {
       "id": "s1015-03",
       "phase": "preshow",
-      "at": 21.0,
-      "maxDurationSec": 10.0,
+      "at": 21,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Mai întâi propunem o explicație. Apoi alegem ce măsurăm. La sfârșit putem schimba explicația, dacă datele ne dau motive."
-      }
+        "ro": "Întâi spunem ce credem că se întâmplă. Apoi alegem ce măsurăm. La final ne putem răzgândi, dacă datele ne dau motive."
+      },
+      "tts": {
+        "audioTags": [
+          "measured",
+          "encouraging",
+          "firm"
+        ]
+      },
+      "direction": "Trei pași clari, pauză între ei; „dacă datele ne dau motive” apăsat."
     },
     {
       "id": "s1015-04",
       "phase": "preshow",
-      "at": 33.0,
-      "maxDurationSec": 11.0,
+      "at": 33,
+      "maxDurationSec": 11,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Dosarul compară două modele: un far care repetă același ritm și un releu care copiază ce primește. Identitatea sursei rămâne necunoscută."
-      }
+        "ro": "Comparăm două modele: un far care repetă același ritm și un releu care copiază ce primește. Cine trimite, nu știm."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "thoughtful",
+          "dryly"
+        ]
+      },
+      "direction": "Cele două modele, contrast limpede; „nu știm” rostit fără jenă."
     },
     {
       "id": "s1015-05",
       "phase": "play",
-      "at": -8.0,
-      "maxDurationSec": 7.0,
+      "at": -8,
+      "maxDurationSec": 7,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Posturile sunt pregătite. Rămâneți așezați. Lăsăm întrebarea deschisă și pornim pe urmele semnalului."
-      }
+        "ro": "Posturile sunt pregătite. Rămâneți pe scaune. Plecăm pe urmele semnalului."
+      },
+      "tts": {
+        "audioTags": [
+          "firm",
+          "decisive",
+          "brief"
+        ]
+      },
+      "direction": "Comandă scurtă, caldă; ultima propoziție ușor ridicată, ca o plecare."
     },
     {
       "id": "s1015-06",
       "phase": "play",
-      "at": 5.0,
-      "maxDurationSec": 9.0,
+      "at": 5,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Pământul rămâne în urmă. Pe tablete apare dosarul; imaginile din față arată drumul, iar dosarul arată investigația noastră."
-      }
+        "ro": "Pământul rămâne în urmă. Pe tablete apare dosarul. În față, drumul. În dosar, căutarea."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "reflective",
+          "softly"
+        ]
+      },
+      "direction": "Ritm rar, aproape contemplativ; pauză între „în față” și „în dosar”."
     },
     {
       "id": "s1015-07",
       "phase": "play",
-      "at": 27.0,
-      "maxDurationSec": 9.0,
+      "at": 27,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Semnalul revine, mereu la fel. Aș vrea să știu dacă ascultăm un început de mesaj sau ecoul lui."
-      }
+        "ro": "Semnalul revine, mereu la fel. Tare aș vrea să știu dacă e începutul unui mesaj sau doar ecoul."
+      },
+      "tts": {
+        "audioTags": [
+          "curious",
+          "wondering",
+          "thoughtful"
+        ]
+      },
+      "direction": "Mirare sinceră; „ecoul” lăsat să atârne la final."
     },
     {
       "id": "s1015-08",
       "phase": "play",
-      "at": 61.0,
-      "maxDurationSec": 10.0,
+      "at": 61,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Ne apropiem de Siwarha. Prima recepție are intervale egale. Pare ordonată, dar ordinea singură nu ne spune cine a produs-o."
-      }
+        "ro": "Ne apropiem de Siwarha. Prima recepție are pauze egale. Sună ordonat, dar atât nu ne spune cine îl trimite."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "cautious",
+          "measured"
+        ]
+      },
+      "direction": "Constatare rece, apoi frână la „dar atât nu ne spune”."
     },
     {
       "id": "s1015-09",
       "phase": "play",
-      "at": 76.0,
-      "maxDurationSec": 10.0,
+      "at": 76,
+      "maxDurationSec": 10,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Mă vedeți repetându-mă. Poate sunt începutul unui mesaj. Poate doar îl duc mai departe. Ce ați măsura ca să aflați?"
-      }
+        "ro": "Mă auziți repetându-mă. Poate sunt începutul unui mesaj. Poate doar îl duc mai departe. Ce ați măsura ca să aflați?"
+      },
+      "tts": {
+        "audioTags": [
+          "ethereal",
+          "wondering",
+          "echoing"
+        ]
+      },
+      "direction": "Voce care se aude pe sine; întrebarea finală, deschisă, aproape șoptită."
     },
     {
       "id": "s1015-10",
       "phase": "play",
-      "at": 88.0,
-      "maxDurationSec": 10.0,
+      "at": 88,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Citiți observația postului vostru. Alegeți far, releu sau încă nu aleg. Acum propuneți o explicație; încă nu dați un verdict."
-      }
+        "ro": "Citiți ce a observat postul vostru. Alegeți far, releu sau încă nu aleg. Deocamdată e o presupunere, nu o concluzie."
+      },
+      "tts": {
+        "audioTags": [
+          "encouraging",
+          "precise",
+          "brief"
+        ]
+      },
+      "direction": "Instrucțiune limpede; accent puternic pe „presupunere, nu concluzie”."
     },
     {
       "id": "s1015-11",
       "phase": "play",
-      "at": 126.0,
-      "maxDurationSec": 10.0,
+      "at": 126,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Primele explicații pot rămâne la vedere. Sunt curios ce vom afla când trimitem ceva neașteptat."
-      }
+        "ro": "Primele presupuneri pot rămâne la vedere. Sunt curios ce aflăm când trimitem ceva neașteptat."
+      },
+      "tts": {
+        "audioTags": [
+          "subtly amused",
+          "intrigued",
+          "calm"
+        ]
+      },
+      "direction": "Umor sec la „ceva neașteptat”; ușoară plăcere a experimentului."
     },
     {
       "id": "s1015-12",
       "phase": "play",
-      "at": 138.0,
-      "maxDurationSec": 6.0,
+      "at": 138,
+      "maxDurationSec": 6,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Păstrați întrebarea. Următoarea măsurătoare poate schimba felul în care mă înțelegeți."
-      }
+        "ro": "Țineți minte întrebarea. Următoarea măsurătoare poate schimba felul în care mă vedeți."
+      },
+      "tts": {
+        "audioTags": [
+          "ethereal",
+          "quietly",
+          "intrigued"
+        ]
+      },
+      "direction": "Avertisment blând, misterios; pauză înainte de „mă vedeți”."
     },
     {
       "id": "s1015-13",
       "phase": "play",
-      "at": 151.0,
-      "maxDurationSec": 10.0,
+      "at": 151,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Acum pregătim probele. Unele instrumente arată direcția. Altele verifică ritmul sau limitele dosarului. Niciun post nu vede singur totul."
-      }
+        "ro": "Acum pregătim probele. Unele aparate arată direcția, altele ritmul sau limitele dosarului. Nimeni nu vede tot singur."
+      },
+      "tts": {
+        "audioTags": [
+          "measured",
+          "warmly",
+          "firm"
+        ]
+      },
+      "direction": "Ton de echipă; „nimeni nu vede tot singur” apăsat, cald."
     },
     {
       "id": "s1015-14",
       "phase": "play",
-      "at": 169.0,
-      "maxDurationSec": 10.0,
+      "at": 169,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Construiți un ritm din piesele unu, doi și trei. Trimiteți-l, apoi încercați altă ordine. Să vedem ce se întoarce."
-      }
+        "ro": "Faceți un ritm din piesele unu, doi și trei. Trimiteți-l, apoi schimbați ordinea. Vedem ce vine."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "brief",
+          "encouraging"
+        ]
+      },
+      "direction": "Rețetă scurtă, ritmată; „vedem ce vine” cu o urmă de joacă."
     },
     {
       "id": "s1015-15",
       "phase": "play",
-      "at": 183.0,
-      "maxDurationSec": 10.0,
+      "at": 183,
+      "maxDurationSec": 10,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
-        "ro": "Întâi alegeți măsurătoarea postului. Apoi puteți construi probele împreună. Toate posturile pot trimite un ritm, în ordinea aleasă de voi."
-      }
+        "ro": "Întâi alegeți măsurătoarea postului. Apoi puteți face probele împreună. Orice post poate trimite un ritm, în ordinea voastră."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "matter-of-fact",
+          "softly"
+        ]
+      },
+      "direction": "Ordine explicată răbdător; „în ordinea voastră” cu blândețe."
     },
     {
       "id": "s1015-16",
       "phase": "play",
-      "at": 225.0,
-      "maxDurationSec": 9.0,
+      "at": 225,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Dacă ați trimis un ritm, priviți ce s-a întors. Emisia și recepția apar alături, gata de comparat."
-      }
+        "ro": "Dacă ați trimis un ritm, uitați-vă la ce s-a întors. Ce am trimis și ce am primit stau alături."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "curious",
+          "brief"
+        ]
+      },
+      "direction": "Atenție dirijată; ultima propoziție rostită ca o comparație vizibilă."
     },
     {
       "id": "s1015-17",
       "phase": "play",
-      "at": 236.0,
-      "maxDurationSec": 10.0,
+      "at": 236,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Uitați-vă mai ales la probele noi și la repetare. O bănuială poate merita urmărită fără să fie deja demonstrată."
-      }
+        "ro": "Uitați-vă bine la probele noi și la ce se repetă. O bănuială merită urmărită, chiar dacă încă nu e dovedită."
+      },
+      "tts": {
+        "audioTags": [
+          "thoughtful",
+          "firm",
+          "encouraging"
+        ]
+      },
+      "direction": "Miezul lecției; frânează pe „chiar dacă încă nu e dovedită”."
     },
     {
       "id": "s1015-18",
       "phase": "play",
-      "at": 253.0,
-      "maxDurationSec": 11.0,
+      "at": 253,
+      "maxDurationSec": 11,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Părăsim această lume cu dosarul deschis. Alegerile de început rămân lângă măsurători; puteți vedea dacă explicația voastră mai stă în picioare."
-      }
+        "ro": "Plecăm cu dosarul deschis. Ce ați ales la început rămâne lângă măsurători. Vedeți dacă mai stă în picioare."
+      },
+      "tts": {
+        "audioTags": [
+          "measured",
+          "reflective",
+          "skeptical"
+        ]
+      },
+      "direction": "Ușoară provocare; „dacă mai stă în picioare” aproape testant."
     },
     {
       "id": "s1015-19",
       "phase": "play",
-      "at": 282.0,
-      "maxDurationSec": 11.0,
+      "at": 282,
+      "maxDurationSec": 11,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "La Mann putem compara modelele. Copierea exactă a două probe noi verifică releul în acest dosar. Fără ambele probe, păstrăm rezerva."
-      }
+        "ro": "La Mann putem compara modelele. Dacă două probe noi se întorc copiate exact, releul e verificat aici. Fără amândouă, rămânem prudenți."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "cautious",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Condiție tehnică, rece; „rămânem prudenți” apăsat, fără dramă."
     },
     {
       "id": "s1015-20",
       "phase": "play",
-      "at": 296.0,
-      "maxDurationSec": 10.0,
+      "at": 296,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Alegeți verdictul, apoi legați de el o dovadă sau o limită din dosar. Ce anume vă susține explicația acum?"
-      }
+        "ro": "Alegeți concluzia, apoi puneți lângă ea o dovadă sau o limită din dosar. Ce anume vă susține explicația acum?"
+      },
+      "tts": {
+        "audioTags": [
+          "firm",
+          "curious",
+          "measured"
+        ]
+      },
+      "direction": "Cere dovada direct; întrebarea finală, deschisă spre echipaj."
     },
     {
       "id": "s1015-21N",
       "phase": "play",
-      "at": 336.0,
-      "maxDurationSec": 10.0,
+      "at": 336,
+      "maxDurationSec": 10,
       "speaker": "TEHNOLOGIC",
       "condition": "N",
       "text": {
-        "ro": "Niciun verdict nu a fost trimis. Lăsăm pagina concluziei deschisă, alături de ce am măsurat. Întrebarea merge cu noi acasă."
-      }
+        "ro": "Nu a venit nicio concluzie de la voi. Lăsăm pagina aceea deschisă, lângă tot ce am măsurat. Întrebarea vine cu noi acasă."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "softly",
+          "reflective"
+        ]
+      },
+      "direction": "Acceptare senină, fără reproș; „vine cu noi acasă” cald, liniștit."
     },
     {
       "id": "s1015-21V",
       "phase": "play",
-      "at": 336.0,
-      "maxDurationSec": 11.0,
+      "at": 336,
+      "maxDurationSec": 11,
       "speaker": "TEHNOLOGIC",
       "condition": "V",
       "text": {
-        "ro": "Ambele probe noi au fost copiate. Releul este verificat în modelele dosarului, iar majoritatea verdictelor îl susține. Cine îl operează rămâne necunoscut."
-      }
+        "ro": "Amândouă probele s-au întors copiate. Releul e verificat, iar cei mai mulți așa ați spus. Cine îl pornește, nu știm."
+      },
+      "tts": {
+        "audioTags": [
+          "subtly amused",
+          "precise",
+          "warmly"
+        ]
+      },
+      "direction": "Satisfacție reținută; „cine îl pornește, nu știm” coborât, onest."
     },
     {
       "id": "s1015-21D",
       "phase": "play",
-      "at": 336.0,
-      "maxDurationSec": 10.0,
+      "at": 336,
+      "maxDurationSec": 10,
       "speaker": "TEHNOLOGIC",
       "condition": "D",
       "text": {
-        "ro": "Cele două probe verifică releul, dar concluziile voastre nu se adună într-o majoritate pentru el. Diferența rămâne la vedere."
-      }
+        "ro": "Cele două probe verifică releul, dar concluziile voastre nu merg toate într-acolo. Diferența rămâne la vedere."
+      },
+      "tts": {
+        "audioTags": [
+          "intrigued",
+          "thoughtful",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Curiozitate față de dezacord; „rămâne la vedere” fără judecată."
     },
     {
       "id": "s1015-21O",
       "phase": "play",
-      "at": 336.0,
-      "maxDurationSec": 10.0,
+      "at": 336,
+      "maxDurationSec": 10,
       "speaker": "TEHNOLOGIC",
       "condition": "O",
       "text": {
-        "ro": "Nu avem încă două probe diferite care să verifice explicația. Dosarul rămâne deschis. Știm ce probă ne-ar trebui mai departe."
-      }
+        "ro": "Nu avem încă două probe diferite care să verifice explicația. Dosarul rămâne deschis. Măcar știm ce probă ne-ar trebui."
+      },
+      "tts": {
+        "audioTags": [
+          "cautious",
+          "measured",
+          "encouraging"
+        ]
+      },
+      "direction": "Luciditate rece, apoi o urmă de câștig la „ce probă ne-ar trebui”."
     },
     {
       "id": "s1015-22",
       "phase": "play",
-      "at": 350.0,
-      "maxDurationSec": 6.0,
+      "at": 350,
+      "maxDurationSec": 6,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Închideți etapa, nu întrebările. Dosarul pleacă împreună cu noi spre casă."
-      }
+        "ro": "Închidem etapa, nu și întrebările. Dosarul vine cu noi spre casă."
+      },
+      "tts": {
+        "audioTags": [
+          "firm",
+          "warmly",
+          "brief"
+        ]
+      },
+      "direction": "Închidere fermă, scurtă; „nu și întrebările” apăsat clar."
     },
     {
       "id": "s1015-23",
       "phase": "play",
-      "at": 373.0,
-      "maxDurationSec": 11.0,
+      "at": 373,
+      "maxDurationSec": 11,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "În tunel, semnalul rămâne în dosar, alături de probe. Nici stelele întinse în fața noastră nu pot răspunde în locul lor."
-      }
+        "ro": "În tunel, semnalul rămâne în dosar, lângă probe. Nici stelele întinse în fața noastră nu răspund în locul nostru."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "reflective",
+          "ethereal"
+        ]
+      },
+      "direction": "Ritm rar, aproape șoptit; stelele nu consolează, doar însoțesc."
     },
     {
       "id": "s1015-24",
       "phase": "play",
-      "at": 388.0,
-      "maxDurationSec": 9.0,
+      "at": 388,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Priviți drumul. Pentru câteva clipe, lăsăm instrumentele în pace. Întrebarea poate călători cu noi fără să o grăbim."
-      }
+        "ro": "Priviți drumul. Câteva clipe lăsăm aparatele în pace. Întrebarea poate călători cu noi, fără să o grăbim."
+      },
+      "tts": {
+        "audioTags": [
+          "softly",
+          "warmly",
+          "calm"
+        ]
+      },
+      "direction": "Invitație la tăcere; pauză reală înainte de „fără să o grăbim”."
     },
     {
       "id": "s1015-25",
       "phase": "play",
-      "at": 404.0,
-      "maxDurationSec": 12.0,
+      "at": 404,
+      "maxDurationSec": 12,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Pământul. De aici întrebarea părea mică: cine trimite? Acum avem și alta: cum putem afla fără să confundăm o bănuială cu o probă?"
-      }
+        "ro": "Pământul. Întrebarea părea mică: cine trimite? Acum: cum aflăm, fără să confundăm bănuiala cu dovada?"
+      },
+      "tts": {
+        "audioTags": [
+          "thoughtful",
+          "wondering",
+          "measured"
+        ]
+      },
+      "direction": "„Pământul” izolat, apoi contrastul întrebărilor, limpede și liniștit."
     },
     {
       "id": "s1015-26",
       "phase": "play",
-      "at": 416.0,
-      "maxDurationSec": 9.0,
+      "at": 416,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "În jurnal se vede ce am presupus, ce am măsurat și ce am încheiat. Sunt trei lucruri diferite."
-      }
+        "ro": "În jurnal se vede ce am bănuit, ce am măsurat și ce am hotărât. Sunt trei lucruri diferite."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "firm",
+          "warmly"
+        ]
+      },
+      "direction": "Numără cele trei lucruri distinct; pauză mică între ele."
     },
     {
       "id": "s1015-27",
       "phase": "play",
-      "at": 427.0,
-      "maxDurationSec": 8.0,
+      "at": 427,
+      "maxDurationSec": 8,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Numele meu poate lipsi. Urmele măsurate pot rămâne, împreună cu întrebările pe care încă le purtați."
-      }
+        "ro": "Numele meu poate să lipsească. Urmele măsurate rămân, împreună cu întrebările pe care le duceți."
+      },
+      "tts": {
+        "audioTags": [
+          "ethereal",
+          "softly",
+          "wondering"
+        ]
+      },
+      "direction": "Renunțare senină la nume; „urmele” rostite cu tandrețe."
     },
     {
       "id": "s1015-28",
       "phase": "play",
-      "at": 436.0,
-      "maxDurationSec": 7.0,
+      "at": 436,
+      "maxDurationSec": 7,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
-        "ro": "O limită scrisă limpede este utilă celui care vine după voi cu un instrument."
-      }
+        "ro": "O limită scrisă limpede îl ajută pe cel care vine după voi cu un aparat mai bun."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "encouraging",
+          "quietly"
+        ]
+      },
+      "direction": "Generozitate discretă; accent pe „limpede” și pe „cel care vine”."
     },
     {
       "id": "s1015-29",
       "phase": "play",
-      "at": 445.0,
-      "maxDurationSec": 9.0,
+      "at": 445,
+      "maxDurationSec": 9,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "Pot compara ritmurile. Încă nu pot pune un nume expeditorului. Semnalul și semnătura sunt două întrebări diferite."
-      }
+        "ro": "Pot compara ritmuri. Nu pot pune încă un nume pe expeditor. Semnalul e o întrebare, semnătura e alta."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "dryly",
+          "precise"
+        ]
+      },
+      "direction": "Onestitate seacă; ultima frază tăiată în două, clar."
     },
     {
       "id": "s1015-30",
       "phase": "play",
-      "at": 456.0,
-      "maxDurationSec": 9.0,
+      "at": 456,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Expediția se încheie aici. Dosarul vostru are propria istorie. Următoarea întrebare poate aștepta până ajungem acasă."
-      }
+        "ro": "Aici se termină expediția. Dosarul vostru are povestea lui. Următoarea întrebare poate aștepta până acasă."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "firm",
+          "measured"
+        ]
+      },
+      "direction": "Finalul expediției, cald și demn; „poate aștepta” fără grabă."
     },
     {
       "id": "s1015-31",
       "phase": "epilogue",
-      "at": 3.0,
-      "maxDurationSec": 9.0,
+      "at": 3,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Instrumentele pot lua o pauză. Dosarul rămâne pe tablete. Ce am aflat și întrebările deschise călătoresc împreună."
-      }
+        "ro": "Aparatele se odihnesc. Dosarul rămâne pe tablete, cu ce am aflat și ce nu știm încă."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "softly",
+          "reflective"
+        ]
+      },
+      "direction": "Destindere; „merg împreună” rostit ca un echilibru, nu ca un reproș."
     },
     {
       "id": "s1015-32",
       "phase": "epilogue",
-      "at": 13.0,
-      "maxDurationSec": 10.0,
+      "at": 13,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Ați păstra explicația de la plecare? Nu trebuie să răspundeți acum. Unele întrebări sună altfel după ce te întorci."
-      }
+        "ro": "Ați mai ține explicația de la plecare? Nu trebuie să răspundeți acum. Unele întrebări sună altfel după ce te întorci."
+      },
+      "tts": {
+        "audioTags": [
+          "curious",
+          "warmly",
+          "thoughtful"
+        ]
+      },
+      "direction": "Întrebare fără presiune; pauză lungă înainte de „nu trebuie să răspundeți”."
     },
     {
       "id": "s1015-33",
       "phase": "epilogue",
-      "at": 24.0,
-      "maxDurationSec": 8.0,
+      "at": 24,
+      "maxDurationSec": 8,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Certificatul postului păstrează firul acestei investigații. Îl puteți privi mai târziu, când vă amintiți călătoria."
-      }
+        "ro": "Certificatul postului ține minte firul căutării. Îl puteți privi când vă amintiți drumul."
+      },
+      "tts": {
+        "audioTags": [
+          "softly",
+          "encouraging",
+          "brief"
+        ]
+      },
+      "direction": "Simplu, prietenos; „firul căutării” cu un strop de afecțiune."
     },
     {
       "id": "s1015-34",
       "phase": "epilogue",
-      "at": 35.0,
-      "maxDurationSec": 9.0,
+      "at": 35,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Dacă pregătim o fotografie de echipaj, ghidul vă anunță. Dosarul și încheierea rămân disponibile și fără fotografie."
-      }
+        "ro": "Dacă facem o fotografie de echipaj, vă spune ghidul. Dosarul și încheierea rămân la voi și fără fotografie."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "warmly",
+          "brief"
+        ]
+      },
+      "direction": "Practic, fără insistență; a doua frază liniștitoare, nu comercială."
     },
     {
       "id": "s1015-35",
       "phase": "epilogue",
-      "at": 45.0,
-      "maxDurationSec": 9.0,
+      "at": 45,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Voi închide dosarul aici. Poate că data viitoare vom întâlni și semnătura. Deocamdată, locul ei rămâne liber."
-      }
+        "ro": "Închid dosarul aici. Poate data viitoare găsim și semnătura. Locul ei rămâne gol."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "wondering",
+          "subtly amused"
+        ]
+      },
+      "direction": "Închide dosarul; „locul ei rămâne gol” lăsat suspendat."
     },
     {
       "id": "s1015-36",
       "phase": "epilogue",
-      "at": 54.0,
-      "maxDurationSec": 7.0,
+      "at": 54,
+      "maxDurationSec": 7,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Am revenit cu întrebări mai precise. Și acesta este un loc bun de încheiere."
-      }
+        "ro": "Ne întoarcem cu întrebări mai precise. Și acesta e un final bun."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "firm",
+          "reflective"
+        ]
+      },
+      "direction": "Concluzie caldă, fără patos; „un final bun” rostit simplu, sigur."
     },
     {
       "id": "s1015-37",
       "phase": "epilogue",
-      "at": 62.0,
-      "maxDurationSec": 8.0,
+      "at": 62,
+      "maxDurationSec": 8,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Bun venit acasă. Rămâneți așezați la posturi. Ghidul vă va spune când vă puteți ridica."
-      }
+        "ro": "Bun venit acasă. Rămâneți pe scaune, la posturi. Ghidul vă spune când vă puteți ridica."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "calm",
+          "brief"
+        ]
+      },
+      "direction": "Bun venit sincer, apoi indicație practică, clară și scurtă."
     },
     {
       "id": "s1015-38",
       "phase": "epilogue",
-      "at": 70.0,
-      "maxDurationSec": 4.0,
+      "at": 70,
+      "maxDurationSec": 4,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Dosar închis pentru această misiune. Mulțumesc, echipaj."
-      }
+        "ro": "Dosar închis pentru misiunea asta. Mulțumesc, echipaj."
+      },
+      "tts": {
+        "audioTags": [
+          "dryly",
+          "warmly",
+          "brief"
+        ]
+      },
+      "direction": "Ultima replică: scurtă, caldă, cu un zâmbet abia auzit."
     }
   ]
 }

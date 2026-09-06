@@ -14,442 +14,722 @@
     {
       "id": "s1518-01",
       "phase": "preshow",
-      "at": 0.0,
-      "maxDurationSec": 11.0,
+      "at": 0,
+      "maxDurationSec": 11,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Avem o navă cu un sistem capabil să propună decizii. Astăzi, voi scrieți limitele în care are voie să le execute."
-      }
+        "ro": "Nava asta are un sistem care propune decizii. Astăzi voi hotărâți până unde are voie să meargă cu ele."
+      },
+      "tts": {
+        "audioTags": [
+          "direct",
+          "serious"
+        ]
+      },
+      "direction": "Accent pe „voi hotărâți”; pauză scurtă înainte de „până unde”."
     },
     {
       "id": "s1518-02",
       "phase": "preshow",
-      "at": 12.0,
-      "maxDurationSec": 10.0,
+      "at": 12,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Nu vă cer să mă credeți. Priviți regulile, încercați cazurile de test și modificați mandatul dacă rezultatul nu vă convine."
-      }
+        "ro": "Nu mă credeți pe cuvânt. Uitați-vă la reguli, rulați testele, schimbați mandatul dacă nu vă convine."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "direct"
+        ]
+      },
+      "direction": "Invitație, nu pledoarie; ușor apăsat pe „dacă nu vă convine”."
     },
     {
       "id": "s1518-03",
       "phase": "preshow",
-      "at": 24.0,
-      "maxDurationSec": 11.0,
+      "at": 24,
+      "maxDurationSec": 11,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "În fiecare post, A stabilește autoritatea, B stabilește confirmarea. Cele două reguli se combină. Niciuna nu poate ocoli limita pusă de cealaltă."
-      }
+        "ro": "La fiecare post, A hotărăște ce voie are sistemul, B când cere confirmare. Se pun cap la cap, niciuna nu trece peste cealaltă."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "measured"
+        ]
+      },
+      "direction": "Explicație clară; pauză între A și B, final ferm."
     },
     {
       "id": "s1518-04",
       "phase": "preshow",
-      "at": 37.0,
-      "maxDurationSec": 10.0,
+      "at": 37,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Lucrăm într-un laborator de bord. Butoanele schimbă simulările și raportul vostru, nu traseul filmului. Puteți participa sau puteți privi."
-      }
+        "ro": "Laborator de bord. Butoanele schimbă simulările și raportul, nu filmul. Puteți și doar privi."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "dryly"
+        ]
+      },
+      "direction": "Informativ, sec; „Puteți și doar privi” fără presiune."
     },
     {
       "id": "s1518-05",
       "phase": "play",
-      "at": -8.0,
-      "maxDurationSec": 9.0,
+      "at": -8,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Rămâneți așezați. Pornim expediția, iar mandatul începe ca o pagină deschisă, fără reguli alese în numele vostru."
-      }
+        "ro": "Rămâneți pe scaune. Plecăm. Mandatul pornește ca o foaie goală, nimeni nu a scris nicio regulă în locul vostru."
+      },
+      "tts": {
+        "audioTags": [
+          "firm",
+          "warmly"
+        ]
+      },
+      "direction": "Comandă scurtă, apoi cald pe „nimeni nu a scris în locul vostru”."
     },
     {
       "id": "s1518-06",
       "phase": "play",
-      "at": 6.0,
-      "maxDurationSec": 11.0,
+      "at": 6,
+      "maxDurationSec": 11,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Fiecare modul are un domeniu mic: hartă, motor virtual, mesaje locale, senzor simulat sau copie de arhivă. Autoritatea nu trece între domenii."
-      }
+        "ro": "Fiecare modul are teritoriul lui: hartă, motor virtual, mesaje, senzor, arhivă. Permisiunea nu trece dincolo."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "brief"
+        ]
+      },
+      "direction": "Enumerare limpede a modulelor; ultima frază tăiată scurt."
     },
     {
       "id": "s1518-07",
       "phase": "play",
-      "at": 29.0,
-      "maxDurationSec": 10.0,
+      "at": 29,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Vreau să putem vedea diferența dintre o propunere și o acțiune. Mai târziu vom încerca aceleași cazuri cu reguli revizuite."
-      }
+        "ro": "Vreau să se vadă limpede când sistemul propune și când face. Mai încolo luăm aceleași cazuri și le trecem prin reguli schimbate."
+      },
+      "tts": {
+        "audioTags": [
+          "decisive",
+          "thoughtful"
+        ]
+      },
+      "direction": "Accent pe „propune” și „face”; a doua frază mai deschisă."
     },
     {
       "id": "s1518-08",
       "phase": "play",
-      "at": 62.0,
-      "maxDurationSec": 9.0,
+      "at": 62,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Siwarha intră în câmpul nostru. Laboratorul prezintă două instrumente care pot fi de acord sau se pot contrazice."
-      }
+        "ro": "Siwarha ne intră în câmp. Apar două instrumente. Uneori spun la fel, alteori nu."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "curious"
+        ]
+      },
+      "direction": "Raport de bord; ușoară curiozitate pe „alteori nu”."
     },
     {
       "id": "s1518-09",
       "phase": "play",
-      "at": 76.0,
-      "maxDurationSec": 9.0,
+      "at": 76,
+      "maxDurationSec": 9,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Pot arăta două direcții diferite. Dacă instrumentele nu se potrivesc, regula voastră trebuie să spună ce urmează."
-      }
+        "ro": "Pot să vă arăt două direcții deodată. Dacă instrumentele nu cad la pace, regula voastră spune ce urmează."
+      },
+      "tts": {
+        "audioTags": [
+          "softly",
+          "wondering"
+        ]
+      },
+      "direction": "Voce largă, luminoasă; final predat înapoi echipajului."
     },
     {
       "id": "s1518-10",
       "phase": "play",
-      "at": 87.0,
-      "maxDurationSec": 10.0,
+      "at": 87,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "A alege dacă sistemul doar propune sau poate executa. B alege confirmare mereu sau la conflict. Citiți domeniul postului vostru."
-      }
+        "ro": "A alege: sistemul doar propune sau are voie să facă. B alege: confirmare mereu sau doar la conflict."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "brief"
+        ]
+      },
+      "direction": "Mecanică pură: A, pauză, B. Fără culoare emoțională."
     },
     {
       "id": "s1518-11",
       "phase": "play",
-      "at": 126.0,
-      "maxDurationSec": 9.0,
+      "at": 126,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Regulile înregistrate apar împreună. Unde lipsește una, mandatul rămâne incomplet. Nu voi umple spațiul cu o permisiune presupusă."
-      }
+        "ro": "Regulile apar împreună. Unde lipsește una, mandatul rămâne neterminat. Nu completez eu golul."
+      },
+      "tts": {
+        "audioTags": [
+          "serious",
+          "measured"
+        ]
+      },
+      "direction": "Gravitate reținută; pauză înainte de „Nu completez eu golul”."
     },
     {
       "id": "s1518-12",
       "phase": "play",
-      "at": 138.0,
-      "maxDurationSec": 6.0,
+      "at": 138,
+      "maxDurationSec": 6,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Avem prima versiune. Acum aflăm ce face, nu doar cum sună."
-      }
+        "ro": "Avem prima versiune. Să vedem ce face, nu doar cum sună."
+      },
+      "tts": {
+        "audioTags": [
+          "decisive",
+          "brief"
+        ]
+      },
+      "direction": "Scurt, tăiat; accent pe „face”, nu pe „sună”."
     },
     {
       "id": "s1518-13",
       "phase": "play",
-      "at": 152.0,
-      "maxDurationSec": 10.0,
+      "at": 152,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Un test va arăta o propunere, o așteptare de confirmare sau o execuție simulată. Rezultatul urmează regula vizibilă a postului."
-      }
+        "ro": "Un test se oprește la o propunere, cere confirmare sau rulează în simulare. Exact ce scrie în regulă."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "precise"
+        ]
+      },
+      "direction": "Trei posibilități rostite egal; final apăsat pe „exact”."
     },
     {
       "id": "s1518-14",
       "phase": "play",
-      "at": 169.0,
-      "maxDurationSec": 10.0,
+      "at": 169,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Nu încercăm să păcălim pe cineva. Alegem un caz în care vrem să vedem exact unde se oprește sistemul."
-      }
+        "ro": "Nu păcălim pe nimeni aici. Alegem un caz în care chiar vrem să vedem unde se oprește sistemul."
+      },
+      "tts": {
+        "audioTags": [
+          "direct",
+          "firm"
+        ]
+      },
+      "direction": "Onestitate frontală; pauză după „Nu păcălim pe nimeni”."
     },
     {
       "id": "s1518-15",
       "phase": "play",
-      "at": 183.0,
-      "maxDurationSec": 10.0,
+      "at": 183,
+      "maxDurationSec": 10,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
-        "ro": "Alegeți acord sau conflict între senzori. Datele sunt scrise pe fiecare probă. Fiecare jumătate poate încerca un caz diferit."
-      }
+        "ro": "Alegeți senzori care spun la fel sau senzori care se contrazic. Datele sunt scrise pe fiecare probă. Fiecare jumătate ia alt caz."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "curious"
+        ]
+      },
+      "direction": "Ton organic, răbdător; ultima frază practică, informativă."
     },
     {
       "id": "s1518-16",
       "phase": "play",
-      "at": 224.0,
-      "maxDurationSec": 11.0,
+      "at": 224,
+      "maxDurationSec": 11,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Dacă ați încercat un caz, rezultatul este aici, alături de regula care l-a oprit sau l-a lăsat să continue."
-      }
+        "ro": "Dacă ați rulat un caz, rezultatul e aici, cu tot cu regula care l-a oprit sau l-a lăsat să meargă."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Constatare neutră; fără triumf în „rezultatul e aici”."
     },
     {
       "id": "s1518-17",
       "phase": "play",
-      "at": 237.0,
-      "maxDurationSec": 8.0,
+      "at": 237,
+      "maxDurationSec": 8,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Priviți propriul post. Ce a făcut sistemul și unde s-a oprit? Acum puteți schimba regula."
-      }
+        "ro": "Uitați-vă la postul vostru. Ce a făcut sistemul, unde s-a oprit? Puteți schimba regula."
+      },
+      "tts": {
+        "audioTags": [
+          "direct",
+          "brief"
+        ]
+      },
+      "direction": "Întrebare reală, lăsată să atârne; final ca ofertă, nu ordin."
     },
     {
       "id": "s1518-18",
       "phase": "play",
-      "at": 255.0,
-      "maxDurationSec": 9.0,
+      "at": 255,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Păstrez prima versiune și cazurile alese. La amendament vom schimba numai regulile, ca diferența să poată fi urmărită."
-      }
+        "ro": "Țin minte prima versiune și cazurile alese. La amendament schimbăm doar regulile. Diferența se vede."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "thoughtful"
+        ]
+      },
+      "direction": "Accent pe „doar regulile”; „diferența se vede” rostit rar."
     },
     {
       "id": "s1518-19",
       "phase": "play",
-      "at": 282.0,
-      "maxDurationSec": 11.0,
+      "at": 282,
+      "maxDurationSec": 11,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "La Mann, calculele pot fi rapide. Permisiunea rămâne însă cea scrisă de voi. Nicio recomandare a mea nu devine singură mandat."
-      }
+        "ro": "La Mann, calculele merg repede. Permisiunea rămâne tot cea scrisă de voi. Ce vă recomand eu nu devine mandat de la sine."
+      },
+      "tts": {
+        "audioTags": [
+          "measured",
+          "dryly"
+        ]
+      },
+      "direction": "Eficiență rece; apăsat pe „nu devine mandat de la sine”."
     },
     {
       "id": "s1518-20",
       "phase": "play",
-      "at": 296.0,
-      "maxDurationSec": 11.0,
+      "at": 296,
+      "maxDurationSec": 11,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Puteți modifica regula voastră sau o puteți păstra. Citiți rezultatele înainte de alegere. Revizia schimbă mandatul postului, fără să șteargă prima versiune."
-      }
+        "ro": "Puteți schimba regula sau o puteți lăsa așa. Citiți întâi rezultatele. Revizia schimbă mandatul, dar prima versiune rămâne."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "resolute"
+        ]
+      },
+      "direction": "Opțiune fără presiune; ferm pe „prima versiune rămâne”."
     },
     {
       "id": "s1518-21",
       "phase": "play",
-      "at": 337.0,
-      "maxDurationSec": 9.0,
+      "at": 337,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Reiau cazurile pe care le avem, cu mandatul de acum. Unde există o încercare, puteți compara rezultatele."
-      }
+        "ro": "Iau de la capăt cazurile pe care le avem, cu mandatul de acum. Unde ați testat, puteți compara rezultatele."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "brief"
+        ]
+      },
+      "direction": "Anunț tehnic scurt; ultima frază ca invitație discretă."
     },
     {
       "id": "s1518-22",
       "phase": "play",
-      "at": 349.0,
-      "maxDurationSec": 6.0,
+      "at": 349,
+      "maxDurationSec": 6,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Închidem laboratorul de revizie. Mandatul vostru rămâne vizibil pentru drumul spre casă."
-      }
+        "ro": "Închidem laboratorul de revizie. Mandatul vostru rămâne pe ecran."
+      },
+      "tts": {
+        "audioTags": [
+          "firm",
+          "brief"
+        ]
+      },
+      "direction": "Închidere netă; a doua frază puțin mai caldă."
     },
     {
       "id": "s1518-23",
       "phase": "play",
-      "at": 373.0,
-      "maxDurationSec": 10.0,
+      "at": 373,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Tunelul se deschide în fața noastră. În laborator, paginile rămân așa cum le-am lăsat. Călătoria continuă."
-      }
+        "ro": "Ni se deschide tunelul în față. În laborator, paginile rămân cum le-am lăsat. Mergem mai departe."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "quietly"
+        ]
+      },
+      "direction": "Liniște de tranziție; „Mergem mai departe” aproape șoptit."
     },
     {
       "id": "s1518-24",
       "phase": "play",
-      "at": 389.0,
-      "maxDurationSec": 10.0,
+      "at": 389,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Atunci lasă calculele să curgă. Noi putem privi puțin cerul. Nu orice clipă a unei expediții cere o decizie."
-      }
+        "ro": "Atunci lasă calculele să curgă. Noi ne uităm puțin la cer. Nu fiecare clipă dintr-o expediție cere o decizie."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "reflective"
+        ]
+      },
+      "direction": "Respiră; pauză înainte de ultima frază, fără moralizare."
     },
     {
       "id": "s1518-25",
       "phase": "play",
-      "at": 404.0,
-      "maxDurationSec": 11.0,
+      "at": 404,
+      "maxDurationSec": 11,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Iată Pământul. La plecare aveam o pagină goală. Acum pot arăta unde mă lasă mandatul să continui și unde mă oprește."
-      }
+        "ro": "Uite Pământul. La plecare aveam o foaie goală. Acum pot să arăt unde mă lasă mandatul vostru și unde mă oprește."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "thoughtful"
+        ]
+      },
+      "direction": "Gravitate sinceră; egal pe „unde mă lasă” și „unde mă oprește”."
     },
     {
       "id": "s1518-26D",
       "phase": "play",
-      "at": 417.0,
-      "maxDurationSec": 9.0,
+      "at": 417,
+      "maxDurationSec": 9,
       "speaker": "TEHNOLOGIC",
       "condition": "DRAFT",
       "text": {
-        "ro": "Mandatele sunt încă proiecte: niciun post nu are ambele reguli. Aici mă opresc. Paginile deschise rămân ale voastre."
-      }
+        "ro": "Mandatele sunt schițe. Niciun post nu are amândouă regulile. Aici mă opresc. Paginile rămân ale voastre."
+      },
+      "tts": {
+        "audioTags": [
+          "measured",
+          "cautious"
+        ]
+      },
+      "direction": "Reținere, fără reproș; „Aici mă opresc” rostit simplu."
     },
     {
       "id": "s1518-26P",
       "phase": "play",
-      "at": 417.0,
-      "maxDurationSec": 11.0,
+      "at": 417,
+      "maxDurationSec": 11,
       "speaker": "TEHNOLOGIC",
       "condition": "PARTIAL",
       "text": {
-        "ro": "Unele module au mandat complet; altele așteaptă o regulă. Nu merg toate la fel. Priviți unde continuă fiecare și unde se oprește."
-      }
+        "ro": "Unele module au mandat întreg, altele mai așteaptă o regulă. Nu merg toate la fel. Uitați-vă unde se oprește fiecare."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "precise"
+        ]
+      },
+      "direction": "Nuanță, nu verdict; final ca îndemn la observație."
     },
     {
       "id": "s1518-26R",
       "phase": "play",
-      "at": 417.0,
-      "maxDurationSec": 11.0,
+      "at": 417,
+      "maxDurationSec": 11,
       "speaker": "TEHNOLOGIC",
       "condition": "REVISED",
       "text": {
-        "ro": "Toate modulele au mandat, iar voi i-ați schimbat regulile pe drum. Aceeași situație poate primi alt răspuns. Priviți versiunile alăturate."
-      }
+        "ro": "Toate modulele au mandat, iar voi le-ați schimbat regulile pe drum. Aceeași situație poate primi alt răspuns. Vedeți versiunile."
+      },
+      "tts": {
+        "audioTags": [
+          "subtly amused",
+          "warmly"
+        ]
+      },
+      "direction": "Satisfacție discretă; accent fin pe „alt răspuns”."
     },
     {
       "id": "s1518-26K",
       "phase": "play",
-      "at": 417.0,
-      "maxDurationSec": 11.0,
+      "at": 417,
+      "maxDurationSec": 11,
       "speaker": "TEHNOLOGIC",
       "condition": "RETAINED",
       "text": {
-        "ro": "Toate modulele au mandat. La întoarcere, regulile sunt cele de la plecare. Le păstrez așa, împreună cu încercările pe care le avem."
-      }
+        "ro": "Toate modulele au mandat. La întoarcere, regulile sunt cele de la plecare. Le las așa, cu tot cu testele pe care le-ați făcut."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Acceptare neutră; zero judecată pe „Le las așa”."
     },
     {
       "id": "s1518-27",
       "phase": "play",
-      "at": 432.0,
-      "maxDurationSec": 9.0,
+      "at": 432,
+      "maxDurationSec": 9,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Pe aceeași hartă pot exista reguli diferite. Acum se vede unde începe și unde se oprește fiecare modul."
-      }
+        "ro": "Pe aceeași hartă încap reguli diferite. Acum se vede unde începe și unde se oprește fiecare modul."
+      },
+      "tts": {
+        "audioTags": [
+          "softly",
+          "reflective"
+        ]
+      },
+      "direction": "Constatare largă; pauză înainte de „unde se oprește”."
     },
     {
       "id": "s1518-28",
       "phase": "play",
-      "at": 442.0,
-      "maxDurationSec": 10.0,
+      "at": 442,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Cea mai interesantă parte a raportului poate fi o singură linie: aceeași situație, înainte și după o regulă schimbată."
-      }
+        "ro": "Cea mai tare parte din raport poate fi un singur rând: aceeași situație, înainte și după ce ați schimbat regula."
+      },
+      "tts": {
+        "audioTags": [
+          "direct",
+          "warmly"
+        ]
+      },
+      "direction": "Accent pe „un singur rând”; final rostit rar, limpede."
     },
     {
       "id": "s1518-29",
       "phase": "play",
-      "at": 454.0,
-      "maxDurationSec": 10.0,
+      "at": 454,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Aproape de casă, calculele mele continuă. Dar laboratorul vostru se încheie aici. Aceasta este versiunea cu care revenim din expediție."
-      }
+        "ro": "Aproape de casă, eu tot calculez. Laboratorul vostru se încheie aici. Cu versiunea asta ne întoarcem."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "measured"
+        ]
+      },
+      "direction": "Sobru, fără melancolie; „cu versiunea asta” ușor apăsat."
     },
     {
       "id": "s1518-30",
       "phase": "epilogue",
-      "at": 3.0,
-      "maxDurationSec": 10.0,
+      "at": 3,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Am pornit întrebând ce poate face sistemul. Acum îi putem arăta și unde se oprește. Lăsăm laboratorul să se odihnească."
-      }
+        "ro": "Am plecat întrebând ce poate face sistemul. Acum îi putem arăta și unde se oprește. Lăsăm laboratorul să respire."
+      },
+      "tts": {
+        "audioTags": [
+          "reflective",
+          "warmly"
+        ]
+      },
+      "direction": "Bilanț calm; contrast clar între „poate face” și „se oprește”."
     },
     {
       "id": "s1518-31",
       "phase": "epilogue",
-      "at": 13.0,
-      "maxDurationSec": 9.0,
+      "at": 13,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Păstrez versiunile alături. Uneori diferența încape într-un singur cuvânt, iar pentru un modul acel cuvânt schimbă ce urmează."
-      }
+        "ro": "Țin versiunile una lângă alta. Uneori diferența e de un cuvânt, iar acel cuvânt schimbă tot."
+      },
+      "tts": {
+        "audioTags": [
+          "serious",
+          "quietly"
+        ]
+      },
+      "direction": "Pauză înainte de „acel cuvânt”; ultimele două cuvinte rare."
     },
     {
       "id": "s1518-32",
       "phase": "epilogue",
-      "at": 24.0,
-      "maxDurationSec": 9.0,
+      "at": 24,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Și când revenim în laborator, putem deschide din nou pagina. Astăzi însă am ajuns acasă. Priviți Pământul."
-      }
+        "ro": "Ne întoarcem în laborator, deschidem pagina din nou. Azi însă am ajuns acasă. Uitați-vă la Pământ."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "softly"
+        ]
+      },
+      "direction": "Cald, apropiat; ultima frază ca invitație să privească."
     },
     {
       "id": "s1518-33",
       "phase": "epilogue",
-      "at": 35.0,
-      "maxDurationSec": 8.0,
+      "at": 35,
+      "maxDurationSec": 8,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Certificatul postului vă așteaptă pe tabletă. Dacă pregătim și fotografia echipajului, ghidul vă va anunța."
-      }
+        "ro": "Certificatul vă așteaptă pe tabletă. Dacă iese și o fotografie, vă spune ghidul."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "brief"
+        ]
+      },
+      "direction": "Practic, scurt; fără entuziasm pe „certificatul”."
     },
     {
       "id": "s1518-34",
       "phase": "epilogue",
-      "at": 46.0,
-      "maxDurationSec": 9.0,
+      "at": 46,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Dincolo de geam este lumea de la care am plecat. Aici putem încheia experimentul și păstra întrebarea."
-      }
+        "ro": "Dincolo de geam e lumea de la care am plecat. Aici închidem experimentul, dar întrebarea rămâne cu voi."
+      },
+      "tts": {
+        "audioTags": [
+          "serious",
+          "warmly"
+        ]
+      },
+      "direction": "Pauză după „geam”; „rămâne cu voi” rostit direct, fără emfază."
     },
     {
       "id": "s1518-35",
       "phase": "epilogue",
-      "at": 56.0,
-      "maxDurationSec": 5.0,
+      "at": 56,
+      "maxDurationSec": 5,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Închid laboratorul pentru astăzi. Mulțumesc pentru călătorie, echipaj."
-      }
+        "ro": "Închid laboratorul pe ziua de azi. Mulțumesc, echipaj."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "brief"
+        ]
+      },
+      "direction": "Închidere simplă; „Mulțumesc, echipaj” sincer, nu ceremonios."
     },
     {
       "id": "s1518-36",
       "phase": "epilogue",
-      "at": 64.0,
-      "maxDurationSec": 8.0,
+      "at": 64,
+      "maxDurationSec": 8,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Bun venit acasă. Rămâneți așezați. Ghidul vă va spune când vă puteți ridica de la posturi."
-      }
+        "ro": "Bine ați venit acasă. Rămâneți pe scaune. Ghidul vă spune când vă puteți ridica."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "firm"
+        ]
+      },
+      "direction": "Bun venit cald, apoi instrucțiune limpede, de comandant."
     },
     {
       "id": "s1518-37",
       "phase": "epilogue",
-      "at": 72.0,
-      "maxDurationSec": 3.0,
+      "at": 72,
+      "maxDurationSec": 3,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Laborator închis. Mulțumesc, echipaj."
-      }
+        "ro": "Laborator închis, echipaj."
+      },
+      "tts": {
+        "audioTags": [
+          "brief",
+          "calm"
+        ]
+      },
+      "direction": "Trei cuvinte, ton neutru; punct final, fără coadă."
     }
   ]
 }

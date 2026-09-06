@@ -47,8 +47,15 @@ async function main() {
       const voice = casting.voices[cue.speaker];
       if (!voice) throw new Error(`No casting for ${cue.speaker}`);
       const voiceId = process.env[`ELEVENLABS_VOICE_${cue.speaker}`] || voice.voiceId;
-      const settings = { ...voice.voiceSettings, stability: 0.5, speed: 1 };
-      const request = { text: cue.text.ro, model_id: 'eleven_v3', language_code: 'ro', voice_settings: settings, seed: parseInt(hash(`${profile}:${cue.id}`).slice(0, 8), 16) };
+      // Per-cue stage direction: eleven_v3 reads leading [tags] as performance instructions and does not
+      // speak them; alignmentToWords(..., true) below strips them from the lip-sync word track.
+      const tags = (cue.tts?.audioTags ?? [])
+        .map(tag => String(tag).trim().replace(/^\[|\]$/g, ''))
+        .filter(tag => /^[\p{L}\p{N} ,.'’!?-]{1,48}$/u.test(tag))
+        .slice(0, 3);
+      const text = tags.length ? `${tags.map(tag => `[${tag}]`).join(' ')} ${cue.text.ro}` : cue.text.ro;
+      const settings = { ...voice.voiceSettings, stability: 0.5, speed: 1, ...(cue.tts?.voiceSettings ?? {}) };
+      const request = { text, model_id: 'eleven_v3', language_code: 'ro', voice_settings: settings, seed: parseInt(hash(`${profile}:${cue.id}`).slice(0, 8), 16) };
       const generationKey = hash(JSON.stringify({ voiceId, request, format: 'mp3_44100_192' }));
       const file = `${cue.id}.mp3`;
       const receiptPath = path.join(out, `${cue.id}.receipt.json`);

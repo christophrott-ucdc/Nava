@@ -14,442 +14,723 @@
     {
       "id": "AD-R01",
       "phase": "preshow",
-      "at": 2.0,
-      "maxDurationSec": 12.0,
+      "at": 2,
+      "maxDurationSec": 12,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Bun venit la bord. Dincolo de Pământ ne așteaptă lumi despre care știm puțin. Ce vom putea aduce înapoi?"
-      }
+        "ro": "Bun venit la bord. Dincolo de Pământ sunt lumi despre care nu știm mai nimic. Ce reușim să aducem înapoi?"
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "curious"
+        ]
+      },
+      "direction": "Accent pe „nu știm mai nimic”; pauză scurtă înainte de întrebare, lăsată deschisă."
     },
     {
       "id": "AD-R02",
       "phase": "preshow",
-      "at": 15.0,
-      "maxDurationSec": 12.0,
+      "at": 15,
+      "maxDurationSec": 12,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Fiecare jumătate de tabletă are un instrument, două unități de energie și un loc în arhivă. Resursele sunt independente."
-      }
+        "ro": "Fiecare jumătate de tabletă are un instrument, două unități de energie și un loc în arhivă. Nimic nu se împarte între voi."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Enumerare limpede, trei bătăi egale; ultima frază tăiată scurt, fără subliniere."
     },
     {
       "id": "AD-R03",
       "phase": "preshow",
-      "at": 29.0,
-      "maxDurationSec": 10.0,
+      "at": 29,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Mai întâi măsurați. Apoi decideți dacă interveniți. La final alegeți ce document trimiteți mai departe. Nu vom putea trimite tot."
-      }
+        "ro": "Întâi măsurați. Apoi hotărâți dacă interveniți. La sfârșit alegeți ce document trimiteți mai departe. Nu încape tot."
+      },
+      "tts": {
+        "audioTags": [
+          "firm",
+          "measured"
+        ]
+      },
+      "direction": "Trei pași de comandă; „Nu încape tot” spus mai jos, fără reproș."
     },
     {
       "id": "AD-R04",
       "phase": "preshow",
-      "at": 40.0,
-      "maxDurationSec": 9.0,
+      "at": 40,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Puteți participa sau puteți privi. Instrumentele vă așteaptă; comenzile lor rămân în mâinile voastre."
-      }
+        "ro": "Puteți lucra sau puteți privi. Instrumentele vă așteaptă, comenzile rămân la voi."
+      },
+      "tts": {
+        "audioTags": [
+          "dryly",
+          "gentle"
+        ]
+      },
+      "direction": "Umor sec pe „sau puteți privi”; final cald, fără insistență."
     },
     {
       "id": "AD-R05",
       "phase": "play",
-      "at": -8.0,
-      "maxDurationSec": 7.0,
+      "at": -8,
+      "maxDurationSec": 7,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Navigație, păstrează ruta. Pregătiți instrumentele. Pământul ne va pierde curând din vedere."
-      }
+        "ro": "Navigație, ține ruta. Pregătiți instrumentele. Curând Pământul nu ne mai vede."
+      },
+      "tts": {
+        "audioTags": [
+          "decisive",
+          "brief"
+        ]
+      },
+      "direction": "Ordine scurte; ultima frază mai joasă, ca o constatare, nu avertisment."
     },
     {
       "id": "AD-R06",
       "phase": "play",
-      "at": 12.0,
-      "maxDurationSec": 10.0,
+      "at": 12,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Zece canale sunt pregătite. Fiecare urmărește altceva: un contur, un consum, o emisie, un ritm sau o schimbare."
-      }
+        "ro": "Zece canale sunt gata. Fiecare urmărește altceva: un contur, un consum, o schimbare."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "calm"
+        ]
+      },
+      "direction": "Cifra clar; cele trei lucruri urmărite, ritm egal, ușor descrescător."
     },
     {
       "id": "AD-R07",
       "phase": "play",
-      "at": 40.0,
-      "maxDurationSec": 9.0,
+      "at": 40,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Nu putem opri călătoria la fiecare întrebare. Va trebui să alegem unde privim mai atent."
-      }
+        "ro": "Nu putem opri drumul la fiecare întrebare. Va trebui să alegem unde privim mai atent."
+      },
+      "tts": {
+        "audioTags": [
+          "thoughtful",
+          "serious"
+        ]
+      },
+      "direction": "Pauză după „la fiecare întrebare”; accent pe „unde privim mai atent”."
     },
     {
       "id": "AD-R08",
       "phase": "play",
-      "at": 65.0,
-      "maxDurationSec": 10.0,
+      "at": 65,
+      "maxDurationSec": 10,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "De departe, suprafața mea pare uniformă. Apropiați instrumentul de un singur loc și veți pierde imaginea întregului."
-      }
+        "ro": "De departe, par netedă peste tot. Dacă apropiați instrumentul de un singur loc, pierdeți întregul."
+      },
+      "tts": {
+        "audioTags": [
+          "ethereal",
+          "subtly amused"
+        ]
+      },
+      "direction": "Ironie blândă pe „netedă peste tot”; final lăsat să atârne."
     },
     {
       "id": "AD-R09",
       "phase": "play",
-      "at": 79.0,
-      "maxDurationSec": 10.0,
+      "at": 79,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Observația largă costă o unitate. Cea fină costă două. Rezerva rămasă va putea proteja sonda la următoarea oprire."
-      }
+        "ro": "Observația largă costă o unitate. Cea fină, două. Ce vă rămâne poate apăra sonda la oprirea următoare."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "brief"
+        ]
+      },
+      "direction": "Costuri rostite ca dintr-un tabel; ultima frază puțin mai apăsată."
     },
     {
       "id": "AD-R10",
       "phase": "play",
-      "at": 92.0,
-      "maxDurationSec": 8.0,
+      "at": 92,
+      "maxDurationSec": 8,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Priviți obiectul de pe tabletă. Cât din el vreți să cercetați? Configurați instrumentul."
-      }
+        "ro": "Uitați-vă la obiectul de pe tabletă. Cât din el vreți să cercetați? Reglați instrumentul."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "firm"
+        ]
+      },
+      "direction": "Invitație caldă; întrebarea din mijloc, reală; ultima frază, comandă simplă."
     },
     {
       "id": "AD-R11",
       "phase": "play",
-      "at": 125.0,
-      "maxDurationSec": 7.0,
+      "at": 125,
+      "maxDurationSec": 7,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Instrumentele au oprit citirea. Pe ecran vedeți cât am păstrat și ce rezervă ne însoțește."
-      }
+        "ro": "Citirea s-a încheiat. Pe ecran vedeți ce ați păstrat și ce rezervă aveți."
+      },
+      "tts": {
+        "audioTags": [
+          "brief",
+          "precise"
+        ]
+      },
+      "direction": "Anunț tehnic, fără culoare; pauză mică între cele două fraze."
     },
     {
       "id": "AD-R12",
       "phase": "play",
-      "at": 134.0,
-      "maxDurationSec": 8.0,
+      "at": 134,
+      "maxDurationSec": 8,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Păstrați lângă fiecare imagine și marginea ei. Acolo începe ceea ce încă nu ați văzut."
-      }
+        "ro": "Țineți lângă fiecare imagine și marginea ei. Acolo începe ce nu ați apucat să vedeți."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "reflective"
+        ]
+      },
+      "direction": "Voce joasă; accent pe „marginea ei”; final rostit aproape în șoaptă."
     },
     {
       "id": "AD-R13",
       "phase": "play",
-      "at": 151.0,
-      "maxDurationSec": 11.0,
+      "at": 151,
+      "maxDurationSec": 11,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
-        "ro": "Instrumentele voastre sunt acum în zona mea. Un nor de particule le va traversa. Puteți urmări trecerea sau puteți proteja sonda."
-      }
+        "ro": "Instrumentele voastre sunt acum în zona mea. Un nor de particule le va traversa. Puteți privi trecerea sau puteți adăposti sonda."
+      },
+      "tts": {
+        "audioTags": [
+          "storytelling",
+          "gentle"
+        ]
+      },
+      "direction": "Ton de povestitor; alternativa finală oferită egal, fără să sugereze răspunsul."
     },
     {
       "id": "AD-R14",
       "phase": "play",
-      "at": 165.0,
-      "maxDurationSec": 10.0,
+      "at": 165,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Protecția costă o unitate și lasă trei secunde fără citire. Observarea pasivă păstrează continuitatea, cu mai mult zgomot."
-      }
+        "ro": "Adăpostul costă o unitate și lasă trei secunde fără citire. Fără el, citirea e întreagă, dar zgomotoasă."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Contrast clar între cele două variante; „zgomotoasă” spus fără dramatism."
     },
     {
       "id": "AD-R15",
       "phase": "play",
-      "at": 179.0,
-      "maxDurationSec": 8.0,
+      "at": 179,
+      "maxDurationSec": 8,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Norul se apropie de sondă. Verificați rezerva. O citire întreruptă și una tulburată vor spune povești diferite."
-      }
+        "ro": "Norul vine spre sondă. Verificați rezerva. O citire ruptă și una tulburată nu spun același lucru."
+      },
+      "tts": {
+        "audioTags": [
+          "firm",
+          "serious"
+        ]
+      },
+      "direction": "Urgență controlată; ultima frază, distincție fină, rostită mai rar."
     },
     {
       "id": "AD-R16",
       "phase": "play",
-      "at": 189.0,
+      "at": 189,
       "maxDurationSec": 7.5,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
-        "ro": "Puteți închide ochiul sondei pentru o clipă. Sau îl puteți lăsa deschis prin nor."
-      }
+        "ro": "Puteți închide ochiul sondei o clipă. Sau îl puteți lăsa deschis prin nor."
+      },
+      "tts": {
+        "audioTags": [
+          "softly",
+          "subtly amused"
+        ]
+      },
+      "direction": "Aproape o șoaptă; cele două opțiuni în oglindă, cu tandrețe ironică."
     },
     {
       "id": "AD-R17",
       "phase": "play",
-      "at": 225.0,
-      "maxDurationSec": 9.0,
+      "at": 225,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Norul a trecut. Dacă ați păstrat o înregistrare, pe ecran se vede și urma comenzii voastre."
-      }
+        "ro": "Norul a trecut. Dacă ați păstrat o înregistrare, pe ecran se vede și ce ați comandat."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Ușurare abia sugerată; restul, raport neutru despre ecran."
     },
     {
       "id": "AD-R18",
       "phase": "play",
-      "at": 236.0,
-      "maxDurationSec": 8.0,
+      "at": 236,
+      "maxDurationSec": 8,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Păstrăm și intervalele fără date. Altfel, următorul echipaj ar putea confunda liniștea instrumentului cu liniștea lumii."
-      }
+        "ro": "Păstrăm și pauzele fără date. Altfel, echipajul de după noi ia tăcerea instrumentului drept tăcerea lumii."
+      },
+      "tts": {
+        "audioTags": [
+          "serious",
+          "measured"
+        ]
+      },
+      "direction": "Greutate reală pe „tăcerea instrumentului”; pauză înainte de „tăcerea lumii”."
     },
     {
       "id": "AD-R19",
       "phase": "play",
-      "at": 252.0,
-      "maxDurationSec": 10.0,
+      "at": 252,
+      "maxDurationSec": 10,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "Pot păstra totul la bord. Dar fiecare canal poate trimite acasă un singur document. Ce va reprezenta expediția voastră?"
-      }
+        "ro": "Pot ține totul la bord. Dar fiecare canal trimite acasă un singur document. Care dintre ele va reprezenta expediția voastră?"
+      },
+      "tts": {
+        "audioTags": [
+          "dryly",
+          "curious"
+        ]
+      },
+      "direction": "Sec pe „pot ține totul”; întrebarea finală, provocare politicoasă."
     },
     {
       "id": "AD-R20",
       "phase": "play",
-      "at": 267.0,
-      "maxDurationSec": 11.0,
+      "at": 267,
+      "maxDurationSec": 11,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Pe tabletă găsiți documentele păstrate: observația, raportul sondei sau locurile rămase goale. Fiecare spune altceva."
-      }
+        "ro": "Pe tabletă aveți ce ați păstrat: observația, raportul sondei sau locul rămas gol. Fiecare spune altceva."
+      },
+      "tts": {
+        "audioTags": [
+          "measured",
+          "thoughtful"
+        ]
+      },
+      "direction": "Cele trei posibilități, ritm egal; „locul rămas gol” nu sună a eșec."
     },
     {
       "id": "AD-R21",
       "phase": "play",
-      "at": 284.0,
-      "maxDurationSec": 10.0,
+      "at": 284,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Următorul echipaj va avea aceste documente înainte să vadă lumile. Alegeți ce i-ar fi mai de folos."
-      }
+        "ro": "Cei care vin după noi văd documentele înainte să vadă lumile. Alegeți ce le-ar fi mai de folos."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "reflective"
+        ]
+      },
+      "direction": "Voce coborâtă; accent pe „înainte să vadă lumile”; final fără îndemn."
     },
     {
       "id": "AD-R22",
       "phase": "play",
-      "at": 299.0,
-      "maxDurationSec": 9.0,
+      "at": 299,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "all_channels_have_document",
       "text": {
-        "ro": "Fiecare instrument are ceva de trimis. Priviți documentele și alegeți unul. Puteți lăsa locul liber."
-      }
+        "ro": "Fiecare instrument are ceva de trimis. Uitați-vă la documente și alegeți unul. Sau lăsați locul gol."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "brief"
+        ]
+      },
+      "direction": "Instrucțiune netedă; ultima variantă oferită la fel de firesc ca prima."
     },
     {
       "id": "AD-R23",
       "phase": "play",
-      "at": 299.0,
-      "maxDurationSec": 9.0,
+      "at": 299,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "some_channels_have_no_document",
       "text": {
-        "ro": "Unele instrumente nu au nimic de trimis. Unde există documente, alegeți unul. Puteți lăsa locul liber."
-      }
+        "ro": "Unele instrumente nu au ce trimite. Unde sunt documente, alegeți unul. Sau lăsați locul gol."
+      },
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "gentle"
+        ]
+      },
+      "direction": "Constatare fără regret pe „nu au ce trimite”; restul, practic."
     },
     {
       "id": "AD-R24",
       "phase": "play",
-      "at": 337.0,
-      "maxDurationSec": 8.0,
+      "at": 337,
+      "maxDurationSec": 8,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "Așez documentele alese în pachetul de întoarcere. Restul rămân în memoria navei."
-      }
+        "ro": "Pun documentele alese în pachetul de întoarcere. Restul rămân în memoria navei."
+      },
+      "tts": {
+        "audioTags": [
+          "precise",
+          "brief"
+        ]
+      },
+      "direction": "Operație de arhivă; „restul rămân” spus fără nostalgie, doar exact."
     },
     {
       "id": "AD-R25",
       "phase": "play",
-      "at": 347.0,
-      "maxDurationSec": 7.0,
+      "at": 347,
+      "maxDurationSec": 7,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Lasă vizibile și locurile goale. Poate că de acolo va porni următoarea expediție."
-      }
+        "ro": "Lasă la vedere și locurile goale. Poate de acolo pornește expediția următoare."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "resolute"
+        ]
+      },
+      "direction": "Cald și hotărât; pauză înainte de „expediția următoare”."
     },
     {
       "id": "AD-R26",
       "phase": "play",
-      "at": 363.0,
-      "maxDurationSec": 8.0,
+      "at": 363,
+      "maxDurationSec": 8,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Transmisia este pregătită. Instrumentele se odihnesc. Priviți înainte: intrăm în traversare."
-      }
+        "ro": "Transmisia e gata. Instrumentele se odihnesc. Intrăm în traversare."
+      },
+      "tts": {
+        "audioTags": [
+          "calm",
+          "brief"
+        ]
+      },
+      "direction": "Trei fraze scurte, descrescătoare; ultima aproape suflată, ca o trecere."
     },
     {
       "id": "AD-R27",
       "phase": "play",
-      "at": 390.0,
-      "maxDurationSec": 9.0,
+      "at": 390,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Undeva, dincolo de trecerea aceasta, este casa noastră. Încerc să-mi amintesc cât de mare părea când am plecat."
-      }
+        "ro": "Undeva, dincolo de trecerea asta, e casa noastră. Încerc să-mi amintesc cât de mare părea în ziua plecării."
+      },
+      "tts": {
+        "audioTags": [
+          "wistful",
+          "softly"
+        ]
+      },
+      "direction": "Melancolie reținută; „cât de mare părea” rostit încet, cu pauză înainte."
     },
     {
       "id": "AD-R28",
       "phase": "play",
-      "at": 405.0,
-      "maxDurationSec": 8.0,
+      "at": 405,
+      "maxDurationSec": 8,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Pământul, în față. Deschid legătura de întoarcere și pregătesc ceea ce ați ales să trimiteți."
-      }
+        "ro": "Pământul, în față. Deschid legătura de întoarcere și pregătesc ce ați ales."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "precise"
+        ]
+      },
+      "direction": "Ușoară căldură pe „Pământul”; restul, procedură anunțată limpede."
     },
     {
       "id": "AD-R29",
       "phase": "play",
-      "at": 418.0,
-      "maxDurationSec": 6.0,
+      "at": 418,
+      "maxDurationSec": 6,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Arătați și întinderea privirii voastre. O imagine îngustă nu este lumea întreagă."
-      }
+        "ro": "Spuneți și cât de larg ați privit. O imagine îngustă nu e lumea întreagă."
+      },
+      "tts": {
+        "audioTags": [
+          "ethereal",
+          "gentle"
+        ]
+      },
+      "direction": "Rugăminte, nu reproș; accent discret pe „nu e lumea întreagă”."
     },
     {
       "id": "AD-R30",
       "phase": "play",
-      "at": 427.0,
-      "maxDurationSec": 7.0,
+      "at": 427,
+      "maxDurationSec": 7,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
-        "ro": "Păstrați lângă citire și urma sondei. Și instrumentul vostru a trecut prin această lume."
-      }
+        "ro": "Țineți lângă citire și urma sondei. A trecut și instrumentul vostru prin lumea mea."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "reflective"
+        ]
+      },
+      "direction": "Ton grav și blând; „și instrumentul vostru” spus cu tâlc, fără apăsare."
     },
     {
       "id": "AD-R31",
       "phase": "play",
-      "at": 436.0,
-      "maxDurationSec": 7.0,
+      "at": 436,
+      "maxDurationSec": 7,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "Memoria navei rămâne deschisă. Ce lipsește va avea locul său, până la o nouă călătorie."
-      }
+        "ro": "Memoria navei rămâne deschisă. Ce lipsește își păstrează locul, până la un alt drum."
+      },
+      "tts": {
+        "audioTags": [
+          "measured",
+          "thoughtful"
+        ]
+      },
+      "direction": "Calm de mașină care așteaptă; pauză înainte de „până la un alt drum”."
     },
     {
       "id": "AD-R32",
       "phase": "play",
-      "at": 447.0,
-      "maxDurationSec": 9.0,
+      "at": 447,
+      "maxDurationSec": 9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Am privit trei lumi fără să le epuizăm misterul. Acum se apropie lumea despre care credeam că știm totul."
-      }
+        "ro": "Am privit trei lumi și tot nu le-am dat de capăt. Acum vine lumea despre care credeam că știm totul."
+      },
+      "tts": {
+        "audioTags": [
+          "weary",
+          "reflective"
+        ]
+      },
+      "direction": "Oboseală bună a drumului; ultima frază cu ironie caldă, nu amară."
     },
     {
       "id": "AD-R33",
       "phase": "play",
-      "at": 458.0,
-      "maxDurationSec": 6.0,
+      "at": 458,
+      "maxDurationSec": 6,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Legătura cu Pământul este pregătită. Iată bagajul expediției."
-      }
+        "ro": "Legătura cu Pământul e deschisă. Iată bagajul expediției."
+      },
+      "tts": {
+        "audioTags": [
+          "brief",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Anunț scurt; „Iată bagajul expediției” rostit simplu, fără ceremonie."
     },
     {
       "id": "AD-R34",
       "phase": "epilogue",
-      "at": 5.0,
-      "maxDurationSec": 12.0,
+      "at": 5,
+      "maxDurationSec": 12,
       "speaker": "AVATAR_AI",
       "condition": "archive_both_types",
       "text": {
-        "ro": "În transmisie se întâlnesc două priviri: observațiile lumilor și urmele sondei. Următorul echipaj le va putea cerceta împreună."
-      }
+        "ro": "În transmisie se întâlnesc două priviri: ce ați văzut și urmele sondei. Următorii le pot citi împreună."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "reflective"
+        ]
+      },
+      "direction": "Satisfacție discretă; accent pe „le pot citi împreună”, cald și liniștit."
     },
     {
       "id": "AD-R35",
       "phase": "epilogue",
-      "at": 5.0,
-      "maxDurationSec": 12.0,
+      "at": 5,
+      "maxDurationSec": 12,
       "speaker": "AVATAR_AI",
       "condition": "archive_one_type",
       "text": {
-        "ro": "Ați trimis un singur fel de document. Va fi prima fereastră a următorului echipaj către călătoria noastră."
-      }
+        "ro": "Ați trimis un singur fel de document. Prin el va privi echipajul următor spre drumul nostru."
+      },
+      "tts": {
+        "audioTags": [
+          "measured",
+          "serious"
+        ]
+      },
+      "direction": "Constatare sobră a limitei; „un singur fel” apăsat calm, fără judecată."
     },
     {
       "id": "AD-R36",
       "phase": "epilogue",
-      "at": 5.0,
-      "maxDurationSec": 12.0,
+      "at": 5,
+      "maxDurationSec": 12,
       "speaker": "AVATAR_AI",
       "condition": "archive_empty",
       "text": {
-        "ro": "Niciun document nu pleacă spre Pământ. Ce există în memoria navei rămâne aici. Drumul poate fi cercetat din nou."
-      }
+        "ro": "Spre Pământ nu pleacă niciun document. Ce s-a strâns rămâne în memoria navei. Drumul poate fi luat de la capăt."
+      },
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "matter-of-fact"
+        ]
+      },
+      "direction": "Voce joasă, neutră, fără reproș; ultima frază, deschidere reală."
     },
     {
       "id": "AD-R37",
       "phase": "epilogue",
-      "at": 23.0,
-      "maxDurationSec": 10.0,
+      "at": 23,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Acesta este locul pentru bagajul expediției. Ce am ales să păstrăm poate deveni începutul altui drum."
-      }
+        "ro": "Aici stă bagajul expediției. Ce am ales să păstrăm poate fi începutul altui drum, pentru altcineva."
+      },
+      "tts": {
+        "audioTags": [
+          "serious",
+          "warmly"
+        ]
+      },
+      "direction": "Gravitate caldă; pauză înainte de „pentru altcineva”, rostit direct spre sală."
     },
     {
       "id": "AD-R38",
       "phase": "epilogue",
-      "at": 37.0,
-      "maxDurationSec": 9.0,
+      "at": 37,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "archive_full",
       "text": {
-        "ro": "Zece locuri, zece documente. Transmisia este completă. Dincolo de ea, lumile au încă multe de arătat."
-      }
+        "ro": "Zece locuri, zece documente. Transmisia e completă. Și lumile tot mai au multe de arătat."
+      },
+      "tts": {
+        "audioTags": [
+          "resolute",
+          "subtly amused"
+        ]
+      },
+      "direction": "Bilanț ferm pe cifre; ultima frază, ironie blândă care taie triumful."
     },
     {
       "id": "AD-R39",
       "phase": "epilogue",
-      "at": 37.0,
-      "maxDurationSec": 9.0,
+      "at": 37,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "archive_partial",
       "text": {
-        "ro": "În transmisie au rămas locuri libere. Le păstrăm așa. Următoarea călătorie va avea propriile întrebări."
-      }
+        "ro": "În transmisie au rămas locuri goale. Le lăsăm așa. Drumul următor are întrebările lui."
+      },
+      "tts": {
+        "audioTags": [
+          "wistful",
+          "calm"
+        ]
+      },
+      "direction": "Acceptare senină; „Le lăsăm așa” spus scurt, apoi pauză, apoi final."
     },
     {
       "id": "AD-R40",
       "phase": "epilogue",
-      "at": 58.0,
-      "maxDurationSec": 12.0,
+      "at": 58,
+      "maxDurationSec": 12,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "De aici, drumul nostru poate deveni începutul altuia. Mulțumesc, echipaj. Rămâneți la posturi; ghidul vă va spune când vă puteți ridica."
-      }
+        "ro": "De aici, drumul nostru poate fi începutul altuia. Vă mulțumesc, echipaj. Rămâneți la posturi, ghidul vă spune când vă puteți ridica."
+      },
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "resolute",
+          "measured"
+        ]
+      },
+      "direction": "Închidere caldă; mulțumirea sinceră, apoi indicația practică, simplu și clar."
     }
   ]
 }
