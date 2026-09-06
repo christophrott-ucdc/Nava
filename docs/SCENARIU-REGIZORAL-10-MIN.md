@@ -142,13 +142,13 @@ Cele cinci tablete se aprind, fiecare cu alt sigiliu. Pe ecranele asociate apar 
 
 În fereastra GLB dedicată, voce joasă și protocolară. Privirea avatarului este orientată spre HUD, nu spre camera publicului.
 
-> Exodus Șapte a interceptat un semnal fără coordonate. E împărțit în cinci fragmente — câte unul pentru fiecare post. În fiecare fragment apar două amprente.
+> Exodus Șapte a prins un semnal fără coordonate. E rupt în cinci bucăți, câte una pentru fiecare post. Și în fiecare bucată sunt două amprente.
 
 ### 0:15 · VOCEA NAVEI
 
 Inelul și forma de undă ale navei se aprind din particule desprinse din marginea Pământului; nu apare un al doilea personaj.
 
-> Postul Comunicații a reconstituit mesajul: „Găsiți a patra lume.” Expeditorul nu poate fi identificat.
+> Postul Comunicații a refăcut mesajul: „Găsiți a patra lume.” Expeditor necunoscut.
 
 Pe HUD, propoziția apare o singură dată, apoi se fragmentează iar în cinci semne, fiecare despărțit în două amprente.
 
@@ -156,19 +156,19 @@ Pe HUD, propoziția apare o singură dată, apoi se fragmentează iar în cinci 
 
 GLB-ul trece lent din profil trei-sferturi la privire directă în camera publicului.
 
-> Din clipa asta, nu mai sunteți pasageri. Sunteți un singur echipaj: cinci posturi, cinci feluri de a citi același semnal. Fiecare contează.
+> De acum nu mai sunteți pasageri. Sunteți un echipaj: cinci posturi, cinci feluri de a citi același semnal. Fiecare contează.
 
 ### 0:35 · VOCEA NAVEI
 
 Calm, fără a rupe ficțiunea.
 
-> Alegeți sau priviți. Pentru pauză, spuneți „pauză” ori faceți semnul.
+> Alegeți sau priviți. Pentru pauză, spuneți pauză sau faceți semnul.
 
 ### 0:43 · CĂPITANUL
 
 Fereastra GLB se apropie foarte puțin; privirea rămâne directă și calmă.
 
-> Pregătiți-vă de plecare. Când apare cifra cinci, numărăm împreună.
+> Ne pregătim de plecare. Când apare cifra cinci, numărăm împreună.
 
 Ambianța introduce un puls subgrav lent. Nu este alarmă. Inelul se retrage spre marginea ecranelor.
 
@@ -186,7 +186,7 @@ Pământul se îndepărtează. La video 20 s dispare, iar câmpul stelar rămân
 
 Mai încet decât în prolog. În fereastra GLB, privirea lui urmărește Pământul care se îndepărtează, nu datele HUD.
 
-> Pământul se îndepărtează. Priviți-l bine. Când îl vom revedea, îl vom privi altfel.
+> Pământul rămâne în urmă. Priviți-l bine. Când îl vom revedea, o să-l privim cu alți ochi.
 
 La dispariția Pământului urmează trei secunde de aproape-tăcere.
 
@@ -194,13 +194,13 @@ La dispariția Pământului urmează trei secunde de aproape-tăcere.
 
 Foarte sec; singura glumă din prima jumătate.
 
-> Echipajul este stabil. Nivelul de uimire depășește estimările. Îl las așa.
+> Echipajul e stabil. Nivelul de uimire e peste ce am calculat. Îl las așa.
 
 ### 1:36 · VOCEA NAVEI
 
 O lumină turcoaz crește în depărtare.
 
-> Postul Navigație confirmă direcția. Semnalul ne conduce spre o sursă de lumină. Prima destinație.
+> Postul Navigație confirmă direcția. Semnalul ne duce spre o sursă de lumină. Prima destinație.
 
 Primul arc al instrumentului începe să pulseze slab, fără să se umple.
 
@@ -216,11 +216,11 @@ Siwarha apare la video 74 s ca o planetă cu inele într-un mediu turcoaz. Entit
 
 Voce fără vârstă. Nu vine din centru, ci pare să traverseze încet panorama.
 
-> Cuvintele voastre ajung greu la noi. Culorile ajung într-o clipă.
+> Cuvintele voastre ajung greu până la noi. Culorile ajung într-o clipă.
 
 ### 2:36 · LUMINA
 
-> Dacă vreți, alegeți culoarea pe care ați lua-o cu voi prin întuneric.
+> Dacă vreți, alegeți o culoare: cea pe care ați lua-o cu voi prin întuneric.
 
 ### 2:43–2:55 · INTERACȚIUNEA 1
 
@@ -232,7 +232,7 @@ Pe ecranele laterale, până la zece urme de culoare intră anonim în entitate,
 
 Entitatea poartă acum amestecul grupului.
 
-> Fiecare culoare schimbă imaginea. Iar liniștea dintre culori îi dă adâncime.
+> Fiecare culoare schimbă imaginea. Și liniștea dintre culori îi dă adâncime.
 
 La finalul replicii, pe cuvântul „adâncime”, primul arc se aprinde și se aude prima notă.
 
@@ -240,7 +240,7 @@ La finalul replicii, pe cuvântul „adâncime”, primul arc se aprinde și se 
 
 Încă formal; reduce experiența la o înregistrare.
 
-> Primul indiciu: semnalul poartă acum culoarea echipajului. Consemnat.
+> Primul indiciu: semnalul are acum culoarea echipajului. Notez în jurnal.
 
 LUMINĂ dispare. Culoarea aleasă de grup rămâne ca o muchie fină a primului arc. Virajul de plecare încheie scena.
 
@@ -250,7 +250,7 @@ Zbor prin câmpul stelar. Kepler-186 d apare la video 180 s ca o planetă albast
 
 ### 3:52 · VOCEA NAVEI
 
-> A doua destinație: Kepler o sută optzeci și șase d. Pe lumea aceasta, nimic viu nu trăiește singur.
+> A doua destinație: Kepler o sută optzeci și șase d. Pe lumea asta, nimic viu nu trăiește singur.
 
 Al doilea arc crește ca o ramură desenată din lumină.
 
@@ -258,11 +258,11 @@ Al doilea arc crește ca o ramură desenată din lumină.
 
 Voce gravă, blândă. Ploaia apare jos în mix, aproape tactilă.
 
-> Credeți că „eu” se termină la marginea trupului. Și totuși, aerul din voi a trecut prin frunze. Apa din voi a fost, cândva, nor.
+> Voi credeți că „eu” se termină unde se termină trupul. Dar aerul din voi a trecut prin frunze. Iar apa din voi a fost, cândva, un nor.
 
 ### 4:33 · NATURA
 
-> Când sigiliul pulsează, îl puteți atinge. Nu trebuie s-o faceți toți deodată.
+> Când sigiliul pulsează, îl puteți atinge. Nu e nevoie s-o faceți toți deodată.
 
 ### 4:39–4:51 · INTERACȚIUNEA 2
 
@@ -272,7 +272,7 @@ Fiecare atingere schimbă ușor ritmul, iar sistemul îl readuce blând într-o 
 
 ### 4:53 · NATURA
 
-> V-am auzit ritmurile. Sunt diferite — și totuși, împreună alcătuiesc o singură rețea.
+> V-am auzit ritmurile. Diferite, dar împreună fac o singură rețea.
 
 La ultimul cuvânt, al doilea arc se aprinde și intră a doua notă.
 
@@ -292,13 +292,13 @@ Warp la video 246–280 s. La 282 s apar planeta Mann, inelele și discul lumino
 
 ### 5:12 · VOCEA NAVEI
 
-> A treia destinație nu ne trimite un mesaj. Ne așteaptă cu o predicție.
+> A treia destinație nu ne trimite un mesaj. Ne așteaptă. Știe deja că venim.
 
 O buclă muzicală perfectă se repetă identic.
 
 ### 5:34 · VOCEA NAVEI
 
-> Mann. Aici, bolile au fost aproape învinse, distanțele aproape șterse, iar riscul poate fi calculat. Civilizația de aici prevede aproape orice.
+> Mann. Aici aproape nu mai există boli. Distanțele aproape au dispărut. Riscul se calculează. Civilizația de aici prevede aproape orice.
 
 ### 5:56 · TEHNOLOGICA
 
@@ -336,9 +336,9 @@ Bucla muzicală se oprește înaintea ultimei note.
 
 Se redă o singură variantă, în funcție de rezultat:
 
-- dacă există cel puțin două alegeri diferite: **„Modelele cereau un singur răspuns. Voi ați găsit mai multe.”**
-- dacă toate alegerile exprimate sunt la fel: **„Ați ales la fel. Dar fiecare post privește răspunsul din alt unghi.”**
-- dacă nu a fost înregistrat niciun răspuns: **„Niciun răspuns nu a fost înregistrat. Uneori, și tăcerea spune ceva.”**
+- dacă există cel puțin două alegeri diferite: **„Modelele cereau un singur răspuns. Voi ați dat mai multe.”**
+- dacă toate alegerile exprimate sunt la fel: **„Ați ales toți la fel. Dar fiecare post vede răspunsul din alt unghi.”**
+- dacă nu a fost înregistrat niciun răspuns: **„Nu am primit niciun răspuns. Uneori, și tăcerea spune ceva.”**
 
 ### 6:42 · CĂPITANUL
 
@@ -372,7 +372,7 @@ Cele trei arce și constelația se desfac în fâșii, apoi se recompun ca o for
 
 Prima ezitare foarte mică.
 
-> Postul Memorie raportează o anomalie. Semnalul traversează tunelul în sens invers. Încă nu a fost trimis.
+> Postul Memorie anunță ceva ciudat. Semnalul trece prin tunel în sens invers. Nimeni nu l-a trimis încă.
 
 ### 7:27 · CĂPITANUL
 
@@ -394,7 +394,7 @@ Swell-ul crește numai două secunde și cade complet sub următoarea replică.
 
 ### 7:42 · VOCEA NAVEI
 
-> Navigația confirmă. Punctul de origine este chiar în fața noastră.
+> Navigația confirmă. Locul de unde pleacă e chiar în fața noastră.
 
 La 7:43, Pământul apare ca o semilună albastră. Constelația celor cinci sigilii se curbează și închide arcul lipsă. Pentru o clipă, inelul este complet, iar al patrulea arc urmează marginea albastră a Pământului. Apoi overlay-urile dispar. Rămân numai planeta și tăcerea.
 
@@ -406,7 +406,7 @@ Aproape șoptit.
 
 ### 7:54 · VOCEA NAVEI
 
-> Originea semnalului este aici. Iar momentul transmisiei... încă nu a sosit.
+> Semnalul pleacă de aici. Iar clipa în care va fi trimis... n-a venit încă.
 
 Cele cinci sigilii reapar în jurul Pământului. Culoarea Luminii, pulsul Naturii și constelația alegerilor reconstruiesc exact forma de undă din prima secundă. Lentilele confirmă succesiv, numai vizual: `NAVIGAȚIE · ORIGINE: PĂMÂNT`, `PROPULSIE · UNDĂ: STABILĂ`, `COMUNICAȚII · MESAJ RECONSTRUIT`, `BIOSEMNALE · SEMNĂTURĂ: VIE`, `MEMORIE · ÎNAINTE DE T0`.
 
@@ -414,11 +414,11 @@ Cele cinci sigilii reapar în jurul Pământului. Culoarea Luminii, pulsul Natur
 
 Fără triumf; cu uimire autentică.
 
-> Înțeleg. N-am urmărit semnalul altcuiva. Noi l-am construit, pas cu pas.
+> Înțeleg. N-am urmărit semnalul altcuiva. L-am făcut noi, pas cu pas.
 
 ### 8:09 · VOCEA NAVEI
 
-> Lumina i-a dat culoare. Natura i-a dat ritm. Iar voi i-ați dat ceva ce nicio mașină nu poate inventa: propriile alegeri.
+> Lumina i-a dat culoare. Natura i-a dat ritm. Iar voi i-ați dat ceva ce nicio mașină nu poate inventa: alegerile voastre.
 
 ### 8:20 · ECOURILE CELOR TREI LUMI
 
@@ -440,7 +440,7 @@ Vocile apar pe rând, ca niște amintiri, nu ca entități vizibile.
 
 Fereastra GLB se mărește discret, iar Căpitanul păstrează contactul vizual direct. Aceasta este replica-titlu.
 
-> Corectez jurnalul. A patra lume nu era ascunsă. Noi nu știam încă s-o vedem.
+> Corectez jurnalul. A patra lume nu era ascunsă. Noi încă nu știam s-o vedem.
 
 ### 8:38 · VOCEA NAVEI
 
@@ -464,27 +464,27 @@ Copiii rămân la aceleași posturi. Cele cinci tablete pulsează automat și nu
 
 Fără corp vizibil. Vocea este apropiată, iar albul respiră aproape imperceptibil.
 
-> Suntem aici, cu voi. Nu mai aveți nimic de rezolvat. De aici, drumul ne duce acasă.
+> Suntem aici, cu voi. Nu mai e nimic de rezolvat. De aici încolo, mergem acasă.
 
 ### 9:08 · VOCEA NAVEI
 
-> Știam unde este Pământul. Nu știam de ce îi spuneți „acasă”. Asta am învățat de la voi.
+> Știam unde e Pământul. Nu știam de ce îi spuneți „acasă”. Asta am învățat de la voi.
 
 ### 9:20 · CĂPITANUL
 
 Fereastra GLB reapare în același loc. Ton de jurnal, dar fără răceala de la început.
 
-> Jurnal de bord: semnalul a fost trimis. Bucla s-a închis.
+> Jurnal de bord: am trimis semnalul. Bucla s-a închis.
 
 ### 9:30 · VOCEA NAVEI
 
-> Ați plecat să găsiți o lume necunoscută. V-ați întors la lumea pe care o știați deja — iar acum o priviți altfel.
+> Ați plecat să găsiți o lume necunoscută. V-ați întors la lumea pe care o știați deja. Doar că acum o vedeți altfel.
 
 ### 9:43 · CĂPITANUL
 
 Complet cald. GLB-ul păstrează privirea directă până când fereastra se stinge.
 
-> Protocolul Acasă s-a încheiat. Bun venit acasă, echipaj. Rămâneți la posturi. Ghidul vă va spune când vă puteți ridica.
+> Protocolul Acasă s-a încheiat. Bun venit acasă, echipaj. Rămâneți la posturi. Ghidul o să vă spună când vă puteți ridica.
 
 La 9:53, tabletele afișează: „MISIUNE ÎNCHEIATĂ · SEMNAL TRANSMIS”. Cele cinci sigilii sunt egale și complete; fiecare se deschide în cele două trasee luminoase ale perechii. Abia acum luminile sălii cresc lent.
 
@@ -502,11 +502,11 @@ Această anexă este foaia de lucru pentru interpretul vocal, TTS, lip-sync și 
 
 | Timp | Arc actoricesc | Text |
 |---:|---|---|
-| 0:04 | protocolar; privirea GLB spre HUD | „Exodus Șapte a interceptat un semnal fără coordonate. E împărțit în cinci fragmente — câte unul pentru fiecare post. În fiecare fragment apar două amprente.” |
-| 0:24 | GLB-ul trece la privire directă | „Din clipa asta, nu mai sunteți pasageri. Sunteți un singur echipaj: cinci posturi, cinci feluri de a citi același semnal. Fiecare contează.” |
-| 0:43 | calm și protector; cadru ușor mai apropiat | „Pregătiți-vă de plecare. Când apare cifra cinci, numărăm împreună.” |
-| 1:09 | prima urmă de contemplare | „Pământul se îndepărtează. Priviți-l bine. Când îl vom revedea, îl vom privi altfel.” |
-| 3:10 | încă formal | „Primul indiciu: semnalul poartă acum culoarea echipajului. Consemnat.” |
+| 0:04 | protocolar; privirea GLB spre HUD | „Exodus Șapte a prins un semnal fără coordonate. E rupt în cinci bucăți, câte una pentru fiecare post. Și în fiecare bucată sunt două amprente.” |
+| 0:24 | GLB-ul trece la privire directă | „De acum nu mai sunteți pasageri. Sunteți un echipaj: cinci posturi, cinci feluri de a citi același semnal. Fiecare contează.” |
+| 0:43 | calm și protector; cadru ușor mai apropiat | „Ne pregătim de plecare. Când apare cifra cinci, numărăm împreună.” |
+| 1:09 | prima urmă de contemplare | „Pământul rămâne în urmă. Priviți-l bine. Când îl vom revedea, o să-l privim cu alți ochi.” |
+| 3:10 | încă formal | „Primul indiciu: semnalul are acum culoarea echipajului. Notez în jurnal.” |
 | 5:01 | privește camera înaintea datelor | „Cinci posturi. Zece amprente. Un echipaj.” |
 | 6:04 | reflex procedural | „Scanați semnalul.” |
 | 6:42 | prima abatere asumată de la protocol | „Atunci nu elimina nimic.” |
@@ -514,11 +514,11 @@ Această anexă este foaia de lucru pentru interpretul vocal, TTS, lip-sync și 
 | 7:27 | foarte scurt, tensiune controlată | „Repetă.” |
 | 7:38 | înțelege înaintea mașinii | „Atunci... noi îl vom trimite.” |
 | 7:50 | aproape șoptit | „Pământul.” |
-| 8:02 | uimire reală | „Înțeleg. N-am urmărit semnalul altcuiva. Noi l-am construit, pas cu pas.” |
-| 8:29 | fereastra GLB se mărește; replica-titlu | „Corectez jurnalul. A patra lume nu era ascunsă. Noi nu știam încă s-o vedem.” |
+| 8:02 | uimire reală | „Înțeleg. N-am urmărit semnalul altcuiva. L-am făcut noi, pas cu pas.” |
+| 8:29 | fereastra GLB se mărește; replica-titlu | „Corectez jurnalul. A patra lume nu era ascunsă. Noi încă nu știam s-o vedem.” |
 | 8:43 | simplu, fără triumf; nod scurt | „Trimite-l.” |
-| 9:20 | GLB-ul reapare; jurnal devenit mărturie | „Jurnal de bord: semnalul a fost trimis. Bucla s-a închis.” |
-| 9:43 | complet cald; privire directă | „Protocolul Acasă s-a încheiat. Bun venit acasă, echipaj. Rămâneți la posturi. Ghidul vă va spune când vă puteți ridica.” |
+| 9:20 | GLB-ul reapare; jurnal devenit mărturie | „Jurnal de bord: am trimis semnalul. Bucla s-a închis.” |
+| 9:43 | complet cald; privire directă | „Protocolul Acasă s-a încheiat. Bun venit acasă, echipaj. Rămâneți la posturi. Ghidul o să vă spună când vă puteți ridica.” |
 
 Durata estimată a tuturor intervențiilor Căpitanului este de aproximativ 75–85 de secunde, în funcție de joc și pauze. Căpitanul are o transformare audibilă: **protocol → observație → îndoială → alegere → apartenență**.
 

@@ -22,18 +22,18 @@ const selected = { voiceId: 'bgVGH727uJ1Qj9P9egUj', voiceName: 'Mihai - Voice Th
 const candidates = [selected, { voiceId: 'jZnpFkNYb90WJdOz4bBb', voiceName: 'Nick - Professional Radio and TV Spots' }, { voiceId: '0okaJWIq26j9LWMEOE8N', voiceName: 'Daniel Mihai | Native Romanian Voice – 30+ Years Broadcast Experience' }];
 const audition = 'Bine ați venit la bord. Atingeți lumina din fața voastră. Împreună alegem o direcție. Pământul rămâne acasă. Căpitane, echipajul este pregătit.';
 const texts = {
-  intro: 'Bine ați venit la bord. Înainte să pornim, nava trebuie să vă cunoască. Nu vă faceți griji. Nu cere parole.',
-  touch: 'Fiecare are propria jumătate de ecran. Atingeți lumina din fața voastră. Dacă preferați, puteți și să priviți.',
-  'age-5-10-practice': 'Nava a rătăcit o piesă. Are obiceiul ăsta înainte de musafiri. Găsiți forma potrivită pe ecran, apoi confirmați alegerea.',
-  'age-10-15-practice': 'Un semnal se repetă. Ce ne spune, de fapt? Priviți intervalele de pe ecran, alegeți observația susținută de date și confirmați.',
-  'age-15-18-practice': 'O decizie începe cu o propunere. Citiți situația de pe ecran și confirmați alegerea voastră. Apoi vom vedea cum lucrăm împreună.',
-  'adults-practice': 'O alegere bună începe cu o întrebare. Priviți informația și costul afișat. Alegeți, apoi confirmați. Această probă nu consumă resursele misiunii.',
-  'legacy-v3-practice': 'Priviți indiciul de pe ecran. Găsiți steaua, apoi confirmați. Aceasta este doar o probă.',
-  cooperate: 'Acum, împreună. Atingeți semnalul de pe jumătatea voastră de ecran. Priviți în față: fiecare contribuție aprinde o parte din navă.',
-  ready: 'Comenzile răspund. Luați-vă o clipă. Priviți în față. Călătoria noastră este gata să înceapă.',
-  handoff: 'Echipajul este pregătit. Căpitane... sunt ai dumneavoastră.',
-  hint: 'Priviți locul luminos de pe jumătatea voastră de ecran. Încercați în ritmul vostru. Dacă aveți nevoie, operatorul vă poate ajuta.',
-  finale: 'Călătoria rămâne în alegerile voastre. Priviți ce ați construit împreună. Alegeți pe ecran ce luați cu voi și trimiteți ultima lumină.',
+  intro: 'Bine ați venit la bord! Înainte de plecare, nava vrea să vă cunoască puțin. Stați liniștiți, nu vă cere nicio parolă.',
+  touch: 'Fiecare are jumătatea lui de ecran. Atingeți lumina din fața voastră. Dacă vreți, puteți și doar să priviți.',
+  'age-5-10-practice': 'Nava a pierdut o piesă. I se întâmplă mereu când vin musafiri. Căutați pe ecran forma care se potrivește, apoi apăsați ca să confirmați.',
+  'age-10-15-practice': 'Un semnal se tot repetă. Ce vrea să ne spună? Uitați-vă la pauzele dintre semnale, alegeți răspunsul care se potrivește cu ce vedeți și confirmați.',
+  'age-15-18-practice': 'Orice decizie începe cu o propunere. Citiți situația de pe ecran și alegeți ce vi se pare potrivit, apoi confirmați. Pe urmă vedem cum lucrăm împreună.',
+  'adults-practice': 'O alegere bună începe cu o întrebare. Uitați-vă la informații și la costul afișat. Alegeți, apoi confirmați. E doar un exercițiu, misiunea nu pierde nimic.',
+  'legacy-v3-practice': 'Uitați-vă la indiciul de pe ecran. Găsiți steaua, apoi confirmați. Este doar o probă, ca să ne încălzim.',
+  cooperate: 'Acum, toți împreună. Atingeți semnalul de pe jumătatea voastră de ecran. Apoi priviți în față: fiecare atingere aprinde o bucată din navă.',
+  ready: 'Comenzile răspund. Trageți aer în piept o clipă. Priviți în față. Călătoria noastră poate să înceapă.',
+  handoff: 'Echipajul este pregătit. Căpitane, de aici sunt ai dumneavoastră.',
+  hint: 'Căutați locul care luminează pe jumătatea voastră de ecran. Nu vă grăbiți, încercați în ritmul vostru. Dacă e nevoie, operatorul vă ajută cu plăcere.',
+  finale: 'Călătoria rămâne în ce ați ales voi. Priviți ce ați construit împreună. Alegeți pe ecran ce luați cu voi acasă, apoi trimiteți ultima lumină.',
 };
 
 async function synth(id, text, voice, folder) {

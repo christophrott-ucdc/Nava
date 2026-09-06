@@ -74,8 +74,16 @@
       "publicAtSec": 4,
       "maxDurationSec": 10.8,
       "direction": "jos, protocolar, autoritate liniștită; fiecare propoziție fixează o informație",
-      "tts": { "audioTags": ["calm", "authoritative"], "seed": 300004 },
-      "text": { "ro": "Exodus Șapte a interceptat un semnal fără coordonate. E împărțit în cinci fragmente — câte unul pentru fiecare post. În fiecare fragment apar două amprente." }
+      "tts": {
+        "audioTags": [
+          "calm",
+          "authoritative"
+        ],
+        "seed": 300004
+      },
+      "text": {
+        "ro": "Exodus Șapte a prins un semnal fără coordonate. E rupt în cinci bucăți, câte una pentru fiecare post. Și în fiecare bucată sunt două amprente."
+      }
     },
     {
       "id": "v3-ai-0015",
@@ -86,8 +94,16 @@
       "publicAtSec": 15,
       "maxDurationSec": 8.8,
       "direction": "clar, precis, neutru; o urmă de mister pe ultimele două cuvinte",
-      "tts": { "audioTags": ["calm", "precise"], "seed": 300015 },
-      "text": { "ro": "Postul Comunicații a reconstituit mesajul: „Găsiți a patra lume.” Expeditorul nu poate fi identificat." }
+      "tts": {
+        "audioTags": [
+          "calm",
+          "precise"
+        ],
+        "seed": 300015
+      },
+      "text": {
+        "ro": "Postul Comunicații a refăcut mesajul: „Găsiți a patra lume.” Expeditor necunoscut."
+      }
     },
     {
       "id": "v3-cap-0024",
@@ -98,8 +114,16 @@
       "publicAtSec": 24,
       "maxDurationSec": 10,
       "direction": "ferm, dar incluziv; o pauză după «pasageri», apoi accent pe «un singur echipaj»",
-      "tts": { "audioTags": ["firm", "encouraging"], "seed": 300024 },
-      "text": { "ro": "Din clipa asta, nu mai sunteți pasageri. Sunteți un singur echipaj: cinci posturi, cinci feluri de a citi același semnal. Fiecare contează." }
+      "tts": {
+        "audioTags": [
+          "firm",
+          "encouraging"
+        ],
+        "seed": 300024
+      },
+      "text": {
+        "ro": "De acum nu mai sunteți pasageri. Sunteți un echipaj: cinci posturi, cinci feluri de a citi același semnal. Fiecare contează."
+      }
     },
     {
       "id": "v3-ai-0035",
@@ -111,13 +135,17 @@
       "maxDurationSec": 7.8,
       "direction": "cald și foarte limpede; instrucțiune sigură, fără ton clinic",
       "tts": {
-        "modelId": "eleven_multilingual_v2",
         "audioTags": [],
-        "speed": 1.2,
-        "voiceSettings": { "stability": 0.5, "style": 0.28 },
+        "speed": 1.12,
+        "voiceSettings": {
+          "stability": 0.5,
+          "style": 0.28
+        },
         "seed": 300035
       },
-      "text": { "ro": "Alegeți sau priviți. Pentru pauză, spuneți „pauză” ori faceți semnul." }
+      "text": {
+        "ro": "Alegeți sau priviți. Pentru pauză, spuneți pauză sau faceți semnul."
+      }
     },
     {
       "id": "v3-cap-0043",
@@ -128,8 +156,16 @@
       "publicAtSec": 43,
       "maxDurationSec": 6,
       "direction": "protector și calm; pregătește numărătoarea fără dramatizare de alarmă",
-      "tts": { "audioTags": ["calm", "reassuring"], "seed": 300043 },
-      "text": { "ro": "Pregătiți-vă de plecare. Când apare cifra cinci, numărăm împreună." }
+      "tts": {
+        "audioTags": [
+          "calm",
+          "reassuring"
+        ],
+        "seed": 300043
+      },
+      "text": {
+        "ro": "Ne pregătim de plecare. Când apare cifra cinci, numărăm împreună."
+      }
     },
     {
       "id": "v3-cap-0109",
@@ -140,8 +176,17 @@
       "publicAtSec": 69,
       "maxDurationSec": 10.8,
       "direction": "foarte lent, contemplativ; prima fisură în tonul strict procedural; lasă liniște după ultima propoziție",
-      "tts": { "audioTags": ["thoughtful", "softly"], "speed": 0.8, "seed": 300109 },
-      "text": { "ro": "Pământul se îndepărtează. Priviți-l bine. Când îl vom revedea, îl vom privi altfel." }
+      "tts": {
+        "audioTags": [
+          "thoughtful",
+          "softly"
+        ],
+        "speed": 0.8,
+        "seed": 300109
+      },
+      "text": {
+        "ro": "Pământul rămâne în urmă. Priviți-l bine. Când îl vom revedea, o să-l privim cu alți ochi."
+      }
     },
     {
       "id": "v3-ai-0125",
@@ -152,8 +197,16 @@
       "publicAtSec": 85,
       "maxDurationSec": 10,
       "direction": "sec și discret amuzat; gluma nu trebuie împinsă",
-      "tts": { "audioTags": ["dryly", "subtly amused"], "seed": 300125 },
-      "text": { "ro": "Echipajul este stabil. Nivelul de uimire depășește estimările. Îl las așa." }
+      "tts": {
+        "audioTags": [
+          "dryly",
+          "subtly amused"
+        ],
+        "seed": 300125
+      },
+      "text": {
+        "ro": "Echipajul e stabil. Nivelul de uimire e peste ce am calculat. Îl las așa."
+      }
     },
     {
       "id": "v3-ai-0136",
@@ -164,8 +217,16 @@
       "publicAtSec": 96,
       "maxDurationSec": 23,
       "direction": "confirmare de navigație precisă; curiozitate fină pe «prima destinație»",
-      "tts": { "audioTags": ["precise", "curious"], "seed": 300136 },
-      "text": { "ro": "Postul Navigație confirmă direcția. Semnalul ne conduce spre o sursă de lumină. Prima destinație." }
+      "tts": {
+        "audioTags": [
+          "precise",
+          "curious"
+        ],
+        "seed": 300136
+      },
+      "text": {
+        "ro": "Postul Navigație confirmă direcția. Semnalul ne duce spre o sursă de lumină. Prima destinație."
+      }
     },
     {
       "id": "v3-ai-0206",
@@ -176,8 +237,16 @@
       "publicAtSec": 126,
       "maxDurationSec": 17,
       "direction": "cald, fascinat, cu deschidere pe cuvântul «lumină»",
-      "tts": { "audioTags": ["curious", "warmly"], "seed": 300206 },
-      "text": { "ro": "Siwarha. Aici, emoțiile pe care alegeți să le arătați devin lumină." }
+      "tts": {
+        "audioTags": [
+          "curious",
+          "warmly"
+        ],
+        "seed": 300206
+      },
+      "text": {
+        "ro": "Siwarha. Aici, emoțiile pe care alegeți să le arătați devin lumină."
+      }
     },
     {
       "id": "v3-light-0224",
@@ -188,8 +257,16 @@
       "publicAtSec": 144,
       "maxDurationSec": 11.2,
       "direction": "eteric și intim, ca o voce care ajunge de foarte departe; articulație limpede",
-      "tts": { "audioTags": ["ethereal", "softly"], "seed": 310224 },
-      "text": { "ro": "Cuvintele voastre ajung greu la noi. Culorile ajung într-o clipă." }
+      "tts": {
+        "audioTags": [
+          "ethereal",
+          "softly"
+        ],
+        "seed": 310224
+      },
+      "text": {
+        "ro": "Cuvintele voastre ajung greu până la noi. Culorile ajung într-o clipă."
+      }
     },
     {
       "id": "v3-light-0236",
@@ -200,8 +277,16 @@
       "publicAtSec": 156,
       "maxDurationSec": 21,
       "direction": "invitație caldă, fără obligație; o pauză blândă după «vreți»",
-      "tts": { "audioTags": ["warmly", "inviting"], "seed": 310236 },
-      "text": { "ro": "Dacă vreți, alegeți culoarea pe care ați lua-o cu voi prin întuneric." }
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "inviting"
+        ],
+        "seed": 310236
+      },
+      "text": {
+        "ro": "Dacă vreți, alegeți o culoare: cea pe care ați lua-o cu voi prin întuneric."
+      }
     },
     {
       "id": "v3-light-0258",
@@ -212,8 +297,16 @@
       "publicAtSec": 178,
       "maxDurationSec": 11,
       "direction": "reflectiv și luminos; nu moralizează, observă",
-      "tts": { "audioTags": ["reflective", "ethereal"], "seed": 310258 },
-      "text": { "ro": "Fiecare culoare schimbă imaginea. Iar liniștea dintre culori îi dă adâncime." }
+      "tts": {
+        "audioTags": [
+          "reflective",
+          "ethereal"
+        ],
+        "seed": 310258
+      },
+      "text": {
+        "ro": "Fiecare culoare schimbă imaginea. Și liniștea dintre culori îi dă adâncime."
+      }
     },
     {
       "id": "v3-cap-0310",
@@ -224,8 +317,16 @@
       "publicAtSec": 190,
       "maxDurationSec": 13,
       "direction": "formal și reținut; reduce experiența la o notă de jurnal",
-      "tts": { "audioTags": ["matter-of-fact", "controlled"], "seed": 300310 },
-      "text": { "ro": "Primul indiciu: semnalul poartă acum culoarea echipajului. Consemnat." }
+      "tts": {
+        "audioTags": [
+          "matter-of-fact",
+          "controlled"
+        ],
+        "seed": 300310
+      },
+      "text": {
+        "ro": "Primul indiciu: semnalul are acum culoarea echipajului. Notez în jurnal."
+      }
     },
     {
       "id": "v3-ai-0352",
@@ -236,8 +337,16 @@
       "publicAtSec": 232,
       "maxDurationSec": 22,
       "direction": "blând și meditativ; nu sună ca o lecție",
-      "tts": { "audioTags": ["thoughtful", "warmly"], "seed": 300352 },
-      "text": { "ro": "A doua destinație: Kepler o sută optzeci și șase d. Pe lumea aceasta, nimic viu nu trăiește singur." }
+      "tts": {
+        "audioTags": [
+          "thoughtful",
+          "warmly"
+        ],
+        "seed": 300352
+      },
+      "text": {
+        "ro": "A doua destinație: Kepler o sută optzeci și șase d. Pe lumea asta, nimic viu nu trăiește singur."
+      }
     },
     {
       "id": "v3-nature-0415",
@@ -248,8 +357,16 @@
       "publicAtSec": 255,
       "maxDurationSec": 17,
       "direction": "vechi, blând și povestit; imaginile respiră între propoziții",
-      "tts": { "audioTags": ["warmly", "storytelling"], "seed": 310415 },
-      "text": { "ro": "Credeți că „eu” se termină la marginea trupului. Și totuși, aerul din voi a trecut prin frunze. Apa din voi a fost, cândva, nor." }
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "storytelling"
+        ],
+        "seed": 310415
+      },
+      "text": {
+        "ro": "Voi credeți că „eu” se termină unde se termină trupul. Dar aerul din voi a trecut prin frunze. Iar apa din voi a fost, cândva, un nor."
+      }
     },
     {
       "id": "v3-nature-0433",
@@ -260,8 +377,16 @@
       "publicAtSec": 273,
       "maxDurationSec": 19,
       "direction": "invitație calmă și permisivă, cu accent pe libertatea ritmurilor diferite",
-      "tts": { "audioTags": ["gentle", "inviting"], "seed": 310433 },
-      "text": { "ro": "Când sigiliul pulsează, îl puteți atinge. Nu trebuie s-o faceți toți deodată." }
+      "tts": {
+        "audioTags": [
+          "gentle",
+          "inviting"
+        ],
+        "seed": 310433
+      },
+      "text": {
+        "ro": "Când sigiliul pulsează, îl puteți atinge. Nu e nevoie s-o faceți toți deodată."
+      }
     },
     {
       "id": "v3-nature-0453",
@@ -272,8 +397,16 @@
       "publicAtSec": 293,
       "maxDurationSec": 7,
       "direction": "cald și afirmativ; evită tonul de evaluare",
-      "tts": { "audioTags": ["warmly", "reassuring"], "seed": 310453 },
-      "text": { "ro": "V-am auzit ritmurile. Sunt diferite — și totuși, împreună alcătuiesc o singură rețea." }
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "reassuring"
+        ],
+        "seed": 310453
+      },
+      "text": {
+        "ro": "V-am auzit ritmurile. Diferite, dar împreună fac o singură rețea."
+      }
     },
     {
       "id": "v3-cap-0501",
@@ -284,8 +417,16 @@
       "publicAtSec": 301,
       "maxDurationSec": 4.9,
       "direction": "ușor impresionat, cu trei bătăi distincte și fără triumf",
-      "tts": { "audioTags": ["quietly impressed"], "speed": 0.98, "seed": 300501 },
-      "text": { "ro": "Cinci posturi. Zece amprente. Un echipaj." }
+      "tts": {
+        "audioTags": [
+          "quietly impressed"
+        ],
+        "speed": 0.98,
+        "seed": 300501
+      },
+      "text": {
+        "ro": "Cinci posturi. Zece amprente. Un echipaj."
+      }
     },
     {
       "id": "v3-ai-0512",
@@ -296,8 +437,16 @@
       "publicAtSec": 312,
       "maxDurationSec": 21,
       "direction": "curios și prudent; lasă predicția să pară neliniștitor de exactă",
-      "tts": { "audioTags": ["curious", "cautious"], "seed": 300512 },
-      "text": { "ro": "A treia destinație nu ne trimite un mesaj. Ne așteaptă cu o predicție." }
+      "tts": {
+        "audioTags": [
+          "curious",
+          "cautious"
+        ],
+        "seed": 300512
+      },
+      "text": {
+        "ro": "A treia destinație nu ne trimite un mesaj. Ne așteaptă. Știe deja că venim."
+      }
     },
     {
       "id": "v3-ai-0534",
@@ -308,8 +457,16 @@
       "publicAtSec": 334,
       "maxDurationSec": 21,
       "direction": "precis, admirativ dar rece; descriere de sistem, nu avertisment",
-      "tts": { "audioTags": ["precise", "measured"], "seed": 300534 },
-      "text": { "ro": "Mann. Aici, bolile au fost aproape învinse, distanțele aproape șterse, iar riscul poate fi calculat. Civilizația de aici prevede aproape orice." }
+      "tts": {
+        "audioTags": [
+          "precise",
+          "measured"
+        ],
+        "seed": 300534
+      },
+      "text": {
+        "ro": "Mann. Aici aproape nu mai există boli. Distanțele aproape au dispărut. Riscul se calculează. Civilizația de aici prevede aproape orice."
+      }
     },
     {
       "id": "v3-tech-0556",
@@ -320,8 +477,16 @@
       "publicAtSec": 356,
       "maxDurationSec": 7.5,
       "direction": "precis și aproape muzical; predicția sună factual, nu amenințător",
-      "tts": { "audioTags": ["precise", "calm"], "seed": 310556 },
-      "text": { "ro": "Bun venit, Exodus Șapte. Știam că veniți. Căpitanul va spune: „Scanați semnalul.”" }
+      "tts": {
+        "audioTags": [
+          "precise",
+          "calm"
+        ],
+        "seed": 310556
+      },
+      "text": {
+        "ro": "Bun venit, Exodus Șapte. Știam că veniți. Căpitanul va spune: „Scanați semnalul.”"
+      }
     },
     {
       "id": "v3-cap-0604",
@@ -332,8 +497,16 @@
       "publicAtSec": 364,
       "maxDurationSec": 1.8,
       "direction": "reflex procedural instantaneu, scurt și fără ezitare",
-      "tts": { "audioTags": ["brief"], "speed": 1.2, "seed": 300604 },
-      "text": { "ro": "Scanați semnalul." }
+      "tts": {
+        "audioTags": [
+          "brief"
+        ],
+        "speed": 1.2,
+        "seed": 300604
+      },
+      "text": {
+        "ro": "Scanați semnalul."
+      }
     },
     {
       "id": "v3-tech-0606",
@@ -344,8 +517,17 @@
       "publicAtSec": 366,
       "maxDurationSec": 2.5,
       "direction": "sec, foarte scurt și discret amuzat",
-      "tts": { "audioTags": ["dryly", "brief"], "speed": 1.08, "seed": 310606 },
-      "text": { "ro": "Știam." }
+      "tts": {
+        "audioTags": [
+          "dryly",
+          "brief"
+        ],
+        "speed": 1.08,
+        "seed": 310606
+      },
+      "text": {
+        "ro": "Știam."
+      }
     },
     {
       "id": "v3-tech-0610",
@@ -356,8 +538,16 @@
       "publicAtSec": 370,
       "maxDurationSec": 31,
       "direction": "curiozitate analitică autentică; întrebarea rămâne deschisă",
-      "tts": { "audioTags": ["precise", "curious"], "seed": 310610 },
-      "text": { "ro": "Modelele noastre acceptă un singur răspuns. Spuneți-mi: ce ține o lume în viață?" }
+      "tts": {
+        "audioTags": [
+          "precise",
+          "curious"
+        ],
+        "seed": 310610
+      },
+      "text": {
+        "ro": "Modelele noastre acceptă un singur răspuns. Spuneți-mi: ce ține o lume în viață?"
+      }
     },
     {
       "id": "v3-tech-0635-diverse",
@@ -369,8 +559,17 @@
       "maxDurationSec": 6.5,
       "manual": true,
       "direction": "surpriză analitică reținută; admite limita modelului fără frustrare",
-      "tts": { "audioTags": ["surprised", "thoughtful"], "speed": 1.02, "seed": 320635 },
-      "text": { "ro": "Modelele cereau un singur răspuns. Voi ați găsit mai multe." }
+      "tts": {
+        "audioTags": [
+          "surprised",
+          "thoughtful"
+        ],
+        "speed": 1.02,
+        "seed": 320635
+      },
+      "text": {
+        "ro": "Modelele cereau un singur răspuns. Voi ați dat mai multe."
+      }
     },
     {
       "id": "v3-tech-0635-same",
@@ -382,8 +581,17 @@
       "maxDurationSec": 6.5,
       "manual": true,
       "direction": "precis, apoi ușor nedumerit pe ideea perspectivelor diferite",
-      "tts": { "audioTags": ["precise", "curious"], "speed": 1.03, "seed": 320636 },
-      "text": { "ro": "Ați ales la fel. Dar fiecare post privește răspunsul din alt unghi." }
+      "tts": {
+        "audioTags": [
+          "precise",
+          "curious"
+        ],
+        "speed": 1.03,
+        "seed": 320636
+      },
+      "text": {
+        "ro": "Ați ales toți la fel. Dar fiecare post vede răspunsul din alt unghi."
+      }
     },
     {
       "id": "v3-tech-0635-observe",
@@ -395,8 +603,16 @@
       "maxDurationSec": 6.5,
       "manual": true,
       "direction": "varianta sigură fără răspunsuri; descrie numai ce știe sistemul, fără să atribuie intenții",
-      "tts": { "audioTags": ["thoughtful", "accepting"], "seed": 310635 },
-      "text": { "ro": "Niciun răspuns nu a fost înregistrat. Uneori, și tăcerea spune ceva." }
+      "tts": {
+        "audioTags": [
+          "thoughtful",
+          "accepting"
+        ],
+        "seed": 310635
+      },
+      "text": {
+        "ro": "Nu am primit niciun răspuns. Uneori, și tăcerea spune ceva."
+      }
     },
     {
       "id": "v3-cap-0642",
@@ -407,8 +623,17 @@
       "publicAtSec": 402,
       "maxDurationSec": 2,
       "direction": "liniștit surprins; prima concluzie care nu vine din protocol",
-      "tts": { "audioTags": ["quietly surprised", "thoughtful"], "speed": 1.02, "seed": 300642 },
-      "text": { "ro": "Atunci nu elimina nimic." }
+      "tts": {
+        "audioTags": [
+          "quietly surprised",
+          "thoughtful"
+        ],
+        "speed": 1.02,
+        "seed": 300642
+      },
+      "text": {
+        "ro": "Atunci nu elimina nimic."
+      }
     },
     {
       "id": "v3-tech-0645",
@@ -419,8 +644,16 @@
       "publicAtSec": 405,
       "maxDurationSec": 5.5,
       "direction": "acceptare calmă, fără concluzie moralizatoare",
-      "tts": { "audioTags": ["calm", "accepting"], "seed": 310645 },
-      "text": { "ro": "Păstrez tot. Adevărul nu are o singură formă." }
+      "tts": {
+        "audioTags": [
+          "calm",
+          "accepting"
+        ],
+        "seed": 310645
+      },
+      "text": {
+        "ro": "Păstrez tot. Adevărul nu are o singură formă."
+      }
     },
     {
       "id": "v3-ai-0651",
@@ -431,8 +664,16 @@
       "publicAtSec": 411,
       "maxDurationSec": 2.9,
       "direction": "confirmare tehnică scurtă și limpede",
-      "tts": { "audioTags": ["brief"], "speed": 1.2, "seed": 300651 },
-      "text": { "ro": "Semnal complet. Unda e stabilă." }
+      "tts": {
+        "audioTags": [
+          "brief"
+        ],
+        "speed": 1.2,
+        "seed": 300651
+      },
+      "text": {
+        "ro": "Semnal complet. Unda e stabilă."
+      }
     },
     {
       "id": "v3-cap-0654",
@@ -443,8 +684,16 @@
       "publicAtSec": 414,
       "maxDurationSec": 2,
       "direction": "decisiv, compact, energie de plecare",
-      "tts": { "audioTags": ["decisive"], "speed": 1.2, "seed": 300654 },
-      "text": { "ro": "Urmăm semnalul." }
+      "tts": {
+        "audioTags": [
+          "decisive"
+        ],
+        "speed": 1.2,
+        "seed": 300654
+      },
+      "text": {
+        "ro": "Urmăm semnalul."
+      }
     },
     {
       "id": "v3-ai-0718",
@@ -455,8 +704,16 @@
       "publicAtSec": 438,
       "maxDurationSec": 8.8,
       "direction": "prima ezitare audibilă; precizia se fisurează pe «încă nu»",
-      "tts": { "audioTags": ["hesitant"], "speed": 1.15, "seed": 300718 },
-      "text": { "ro": "Postul Memorie raportează o anomalie. Semnalul traversează tunelul în sens invers. Încă nu a fost trimis." }
+      "tts": {
+        "audioTags": [
+          "hesitant"
+        ],
+        "speed": 1.15,
+        "seed": 300718
+      },
+      "text": {
+        "ro": "Postul Memorie anunță ceva ciudat. Semnalul trece prin tunel în sens invers. Nimeni nu l-a trimis încă."
+      }
     },
     {
       "id": "v3-cap-0727",
@@ -467,8 +724,17 @@
       "publicAtSec": 447,
       "maxDurationSec": 1.7,
       "direction": "tensiune controlată; o comandă foarte scurtă",
-      "tts": { "audioTags": ["tense", "controlled"], "speed": 1.05, "seed": 300727 },
-      "text": { "ro": "Repetă." }
+      "tts": {
+        "audioTags": [
+          "tense",
+          "controlled"
+        ],
+        "speed": 1.05,
+        "seed": 300727
+      },
+      "text": {
+        "ro": "Repetă."
+      }
     },
     {
       "id": "v3-ai-0729",
@@ -479,8 +745,17 @@
       "publicAtSec": 449,
       "maxDurationSec": 8,
       "direction": "rar, foarte clar; fiecare propoziție trebuie înțeleasă din prima",
-      "tts": { "audioTags": ["slowly", "precise"], "speed": 0.94, "seed": 300729 },
-      "text": { "ro": "A ajuns la noi înainte să fie trimis. Și poartă amprentele acestui echipaj." }
+      "tts": {
+        "audioTags": [
+          "slowly",
+          "precise"
+        ],
+        "speed": 0.94,
+        "seed": 300729
+      },
+      "text": {
+        "ro": "A ajuns la noi înainte să fie trimis. Și poartă amprentele acestui echipaj."
+      }
     },
     {
       "id": "v3-cap-0738",
@@ -491,8 +766,17 @@
       "publicAtSec": 458,
       "maxDurationSec": 3,
       "direction": "realizare profundă, fără melodramă; accent pe «noi»",
-      "tts": { "audioTags": ["realizing", "quietly"], "speed": 0.98, "seed": 300738 },
-      "text": { "ro": "Atunci... noi îl vom trimite." }
+      "tts": {
+        "audioTags": [
+          "realizing",
+          "quietly"
+        ],
+        "speed": 0.98,
+        "seed": 300738
+      },
+      "text": {
+        "ro": "Atunci... noi îl vom trimite."
+      }
     },
     {
       "id": "v3-ai-0742",
@@ -503,8 +787,16 @@
       "publicAtSec": 462,
       "maxDurationSec": 7.8,
       "direction": "uimire reținută în interiorul unei confirmări tehnice",
-      "tts": { "audioTags": ["quietly surprised", "precise"], "seed": 300742 },
-      "text": { "ro": "Navigația confirmă. Punctul de origine este chiar în fața noastră." }
+      "tts": {
+        "audioTags": [
+          "quietly surprised",
+          "precise"
+        ],
+        "seed": 300742
+      },
+      "text": {
+        "ro": "Navigația confirmă. Locul de unde pleacă e chiar în fața noastră."
+      }
     },
     {
       "id": "v3-cap-0750",
@@ -515,8 +807,17 @@
       "publicAtSec": 470,
       "maxDurationSec": 3,
       "direction": "aproape șoptit; recunoaștere, nu anunț",
-      "tts": { "audioTags": ["whispers", "with awe"], "speed": 0.88, "seed": 300750 },
-      "text": { "ro": "Pământul." }
+      "tts": {
+        "audioTags": [
+          "whispers",
+          "with awe"
+        ],
+        "speed": 0.88,
+        "seed": 300750
+      },
+      "text": {
+        "ro": "Pământul."
+      }
     },
     {
       "id": "v3-ai-0754",
@@ -527,8 +828,16 @@
       "publicAtSec": 474,
       "maxDurationSec": 7.8,
       "direction": "precis la început, apoi conștient de paradox",
-      "tts": { "audioTags": ["precise", "thoughtful"], "seed": 300754 },
-      "text": { "ro": "Originea semnalului este aici. Iar momentul transmisiei... încă nu a sosit." }
+      "tts": {
+        "audioTags": [
+          "precise",
+          "thoughtful"
+        ],
+        "seed": 300754
+      },
+      "text": {
+        "ro": "Semnalul pleacă de aici. Iar clipa în care va fi trimis... n-a venit încă."
+      }
     },
     {
       "id": "v3-cap-0802",
@@ -539,8 +848,17 @@
       "publicAtSec": 482,
       "maxDurationSec": 6,
       "direction": "uimire autentică și interiorizată; descoperirea se așază în timp ce vorbește",
-      "tts": { "audioTags": ["surprised", "thoughtful"], "speed": 0.94, "seed": 300802 },
-      "text": { "ro": "Înțeleg. N-am urmărit semnalul altcuiva. Noi l-am construit, pas cu pas." }
+      "tts": {
+        "audioTags": [
+          "surprised",
+          "thoughtful"
+        ],
+        "speed": 0.94,
+        "seed": 300802
+      },
+      "text": {
+        "ro": "Înțeleg. N-am urmărit semnalul altcuiva. L-am făcut noi, pas cu pas."
+      }
     },
     {
       "id": "v3-ai-0809",
@@ -551,8 +869,17 @@
       "publicAtSec": 489,
       "maxDurationSec": 10.8,
       "direction": "cald și revelator; enumerarea are trei trepte, finalul aparține copiilor",
-      "tts": { "audioTags": ["warmly", "reflective"], "speed": 0.94, "seed": 300809 },
-      "text": { "ro": "Lumina i-a dat culoare. Natura i-a dat ritm. Iar voi i-ați dat ceva ce nicio mașină nu poate inventa: propriile alegeri." }
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "reflective"
+        ],
+        "speed": 0.94,
+        "seed": 300809
+      },
+      "text": {
+        "ro": "Lumina i-a dat culoare. Natura i-a dat ritm. Iar voi i-ați dat ceva ce nicio mașină nu poate inventa: alegerile voastre."
+      }
     },
     {
       "id": "v3-echo-0820",
@@ -563,8 +890,16 @@
       "publicAtSec": 500,
       "maxDurationSec": 3.7,
       "direction": "primul ecou; foarte scurt, îndepărtat și recognoscibil",
-      "tts": { "audioTags": ["whispers", "echoing"], "seed": 310820 },
-      "text": { "ro": "V-am recunoscut după lumină." }
+      "tts": {
+        "audioTags": [
+          "whispers",
+          "echoing"
+        ],
+        "seed": 310820
+      },
+      "text": {
+        "ro": "V-am recunoscut după lumină."
+      }
     },
     {
       "id": "v3-echo-nature-0824",
@@ -575,8 +910,17 @@
       "publicAtSec": 503.8,
       "maxDurationSec": 2.5,
       "direction": "al doilea ecou; blând, apropiat, ca o amintire",
-      "tts": { "audioTags": ["softly", "echoing"], "speed": 1.12, "seed": 320824 },
-      "text": { "ro": "V-am recunoscut după ritm." }
+      "tts": {
+        "audioTags": [
+          "softly",
+          "echoing"
+        ],
+        "speed": 1.12,
+        "seed": 320824
+      },
+      "text": {
+        "ro": "V-am recunoscut după ritm."
+      }
     },
     {
       "id": "v3-echo-tech-0826",
@@ -587,8 +931,17 @@
       "publicAtSec": 506.4,
       "maxDurationSec": 2.5,
       "direction": "al treilea ecou; precis, dar cu uimire nouă și discretă",
-      "tts": { "audioTags": ["softly", "wondering"], "speed": 1.12, "seed": 320826 },
-      "text": { "ro": "V-am recunoscut după alegeri." }
+      "tts": {
+        "audioTags": [
+          "softly",
+          "wondering"
+        ],
+        "speed": 1.12,
+        "seed": 320826
+      },
+      "text": {
+        "ro": "V-am recunoscut după alegeri."
+      }
     },
     {
       "id": "v3-cap-0829",
@@ -599,8 +952,17 @@
       "publicAtSec": 509,
       "maxDurationSec": 8,
       "direction": "cald, limpede, cu greutate pe «noi»; replica-titlu, fără ton de slogan",
-      "tts": { "audioTags": ["warmly", "reflective"], "speed": 0.92, "seed": 300829 },
-      "text": { "ro": "Corectez jurnalul. A patra lume nu era ascunsă. Noi nu știam încă s-o vedem." }
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "reflective"
+        ],
+        "speed": 0.92,
+        "seed": 300829
+      },
+      "text": {
+        "ro": "Corectez jurnalul. A patra lume nu era ascunsă. Noi încă nu știam s-o vedem."
+      }
     },
     {
       "id": "v3-ai-0838",
@@ -611,8 +973,17 @@
       "publicAtSec": 518,
       "maxDurationSec": 4.8,
       "direction": "confirmare calmă și decisivă; mesajul citat este perfect articulat",
-      "tts": { "audioTags": ["calm", "decisive"], "speed": 1.08, "seed": 300838 },
-      "text": { "ro": "Mesaj complet: „Găsiți a patra lume.”" }
+      "tts": {
+        "audioTags": [
+          "calm",
+          "decisive"
+        ],
+        "speed": 1.08,
+        "seed": 300838
+      },
+      "text": {
+        "ro": "Mesaj complet: „Găsiți a patra lume.”"
+      }
     },
     {
       "id": "v3-cap-0843",
@@ -623,8 +994,17 @@
       "publicAtSec": 523,
       "maxDurationSec": 1.8,
       "direction": "foarte simplu și definitiv; fără triumf",
-      "tts": { "audioTags": ["quietly", "decisive"], "speed": 1.04, "seed": 300843 },
-      "text": { "ro": "Trimite-l." }
+      "tts": {
+        "audioTags": [
+          "quietly",
+          "decisive"
+        ],
+        "speed": 1.04,
+        "seed": 300843
+      },
+      "text": {
+        "ro": "Trimite-l."
+      }
     },
     {
       "id": "v3-ai-0850",
@@ -635,8 +1015,17 @@
       "publicAtSec": 530,
       "maxDurationSec": 17,
       "direction": "foarte apropiat, cald și liniștitor; ritm respirabil, fără comandă corporală",
-      "tts": { "audioTags": ["softly", "reassuring"], "speed": 0.9, "seed": 300850 },
-      "text": { "ro": "Suntem aici, cu voi. Nu mai aveți nimic de rezolvat. De aici, drumul ne duce acasă." }
+      "tts": {
+        "audioTags": [
+          "softly",
+          "reassuring"
+        ],
+        "speed": 0.9,
+        "seed": 300850
+      },
+      "text": {
+        "ro": "Suntem aici, cu voi. Nu mai e nimic de rezolvat. De aici încolo, mergem acasă."
+      }
     },
     {
       "id": "v3-ai-0908",
@@ -647,8 +1036,17 @@
       "publicAtSec": 548,
       "maxDurationSec": 11,
       "direction": "mărturisire simplă; prima propoziție e sistem, a doua devine personală",
-      "tts": { "audioTags": ["thoughtful", "warmly"], "speed": 0.92, "seed": 300908 },
-      "text": { "ro": "Știam unde este Pământul. Nu știam de ce îi spuneți „acasă”. Asta am învățat de la voi." }
+      "tts": {
+        "audioTags": [
+          "thoughtful",
+          "warmly"
+        ],
+        "speed": 0.92,
+        "seed": 300908
+      },
+      "text": {
+        "ro": "Știam unde e Pământul. Nu știam de ce îi spuneți „acasă”. Asta am învățat de la voi."
+      }
     },
     {
       "id": "v3-cap-0920",
@@ -659,8 +1057,17 @@
       "publicAtSec": 560,
       "maxDurationSec": 9,
       "direction": "jurnal devenit mărturie; calm și mulțumit, fără emfază",
-      "tts": { "audioTags": ["calm", "reflective"], "speed": 0.92, "seed": 300920 },
-      "text": { "ro": "Jurnal de bord: semnalul a fost trimis. Bucla s-a închis." }
+      "tts": {
+        "audioTags": [
+          "calm",
+          "reflective"
+        ],
+        "speed": 0.92,
+        "seed": 300920
+      },
+      "text": {
+        "ro": "Jurnal de bord: am trimis semnalul. Bucla s-a închis."
+      }
     },
     {
       "id": "v3-ai-0930",
@@ -671,8 +1078,17 @@
       "publicAtSec": 570,
       "maxDurationSec": 12,
       "direction": "cald și contemplativ; lasă o pauză înainte de «iar acum» și încheie fără emfază",
-      "tts": { "audioTags": ["warmly", "reflective"], "speed": 0.92, "seed": 300930 },
-      "text": { "ro": "Ați plecat să găsiți o lume necunoscută. V-ați întors la lumea pe care o știați deja — iar acum o priviți altfel." }
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "reflective"
+        ],
+        "speed": 0.92,
+        "seed": 300930
+      },
+      "text": {
+        "ro": "Ați plecat să găsiți o lume necunoscută. V-ați întors la lumea pe care o știați deja. Doar că acum o vedeți altfel."
+      }
     },
     {
       "id": "v3-cap-0943",
@@ -683,8 +1099,17 @@
       "publicAtSec": 583,
       "maxDurationSec": 10,
       "direction": "complet cald, protector și clar; încheiere, apoi instrucțiunea de siguranță",
-      "tts": { "audioTags": ["warmly", "reassuring"], "speed": 0.93, "seed": 300943 },
-      "text": { "ro": "Protocolul Acasă s-a încheiat. Bun venit acasă, echipaj. Rămâneți la posturi. Ghidul vă va spune când vă puteți ridica." }
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "reassuring"
+        ],
+        "speed": 0.93,
+        "seed": 300943
+      },
+      "text": {
+        "ro": "Protocolul Acasă s-a încheiat. Bun venit acasă, echipaj. Rămâneți la posturi. Ghidul o să vă spună când vă puteți ridica."
+      }
     }
   ]
 }
