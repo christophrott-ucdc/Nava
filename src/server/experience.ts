@@ -3,7 +3,7 @@ import {EXPERIENCE_PRACTICE,FINALE_CHOICES,type ExperienceState,type NarratorMan
 import type {ScenarioId} from '../shared/scenario-engine';
 
 export const ALL_PARTICIPANTS=Array.from({length:5},(_,i)=>[`${i+1}A`,`${i+1}B`]).flat();
-export function freshExperience():ExperienceState{return {version:1,status:'pending',step:'touch',epoch:0,participants:[...ALL_PARTICIPANTS],observed:[],touched:[],practiced:[],linked:[],practice:{},finale:{},narration:null};}
+export function freshExperience():ExperienceState{return {version:1,status:'pending',step:'touch',epoch:0,crew:{open:true,characters:{}},participants:[],observed:[],touched:[],practiced:[],linked:[],practice:{},finale:{},narration:null};}
 export function validParticipants(value:unknown):value is string[]{return Array.isArray(value)&&value.length>0&&value.length<=10&&new Set(value).size===value.length&&value.every(x=>ALL_PARTICIPANTS.includes(x));}
 export function tutorialSatisfied(e:ExperienceState):boolean {
   const done=e.step==='touch'?e.touched:e.step==='practice'?e.practiced:e.linked;

@@ -24,6 +24,7 @@ export const DEFAULT_ACCESSIBILITY: PostAccessibility = {
 };
 export interface MissionRecord {
   experience?:ExperienceState;
+  journalRetries?:Record<string,number>;
   runId: string; scenarioId: ScenarioId; contentHash: string; revision: number;
   timelineEpoch: number; createdAt: string; status: 'prepared'|'active'|'completed'|'interrupted';
   progress: ScenarioProgress; checkpoint: ShowState | null;
@@ -32,8 +33,10 @@ export interface MissionRecord {
 }
 export interface MissionSnapshot {
   experience?:ExperienceSnapshot;
-  lantern?:Array<{found:boolean;mounted:boolean;linked:boolean}>;
+  lantern?:Array<{seat?:string;found:boolean;mounted:boolean;linked:boolean}>;
   certificateToken?:string;
+  /** Persistent operator retry generation for this physical post. */
+  journalRetry?:number;
   runId: string; serverEpoch: string; scenarioId: ScenarioId; label: string; revision: number;
   cueInstanceId: string; stage: number; endsAt: number | null; suspended: boolean;
   state: ShowState; post?: TabletPost;

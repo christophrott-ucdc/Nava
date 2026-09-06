@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ro" data-theme="prologue">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#fdfcf7" />
+  <title>EXODUS-7 · Administrare</title>
+  <link rel="stylesheet" href="/shared/glass.css" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Sari la conținut</a>
+
+  <div class="admin-shell">
+    <aside class="admin-nav glass" aria-label="Secțiuni de administrare">
+      <a class="brand" href="#/prezentare">
+        <span class="brand-mark" data-icon="rocket" aria-hidden="true"></span>
+        <span class="brand-copy"><strong>EXODUS-7</strong><span>Administrare</span></span>
+      </a>
+      <nav id="nav" aria-label="Navigare principală">
+        <a href="#/prezentare" data-view="prezentare"><span data-icon="star" aria-hidden="true"></span><span>Prezentare</span></a>
+        <a href="#/utilizatori" data-view="utilizatori"><span data-icon="user" aria-hidden="true"></span><span>Utilizatori</span></a>
+        <a href="#/sesiuni" data-view="sesiuni"><span data-icon="signal" aria-hidden="true"></span><span>Sesiuni</span></a>
+        <a href="#/audit" data-view="audit"><span data-icon="memory" aria-hidden="true"></span><span>Audit</span></a>
+        <a href="#/instalatie" data-view="instalatie"><span data-icon="screen" aria-hidden="true"></span><span>Instalație</span><span class="nav-tag">planificat</span></a>
+      </nav>
+      <div class="nav-foot">
+        <a href="/control/"><span data-icon="play" aria-hidden="true"></span><span>Consola operatorului</span></a>
+      </div>
+    </aside>
+
+    <div class="admin-body">
+      <header class="admin-header">
+        <div class="view-heading">
+          <p class="eyebrow" id="view-eyebrow">Administrare</p>
+          <h1 id="view-title">Prezentare</h1>
+        </div>
+        <div class="header-actions">
+          <span class="identity" id="identity" role="status"></span>
+          <button id="refresh" class="button-quiet" type="button"><span data-icon="timer" aria-hidden="true"></span>Actualizează</button>
+          <button id="cta" class="button-primary" type="button" hidden><span data-icon="user" aria-hidden="true"></span>Adaugă utilizator</button>
+          <button id="logout" type="button">Ieșire</button>
+        </div>
+      </header>
+
+      <main id="main" tabindex="-1">
+        <p id="page-status" class="page-status" role="status" aria-live="polite">Se verifică accesul…</p>
+
+        <div id="denied" class="glass-strong access-denied" hidden>
+          <span class="access-icon" data-icon="warning" aria-hidden="true"></span>
+          <div>
+            <h2>Nu ai acces la administrare</h2>
+            <p>Pagina este disponibilă doar administratorilor. Contul tău poate conduce show-ul din consola operatorului.</p>
+            <p class="access-actions"><a class="button" href="/control/">Mergi la consolă</a></p>
+          </div>
+        </div>
+
+        <div id="views" hidden>
+          <section id="view-prezentare" class="view" aria-labelledby="view-title" hidden>
+            <div class="facts">
+              <article class="glass fact"><p class="eyebrow">Conturi</p><p class="fact-value" id="fact-users">–</p><p class="muted" id="fact-users-note"></p></article>
+              <article class="glass fact"><p class="eyebrow">Sesiuni active</p><p class="fact-value" id="fact-sessions">–</p><p class="muted" id="fact-sessions-note"></p></article>
+              <article class="glass fact"><p class="eyebrow">Contul tău</p><p class="fact-value fact-text" id="fact-me">–</p><p class="muted" id="fact-me-note"></p></article>
+              <article class="glass fact"><p class="eyebrow">Jurnal de audit</p><p class="fact-value" id="fact-audit">–</p><p class="muted" id="fact-audit-note"></p></article>
+            </div>
+            <section class="glass-strong panel" aria-labelledby="recent-title">
+              <div class="section-header"><h2 id="recent-title">Ultimele modificări</h2><a href="#/audit" class="button-quiet">Vezi tot jurnalul</a></div>
+              <ol class="recent" id="recent"></ol>
+              <p class="empty-note" id="recent-empty" hidden>Nu s-a înregistrat încă nicio modificare administrativă.</p>
+            </section>
+          </section>
+
+          <section id="view-utilizatori" class="view" hidden>
+            <section class="glass-strong panel" aria-labelledby="users-title">
+              <div class="section-header">
+                <div><h2 id="users-title">Conturi</h2><p class="muted" id="users-summary"></p></div>
+              </div>
+              <div class="table-wrap">
+                <table id="users-table">
+                  <thead><tr><th scope="col">Nume</th><th scope="col">Rol</th><th scope="col">Stare</th><th scope="col">Ultima autentificare</th><th scope="col"><span class="sr-only">Acțiuni</span></th></tr></thead>
+                  <tbody id="users"></tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="users-empty" hidden>
+                <span class="icon-lg" data-icon="user" aria-hidden="true"></span>
+                <h3>Niciun cont încă</h3>
+                <p>Adaugă primul cont de operator ca echipa să poată conduce show-ul.</p>
+              </div>
+            </section>
+          </section>
+
+          <section id="view-sesiuni" class="view" hidden>
+            <section class="glass-strong panel" aria-labelledby="sessions-title">
+              <div class="section-header">
+                <div><h2 id="sessions-title">Sesiuni deschise</h2><p class="muted">Cine este autentificat acum, cu ce rol și până când. Închiderea unei sesiuni deconectează și consola respectivă.</p></div>
+              </div>
+              <div class="table-wrap">
+                <table id="sessions-table">
+                  <thead><tr><th scope="col">Utilizator</th><th scope="col">Rol</th><th scope="col">Începută</th><th scope="col">Expiră</th><th scope="col"><span class="sr-only">Acțiuni</span></th></tr></thead>
+                  <tbody id="sessions"></tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="sessions-empty" hidden>
+                <span class="icon-lg" data-icon="signal" aria-hidden="true"></span>
+                <h3>Nicio sesiune deschisă</h3>
+                <p>Când cineva se autentifică cu PIN, sesiunea apare aici.</p>
+              </div>
+            </section>
+          </section>
+
+          <section id="view-audit" class="view" hidden>
+            <section class="glass-strong panel" aria-labelledby="audit-title">
+              <div class="section-header">
+                <div><h2 id="audit-title">Jurnalul modificărilor</h2><p class="muted" id="audit-summary">Cine a schimbat ce, când și cu ce rezultat. Fără PIN-uri sau tokenuri.</p></div>
+              </div>
+              <div class="table-wrap">
+                <table id="audit-table">
+                  <thead><tr><th scope="col">Când</th><th scope="col">Cine</th><th scope="col">Acțiune</th><th scope="col">Țintă</th><th scope="col">Rezultat</th></tr></thead>
+                  <tbody id="audit"></tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="audit-empty" hidden>
+                <span class="icon-lg" data-icon="memory" aria-hidden="true"></span>
+                <h3>Jurnalul este gol</h3>
+                <p>Prima modificare de cont sau de sesiune va apărea aici.</p>
+              </div>
+            </section>
+          </section>
+
+          <section id="view-instalatie" class="view" hidden>
+            <section class="glass-strong panel">
+              <div class="section-header"><div><h2>Configurarea instalației</h2><span class="status-badge warning">Planificat</span></div></div>
+              <p>Aici vor ajunge setările pentru ecrane, tablete și rețea, cu istoricul modificărilor. Până atunci, configurarea se face din fișierul de configurare și din consola operatorului, iar această secțiune nu expune nicio comandă.</p>
+            </section>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog id="dlg-user" class="glass-modal admin-dialog" aria-labelledby="dlg-user-title">
+    <form id="form-user" method="dialog" novalidate>
+      <h2 id="dlg-user-title">Adaugă utilizator</h2>
+      <p class="muted" id="dlg-user-intro">Contul primește un PIN unic, cu care se autentifică pe consolă.</p>
+      <div class="field">
+        <label for="f-name">Nume</label>
+        <input id="f-name" name="name" type="text" maxlength="32" autocomplete="off" spellcheck="false" placeholder="de exemplu: Andrei" required />
+        <p class="field-help">Numele apare în consolă și în jurnal. Maximum 32 de caractere.</p>
+      </div>
+      <div class="field">
+        <label for="f-role">Rol</label>
+        <select id="f-role" name="role">
+          <option value="operator">Operator</option>
+          <option value="viewer">Observator</option>
+          <option value="admin">Administrator</option>
+        </select>
+        <p class="field-help" id="f-role-help"></p>
+      </div>
+      <div class="field" id="f-pin-field">
+        <label for="f-pin">PIN</label>
+        <input id="f-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" minlength="4" maxlength="8" autocomplete="off" placeholder="4 până la 8 cifre" />
+        <p class="field-help">Doar cifre. PIN-ul trebuie să fie diferit de al celorlalte conturi și nu se mai poate afișa după salvare.</p>
+      </div>
+      <div class="field" id="f-state-field" hidden>
+        <label class="check"><input id="f-disabled" name="disabled" type="checkbox" /> <span>Cont dezactivat (nu se poate autentifica)</span></label>
+      </div>
+      <p class="form-error" id="form-user-error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" class="button-quiet" data-close>Renunță</button>
+        <button type="submit" class="button-primary" id="form-user-submit">Salvează</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-pin" class="glass-modal admin-dialog" aria-labelledby="dlg-pin-title">
+    <form id="form-pin" method="dialog" novalidate>
+      <h2 id="dlg-pin-title">Resetează PIN-ul</h2>
+      <p class="muted" id="dlg-pin-intro"></p>
+      <div class="field">
+        <label for="p-pin">PIN nou</label>
+        <input id="p-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" minlength="4" maxlength="8" autocomplete="off" placeholder="4 până la 8 cifre" required />
+        <p class="field-help">Toate sesiunile deschise ale acestui cont se închid imediat după schimbare.</p>
+      </div>
+      <p class="form-error" id="form-pin-error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" class="button-quiet" data-close>Renunță</button>
+        <button type="submit" class="button-primary" id="form-pin-submit">Schimbă PIN-ul</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-confirm" class="glass-modal admin-dialog" aria-labelledby="dlg-confirm-title">
+    <form id="form-confirm" method="dialog">
+      <h2 id="dlg-confirm-title"></h2>
+      <p id="dlg-confirm-text"></p>
+      <p class="form-error" id="form-confirm-error" role="alert" hidden></p>
+      <div class="dialog-actions">
+        <button type="button" class="button-quiet" data-close>Renunță</button>
+        <button type="submit" class="button-primary" id="form-confirm-submit">Confirmă</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="glass-toast toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

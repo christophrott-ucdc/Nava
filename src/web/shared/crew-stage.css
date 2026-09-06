@@ -1,0 +1,6 @@
+.crew-stage-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.crew-stage-canvas[hidden]{display:none}
+.crew-trigger-art,.crew-world{position:relative;display:block;min-width:0}
+.crew-stage-flat{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+[data-crew-mode="3d"] .crew-flat-art{visibility:hidden}
+.crew-seat-label{fill:#153e53;stroke:#f5faf6;stroke-width:5;paint-order:stroke;stroke-linejoin:round;font:750 23px 'Segoe UI',sans-serif}

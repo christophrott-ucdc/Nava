@@ -18,6 +18,7 @@
 import type { AmbientCue, Phase, SceneTheme } from "../../shared/types";
 import { musicSilenceGain } from "../../shared/music";
 import { createMusicFiles } from "./music-files";
+import { createWaitingScore } from "./waiting-score";
 import type { Logger } from "../log";
 import { getAudioContext, unlockAudio } from "./context";
 import { noiseBuffer } from "./sfx";
@@ -61,6 +62,9 @@ export interface AmbientEngine {
   setDucked(on: boolean, owner?: 'voice'|'narrator'): void;
   setFileCues(cues: readonly AmbientCue[]): void;
   syncFiles(phase:Phase|null,time:number,rate:number):void;
+  /** Reception only; paused reception retains its position, a new run restarts it. */
+  syncWaiting(runId:string,eligible:boolean,paused:boolean):void;
+  stopWaiting():void;
   musicStatus():{loaded:string[];failed:string[];active:string[];silenceGain:number;duckGain:number};
   /** config.ambient.volume (0..1). */
   setVolume(v: number): void;
@@ -412,6 +416,9 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
   const speakers=new Set<string>();
   let fileCues:readonly AmbientCue[]=[];
   let files:ReturnType<typeof createMusicFiles>|null=null;
+  let waiting:ReturnType<typeof createWaitingScore>|null=null;
+  let waitingRun='',waitingEligible=false,waitingPaused=false;
+  let showPhase:Phase|null=null;
   let silenceGain=1;
   let explicitBeds: ReadonlySet<SceneTheme> = new Set();
   let lastTheme: SceneTheme | null = null;
@@ -437,6 +444,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
       silence=ctx.createGain();silence.gain.value=silenceGain;
       duck.connect(silence).connect(master).connect(ctx.destination);
       if(opts.fileBaseUrl){files=createMusicFiles(ctx,duck,opts.fileBaseUrl,log);files.preload(fileCues);}
+      if(opts.fileBaseUrl)waiting=createWaitingScore(ctx,duck,opts.fileBaseUrl,log);
     }
     void unlockAudio();
     return { ctx, duck: duck! };
@@ -479,7 +487,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
   };
 
   const play = (theme: SceneTheme, o: BedOptions | undefined, defaultFade: number) => {
-    if (!enabled) return;
+    if (!enabled || waitingEligible && showPhase===null) return;
     const g = graph();
     if (!g) {
       current = null;
@@ -526,6 +534,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
     setEnabled(on) {
       if (enabled === on) return;
       enabled = on;
+      waiting?.sync(waitingRun,on&&waitingEligible&&!waitingPaused&&showPhase===null);
       if (!on) stop({ fadeSec: 1.5 });
       else if (lastTheme) this.followTheme(lastTheme);
     },
@@ -543,10 +552,20 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
     },
     setFileCues(cues){fileCues=cues;const g=audible&&enabled?graph():null;if(g)files?.preload(cues);},
     syncFiles(phase,time,rate){
+      showPhase=phase;
+      // Stop reception before the first show source can start, including local launch commands.
+      waiting?.sync(waitingRun,enabled&&waitingEligible&&!waitingPaused&&phase===null);
       silenceGain=musicSilenceGain(phase,time);if(silence)silence.gain.value=silenceGain;
       if(audible&&enabled&&fileCues.length&&!files)graph();
       files?.sync(fileCues,phase,time,rate,enabled);
     },
+    syncWaiting(runId,eligible,paused){
+      waitingRun=runId;waitingEligible=eligible;waitingPaused=paused;
+      if(eligible&&enabled&&audible&&!waiting)graph();
+      if(eligible&&showPhase===null&&current)stop({fadeSec:.1});
+      waiting?.sync(runId,enabled&&eligible&&!paused&&showPhase===null);
+    },
+    stopWaiting(){waitingEligible=false;waiting?.sync(waitingRun,false);},
     musicStatus(){return {...(files?.status()??{loaded:[],failed:[],active:[]}),silenceGain,duckGain:duck?.gain.value??1};},
     setDucked(on,owner='voice') {
       if(on)speakers.add(owner);else speakers.delete(owner);
@@ -571,6 +590,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
     dispose() {
       disposed = true;
       files?.dispose();
+      waiting?.dispose();
       stop({ fadeSec: 0.2 });
       duckLevel = 0;
     },

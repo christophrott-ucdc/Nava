@@ -805,3 +805,77 @@ După aprobarea planului, generate 10 ilustrații folosind exclusiv imagegen int
 Integrate în sursele tabletelor și în finalul TV pentru profilurile copiilor. Textele/controalele rămân HTML/SVG, geometria pieselor și semnalele rămân în cod, fallback-ul vector și setările de confort sunt păstrate. Jurnalul și certificatul încarcă asseturile înainte de exportul canvas; logo-ul rămâne comun. Nu s-au schimbat filmul, GLB-ul, replicile, vocile sau timingul. Mecanica finalului rămâne cea existentă, cu opțiuni ilustrate.
 
 Ghid: docs/ILUSTRATII-EXODUS7.md; planul și README/OPERARE actualizate. Galerie de fișiere, fără capturi runtime: src/web/shared/illustrations/exodus7/index.html. Nu au fost rulate teste, builduri, aplicația sau capturi noi, conform interdicției explicite a utilizatorului. Aceasta este implementare în surse, nu validare vizuală/runtime/hardware și nu finalizarea lucrului oprit anterior la jocuri. Fără commit/push/merge/release/deploy.
+
+## 30. De pe tabletă pe nava centrală — 2026-09-05
+
+La cererea utilizatorului, implementate butoane cu Three.js care corespund modulelor 1A–5B de pe ecranul central. O singură scenă comună deservește două viewporturi de tabletă; rendererul TV folosește nava completă. Carcasă sidefată, accente coral/turcoaz, simboluri distincte după alegere, sosire scurtă numai după confirmare și punte pentru fiecare pereche confirmată. Locurile absente, observarea și așteptarea rămân distincte.
+
+În final, selectarea unui card este acum un draft local; „Trimite simbolul meu” trimite valoarea finale existentă. Participanții se pot răzgândi înainte de trimitere. Serverul validează și persistă ca înainte, iar jurnalul păstrează numai confirmările. Nu s-au schimbat schema SQLite sau protocolul. Tutorialul păstrează probele educative și vocea, dar salutul/cooperarea au butoane 3D și o reprezentare comună a echipajului. Ecranul de pornire are un hangar EXODUS7 nou, iar tabletele arată clar locurile numerotate.
+
+Module noi: src/web/shared/crew-relay.ts, crew-stage.ts și crew-stage.css; integrare în experience-ui/mission-ui și renderer/ui/experience, cu CSS local pe ambele suprafețe. Ghid docs/RELAIS-3D-EXODUS7.md; README și OPERARE actualizate. SVG alternativ la lipsa/pierderea WebGL, mișcare redusă și stimuli reduși, randare la schimbare cu buget de pixeli. SFX-urile existente rămân sub controlul operatorului; nicio voce/muzică/show/film/GLB modificat.
+
+Fără teste, typecheck, build, rularea aplicației, browser sau capturi noi, conform instrucțiunii utilizatorului. Livrare în surse, revizuită prin lectură, fără afirmație de validare vizuală/runtime sau de performanță pe hardware. Rămân de confirmat pe instalație încadrarea, subtitrările lungi, textul mărit, touch-ul A/B, latența tabletă–TV, etichetele la 4–5 metri și încărcarea GPU. Lucrul oprit anterior la celelalte jocuri nu este declarat finalizat. Fără commit/push/merge/release/deploy.
+
+## 31. Echipaj EXODUS7 și sesiuni cu 1–10 participanți — 2026-09-05
+
+Implementare directă în worktree: zece portrete cute EXODUS7 și selecție individuală a personajelor la fiecare reset al sălii. Opt personaje umane albe, conform direcției utilizatorului, plus Zori și Pipo. Asseturile și prompturile exacte: src/web/shared/crew/portraits/; galerie statică index.html. Originalele generatorului sunt păstrate.
+
+Catalog comun src/shared/crew.ts, asociere loc→personaj în experience.crew, roster activ oglindit în progress.participants. Confirmare/deblocare prin missionAction, unicitate globală în sesiune, deduplicare și persistență atomică în SQLite existent. Draftul local nu creează participant. Posturile fizice A/B și profilul de vârstă rămân distincte de personaj.
+
+Readiness verifică posturile ocupate efectiv. Tutorialul și finalul cer numai contribuțiile locurilor confirmate. Pragurile de completare pentru copii și adulți, majoritatea pentru semnal și posturile pilotului sunt adaptate. Pe un post ocupat de o singură persoană, ambele reguli ale pilotului automat sunt manipulate explicit, cu istoric înainte/după. Originalul legacy păstrează mecanica și blochează alegerile locurilor absente. Repetiția tehnică păstrează cerințele instalației și rosterul tehnic separat de public.
+
+Tabletele au două selecții independente, portret mare la confirmare și identitate ilustrată în interacțiuni. Echipajul și sosirile confirmate apar pe TV-ul central. Consola arată personajele și permite redeschiderea alegerii/eliberea unui loc înainte de show. Nu există autostart după prima selecție. Lista se fixează la tutorial; pierderea conexiunii nu șterge participantul. Resetul golește sesiunea și păstrează atribuirea tabletelor.
+
+Ghid: docs/ECHIPAJ-EXODUS7.md; README și OPERARE actualizate. Filmul, avatarul GLB, fișierele vocale, muzica și timingurile nu au fost modificate. Nu au fost regenerate replici pentru adresare la singular.
+
+Fără teste, typecheck, build, rularea aplicației, browser sau capturi runtime, conform instrucțiunii explicite a utilizatorului. Livrare în surse, revizuită prin lectură; fără afirmație că integrarea sau performanța sunt validate. De verificat ulterior: fiecare distribuție de participanți, concurența/retry/recuperarea, touch A/B, încadrare/contrast/text mărit, TV 4K/windowed, film/GLB/subtitrări, SFX și tabletSfx, lizibilitate și GPU pe mini-PC. Nu se declară finalizat lucrul oprit anterior la celelalte jocuri. Fără commit/push/merge/release/deploy.
+
+## 32. Nia, personaj suplimentar — 2026-09-05
+
+La cererea utilizatorului, primul portret generat al fetei a fost integrat ca Nia (nia-v1.png), păstrând celelalte zece personaje. Catalogul comun are 11 opțiuni; capacitatea rămâne 10 locuri A/B. Grila selecției derivă coloanele din catalog, în două rânduri. Actualizate galeria și docs/ECHIPAJ-EXODUS7.md, cu proveniența assetului reutilizat. Fără teste, build, aplicație sau capturi runtime; fără commit/push/deploy.
+
+## 33. Dori și selecția arcade a echipajului — 2026-09-05
+
+Adăugat al doisprezecelea personaj: Dori, pinguin explorator, portret imagegen nou cu referință de stil Luca. PNG și prompt exact în src/web/shared/crew/portraits/dori-v1.*. Selecția are 6×2 carduri pe fiecare zonă A/B, previzualizare mare cu podium, nume și rol, contur auriu și confirmare explicită „Gata de aventură!”. Stil EXODUS7 inspirat de meniurile de personaje ale jocurilor de karting. Starea confirmată păstrează portretul mare și badge-ul la bord. Mișcare redusă respectată; fără schimbarea mecanicii, a evenimentelor sau a capacității de 10 participanți. Galerie și docs/ECHIPAJ-EXODUS7.md actualizate. Fără teste, typecheck, build, aplicație sau capturi runtime; încadrarea/touch-ul rămân nevalidate. Fără commit/push/merge/release/deploy.
+
+## 34. Completarea grafică și UX a experienței — 2026-09-05
+
+Implementate cele șapte intervenții aprobate: identitate ilustrată persistentă; gesturi demonstrative finite și reluabile, fără evenimente de joc; explicații educative vizibile după rezolvare; contribuție personală vizibilă și final TV/Three.js/SVG adaptiv pentru 1–10; marcaje arcade și confirmări aurii; texte pentru solo și locuri libere; consolă cu acțiune contextuală, participanți așteptați nominal, conexiuni și jurnale.
+
+Retrimiterea jurnalelor este controlată de operator prin POST /api/mission/journal/retry, cu verificarea grupului/postului/stării și contor persistent. Tableta păstrează PNG-ul în memorie/IndexedDB, folosește tokenul curent și retry progresiv. Butoanele tehnice au fost scoase de pe tablete. Acceptarea cererii nu este raportată drept transfer încheiat. Cache-ul persistent depinde de disponibilitatea IndexedDB.
+
+Detalii și limite: docs/EXPERIENTA-COMPLETA-UX.md. Livrările agenților au fost inspectate în surse. Fără teste, typecheck, build, aplicație, browser sau capturi runtime, conform interdicției utilizatorului. Nu se declară validată încadrarea, performanța ori integrarea. Filmul, GLB-ul, vocile și timingurile sunt păstrate. Fără commit/push/merge/release/deploy.
+
+## 35. Screensaver EXODUS7 — 2026-09-05
+
+Adăugat ecran de așteptare în renderer: logo EXODUS7 mare, stele animate lent, orizont planetar turcoaz, orbită și ilustrația navei existentă. Implementare locală CSS/SVG/PNG, fără sunete sau cereri externe, fără un nou context WebGL. Apare din snapshot în idle nesuspendat, înainte de confirmarea primului participant; la confirmare cedează primirii echipajului, iar la pornirea show-ului dispare. Nu acoperă epilogul sau finalul. În configurații fără înregistrare de personaje rămâne în idle până la pornire. Textul invitației urmează disponibilitatea selecției.
+
+Suprafața este inclusă în lista overlay-urilor pentru span. Ferestrele renderer independente au propria compoziție; nu se pretinde un fundal panoramic calibrat între TV-uri. Sunt păstrate comenzile din consolă și scurtăturile rendererului; cardul public de lansare este ascuns cât timp screensaverul e activ. Mișcare redusă, mod stimuli reduși și pauza animațiilor la ascunderea documentului. Fără modificări la film, audio, GLB sau timpi.
+
+Fișiere: src/renderer/ui/waiting.ts, src/renderer/waiting.css, integrare index.ts/index.html și regula de prioritate din ui/experience.ts. Fără teste/build/aplicație/capturi runtime, la cererea utilizatorului. De verificat ulterior: lizibilitate și încadrare 4K/windowed/span, tranziția reset–selecție–tutorial–show și suprapunerea cu diagnosticele. Fără commit/push/deploy.
+
+## 36. Suita orchestrală EXODUS7 — 2026-09-05
+
+Scrisă direcția muzicală „Dincolo de lumi”: șase mișcări a câte 60 secunde, motiv Re–La–Si–Fa diez, orchestrație instrumentală caldă pentru fundal. Plan exact în assets/music/symphony/composition-plan.json; script independent scripts/symphony-produce.mjs; document docs/SIMFONIE-EXODUS7.md. Cererea ElevenLabs music_v2 a fost trimisă și respinsă HTTP 401. NU există audio generat. Markerul păstrează statusul respins, fără cheie; fără retry automat. Necesită credential valid și reluare explicită. Muzica și manifestul existente rămân neschimbate. Fără teste/build/aplicație/commit/push/deploy.
+
+### Suită orchestrală — generare reușită, 2026-09-05
+
+Utilizatorul a furnizat credential nou și a autorizat reluarea. Respingerea 401 a fost arhivată; ElevenLabs music_v2 a returnat audio salvat în assets/music/symphony/exodus7-dincolo-de-lumi-v1.mp3, cu receipt și SHA-256. Cerere de 360 secunde, șase mișcări. Credentialul este în .env ignorat de Git, nu în surse. Piesa este disponibilă pentru audiție, fără înlocuirea manifestului sau activare în show. Nu s-au rulat teste/build/aplicație sau audiție automată; conținutul și durata efectivă rămân nevalidate. Fără commit/push/deploy.
+
+## 37. Suita orchestrală integrată în primirea publicului — 2026-09-06
+
+Consultat agent în rol de compozitor/orchestrator cinematografic. Recomandarea aplicată: suita nouă în waiting și selecția personajelor, fără înlocuirea celor zece cue-uri sincronizate ale filmului. Nu se pretinde relație personală cu Hans Zimmer sau audiție efectuată.
+
+assets/music/M11-simfonie.mp3 și waiting.json: copie runtime și hash al masterului generat. Serverul verifică integritatea, oferă /api/music/waiting și servește fișierul explicit permis; pachetul este opțional independent de M01–M10. Rendererul folosește waiting-score.ts conectat la busul duck/master ambiental pe ieșirea audio configurată. Gain suplimentar conservator -18dB, fade de 3s la început/sfârșit natural, 2s liniște între repetări pe durata decodată efectivă. Pauza/mute păstrează poziția, resetul grupului reîncepe; confirmarea personajelor nu repornește piesa. Oprire la tutorial și înaintea muzicii show-ului; pe tranziția către show este stop imediat pentru a evita suprapunerea. Fără API extern runtime.
+
+Sursele agentului au fost inspectate înainte de finalizare. Fără teste, typecheck, build, aplicație, audiție sau capturi, la cererea utilizatorului. Nivelul în sală, tranzițiile, autoplay și comportamentul pe hardware rămân nevalidate. Documentate în SIMFONIE-EXODUS7.md și OPERARE.md. Fără commit/push/merge/deploy.
+
+## 38. Schelet administrare și RBAC pentru Fable — 2026-09-06
+
+Confirmat RBAC existent viewer/operator/admin și API admin-only pentru conturi. Adăugat /admin/ (doar citire, conturi, sesiuni, permisiuni, refresh/logout), contract src/shared/admin.ts, GET /api/admin/overview protejat admin-only și proiecție fără token/PIN, target și static assets în build. Nu este RBAC granular complet și nu s-a înlocuit autentificarea. Formularele de mutație, revocarea individuală a sesiunilor, auditul și integrarea setărilor rămân explicit pentru Fable.
+
+Handoff complet: docs/FABLE-ADMIN-RBAC-HANDOFF.md cu endpointuri existente, limite, ordine de continuare, riscuri WS/CSRF/persistare și definiția de gata. Fără teste, typecheck, build sau aplicație, conform instrucțiunii utilizatorului. Ruta va exista în dist după următorul build autorizat. Fără commit/push/merge/deploy.
+
+## 39. Ghid frontend Nava Glass pentru Fable — 2026-09-06
+
+Creat docs/FABLE-FRONTEND-GLASS-GUIDELINES.md, aliniat la DESIGN-SPEC-GLASS și tokenurile glass.css: paletă exactă, opt teme, materiale/blur/fallback TV, tipografie, spațiere, layout admin, componente și stări, română, iconografie, performanță și accesibilitate. Include prompt de continuare și criterii de predare; legat din handoff-ul admin. Documentație numai, fără modificări frontend, teste/build/aplicație sau commit/push/deploy.

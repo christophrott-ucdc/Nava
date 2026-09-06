@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="glass-tv.css" />
   <link rel="stylesheet" href="experience.css" />
+  <link rel="stylesheet" href="shared/crew-stage.css" />
+  <link rel="stylesheet" href="crew-relay.css" />
+  <link rel="stylesheet" href="waiting.css" />
 </head>
 <body data-theme="prologue">
   <div id="stage">
@@ -59,15 +62,19 @@
     <!-- z7: visible on the master clock-source screen while the show is idle -->
     <div id="launch-controls" class="layer" hidden>
       <div class="launch-card">
+        <div class="launch-hangar" aria-hidden="true"><div class="launch-hangar-ring"></div><img src="shared/illustrations/exodus7/ship-boarding-v1.png" alt="" /></div>
+        <div class="launch-welcome">
         <svg class="exodus-brand launch-brand" viewBox="55 60 2070 562" role="img" aria-label="EXODUS7 · A Patra Lume"><image href="shared/brand/exodus7-v1.png" width="2172" height="724" /></svg>
-        <div class="launch-kicker">SISTEM PREGĂTIT</div>
-        <div class="launch-title">A PATRA LUME</div>
-        <div class="launch-text">Apasă oriunde sau <kbd>SPACE</kbd> / <kbd>ENTER</kbd> pentru a începe.</div>
+        <div class="launch-kicker">BUN VENIT LA BORD</div>
+        <div class="launch-title">Dincolo de lumi.<br>Împreună.</div>
+        <div class="launch-text">A Patra Lume · O expediție în care fiecare are un loc.</div>
+        <div class="launch-route" aria-label="Primire, explorare, întoarcere"><span>La bord</span><i></i><span>Printre lumi</span><i></i><span>Împreună</span></div>
         <div class="launch-actions">
           <button id="launch-experience" type="button">PORNEȘTE EXPERIENȚA</button>
           <button id="launch-start" class="secondary" type="button">SARI LA LANSARE</button>
         </div>
         <div class="launch-help"><kbd>S</kbd> start · <kbd>P</kbd> pre-show · <kbd>O</kbd> diagnostic · <kbd>F</kbd> fullscreen</div>
+        </div>
       </div>
     </div>
 

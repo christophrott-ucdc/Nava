@@ -3,14 +3,15 @@ import type {ShowState,TabletPost} from '../shared/types';
 import {createProgress,applyScenarioAction,scenarioView,summarizeScenario,scenarioConditions,type ScenarioId} from '../shared/scenario-engine';
 import {DEFAULT_ACCESSIBILITY,SCENARIO_LABELS,STAGE_WINDOWS,type MissionRecord,type MissionSnapshot,type MissionEvent,type PostAccessibility} from '../shared/mission';
 import {MissionStore} from './mission-store';
-import {freshExperience,acceptExperience,tutorialSatisfied} from './experience';
+import {freshExperience,acceptExperience,tutorialSatisfied,ALL_PARTICIPANTS} from './experience';
+import {crewCharacter,occupiedSeats} from '../shared/crew';
 
 export class MissionSession {
   readonly serverEpoch=randomUUID();
   record:MissionRecord;
   recovery:MissionRecord|null;
   constructor(readonly store:MissionStore){this.recovery=store.recoverable();this.record=this.fresh('legacy-v3','');}
-  private fresh(id:ScenarioId,hash:string):MissionRecord{return {runId:randomUUID(),scenarioId:id,contentHash:hash,revision:0,timelineEpoch:0,createdAt:new Date().toISOString(),status:'prepared',progress:createProgress(id),checkpoint:null,accessibility:{},mode:'public',experience:freshExperience()};}
+  private fresh(id:ScenarioId,hash:string):MissionRecord{return {runId:randomUUID(),scenarioId:id,contentHash:hash,revision:0,timelineEpoch:0,createdAt:new Date().toISOString(),status:'prepared',progress:{...createProgress(id),participants:[]},checkpoint:null,accessibility:{},mode:'public',experience:freshExperience()};}
   reset(id=this.record.scenarioId,hash=this.record.contentHash):void {
     const old=this.record;
     if(old.status==='active')old.status='interrupted';
@@ -45,9 +46,9 @@ export class MissionSession {
         const play=view.zones[zone].play;if(play?.kind==='signal')play.canTransmit=false;
       }
     }
-    const experience=r.experience??{...freshExperience(),status:'skipped' as const};
+    const experience=r.experience??{...freshExperience(),crew:undefined,participants:[...ALL_PARTICIPANTS],status:'skipped' as const};
     return {experience:{...experience,active:experience.status==='tutorial',finaleActive:this.finaleActive(state),paused:experience.pausedAt!==undefined||!!state.suspended,canContinue:tutorialSatisfied(experience)},runId:r.runId,serverEpoch:this.serverEpoch,scenarioId:r.scenarioId,label:SCENARIO_LABELS[r.scenarioId],revision:r.revision,
-      lantern:r.scenarioId==='age-5-10'?Object.values(r.progress.zones).map(z=>({found:z.choices['1']==='found',mounted:z.choices['2']==='fitted',linked:z.choices['3']==='linked'})):undefined,
+      lantern:r.scenarioId==='age-5-10'?Object.entries(r.progress.zones).filter(([seat])=>!r.progress.participants||r.progress.participants.includes(seat)).map(([seat,z])=>({seat,found:z.choices['1']==='found',mounted:z.choices['2']==='fitted',linked:z.choices['3']==='linked'})):undefined,
       cueInstanceId:this.instance(state),stage,endsAt:stage?STAGE_WINDOWS[r.scenarioId][stage-1][1]:null,
       suspended:!!state.suspended,state,post,view,
       summary:summarizeScenario(r.progress),accessibility:r.accessibility[String(post)]??DEFAULT_ACCESSIBILITY};
@@ -59,9 +60,25 @@ export class MissionSession {
     const payload=JSON.stringify({post,zone:event.zone,value:event.value,instance:event.cueInstanceId});
     const previous=this.store.event(event.runId,event.eventId);
     if(previous)return result(previous.payload===payload?'duplicate':'invalid');
+    if(event.value.startsWith('crew:')){
+      if(event.cueInstanceId!==this.instance(state)||state.suspended)return result('expired');
+      const experience=structuredClone(this.record.experience),seat=`${post}${event.zone}`;
+      if(state.state!=='idle'||!experience?.crew?.open||experience.status!=='pending')return result('registration-closed');
+      if(event.value==='crew:release')delete experience.crew.characters[seat];
+      else if(event.value.startsWith('crew:lock:')){
+        const character=crewCharacter(event.value.slice('crew:lock:'.length));
+        if(!character)return result('invalid');
+        if(Object.entries(experience.crew.characters).some(([other,id])=>other!==seat&&id===character.id))return result('character-taken');
+        experience.crew.characters[seat]=character.id;
+      }else return result('invalid');
+      experience.participants=occupiedSeats(experience.crew);
+      const next={...this.record,experience,progress:{...this.record.progress,participants:[...experience.participants]},status:'active' as const,revision:this.record.revision+1,checkpoint:state};
+      const response=result('accepted');this.store.accept(next,event.eventId,payload,response);this.record=next;return response;
+    }
+    if(this.record.progress.participants&&!this.record.progress.participants.includes(`${post}${event.zone}`))return result('inactive-seat');
     if(event.value.startsWith('tutorial:')||event.value.startsWith('finale:')){
       if(event.cueInstanceId!==this.instance(state)||state.suspended)return result('expired');
-      const experience=acceptExperience(this.record.experience??{...freshExperience(),status:'skipped'},this.record.scenarioId,`${post}${event.zone}`,event.value,this.finaleActive(state));
+      const experience=acceptExperience(this.record.experience??{...freshExperience(),crew:undefined,participants:[...ALL_PARTICIPANTS],status:'skipped'},this.record.scenarioId,`${post}${event.zone}`,event.value,this.finaleActive(state));
       if(!experience)return result('invalid');
       const next={...this.record,experience,revision:this.record.revision+1,checkpoint:state};
       const response=result('accepted');this.store.accept(next,event.eventId,payload,response);this.record=next;return response;

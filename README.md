@@ -101,7 +101,9 @@ Consola include confort pe post, editor de pachete, diagnostic și repetiție co
 
 ## Tutorial și final interactiv — 2026-09-05
 
-Tutorialul vocal „Nava vă recunoaște” și finalul colectiv sunt implementate pentru cele patru categorii. În consolă: **Tutorial și echipaj** → locuri ocupate → începe → predă Căpitanului. Narator român separat, probe A/B fără punctaj, pauză/repetare, SQLite și constelație bazată pe contribuții reale. Detalii și comenzi QA: [docs/TUTORIAL-FINAL.md](docs/TUTORIAL-FINAL.md). Galerie: `runs/debug/tutorial-final/index.html`. Audiția și acceptanța celor cinci TV-uri și șase tablete se fac în sală.
+Upgrade în surse: butoane Three.js pe tablete și o navă comună pe ecranul central, cu module 1A–5B aprinse numai după confirmarea serverului. Finalul separă alegerea de butonul „Trimite simbolul meu”. Primirea și ecranul de pornire au o compoziție EXODUS7 nouă. [Implementare și limite](docs/RELAIS-3D-EXODUS7.md). Acest upgrade nu a fost construit sau testat, la cererea utilizatorului.
+
+Tutorialul vocal „Nava vă recunoaște” și finalul colectiv sunt implementate pentru cele patru categorii. În consolă: **Tutorial și echipaj** → locuri ocupate → începe → predă Căpitanului. Narator român separat, probe A/B fără punctaj, pauză/repetare și SQLite. Nava 3D înlocuiește acum constelația vizuală; contribuțiile rămân reale. Detalii despre fluxul original: [docs/TUTORIAL-FINAL.md](docs/TUTORIAL-FINAL.md). Galeria `runs/debug/tutorial-final/index.html` documentează versiunea anterioară. Audiția și acceptanța celor cinci TV-uri și șase tablete se fac în sală.
 
 ## Coloana sonoră
 
@@ -120,3 +122,15 @@ Revizia inițială a textelor și formularelor este documentată în [docs/REVIZ
 Copiii construiesc și aprind felinarul prin gesturi; grupa 10–15 reglează antena și compune ritmuri; adolescenții văd pilotul executând regulile A/B, cu comparație înainte/acum; adulții mută instrumentul, văd pierderea sau incertitudinea datelor și trimit documentul în capsulă. Jocurile rămân interactive după prima contribuție. Starea este validată pe server și păstrată în SQLite; filmul, vocile și timpii sunt păstrați.
 
 Ghid actual: [docs/JOCURI-EXPLORARE.md](docs/JOCURI-EXPLORARE.md). Galerie: [runs/debug/play-experience/index.html](runs/debug/play-experience/index.html). Verificare: `node scripts/play-review.mjs`. Parametrul `interaction=classic` păstrează numai interfața anterioară pentru regresie. Proba pe mini-PC/touch și pilotul cu publicul rămân necesare.
+
+## Echipaj EXODUS7 · 1–10 participanți (2026-09-05)
+
+Implementate în surse selecția și confirmarea individuală a personajelor pe A/B, zece portrete EXODUS7, echipajul pe TV și în consolă, persistență în SQLite existent și adaptarea pragurilor jocurilor la locurile confirmate. La un post cu un singur participant, pilotul automat are ambele reguli controlabile din aceeași jumătate. Readiness cere doar tabletele cu participanți confirmați; operatorul încheie îmbarcarea. Resetarea grupului golește personajele, păstrând posturile fizice.
+
+Ghid: [ECHIPAJ-EXODUS7](docs/ECHIPAJ-EXODUS7.md). [Galeria portretelor](src/web/shared/crew/portraits/index.html). Nu au fost rulate teste, typecheck, build, aplicația sau capturi noi în această intervenție, conform instrucțiunii utilizatorului. Implementare nevalidată runtime/hardware.
+
+Actualizare UX EXODUS7 (2026-09-05): identitate persistentă, demonstrații, concluzii educative, final adaptiv și gestionarea jurnalelor din consolă. Implementare și limite: [EXPERIENTA-COMPLETA-UX](docs/EXPERIENTA-COMPLETA-UX.md). Fără validare runtime în această tură.
+
+
+Administrare: schelet /admin/ cu acces admin-only și liste reale de conturi/sesiuni. Continuare: [Fable — Admin RBAC](docs/FABLE-ADMIN-RBAC-HANDOFF.md). Build neexecutat în această tură.
+

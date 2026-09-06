@@ -1,0 +1,73 @@
+/* The button is real HTML; its 3D face never intercepts touch or focus. */
+.mission-wait[data-boarding=true]{position:relative;max-width:1100px;gap:14px}
+.mission-wait[data-boarding=true] .mission-wait-art.has-expedition-ship{width:300px;height:230px}
+.mission-wait[data-boarding=true] .mission-wait-art.has-expedition-ship .mission-wait-mascot{width:70px;height:70px;right:14px;bottom:5px}
+.mission-wait[data-boarding=true] h2{font-size:46px;letter-spacing:-.035em}
+.mission-wait[data-boarding=true] .mission-wait-copy{max-width:870px;font-size:24px;color:#395b6b}
+.crew-boarding-seats{display:flex;gap:24px;justify-content:center;margin-top:12px}
+.crew-boarding-seats[hidden]{display:none}
+.crew-boarding-seat{display:flex;align-items:center;gap:12px;padding:12px 22px;border-radius:24px;background:#ffffffa8;border:1px solid #fff;color:#224657;font-size:22px}
+.crew-boarding-seat b{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:#f5c4ad}
+.crew-boarding-b b{background:#b6dcf0}
+body[data-mission-guidance=false] .mission-wait[data-boarding=true] .mission-wait-art,body[data-mission-quiet=true] .mission-wait[data-boarding=true] .mission-wait-art{width:160px;height:160px}
+body[data-mission-guidance=false] .mission-wait[data-boarding=true] .mission-wait-art .mission-wait-mascot,body[data-mission-quiet=true] .mission-wait[data-boarding=true] .mission-wait-art .mission-wait-mascot{inset:28px;width:104px;height:104px}
+.experience-zone .experience-options .crew-trigger{position:relative;display:grid;grid-template-columns:44% 1fr;grid-template-rows:1fr auto;column-gap:12px;row-gap:4px;min-height:180px;padding:14px 24px 20px;border-radius:32px;border:2px solid #fff;background:radial-gradient(ellipse at 25% 35%,#fffdf7 0,#eef7f4 48%,#d4ecee 100%);color:#193d50;box-shadow:inset 0 2px 0 #fff,inset 0 -5px 0 #bfd5d7,0 14px 24px -20px #396d85;overflow:hidden}
+.crew-trigger>.crew-trigger-art{grid-row:1/3;height:100%;min-height:130px;align-self:stretch}
+.crew-trigger>span:not(.crew-trigger-art){align-self:end;position:relative;z-index:4;text-align:left;font-size:calc(26px * var(--mission-text-scale,1));line-height:1.15;font-weight:750}
+.crew-trigger>.crew-trigger-hint{align-self:start;position:relative;z-index:4;color:#3a5c6b;font-size:calc(18px * var(--mission-text-scale,1));font-weight:500;text-align:left;line-height:1.25}
+.crew-trigger:not(:disabled):active{transform:translateY(3px);box-shadow:inset 0 2px 0 #fff,inset 0 -2px 0 #bfd5d7}
+.experience-zone .crew-trigger:disabled{opacity:1;cursor:default}
+.experience-zone .crew-trigger[data-confirmed=true]{background:radial-gradient(ellipse at 25% 35%,#fffbee,#ddf4e8 65%,#cee8e5);border-color:#85b9a6}
+.experience-zone .crew-trigger:disabled:not([data-confirmed=true]){border-color:#c1d2d5}
+.experience-zone .crew-trigger:focus-visible,.experience-zone .crew-choice:focus-visible{outline:4px solid #1d5476;outline-offset:3px}
+.experience-zone[data-kind=experience-finale] .experience-options{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.experience-zone[data-kind=experience-finale] .crew-choice{display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:90px;padding:8px;font-size:calc(20px * var(--mission-text-scale,1));line-height:1.18;text-align:center}
+.experience-zone[data-kind=experience-finale] .crew-choice.experience-selected:after{position:absolute;right:7px;top:3px;font-size:19px;margin:0}
+.experience-zone[data-kind=experience-finale] .crew-choice{position:relative}
+.experience-zone[data-kind=experience-finale] .experience-keepsake-image{width:44px;height:44px}
+.experience-zone[data-kind=experience-finale] .crew-trigger{grid-column:1/-1;min-height:116px;padding:8px 22px 12px;grid-template-columns:32% 1fr}
+.experience-zone[data-kind=experience-finale] .crew-trigger-art{min-height:90px}
+.experience-zone[data-kind=experience-finale] .crew-trigger>span:not(.crew-trigger-art){font-size:calc(23px * var(--mission-text-scale,1))}
+.experience-zone[data-kind=experience-finale] .mission-observe{grid-column:1/-1;min-height:64px}
+.experience-zone[data-kind=experience-finale] .experience-journal{position:absolute;right:18px;top:10px;z-index:6;max-width:46%;font-size:18px}
+.experience-zone[data-kind=experience-finale] .experience-journal summary{min-height:64px;padding:8px 12px}
+.experience-zone[data-kind=experience-finale] .mission-zone-head{min-height:64px;padding-right:48%}
+.experience-zone[data-kind=experience-finale] .experience-journal[open]{top:10px;left:16px;right:16px;max-width:none;background:white}
+.experience-zone[data-kind=experience-finale][data-complete=true] .crew-choice{grid-column:1/-1;min-height:64px;flex-direction:row}
+.experience-zone[data-kind=experience-finale] .mission-detail{font-size:calc(20px * var(--mission-text-scale,1));line-height:1.2}
+.experience-zone[data-kind=experience-finale] .mission-delivery{font-size:calc(18px * var(--mission-text-scale,1));min-height:24px}
+.experience-tutorial-surface .experience-zone[data-kind=tutorial-touch],.experience-tutorial-surface .experience-zone[data-kind=tutorial-cooperate]{background:radial-gradient(ellipse at 30% 25%,#fffdf5,#e6f5f2 65%,#dfeaf7)}
+.experience-tutorial-surface .experience-options:has(.crew-trigger){flex:1;align-content:center;margin-top:0}
+.experience-tutorial-surface .crew-trigger{min-height:240px!important}
+.experience-tutorial-surface .crew-trigger-art{min-height:170px}
+body[data-mission-contrast=true] .experience-zone .crew-trigger{border:3px solid #1d5476;background:#f5faf8}
+body[data-mission-quiet=true] .experience-zone .crew-trigger{background:#f5faf8;box-shadow:none}
+body[data-mission-motion=true] .crew-trigger:active,body[data-mission-quiet=true] .crew-trigger:active{transform:none}
+@media(prefers-reduced-motion:reduce){.crew-trigger:active{transform:none!important}}
+@media(max-height:850px){.experience-tutorial-surface .crew-trigger{min-height:150px!important}.experience-tutorial-surface .crew-trigger-art{min-height:110px}.experience-zone[data-kind=experience-finale] .crew-trigger{min-height:100px}.experience-zone[data-kind=experience-finale] .crew-trigger-art{min-height:75px}.experience-zone[data-kind=experience-finale] .crew-choice{min-height:80px}.experience-zone[data-kind=experience-finale] .experience-keepsake-image{width:32px;height:32px}}
+@media(max-height:850px){.mission-wait[data-boarding=true] .mission-wait-art.has-expedition-ship{width:200px;height:150px}.mission-wait[data-boarding=true] h2{font-size:34px}.mission-wait[data-boarding=true] .mission-wait-copy{font-size:22px}.crew-boarding-seat{padding:8px 16px}.crew-boarding-seat b{width:44px;height:44px}}
+
+/* Three choices beside the transmitter keep the A/B workspaces spacious at 1080p. */
+.experience-zone[data-kind=experience-finale]{justify-content:flex-start}
+.experience-zone[data-kind=experience-finale] .experience-options{grid-template-columns:minmax(0,1fr) minmax(0,1.06fr);grid-template-rows:repeat(3,minmax(72px,auto));align-content:center;margin-top:auto}
+.experience-zone[data-kind=experience-finale] .crew-choice{grid-column:1;min-height:72px;flex-direction:row;justify-content:flex-start;text-align:left;padding:10px 12px;gap:10px}
+.experience-zone[data-kind=experience-finale] .crew-choice:disabled.experience-selected{opacity:1}
+.experience-zone[data-kind=experience-finale] .crew-choice:nth-child(1){grid-row:1}.experience-zone[data-kind=experience-finale] .crew-choice:nth-child(2){grid-row:2}.experience-zone[data-kind=experience-finale] .crew-choice:nth-child(3){grid-row:3}
+.experience-zone[data-kind=experience-finale] .crew-trigger{grid-column:2;grid-row:1/3;grid-template-columns:1fr;grid-template-rows:minmax(70px,1fr) auto auto;min-height:152px;padding:8px 12px 12px;gap:2px}
+.experience-zone[data-kind=experience-finale] .crew-trigger-art{grid-row:1;min-height:70px}
+.experience-zone[data-kind=experience-finale] .crew-trigger>span:not(.crew-trigger-art),.experience-zone[data-kind=experience-finale] .crew-trigger-hint{text-align:center;align-self:center}
+.experience-zone[data-kind=experience-finale] .crew-trigger>span:not(.crew-trigger-art){font-size:calc(22px * var(--mission-text-scale,1))}
+.experience-zone[data-kind=experience-finale] .crew-trigger-hint{font-size:calc(16px * var(--mission-text-scale,1))}
+.experience-zone[data-kind=experience-finale] .mission-observe{grid-column:2;grid-row:3;min-height:72px;padding:10px}
+.experience-zone[data-kind=experience-finale][data-complete=true] .experience-options{grid-template-columns:1fr;grid-template-rows:auto auto}
+.experience-zone[data-kind=experience-finale][data-complete=true] .crew-choice{grid-column:1;grid-row:1}
+.experience-zone[data-kind=experience-finale][data-complete=true] .crew-trigger{grid-column:1;grid-row:2;grid-template-columns:34% 1fr;grid-template-rows:1fr auto;min-height:140px}
+.experience-zone[data-kind=experience-finale][data-complete=true] .crew-trigger-art{grid-row:1/3;min-height:110px}
+.experience-zone[data-kind=experience-finale][data-complete=true] .mission-observe{grid-column:1;grid-row:auto}
+.experience-finale-surface{position:relative}
+.experience-finale-surface .experience-intro{min-height:64px;padding-right:52%;flex-wrap:nowrap}
+.experience-finale-surface .experience-intro h2{font-size:28px;line-height:1.15}
+.experience-finale-surface .mission-finale-actions{position:absolute;top:0;right:0;max-width:50%;min-height:64px;gap:10px;z-index:5;flex-wrap:wrap}
+.experience-finale-surface .mission-finale-actions button{font-size:18px;padding:10px 14px}
+.experience-finale-surface .mission-upload-status:empty{display:none}
+.experience-finale-surface .mission-upload-status:not(:empty){position:absolute;right:0;top:100%;background:#fffdf4;border:1px solid #bdd1d6;border-radius:12px;padding:6px 12px;max-width:100%;font-size:16px}

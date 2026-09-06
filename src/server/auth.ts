@@ -11,7 +11,7 @@
  * Sessions are persisted in data/sessions.json so a server restart does not log operators out.
  */
 
-import { randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { Context, MiddlewareHandler, Next } from "hono";
@@ -22,6 +22,8 @@ import { CONFIG_DEFAULTS_R4 } from "../shared/types";
 import type { HelloMsg } from "../shared/protocol";
 import { ROLE_RANK, UsersStore, toPublicUser } from "./users";
 import type { LogFn } from "./runlog";
+import type { AuditLog } from "./audit";
+import type { AuditAction, AuditEntry } from "../shared/admin";
 
 export const SESSION_COOKIE = "nava_session";
 
@@ -31,10 +33,25 @@ export type Principal =
 
 export type AuthEnv = { Variables: { principal: Principal | null } };
 
+/** Why a set of sessions was invalidated; the WS close code tells the console what to do next. */
+export interface RevocationInfo {
+  /** 4401: sign in again (revoked, disabled, deleted, PIN changed). 4409: reconnect and re-read the role. */
+  code: 4401 | 4409;
+  reason: string;
+}
+
 export interface AuthDeps {
   config: AppConfig;
   appRoot: string;
   log: LogFn;
+  /** Persistent audit of administrative changes; optional so tests can run without a filesystem. */
+  audit?: AuditLog;
+  /**
+   * Called with the session tokens that just became invalid, so the owner of the WebSocket clients can
+   * close the affected connections. Server-side HTTP checks do not need this (sessionByToken already
+   * rejects them); it exists because an OPEN WebSocket would otherwise keep its stale principal.
+   */
+  onSessionsRevoked?: (tokens: string[], info: RevocationInfo) => void;
 }
 
 export interface Auth {
@@ -51,8 +68,23 @@ export interface Auth {
   /** WS hello authentication. */
   authenticateHello(msg: HelloMsg): { ok: true; principal: Principal | null } | { ok: false; code: number; reason: string };
   principalOf(c: Context<AuthEnv>): Principal | null;
+  /** Best-effort client address for logs and audit (X-Forwarded-For, then the socket). */
+  clientIp(c: Context<AuthEnv>): string;
+  /**
+   * Rejects state-changing requests whose Origin / Sec-Fetch-Site does not match this server. The session
+   * cookie is SameSite=Lax, so this is defence in depth for admin mutations, not the only barrier.
+   */
+  sameOrigin: MiddlewareHandler<AuthEnv>;
   sessions(): SessionInfo[];
+  /** Opaque, non-reversible identifier for a session (hash of the token). Safe to send to the admin UI. */
+  sessionIdOf(token: string): string;
   revoke(token: string): Promise<boolean>;
+  /** Revokes one session by its opaque id. Returns the session that was removed, or null. */
+  revokeById(id: string, info: RevocationInfo): Promise<SessionInfo | null>;
+  /** Revokes every session of a user (optionally keeping one token, e.g. the acting admin's own). */
+  revokeUser(userId: string, info: RevocationInfo, keepToken?: string): Promise<number>;
+  /** Writes an audit entry (no-op without an AuditLog). Resolves false when persistence failed. */
+  audit(entry: Omit<AuditEntry, "t">): Promise<boolean>;
   load(): Promise<void>;
 }
 
@@ -70,7 +102,7 @@ function tokenEquals(a: string, b: string): boolean {
 }
 
 export function createAuth(deps: AuthDeps): Auth {
-  const { config, appRoot, log } = deps;
+  const { config, appRoot, log, audit: auditLog, onSessionsRevoked } = deps;
   const security = securityOf(config);
   const users = new UsersStore(path.resolve(appRoot, security.usersFile), security.operatorPin, log);
   const sessionsPath = path.resolve(appRoot, path.dirname(security.usersFile), "sessions.json");
@@ -119,6 +151,27 @@ export function createAuth(deps: AuthDeps): Auth {
     void saveSessions();
     return s;
   };
+  const sessionIdOf = (token: string): string => createHash("sha256").update(token).digest("hex").slice(0, 24);
+  /** Removes the given tokens, persists, and tells the WS owner to drop the matching connections. */
+  const dropSessions = async (tokens: string[], info: RevocationInfo): Promise<number> => {
+    let n = 0;
+    for (const t of tokens) if (sessions.delete(t)) n += 1;
+    if (n > 0) await saveSessions();
+    if (tokens.length > 0) onSessionsRevoked?.(tokens, info);
+    return n;
+  };
+  const tokensOfUser = (userId: string, keepToken?: string): string[] => {
+    const out: string[] = [];
+    for (const [tok, s] of sessions) if (s.userId === userId && tok !== keepToken) out.push(tok);
+    return out;
+  };
+  const audit: Auth["audit"] = (entry) => {
+    if (!auditLog) return Promise.resolve(true);
+    return auditLog.record({ t: new Date().toISOString(), ...entry });
+  };
+  const actorOf = (p: Principal | null): AuditEntry["actor"] =>
+    p?.kind === "user" ? { id: p.userId, name: p.name, role: p.role } : null;
+
   const sessionByToken = (token: string | undefined | null): SessionInfo | null => {
     if (!token || !/^[0-9a-f]{64}$/.test(token)) return null;
     const s = sessions.get(token);
@@ -211,6 +264,27 @@ export function createAuth(deps: AuthDeps): Auth {
   const clientIp = (c: Context<AuthEnv>): string =>
     c.req.header("x-forwarded-for")?.split(",")[0]?.trim() || (c.env as { incoming?: { socket?: { remoteAddress?: string } } })?.incoming?.socket?.remoteAddress || "?";
 
+  // ---- same-origin guard for mutations ----------------------------------------
+  const sameOrigin: MiddlewareHandler<AuthEnv> = async (c, next) => {
+    if (c.req.method === "GET" || c.req.method === "HEAD" || c.req.method === "OPTIONS") return next();
+    const site = c.req.header("sec-fetch-site");
+    if (site && site !== "same-origin" && site !== "same-site" && site !== "none") {
+      return deny(c, 403, "Cererea vine din alt site");
+    }
+    const origin = c.req.header("origin");
+    const host = c.req.header("host");
+    if (origin && host) {
+      let originHost: string | null = null;
+      try {
+        originHost = new URL(origin).host;
+      } catch {
+        originHost = null;
+      }
+      if (originHost !== host) return deny(c, 403, "Origine neacceptată pentru această acțiune");
+    }
+    await next();
+  };
+
   // ---- routers --------------------------------------------------------------
   const router = new Hono<AuthEnv>();
   router.post("/login", async (c) => {
@@ -240,13 +314,14 @@ export function createAuth(deps: AuthDeps): Auth {
       maxAge: Math.max(5, security.sessionTtlMin) * 60,
     });
     log("info", `auth: login ${user.role} "${user.name}"`, { ip });
+    void audit({ actor: { id: user.id, name: user.name, role: user.role }, action: "auth.login", ok: true, ip });
     return c.json({ ok: true, token: s.token, user: toPublicUser(user), expiresAt: s.expiresAt });
   });
   router.post("/logout", async (c) => {
     const p = principalOf(c);
     if (p?.kind === "user") {
-      sessions.delete(p.token);
-      await saveSessions();
+      await dropSessions([p.token], { code: 4401, reason: "Ai ieșit din cont" });
+      void audit({ actor: actorOf(p), action: "auth.logout", ok: true, ip: clientIp(c) });
     }
     deleteCookie(c, SESSION_COOKIE, { path: "/" });
     return c.json({ ok: true });
@@ -268,11 +343,19 @@ export function createAuth(deps: AuthDeps): Auth {
   });
   router.get("/sessions", requireRole("admin"), (c) => {
     pruneSessions();
-    return c.json({ sessions: [...sessions.values()].map((s) => ({ ...s, token: `${s.token.slice(0, 6)}…` })) });
+    // Legacy listing: the token is replaced by its opaque id (never a prefix of the secret).
+    return c.json({ sessions: [...sessions.values()].map(({ token, ...s }) => ({ ...s, id: sessionIdOf(token) })) });
   });
 
+  // ---- users (admin) ---------------------------------------------------------
   const usersRouter = new Hono<AuthEnv>();
   usersRouter.use("*", requireRole("admin"));
+  usersRouter.use("*", sameOrigin);
+  /** Audits a user mutation and reports the outcome with the same shape the routes already use. */
+  const auditUser = (c: Context<AuthEnv>, action: AuditAction, target: AuditEntry["target"], ok: boolean, detail?: string) =>
+    audit({ actor: actorOf(principalOf(c)), action, target, ok, detail, ip: clientIp(c) });
+  const targetName = (id: string): string | undefined => users.get(id)?.name;
+
   usersRouter.get("/", (c) => c.json({ users: users.list() }));
   usersRouter.post("/", async (c) => {
     let body: { name?: unknown; role?: unknown; pin?: unknown };
@@ -281,11 +364,21 @@ export function createAuth(deps: AuthDeps): Auth {
     } catch {
       return c.json({ ok: false, reason: "Corp JSON invalid" }, 400);
     }
-    const r = await users.create(String(body.name ?? ""), String(body.role ?? "operator") as UserRole, String(body.pin ?? ""));
-    return r.ok ? c.json({ ok: true, user: r.value }, 201) : c.json({ ok: false, reason: r.reason }, r.status as 400);
+    const name = String(body.name ?? "");
+    const role = String(body.role ?? "operator") as UserRole;
+    const r = await users.create(name, role, String(body.pin ?? ""));
+    const audited = await auditUser(
+      c,
+      "user.create",
+      r.ok ? { kind: "user", id: r.value.id, name: r.value.name } : { kind: "user", id: "", name: name.trim().slice(0, 32) },
+      r.ok,
+      r.ok ? `Cont nou cu rolul ${role}` : r.reason,
+    );
+    return r.ok ? c.json({ ok: true, user: r.value, audited }, 201) : c.json({ ok: false, reason: r.reason }, r.status as 400);
   });
   usersRouter.patch("/:id", async (c) => {
     const me = principalOf(c);
+    const id = c.req.param("id");
     let body: { name?: unknown; role?: unknown; disabled?: unknown };
     try {
       body = (await c.req.json()) as typeof body;
@@ -296,32 +389,48 @@ export function createAuth(deps: AuthDeps): Auth {
     if (typeof body.name === "string") patch.name = body.name;
     if (typeof body.role === "string") patch.role = body.role as UserRole;
     if (typeof body.disabled === "boolean") patch.disabled = body.disabled;
-    const r = await users.update(c.req.param("id"), patch, me?.kind === "user" ? me.userId : "");
-    return r.ok ? c.json({ ok: true, user: r.value }) : c.json({ ok: false, reason: r.reason }, r.status as 400);
+    const before = users.get(id);
+    const r = await users.update(id, patch, me?.kind === "user" ? me.userId : "");
+    if (r.ok && before) {
+      // An OPEN WebSocket keeps the principal it had at `hello`; make the change effective now.
+      if (patch.disabled === true) {
+        await dropSessions(tokensOfUser(id), { code: 4401, reason: "Contul a fost dezactivat" });
+      } else if (patch.role !== undefined && patch.role !== before.role) {
+        await dropSessions(tokensOfUser(id), { code: 4409, reason: "Rolul contului s-a schimbat; reconectare" });
+      }
+    }
+    const changes = [
+      patch.name !== undefined ? "nume" : null,
+      patch.role !== undefined ? `rol → ${patch.role}` : null,
+      patch.disabled !== undefined ? (patch.disabled ? "dezactivat" : "reactivat") : null,
+    ].filter(Boolean);
+    const audited = await auditUser(c, "user.update", { kind: "user", id, name: r.ok ? r.value.name : before?.name }, r.ok, r.ok ? changes.join(", ") : r.reason);
+    return r.ok ? c.json({ ok: true, user: r.value, audited }) : c.json({ ok: false, reason: r.reason }, r.status as 400);
   });
   usersRouter.post("/:id/pin", async (c) => {
+    const id = c.req.param("id");
     let body: { pin?: unknown };
     try {
       body = (await c.req.json()) as typeof body;
     } catch {
       return c.json({ ok: false, reason: "Corp JSON invalid" }, 400);
     }
-    const r = await users.setPin(c.req.param("id"), String(body.pin ?? ""));
+    const r = await users.setPin(id, String(body.pin ?? ""));
     if (r.ok) {
-      // a PIN change invalidates that user's sessions (except none: keep simple & safe)
-      for (const [tok, s] of sessions) if (s.userId === c.req.param("id")) sessions.delete(tok);
-      await saveSessions();
+      // A PIN change signs that user out everywhere, including open consoles.
+      await dropSessions(tokensOfUser(id), { code: 4401, reason: "PIN-ul a fost schimbat; autentifică-te din nou" });
     }
-    return r.ok ? c.json({ ok: true, user: r.value }) : c.json({ ok: false, reason: r.reason }, r.status as 400);
+    const audited = await auditUser(c, "user.pin", { kind: "user", id, name: targetName(id) }, r.ok, r.ok ? "PIN nou; sesiunile contului au fost închise" : r.reason);
+    return r.ok ? c.json({ ok: true, user: r.value, audited }) : c.json({ ok: false, reason: r.reason }, r.status as 400);
   });
   usersRouter.delete("/:id", async (c) => {
     const me = principalOf(c);
-    const r = await users.remove(c.req.param("id"), me?.kind === "user" ? me.userId : "");
-    if (r.ok) {
-      for (const [tok, s] of sessions) if (s.userId === r.value.id) sessions.delete(tok);
-      await saveSessions();
-    }
-    return r.ok ? c.json({ ok: true }) : c.json({ ok: false, reason: r.reason }, r.status as 400);
+    const id = c.req.param("id");
+    const name = targetName(id);
+    const r = await users.remove(id, me?.kind === "user" ? me.userId : "");
+    if (r.ok) await dropSessions(tokensOfUser(id), { code: 4401, reason: "Contul a fost șters" });
+    const audited = await auditUser(c, "user.delete", { kind: "user", id, name }, r.ok, r.ok ? "Cont șters" : r.reason);
+    return r.ok ? c.json({ ok: true, audited }) : c.json({ ok: false, reason: r.reason }, r.status as 400);
   });
 
   // ---- WS -------------------------------------------------------------------
@@ -348,15 +457,30 @@ export function createAuth(deps: AuthDeps): Auth {
     requireScreenOrRole,
     authenticateHello,
     principalOf,
+    clientIp,
+    sameOrigin,
     sessions: () => {
       pruneSessions();
       return [...sessions.values()];
     },
+    sessionIdOf,
     async revoke(token) {
-      const had = sessions.delete(token);
-      if (had) await saveSessions();
-      return had;
+      return (await dropSessions([token], { code: 4401, reason: "Sesiunea a fost închisă" })) > 0;
     },
+    async revokeById(id, info) {
+      pruneSessions();
+      for (const [token, s] of sessions) {
+        if (sessionIdOf(token) === id) {
+          await dropSessions([token], info);
+          return s;
+        }
+      }
+      return null;
+    },
+    async revokeUser(userId, info, keepToken) {
+      return dropSessions(tokensOfUser(userId, keepToken), info);
+    },
+    audit,
     async load() {
       await users.load();
       await loadSessions();

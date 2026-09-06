@@ -28,6 +28,7 @@ export interface SignalPlayView extends PlayBase {
   verdict?: string; attachment?: string;
 }
 export interface PilotPlayView extends PlayBase {
+  solo?:boolean;
   kind: 'pilot'; authority?: 'propose' | 'execute'; confirmation?: 'always' | 'conflict';
   case: 'agree' | 'conflict'; decision: PilotDecision; beforeDecision: PilotDecision;
   sensorLabels: [string, string]; ruleEditable: boolean;
@@ -47,6 +48,8 @@ const stageState = (p: ScenarioProgress, post: Post, zone: Zone, stage: number) 
 const ownShape = (post: Post, zone: Zone) => shapes[post - 1][zone === 'A' ? 0 : 1];
 const selected = (v?: string) => v && !['observe', 'abstain'].includes(v) ? v : undefined;
 export function playRule(p: ScenarioProgress, post: Post, zone: Zone, revised: boolean): string | undefined {
+  const active=p.participants?.filter(id=>id.startsWith(String(post)));
+  if(active?.length===1){const own=p.zones[active[0]],field=zone==='A'?'authority':'confirmation';return (revised?own.soloRules?.['3']?.[field]:undefined)||own.soloRules?.['1']?.[field];}
   const c = p.zones[seat(post, zone)].choices;
   return revised && selected(c['3']) && c['3'] !== 'keep' ? c['3'] : selected(c['1']);
 }
@@ -93,9 +96,10 @@ export function playView(p: ScenarioProgress, stage: number, post: Post, zone: Z
     return { ...base, kind: 'signal', title: ['Prinde semnalul', 'Trimite ceva neașteptat', 'Pune dovada lângă explicație'][stage - 1], instruction: ['Rotește antena. Ce crezi că se află la capăt?', 'Schimbă ordinea pieselor 1, 2 și 3. Trimite ritmul.', 'Trage un rezultat peste explicația pe care o susține.'][stage - 1], lesson: ['Un semnal mai puternic nu ne spune cine îl trimite.', 'Schimbăm intrarea și urmărim dacă se schimbă răspunsul.', 'O explicație bună trebuie să se potrivească cu rezultatul testului.'][stage - 1], angle, targetAngle, strength: signalStrength(angle, targetAngle), canTransmit: true, hypothesis: selected(z.choices['1']) as SignalPlayView['hypothesis'], sequence: s?.sequence ?? stageState(p, post, zone, 2)?.sequence ?? [1, 2, 3], records: structuredClone(records), verdict: selected(z.choices['3']), attachment: z.attachment };
   }
   if (p.profile === 'age-15-18') {
+    const solo=p.participants?.filter(id=>id.startsWith(String(post))).length===1;
     const authority = playRule(p, post, 'A', stage === 3) as PilotPlayView['authority'], confirmation = playRule(p, post, 'B', stage === 3) as PilotPlayView['confirmation'];
     const test = s?.case ?? stageState(p, post, zone, 2)?.case ?? (z.choices['2'] === 'conflict' ? 'conflict' : 'agree');
-    return { ...base, kind: 'pilot', title: ['Tu îi dai libertatea', 'Pune pilotul la încercare', 'Schimbă regula. Vezi diferența.'][stage - 1], instruction: stage === 2 ? 'Pornește o probă cu senzorii de acord, apoi una în care se contrazic.' : zone === 'A' ? 'Mișcă maneta: pilotul propune sau poate executa?' : 'Mișcă maneta: când cere pilotul acordul?', lesson: 'Un pilot automat execută regula primită. Senzorii de acord pot totuși greși.', authority, confirmation, case: test, decision: pilotDecision(authority, confirmation, test), beforeDecision: pilotDecision(playRule(p, post, 'A', false), playRule(p, post, 'B', false), test), sensorLabels: [sensors[post - 1][0], sensors[post - 1][test === 'agree' ? 0 : 1]], ruleEditable: stage !== 2 };
+    return { ...base, kind: 'pilot', solo, title: ['Tu îi dai libertatea', 'Pune pilotul la încercare', 'Schimbă regula. Vezi diferența.'][stage - 1], instruction: solo && stage !== 2 ? 'Alege libertatea pilotului și când cere acordul. Tu stabilești ambele reguli.' : stage === 2 ? 'Pornește o probă cu senzorii de acord, apoi una în care se contrazic.' : zone === 'A' ? 'Mișcă maneta: pilotul propune sau poate executa?' : 'Mișcă maneta: când cere pilotul acordul?', lesson: 'Un pilot automat execută regula primită. Senzorii de acord pot totuși greși.', authority, confirmation, case: test, decision: pilotDecision(authority, confirmation, test), beforeDecision: pilotDecision(playRule(p, post, 'A', false), playRule(p, post, 'B', false), test), sensorLabels: [sensors[post - 1][0], sensors[post - 1][test === 'agree' ? 0 : 1]], ruleEditable: stage !== 2 };
   }
   const center = stageState(p, post, zone, 1)?.center ?? 1;
   const measurementLabel = ['Culoar liber', 'Consum', 'Intensitatea semnalului', 'Conectivitate', 'Date păstrate'][post - 1] + ' · indice simulat 0–100';
@@ -105,6 +109,7 @@ export function playView(p: ScenarioProgress, stage: number, post: Post, zone: Z
 /** Valid unsuccessful experiments are commits, not protocol errors. */
 export function applyPlayAction(progress: ScenarioProgress, action: ScenarioAction): { ok: boolean; reason?: string; progress: ScenarioProgress } {
   const fail = (reason = 'unavailable-action') => ({ ok: false, reason, progress });
+  if(progress.participants&&!progress.participants.includes(seat(action.post,action.zone)))return fail('inactive-seat');
   if (action.action !== 'choose' || typeof action.value !== 'string' || action.value.length > 200 || !Number.isInteger(action.post) || action.post < 1 || action.post > 5 || !['A', 'B'].includes(action.zone) || ![1, 2, 3].includes(action.stage)) return fail('invalid-action');
   const current = playView(progress, action.stage, action.post, action.zone); if (!current) return fail();
   const parts = action.value.split(':'), [, verb, arg, extra] = parts;
@@ -150,7 +155,11 @@ export function applyPlayAction(progress: ScenarioProgress, action: ScenarioActi
       s.feedback = arg === 'relay' && record?.received ? 'Rezultatul ales arată același ritm la intrare și la ieșire.' : arg === 'insufficient' && (!record?.received || p.probes.length < 2) ? 'Ai arătat ce ne lipsește. Mai multe teste ar putea lămuri răspunsul.' : 'Compară din nou: explicația trebuie să prezică ritmul pe care l-ai primit.';
     } else return fail();
   } else if (current.kind === 'pilot') {
-    if (verb === 'rule' && action.stage !== 2 && (action.zone === 'A' ? ['propose', 'execute'] : ['always', 'conflict']).includes(arg) && extra === undefined) { z.choices[String(action.stage)] = arg; s.feedback = 'Regula s-a schimbat. Pornește o probă ca să vezi ce face pilotul.'; }
+    if (verb === 'rule' && action.stage !== 2 && (current.solo?['propose','execute','always','conflict']:action.zone === 'A' ? ['propose', 'execute'] : ['always', 'conflict']).includes(arg) && extra === undefined) {
+      if(current.solo){z.soloRules??={};const rules=z.soloRules[String(action.stage)]??={};rules[['propose','execute'].includes(arg)?'authority':'confirmation']=arg;if(playRule(p,action.post,'A',action.stage===3)&&playRule(p,action.post,'B',action.stage===3))z.choices[String(action.stage)]='configured';}
+      else z.choices[String(action.stage)] = arg;
+      s.feedback = current.solo?'Tu stabilești ambele reguli. Pornește o probă când le-ai ales.':'Regula s-a schimbat. Pornește o probă ca să vezi ce face pilotul.';
+    }
     else if (verb === 'pilot' && ['agree', 'conflict'].includes(arg) && extra === undefined) {
       trial = true; s.case = arg as 'agree' | 'conflict';
       if (action.stage >= 2) { z.game = { ...z.game, tests: [...new Set([...(z.game?.tests ?? (['agree', 'conflict'].includes(z.choices['2']) ? [z.choices['2'] as 'agree' | 'conflict'] : [])), s.case])] }; if (action.stage === 2) z.choices['2'] = arg; }

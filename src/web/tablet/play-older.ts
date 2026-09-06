@@ -7,7 +7,7 @@ type Decision = 'incomplete' | 'propose' | 'confirm' | 'execute';
 type Context = { blocked: boolean; reduced: boolean };
 const NS = 'http://www.w3.org/2000/svg';
 const outcome: Record<Decision, string> = {
-  incomplete: 'Așteaptă regula colegului', propose: 'Arată propunerea. Voi decideți.',
+  incomplete: 'Mai trebuie stabilită o regulă.', propose: 'Arată propunerea. Voi decideți.',
   confirm: 'Se oprește și cere acordul.', execute: 'Execută acțiunea singur.',
 };
 const zoneNames = ['Intrare', 'Centru', 'Ieșire'];
@@ -107,34 +107,32 @@ export function createOlderToy(host: HTMLElement, send: (value: string) => void)
       if (compare) scene.append(svg('text', { x: 27, y: y - 48, class: 'older-svg-small' }, i ? 'ACUM' : 'ÎNAINTE'));
       scene.append(gate, ghost, craft, result); lanes.push({ ship: craft, ghost, gate, result, y });
     }
-    const lever = el('div', 'older-lever');
-    const labels = v.zone === 'A' ? ['Doar propune', 'Poate acționa'] : ['Acord de fiecare dată', 'Acord dacă senzorii diferă'];
-    const values = v.zone === 'A' ? ['propose', 'execute'] : ['always', 'conflict'];
-    const choiceButtons = labels.map((label, i) => {
-      const b = button(label, () => emit(`play:rule:${values[i]}`), 'older-lever-choice');
-      b.dataset.value = `play:rule:${values[i]}`; return b;
+    root.dataset.solo=String(!!v.solo);
+    const levers=(v.solo?['A','B']:[v.zone]).map(zone=>{
+      const lever=el('div','older-lever');
+      const labels=zone==='A'?['Doar propune','Poate acționa']:['Acord de fiecare dată','Acord dacă senzorii diferă'];
+      const values=zone==='A'?['propose','execute']:['always','conflict'];
+      const choiceButtons=labels.map((label,i)=>{const b=button(label,()=>emit(`play:rule:${values[i]}`),'older-lever-choice');b.dataset.value=`play:rule:${values[i]}`;return b;});
+      const range=el('input','older-lever-range');range.type='range';range.min='0';range.max='1';range.step='1';range.setAttribute('aria-label',zone==='A'?'Libertatea pilotului automat':'Când cere pilotul acordul');
+      lever.append(choiceButtons[0],range,choiceButtons[1]);listen(range,'change',()=>emit(`play:rule:${values[Number(range.value)]}`));
+      if(v.stage!==2)controls.append(lever);return {zone,labels,values,range,choiceButtons};
     });
-    const range = el('input', 'older-lever-range'); range.type = 'range'; range.min = '0'; range.max = '1'; range.step = '1';
-    range.setAttribute('aria-label', v.zone === 'A' ? 'Libertatea pilotului automat' : 'Când cere pilotul acordul');
-    lever.append(choiceButtons[0], range, choiceButtons[1]);
-    listen(range, 'change', () => emit(`play:rule:${values[Number(range.value)]}`));
     const tests = el('div', 'older-test-switches');
     const caseButtons = [button('Senzorii sunt de acord', () => emit('play:pilot:agree')), button('Senzorii se contrazic', () => emit('play:pilot:conflict'))];
     caseButtons.forEach((b, i) => { b.dataset.value = `play:pilot:${i ? 'conflict' : 'agree'}`; tests.append(b); });
-    if (v.stage !== 2) controls.append(lever);
     controls.append(tests);
     render = () => {
-      const p = current as PilotView, own = p.zone === 'A' ? p.authority : p.confirmation;
+      const p = current as PilotView;
       root.dataset.running = String(animation?.kind === 'pilot'); root.dataset.case = p.case; root.dataset.decision = p.decision;
       sensorTexts.forEach((t, i) => t.textContent = `S${i + 1} · ${p.sensorLabels[i]}`);
       caseBadge.textContent = 'SIMULARE';
-      const selected = Math.max(0, values.indexOf(own || ''));
-      if (document.activeElement !== range) range.value = String(selected);
-      range.setAttribute('aria-valuetext', own ? labels[selected] : 'Încă nu ai ales');
-      range.disabled = context.blocked || !p.ruleEditable;
-      choiceButtons.forEach((b, i) => { b.setAttribute('aria-pressed', String(own === values[i])); b.dataset.unavailable = String(!p.ruleEditable); });
+      for(const {zone,labels,values,range,choiceButtons} of levers){
+        const own=zone==='A'?p.authority:p.confirmation,selected=Math.max(0,values.indexOf(own||''));
+        if(document.activeElement!==range)range.value=String(selected);range.setAttribute('aria-valuetext',own?labels[selected]:'Încă nu ai ales');range.disabled=context.blocked||!p.ruleEditable;
+        choiceButtons.forEach((b,i)=>{b.setAttribute('aria-pressed',String(own===values[i]));b.dataset.unavailable=String(!p.ruleEditable);});enable(choiceButtons);
+      }
       caseButtons.forEach((b, i) => b.setAttribute('aria-pressed', String(p.case === (i ? 'conflict' : 'agree'))));
-      enable([...choiceButtons, ...caseButtons]);
+      enable(caseButtons);
       const progress = animation?.kind === 'pilot' ? animation.elapsed / animation.duration : 1;
       for (const [i, lane] of lanes.entries()) {
         const decision = compare && i === 0 ? p.beforeDecision : p.decision;

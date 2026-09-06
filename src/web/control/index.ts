@@ -18,6 +18,7 @@ const dom = {
   connection: byId<HTMLDivElement>("connection"),
   connectionLabel: byId<HTMLSpanElement>("connection-label"),
   logout: byId<HTMLButtonElement>("logout"),
+  adminLink: byId<HTMLAnchorElement>("admin-link"),
   showTitle: byId<HTMLHeadingElement>("show-title"),
   showVersion: byId<HTMLParagraphElement>("show-version"),
   sceneLabel: byId<HTMLParagraphElement>("scene-label"),
@@ -180,6 +181,8 @@ async function ensureSession(): Promise<boolean> {
 function applyRole(): void {
   const admin = sessionUser?.role === "admin";
   dom.usersPanel.hidden = !admin;
+  // Presentation only: /admin/ and /api/admin/* are guarded on the server by requireRole("admin").
+  dom.adminLink.hidden = !admin;
   if (admin) void loadUsers();
   const viewer = sessionUser?.role === "viewer";
   document.body.classList.toggle("is-viewer", viewer);

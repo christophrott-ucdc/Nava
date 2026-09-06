@@ -1,0 +1,211 @@
+{
+  "title": "EXODUS7 — Dincolo de lumi",
+  "sections": [
+    {
+      "title": "I. Portul stelelor",
+      "durationMs": 60000,
+      "direction": "Begin quietly with harp harmonics and celesta introducing the four-note motif, long warm strings enter gradually. A welcoming space harbour, patient and luminous. No grand opening hit."
+    },
+    {
+      "title": "II. Aripi de lumină",
+      "durationMs": 60000,
+      "direction": "Develop the same motif in soft French horn above gently flowing strings. A graceful sense of departure, dignified lift, no action-movie intensity."
+    },
+    {
+      "title": "III. Grădina dintre lumi",
+      "durationMs": 60000,
+      "direction": "Woodwinds answer the motif in delicate counterpoint, harp ripples and restrained pizzicato, playful discovery with elegance rather than cartoon comedy."
+    },
+    {
+      "title": "IV. Întrebarea",
+      "durationMs": 60000,
+      "direction": "Thin the orchestra, introduce suspended harmony and distant celesta echoes of the motif. Curious uncertainty, never horror or menace. Leave generous breathing space."
+    },
+    {
+      "title": "V. Împreună",
+      "durationMs": 60000,
+      "direction": "Resolve the uncertainty as the motif returns in warm strings and rounded horns, the fullest but still restrained orchestration. Tender collective discovery, no percussion climax."
+    },
+    {
+      "title": "VI. Acasă, printre stele",
+      "durationMs": 60000,
+      "direction": "Return to the opening harp and celesta motif, softened strings and a reassuring homecoming. Gentle complete cadence in D major, long natural decay ending in silence."
+    }
+  ],
+  "request": {
+    "model_id": "music_v2",
+    "store_for_inpainting": true,
+    "composition_plan": {
+      "chunks": [
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 60000,
+          "positive_styles": [
+            "original cinematic orchestral space suite",
+            "instrumental only, absolutely no voices or choir",
+            "warm strings, harp, celesta, soft French horn, restrained woodwinds",
+            "recurring four-note motif D A B F sharp, spacious phrasing",
+            "D major with luminous Lydian colours, approximately 68 BPM",
+            "gentle background underscore beneath spoken Romanian dialogue",
+            "clear low mids, sparse melodic activity, restrained dynamics",
+            "wonder, kindness and curiosity, suitable for children and adults",
+            "organic symphonic development, seamless transitions, no abrupt cuts",
+            "Begin quietly with harp harmonics and celesta introducing the four-note motif, long warm strings enter gradually. A welcoming space harbour, patient and luminous. No grand opening hit."
+          ],
+          "negative_styles": [
+            "vocals",
+            "lyrics",
+            "spoken word",
+            "choir",
+            "trailer drums",
+            "aggressive brass",
+            "horror",
+            "sudden loud impacts",
+            "distortion"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 60000,
+          "positive_styles": [
+            "original cinematic orchestral space suite",
+            "instrumental only, absolutely no voices or choir",
+            "warm strings, harp, celesta, soft French horn, restrained woodwinds",
+            "recurring four-note motif D A B F sharp, spacious phrasing",
+            "D major with luminous Lydian colours, approximately 68 BPM",
+            "gentle background underscore beneath spoken Romanian dialogue",
+            "clear low mids, sparse melodic activity, restrained dynamics",
+            "wonder, kindness and curiosity, suitable for children and adults",
+            "organic symphonic development, seamless transitions, no abrupt cuts",
+            "Develop the same motif in soft French horn above gently flowing strings. A graceful sense of departure, dignified lift, no action-movie intensity."
+          ],
+          "negative_styles": [
+            "vocals",
+            "lyrics",
+            "spoken word",
+            "choir",
+            "trailer drums",
+            "aggressive brass",
+            "horror",
+            "sudden loud impacts",
+            "distortion"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 60000,
+          "positive_styles": [
+            "original cinematic orchestral space suite",
+            "instrumental only, absolutely no voices or choir",
+            "warm strings, harp, celesta, soft French horn, restrained woodwinds",
+            "recurring four-note motif D A B F sharp, spacious phrasing",
+            "D major with luminous Lydian colours, approximately 68 BPM",
+            "gentle background underscore beneath spoken Romanian dialogue",
+            "clear low mids, sparse melodic activity, restrained dynamics",
+            "wonder, kindness and curiosity, suitable for children and adults",
+            "organic symphonic development, seamless transitions, no abrupt cuts",
+            "Woodwinds answer the motif in delicate counterpoint, harp ripples and restrained pizzicato, playful discovery with elegance rather than cartoon comedy."
+          ],
+          "negative_styles": [
+            "vocals",
+            "lyrics",
+            "spoken word",
+            "choir",
+            "trailer drums",
+            "aggressive brass",
+            "horror",
+            "sudden loud impacts",
+            "distortion"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 60000,
+          "positive_styles": [
+            "original cinematic orchestral space suite",
+            "instrumental only, absolutely no voices or choir",
+            "warm strings, harp, celesta, soft French horn, restrained woodwinds",
+            "recurring four-note motif D A B F sharp, spacious phrasing",
+            "D major with luminous Lydian colours, approximately 68 BPM",
+            "gentle background underscore beneath spoken Romanian dialogue",
+            "clear low mids, sparse melodic activity, restrained dynamics",
+            "wonder, kindness and curiosity, suitable for children and adults",
+            "organic symphonic development, seamless transitions, no abrupt cuts",
+            "Thin the orchestra, introduce suspended harmony and distant celesta echoes of the motif. Curious uncertainty, never horror or menace. Leave generous breathing space."
+          ],
+          "negative_styles": [
+            "vocals",
+            "lyrics",
+            "spoken word",
+            "choir",
+            "trailer drums",
+            "aggressive brass",
+            "horror",
+            "sudden loud impacts",
+            "distortion"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 60000,
+          "positive_styles": [
+            "original cinematic orchestral space suite",
+            "instrumental only, absolutely no voices or choir",
+            "warm strings, harp, celesta, soft French horn, restrained woodwinds",
+            "recurring four-note motif D A B F sharp, spacious phrasing",
+            "D major with luminous Lydian colours, approximately 68 BPM",
+            "gentle background underscore beneath spoken Romanian dialogue",
+            "clear low mids, sparse melodic activity, restrained dynamics",
+            "wonder, kindness and curiosity, suitable for children and adults",
+            "organic symphonic development, seamless transitions, no abrupt cuts",
+            "Resolve the uncertainty as the motif returns in warm strings and rounded horns, the fullest but still restrained orchestration. Tender collective discovery, no percussion climax."
+          ],
+          "negative_styles": [
+            "vocals",
+            "lyrics",
+            "spoken word",
+            "choir",
+            "trailer drums",
+            "aggressive brass",
+            "horror",
+            "sudden loud impacts",
+            "distortion"
+          ],
+          "context_adherence": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 60000,
+          "positive_styles": [
+            "original cinematic orchestral space suite",
+            "instrumental only, absolutely no voices or choir",
+            "warm strings, harp, celesta, soft French horn, restrained woodwinds",
+            "recurring four-note motif D A B F sharp, spacious phrasing",
+            "D major with luminous Lydian colours, approximately 68 BPM",
+            "gentle background underscore beneath spoken Romanian dialogue",
+            "clear low mids, sparse melodic activity, restrained dynamics",
+            "wonder, kindness and curiosity, suitable for children and adults",
+            "organic symphonic development, seamless transitions, no abrupt cuts",
+            "Return to the opening harp and celesta motif, softened strings and a reassuring homecoming. Gentle complete cadence in D major, long natural decay ending in silence."
+          ],
+          "negative_styles": [
+            "vocals",
+            "lyrics",
+            "spoken word",
+            "choir",
+            "trailer drums",
+            "aggressive brass",
+            "horror",
+            "sudden loud impacts",
+            "distortion"
+          ],
+          "context_adherence": "high"
+        }
+      ]
+    }
+  }
+}

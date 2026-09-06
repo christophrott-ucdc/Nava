@@ -13,6 +13,7 @@ import { createAvatarController } from "./avatar/index";
 import { createVoiceEngine, setTtsAuthToken } from "./voice/index";
 import {createMissionOverlay} from "./ui/mission";
 import {createExperienceOverlay} from "./ui/experience";
+import {createWaitingScreen} from "./ui/waiting";
 import type {RateAwareVoiceEngine} from "./voice/index";
 import { createAmbient } from "./voice/ambient";
 import type {MusicManifest} from '../shared/music';
@@ -174,6 +175,9 @@ async function main(): Promise<void> {
   const subtitles = createSubtitles($("subtitles"), { enabled: screen.showSubtitles });
   const countdown = createCountdown($("countdown"), { enabled: !wallMode || screen.showAvatar || screen.showSubtitles });
   const launchControls = $("launch-controls");
+  let crewWelcomeActive=false;
+  const waitingScreen=createWaitingScreen($("stage"));
+  let waitingActive=false;
 
   // ---- Voice engine (Agent C) — never audible on screens with playAudio=false
   // R4: /api/tts (and /api/dialog) require `Authorization: Bearer <screenToken>`.
@@ -296,7 +300,9 @@ async function main(): Promise<void> {
       veil.hidden = false;
     },
     onStateChange: (state) => {
-      launchControls.hidden = !isClockSource || state !== "idle";
+      if(state!=='idle')ambient.stopWaiting();
+      if(state!=="idle"){waitingActive=false;waitingScreen.update(false);}
+      launchControls.hidden = waitingActive || crewWelcomeActive || !isClockSource || state !== "idle";
     },
     onConfiguredVideoEnd: () => {
       // The player has already entered epilogue locally without a visible hold. Tell the server at
@@ -324,7 +330,7 @@ async function main(): Promise<void> {
         screens: config.screens,
         fit: config.video.fit,
         centerScreenId: screen.id,
-        overlays: [missionOverlay.element,experienceOverlay.element,$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl, $("osd"), $("rehearse"), $("identify"), $("spinner"), $("error-banner"), launchControls, veil, ...Array.from(document.querySelectorAll<HTMLElement>("#photo"))],
+        overlays: [waitingScreen.element,missionOverlay.element,experienceOverlay.element,$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl, $("osd"), $("rehearse"), $("identify"), $("spinner"), $("error-banner"), launchControls, veil, ...Array.from(document.querySelectorAll<HTMLElement>("#photo"))],
         wall: config.videoWall,
         getTime: () => player.phaseTime(),
         log,
@@ -370,8 +376,13 @@ async function main(): Promise<void> {
       if (typeof msg.state?.ambientEnabled === "boolean") ambient.setEnabled(msg.state.ambientEnabled);
     },
     onMission: s=>{
+      ambient.syncWaiting(s.runId,s.state.state==='idle'&&!s.experience?.active,s.suspended||!!s.experience?.paused);
+      waitingActive=s.state.state==='idle'&&!s.suspended&&!s.experience?.active&&(!s.experience?.participants.length||!s.experience?.crew);
+      waitingScreen.update(waitingActive,s.accessibility.reducedMotion||s.accessibility.reducedStimuli,!!s.experience?.crew?.open);
       experienceOverlay.update(s);
-      if(s.experience?.active)launchControls.hidden=true;
+      if(waitingActive)experienceOverlay.element.hidden=true;
+      crewWelcomeActive=!!s.experience?.active||!!s.experience?.crew?.open;
+      launchControls.hidden=waitingActive||crewWelcomeActive||!isClockSource||s.state.state!=='idle';
       if(screen.showAvatar)missionOverlay.update(s);
       if(s.runId!==missionRun||s.suspended!==missionSuspended){
         player.apply({action:'stopVoice'});

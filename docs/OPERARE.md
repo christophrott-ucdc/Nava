@@ -220,6 +220,8 @@ Misiunile sunt în `data/nava.sqlite`; certificatele și fotografiile rămân î
 Ghidul complet și limitele de acceptare sunt în [IMPLEMENTARE-SCENARII-DISPLAY.md](IMPLEMENTARE-SCENARII-DISPLAY.md).
 ## Tutorialul și încheierea interactivă
 
+Upgrade nou în surse: în tutorial, fiecare gest aprinde modulul 1A–5B al participantului pe nava 3D centrală. În final, participantul alege un card, apoi apasă **Trimite simbolul meu**. Selectarea cardului singură nu trimite răspunsul. „Prefer să privesc” rămâne posibil, iar alegerile confirmate intră în jurnal. Ecranul de primire a fost refăcut vizual, cu aceleași comenzi de pornire. [Detalii și limite](RELAIS-3D-EXODUS7.md); fără teste/builduri noi în această livrare.
+
 Ghid complet: [TUTORIAL-FINAL.md](TUTORIAL-FINAL.md). Selectează profilul, deschide **Tutorial și echipaj**, aplică numai locurile ocupate și începe. La finalul probei, **Predă Căpitanului și pornește** lansează preshow-ul după explicație și verificarea readiness. Poți pune pauză, repeta explicația sau omite explicit tutorialul. Nu adăuga participanți după proba de recunoaștere. Vocea se aude numai pe ieșirea audio configurată; dacă un pas rămâne blocat, verifică rendererul și sunetul, apoi repetă explicația.
 
 În ultimele 15 secunde ale epilogului apar alegerile finale; invitația naratorului se aude numai după terminarea show-ului. Jurnalul trimis operatorului include alegerile finale ale locurilor active; descărcarea locală este disponibilă și înainte. „Prefer să privesc” este un răspuns valid. Înainte de public: audiție la volum de sală și probă completă pe cele șase tablete și cinci TV-uri.
@@ -251,3 +253,29 @@ Gesturile au alternative prin atingere și tastatură. Confirmarea nu închide i
 Oprirea ghidajului decorativ nu ascunde instrumentele jocului. Mișcarea redusă păstrează rezultatul și temporizarea obturatorului; pauza oprește și această temporizare locală. Sunetele și confetti apar la prima contribuție confirmată, nu la fiecare încercare. Controlul operatorului `tabletSfx` rămâne autoritativ.
 
 Galerie și raport noi: `runs/debug/play-experience/index.html` și `review.json`. Capturile verifică încadrarea la 1920×1080, inclusiv text mărit, dar nu înlocuiesc proba cu două persoane la fiecare ecran. Validează în sală atingerea simultană, lizibilitatea, volumul, performanța mini-PC-ului și dacă publicul înțelege și reia spontan activitatea.
+
+## Îmbarcare prin personaje — înlocuiește bifarea locurilor pentru grupurile noi
+
+După „Grup nou”/restart, fiecare participant își alege personajul și îl confirmă pe propria jumătate de tabletă: A stânga, B dreapta. Sunt permise 1–10 persoane, inclusiv un singur loc B sau trei persoane pe două tablete. Locurile neconfirmate rămân libere. Portretele apar pe TV-ul central și în consola „Tutorial și echipaj”. Postul fizic și scenariul de vârstă nu sunt schimbate de personaj.
+
+Operatorul pornește tutorialul când grupul este pregătit. Prima selecție nu pornește automat show-ul. Lista se fixează la tutorial; deconectarea nu scoate participantul. Înainte de show, „Redeschide alegerea personajelor” permite modificări și reia tutorialul; „Eliberează locul” scoate un participant plecat. Resetarea sălii golește lista pentru grupul următor.
+
+Readiness cere conexiunea posturilor ocupate efectiv, plus ecranele, filmul și vocile. O tabletă conectată la alt post nu înlocuiește un post ocupat lipsă. Procedura tehnică de repetiție păstrează cerințele instalației separat de înscrierea publicului.
+
+Detalii și limite: [ECHIPAJ-EXODUS7.md](ECHIPAJ-EXODUS7.md). Livrare în surse fără teste/build/runtime/capturi, la cererea utilizatorului; punerea în funcțiune pe hardware rămâne de confirmat.
+
+### Jurnale și pregătirea echipajului — 2026-09-05
+În consola Tutorial și echipaj, acțiunea principală urmărește etapa curentă. Secțiunea Jurnalele expediției arată PNG-urile primite și permite cererea de retrimitere pentru un post activ conectat, la final. Actualizează lista pentru confirmarea primirii; cererea acceptată nu confirmă transferul. Copiii nu mai gestionează fișiere pe tablete. Detalii și limite: [EXPERIENTA-COMPLETA-UX](EXPERIENTA-COMPLETA-UX.md). Implementat în surse, nevalidat runtime.
+
+
+### Ecranul de așteptare EXODUS7
+În idle, înainte de primul personaj confirmat, televizoarele afișează screensaverul EXODUS7. Prima confirmare deschide primirea echipajului; pornirea sesiunii retrage screensaverul. Nu există pornire automată sau sunet nou. Comenzile rămân în consolă și scurtăturile rendererului. Implementare nevalidată runtime, conform interdicției de testare.
+
+
+### Muzică pe screensaver și la alegerea personajelor — 2026-09-06
+
+Suita EXODUS7 este muzică de primire în idle, înainte de tutorial/show. Volumul și dezactivarea urmează comenzile ambientale existente; nu pornește din fiecare TV. Tutorialul și filmul păstrează muzica proprie. Fișierul opțional M11-simfonie.mp3 este servit împreună cu metadatele waiting.json. Nu se apelează ElevenLabs în timpul sesiunii. Integrare nevalidată runtime, conform interdicției utilizatorului.
+
+### Administrare — schelet
+Rolurile existente sunt viewer, operator și admin. Pagina /admin/ folosește autentificarea PIN existentă și este doar de vizualizare în această etapă; serverul permite datele numai administratorilor. Formularele de gestionare urmează. Detalii: [handoff Fable](FABLE-ADMIN-RBAC-HANDOFF.md). Necesită următorul build autorizat; nevalidat runtime.
+

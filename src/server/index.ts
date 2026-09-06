@@ -43,9 +43,11 @@ import { ShowDirector, emptyShow, validateCommand, type DispatchResult } from ".
 import { TabletRegistry } from "./tablets";
 import { RunLog, type LogFn } from "./runlog";
 import { createStaticHandler } from "./static";
-import { loadMusic } from './music';
+import { loadMusic, loadWaitingMusic } from './music';
 import { createTtsRouter } from "./tts";
 import { createAuth, type AuthEnv, type Principal } from "./auth";
+import { createAdminRouter } from "./admin";
+import { AuditLog } from "./audit";
 import { PerfStore, createDebugRouter, createFrameExtractor, createFrameRouter } from "./debug";
 import { runPreflight, type PreflightResult } from "./preflight";
 import { rotateRuns } from "./maintenance";
@@ -385,6 +387,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const mission=new MissionSession(new MissionStore(path.join(path.dirname(opts.runsDir),'data','nava.sqlite')));
   let narrator:NarratorManifest|null=null;
   const musicPack=await loadMusic(opts.appRoot);
+  const waitingMusic=await loadWaitingMusic(opts.appRoot);
   if(!musicPack)log('warn','Music: complete verified pack unavailable; procedural ambience remains available.');
   let narratorDirectory='';
   let narratorEnded='';
@@ -422,7 +425,28 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   await rotateRuns(opts.runsDir, RUNS_KEEP, [runlog.currentPath], log).catch((err) => log("warn", "runs rotation failed", { err: String(err) }));
 
   // --- auth (PIN sessions for the console, shared token for screens) ------------
-  const auth = createAuth({ config, appRoot: opts.appRoot, log });
+  // Audit log lives next to users.json / sessions.json (data/ by default).
+  const usersFile = config.security?.usersFile ?? "data/users.json";
+  const auditLog = new AuditLog(path.resolve(opts.appRoot, path.dirname(usersFile), "audit.jsonl"), log);
+  const auth = createAuth({
+    config,
+    appRoot: opts.appRoot,
+    log,
+    audit: auditLog,
+    // An open console keeps the principal from its `hello`; close it so the change applies immediately.
+    // 4401 → the console goes back to /login; 4409 → it reconnects and re-reads its role from /api/auth/me.
+    onSessionsRevoked: (tokens, info) => {
+      for (const c of clients) {
+        if (c.principal?.kind !== "user" || !tokens.includes(c.principal.token)) continue;
+        send(c, { type: "error", reason: info.reason, code: info.code });
+        try {
+          c.ws.close(info.code, info.reason.slice(0, 120));
+        } catch {
+          /* already closing */
+        }
+      }
+    },
+  });
   await auth.load();
 
   // --- perf + preflight -------------------------------------------------------
@@ -478,11 +502,24 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   // --- lights (R4, Art-Net / Hue / none) -----------------------------------------
   const lights = createLightsAdapter(config.lights, log);
 
+  const crewReadiness=()=>{
+    const e=mission.record.experience;if(!e?.crew||mission.record.mode==='diagnostic')return null;
+    const posts=[...new Set(e.participants.map(seat=>Number(seat[0])))];
+    const connected=new Set([...tablets.tablets.values()].filter(t=>t.connected&&t.post).map(t=>Number(t.post)));
+    const missing=posts.filter(post=>!connected.has(post));
+    return {required:posts.length,connected:posts.filter(post=>connected.has(post)).length,reasons:!posts.length?['Așteptăm cel puțin un personaj confirmat pe tabletă.']:missing.length?[`Posturi cu participanți de reconectat: ${missing.join(', ')}`]:[]};
+  };
   // --- director --------------------------------------------------------------
   const director = new ShowDirector(show, config, {
     beforeCommand:(cmd,source)=>{
       if(source==='diagnostic')return;
       const e=mission.record.experience;
+      if(['preshow','start'].includes(cmd.action)&&director.getState().state==='idle'){
+        if(e?.crew?.open&&source.startsWith('autoRun'))return {ok:false,reason:'Operatorul confirmă încheierea îmbarcării înainte de plecare.'};
+        const crew=crewReadiness();if(crew?.reasons.length)return {ok:false,reason:crew.reasons.join(' ')};
+        if(e?.status==='pending'&&activePackage.id!=='legacy-v3'&&!narrator)return {ok:false,reason:'Vocile tutorialului lipsesc. Verifică pachetul sau omite explicit tutorialul din consolă.'};
+        if(e?.crew?.open){e.crew.open=false;mission.record.progress.participants=[...e.participants];mission.store.save(mission.record);}
+      }
       if(e?.status==='tutorial'&&!['restart','preflight','tabletSfx','setVolume','ambient','lights'].includes(cmd.action))return {ok:false,reason:'Tutorialul este activ. Folosește comenzile tutorialului sau pregătește un grup nou.'};
       if(['preshow','start'].includes(cmd.action)&&director.getState().state==='idle'&&e?.status==='pending'&&activePackage.id!=='legacy-v3'){
         if(!narrator)return {ok:false,reason:'Vocile tutorialului lipsesc. Verifică pachetul sau omite explicit tutorialul din consolă.'};
@@ -540,15 +577,18 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     },
   });
 
+  director.setCrewReadinessProvider(crewReadiness);
   director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:mission.record.timelineEpoch});
   if(mission.recovery&&!recoveryIssue&&mission.record.checkpoint)director.restoreCheckpoint(mission.record.checkpoint);
   const pushMission=():void=>{
+    director.notifyPreflight();
     const state=director.getState();
     for(const client of clients){
       if(!client.kind)continue;
       const post=client.kind==='tablet'?tablets.tablets.get(client.id)?.post??undefined:undefined;
       const snapshot=mission.snapshot(state,post);
       if(post)snapshot.certificateToken=artifactToken(snapshot.runId,post,snapshot.revision);
+      if(post)snapshot.journalRetry=mission.record.journalRetries?.[String(post)]??0;
       send(client,{type:'mission',snapshot});
     }
   };
@@ -691,8 +731,10 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   };
 
   app.get("/", (c) => c.redirect("/control/"));
+  app.get('/api/music/waiting',c=>waitingMusic?c.json(waitingMusic.metadata):c.json({ok:false},404));
   app.get('/api/music',c=>musicPack?c.json(musicPack.manifest):c.json({ok:false,reason:'Music pack unavailable'},503));
   app.get('/assets/music/:file',async c=>{
+    if(waitingMusic&&c.req.param('file')===waitingMusic.metadata.file)return createStaticHandler({prefix:'/assets/music',dir:waitingMusic.directory})(c);
     if(!musicPack||!musicPack.manifest.tracks.some(t=>t.file===c.req.param('file')))return c.notFound();
     return createStaticHandler({prefix:'/assets/music',dir:musicPack.directory})(c);
   });
@@ -701,7 +743,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     if(!narrator||!Object.values(narrator.clips).some(clip=>clip.file===file))return c.notFound();
     return createStaticHandler({prefix:'/assets/experience/voice/ro',dir:narratorDirectory})(c);
   });
-  for (const name of ["control", "tablet", "login", "debug", "analytics", "shared", "wall"] as const) {
+  for (const name of ["control", "tablet", "login", "debug", "analytics", "admin", "shared", "wall"] as const) {
     app.get(`/${name}`, (c) => c.redirect(`/${name}/`));
     app.get(`/${name}/*`, createStaticHandler({ prefix: `/${name}`, dir: path.join(opts.webDir, name) }));
   }
@@ -721,9 +763,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     finally{preparingPackage=false;}
   });
   const diagnosticDir=path.join(path.dirname(opts.runsDir),'data','diagnostics');
-  rehearsal=new TechnicalRehearsal({directory:diagnosticDir,scenario:()=>({id:activePackage.id,hash:activePackage.hash}),state:()=>director.getState(),samples:()=>perf.snapshot(),
+  rehearsal=new TechnicalRehearsal({directory:diagnosticDir,scenario:()=>({id:activePackage.id,hash:activePackage.hash}),state:()=>({...director.getState(),readiness:director.readiness(false)}),samples:()=>perf.snapshot(),
     start:()=>{
       mission.reset(activePackage.id,activePackage.hash);mission.record.mode='diagnostic';
+      delete mission.record.progress.participants;
+      mission.record.experience={...freshExperience(),crew:undefined,participants:Array.from({length:10},(_,i)=>`${Math.floor(i/2)+1}${i%2?'B':'A'}`),status:'skipped'};
       director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:0});
       director.dispatchCommand({action:'setRate',rate:1},'diagnostic');director.dispatchCommand({action:'preshow'},'diagnostic');mission.checkpoint(director.getState());pushMission();
     },
@@ -778,6 +822,16 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     finally{preparingPackage=false;}
   });
   app.get('/api/mission',viewer,c=>c.json(mission.snapshot(director.getState())));
+  app.post('/api/mission/journal/retry',operator,async c=>{
+    const body=await c.req.json().catch(()=>null),state=director.getState();
+    if(!body||typeof body.runId!=='string'||!Number.isInteger(body.post)||body.post<1||body.post>5)return c.json({ok:false,reason:'Grup sau post invalid.'},400);
+    if(body.runId!==mission.record.runId)return c.json({ok:false,reason:'Grupul s-a schimbat. Actualizează lista.'},409);
+    if(preparingPackage||topologyApplying||recoveryIssue||rehearsal?.running||state.suspended||!['epilogue','ended'].includes(state.state))return c.json({ok:false,reason:'Jurnalul poate fi retrimis numai la finalul unei expediții nesuspendate.'},409);
+    if(!mission.record.experience?.participants.some(seat=>Number(seat[0])===body.post))return c.json({ok:false,reason:'Acest post nu are participanți în expediție.'},409);
+    const next=structuredClone(mission.record);next.journalRetries??={};next.journalRetries[String(body.post)]=(next.journalRetries[String(body.post)]??0)+1;next.revision++;
+    try{mission.store.save(next);}catch{return c.json({ok:false,reason:'Cererea nu a putut fi păstrată. Încearcă din nou.'},503);}
+    mission.record=next;pushMission();return c.json({ok:true});
+  });
   app.get('/api/experience/voices',c=>narrator?c.json(narrator):c.json({ok:false,reason:'Pachetul naratorului lipsește.'},503));
   app.post('/api/experience/control',operator,async c=>{
     if(preparingPackage||topologyApplying||rehearsal?.running||recoveryIssue)return c.json({ok:false,reason:'Pregătirea sau verificarea instalației este în curs.'},409);
@@ -785,17 +839,29 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     if(!body||typeof body.action!=='string')return c.json({ok:false,reason:'Comandă invalidă.'},400);
     const state=director.getState();
     if(state.state!=='idle'||state.suspended)return c.json({ok:false,reason:'Tutorialul se controlează înainte de show. Încheie sau reia recuperarea mai întâi.'},409);
+    if(body.runId&&body.runId!==mission.record.runId)return c.json({ok:false,reason:'Grupul s-a schimbat. Reîncarcă lista echipajului.'},409);
     const e=structuredClone(mission.record.experience??freshExperience()),now=Date.now();
     const fail=(reason:string)=>c.json({ok:false,reason},409);
-    if(body.action==='participants'){
+    if(body.action==='releaseSeat'){
+      if(!e.crew?.open||e.status!=='pending'||typeof body.seat!=='string'||! /^[1-5][AB]$/.test(body.seat))return fail('Redeschide alegerea personajelor înainte de a elibera un loc.');
+      delete e.crew.characters[body.seat];e.participants=e.participants.filter(seat=>seat!==body.seat);
+    }else if(body.action==='participants'){
+      if(e.crew)return fail('Participanții își confirmă personajele pe tablete. Folosește Redeschide alegerea pentru modificări.');
       if(e.status==='tutorial'&&e.step!=='touch')return fail('Lista se fixează la recunoaștere. Repornește tutorialul pentru a adăuga participanți mai târziu.');
       if(!validParticipants(body.participants)||e.launchRequested)return fail('Selectează între unu și zece participanți, fără dubluri.');
       e.participants=[...body.participants];e.epoch++;
+    }else if(body.action==='reopenCrew'){
+      if(!e.crew)return fail('Pregătește un grup nou pentru selecția personajelor.');
+      const crew={...e.crew,open:true},participants=[...e.participants];Object.assign(e,freshExperience(),{crew,participants,epoch:e.epoch+1});
+      delete e.pausedAt;delete e.launchRequested;
     }else if(body.action==='start'){
+      const ready=crewReadiness();if(ready?.reasons.length)return fail(ready.reasons.join(' '));
       if(!narrator)return fail('Pachetul vocal al naratorului nu este disponibil.');
       if(e.status==='tutorial')return fail('Tutorialul este deja activ.');
-      const participants=e.participants;Object.assign(e,freshExperience(),{participants,epoch:e.epoch+1,status:'tutorial'});narrate(e,'intro',now);
+      const participants=e.participants,crew=e.crew?{...e.crew,open:false}:undefined;Object.assign(e,freshExperience(),{participants,crew,epoch:e.epoch+1,status:'tutorial'});delete e.pausedAt;delete e.launchRequested;narrate(e,'intro',now);
     }else if(body.action==='skip'){
+      if(e.crew&&!e.participants.length)return fail('Confirmă cel puțin un personaj pe tabletă înainte de a omite tutorialul.');
+      if(e.crew)e.crew.open=false;
       e.status='skipped';e.narration=null;e.launchRequested=false;delete e.pausedAt;e.epoch++;
     }else if(body.action==='launch'&&(e.status==='skipped'||e.status==='complete')){
       if(!director.readiness().ready||!voicesPrepared())return fail('Instalația și vocile nu sunt încă pregătite.');
@@ -817,7 +883,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       if(!director.readiness().ready||!voicesPrepared())return fail('Instalația și vocile misiunii trebuie să fie pregătite înainte de plecare.');
       e.launchRequested=true;narrate(e,'handoff',now);
     }else return c.json({ok:false,reason:'Comandă necunoscută.'},400);
-    const next={...mission.record,experience:e,revision:mission.record.revision+1,status:e.status==='tutorial'?'active' as const:mission.record.status,checkpoint:state};
+    const next={...mission.record,experience:e,progress:{...mission.record.progress,...(e.crew?{participants:[...e.participants]}:{})},revision:mission.record.revision+1,status:e.status==='tutorial'?'active' as const:mission.record.status,checkpoint:state};
     mission.store.save(next);mission.record=next;pushMission();return c.json({ok:true,snapshot:mission.snapshot(state)});
   });
   app.get('/api/mission/accessibility',viewer,c=>c.json({posts:mission.record.accessibility}));
@@ -872,6 +938,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   app.use("/api/dialog/*", auth.requireScreenOrRole("operator"));
   app.route("/api/auth", auth.router);
   app.route("/api/users", auth.usersRouter);
+  app.route("/api/admin", createAdminRouter(auth, auditLog));
 
   app.get("/api/health", (c) =>
     c.json({
@@ -1145,6 +1212,10 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       return;
     }
     if(activePackage.id!=='legacy-v3'&&!['set-post','ping'].includes(msg.event.kind))return;
+    if(msg.event.kind==='choice'&&mission.record.experience?.crew){
+      const post=tablets.tablets.get(client.id)?.post,e=mission.record.experience;
+      if(e.crew?.open||!post||!e.participants.includes(`${post}${msg.event.zone}`)){send(client,{type:'error',reason:'Acest loc nu are un personaj confirmat pentru misiune.'});return;}
+    }
     const fixed: TabletEventMsg = { ...msg, tabletId: client.id };
     const res = tablets.handleEvent(fixed, director.cues.tablet);
     if (res.error) send(client, { type: "error", reason: res.error });

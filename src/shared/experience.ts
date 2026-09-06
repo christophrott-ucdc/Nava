@@ -1,9 +1,11 @@
 import type {ScenarioId} from './scenario-engine';
+import type {CrewRegistration} from './crew';
 export type TutorialStep = 'touch'|'practice'|'cooperate'|'ready';
 export interface ExperienceState {
   version:1; status:'pending'|'tutorial'|'complete'|'skipped'; step:TutorialStep; epoch:number;
   pausedAt?:number; launchRequested?:boolean;
   finaleNarrated?:boolean;
+  crew?:CrewRegistration;
   participants:string[]; observed:string[]; touched:string[]; practiced:string[]; linked:string[];
   practice:Record<string,string>; finale:Record<string,string>;
   narration:{id:string;instance:string;startedAt:number}|null;

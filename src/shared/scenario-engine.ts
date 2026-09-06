@@ -2,7 +2,7 @@
 import { educationFacts } from './education-facts';
 import type { EducationForm, EducationVisual } from './education-visual';
 import { adultDocument, adultSubject, autopilotTasks, type ExpeditionDocument } from './game-content';
-import { applyPlayAction, pilotDecision, playView, playDocuments, type PlayProgress, type PlayView } from './play-engine';
+import { applyPlayAction, pilotDecision, playRule, playView, playDocuments, type PlayProgress, type PlayView } from './play-engine';
 export type ScenarioId = 'legacy-v3' | 'age-5-10' | 'age-10-15' | 'age-15-18' | 'adults';
 export type Post = 1 | 2 | 3 | 4 | 5;
 export type Zone = 'A' | 'B';
@@ -16,8 +16,9 @@ export interface ZoneProgress {
   attachment?: string;
   game?: { rotation?: number; tests?: Array<'agree' | 'conflict'> };
   play?: PlayProgress;
+  soloRules?:Record<string,{authority?:string;confirmation?:string}>;
 }
-export interface ScenarioProgress { version: 1; profile: ScenarioId; zones: Record<string, ZoneProgress>; probes: string[] }
+export interface ScenarioProgress { version: 1; profile: ScenarioId; zones: Record<string, ZoneProgress>; probes: string[]; participants?:string[] }
 export interface ZoneView {
   heading: string; instruction: string; detail: string;
   options: Array<{ value: string; label: string; disabled?: boolean; hint?: string; route?: 'continuous' | 'dead-end' | 'loop' }>;
@@ -82,7 +83,7 @@ function rule(z: ZoneProgress, revised: boolean): string | undefined {
   return revised && substantive(amended) && amended !== 'keep' ? amended : substantive(z.choices['1']) ? z.choices['1'] : undefined;
 }
 function mandate(p: ScenarioProgress, post: number, test: string, revised: boolean, compact = false): string {
-  const a = rule(p.zones[key(post, 'A')], revised), b = rule(p.zones[key(post, 'B')], revised);
+  const a = playRule(p,post as Post,'A',revised), b = playRule(p,post as Post,'B',revised);
   const decision = pilotDecision(a, b, test);
   if (decision === 'incomplete') return compact ? 'Regulă incompletă' : 'Pilotul așteaptă: mai avem de ales o regulă.';
   if (decision === 'propose') return compact ? 'Propune; echipajul decide' : 'Pilotul propune o acțiune. Echipajul decide dacă o execută.';
@@ -106,6 +107,7 @@ function attachmentOptions(p: ScenarioProgress, post: number) {
   return result;
 }
 function zoneView(p: ScenarioProgress, stage: number, post: Post, zone: Zone): ZoneView {
+  if(p.participants&&!p.participants.includes(key(post,zone)))return {heading:`${posts[post-1]} · ${zone}`,instruction:'Loc liber',detail:'Personajele confirmate continuă expediția. Poți urmări povestea pe ecran.',options:[],completed:false,kind:'crew-inactive'};
   const z = p.zones[key(post, zone)], i = index(post, zone), choice = z.choices[String(stage)];
   const v: ZoneView = { heading: `${posts[post - 1]} · ${zone}`, instruction: '', detail: '', options: [], completed: !!choice };
   if (p.profile === 'legacy-v3' || ![1, 2, 3].includes(stage)) return v;
@@ -115,7 +117,7 @@ function zoneView(p: ScenarioProgress, stage: number, post: Post, zone: Zone): Z
     shapes: shapes[post - 1] as [EducationForm, EducationForm], observation: observations[i],
     measurement: localMeasure(p, post, zone),
     attachmentMeasurement: z.attachment?.startsWith('attach:local:') ? localMeasure(p, post, z.attachment.slice(-1) as Zone) : undefined,
-    ruleA: rule(p.zones[key(post, 'A')], stage === 3), ruleB: rule(p.zones[key(post, 'B')], stage === 3),
+    ruleA: playRule(p,post,'A',stage===3), ruleB: playRule(p,post,'B',stage===3),
     before: ['agree', 'conflict'].includes(test) ? mandate(p, post, test, false) : undefined,
     after: ['agree', 'conflict'].includes(test) ? mandate(p, post, test, true) : undefined,
     sensors: ['agree', 'conflict'].includes(test) ? [sensorCases[post - 1][sensorOffset], sensorCases[post - 1][sensorOffset + (test === 'conflict' ? 1 : 0)]] : undefined,
@@ -133,7 +135,7 @@ function zoneView(p: ScenarioProgress, stage: number, post: Post, zone: Zone): Z
     if (!choice) v.options = stage === 1 ? [shape, ...distractors[i]].map(s => option(`shape:${s}`, s)).concat(observe()) : stage === 2 ? z.builder.length ? [option('rotate', 'Rotește piesa'), option('fit', 'Așază piesa'), observe()] : [option('select', 'Ia piesa'), observe()] : [
       { ...option('dead-end', 'Drumul 1'), route: 'dead-end' }, { ...option('link', 'Drumul 2'), route: 'continuous' }, { ...option('loop', 'Drumul 3'), route: 'loop' }, observe(),
     ];
-    if (choice) v.feedback = choice === 'observe' ? 'Poți urmări cum se construiește felinarul.' : stage === 1 ? 'Ai găsit piesa! O luăm cu noi.' : stage === 2 ? 'Se potrivește! Felinarul are acum și piesa ta.' : p.zones[key(post, zone === 'A' ? 'B' : 'A')].choices['3'] === 'linked' ? 'Ați găsit amândoi drumul. Felinarul vostru luminează!' : 'Drumul tău ajunge la felinar! Urmează și drumul colegului.';
+    if (choice) v.feedback = choice === 'observe' ? 'Poți urmări cum se construiește felinarul.' : stage === 1 ? 'Ai găsit piesa! O luăm cu noi.' : stage === 2 ? 'Se potrivește! Felinarul are acum și piesa ta.' : p.zones[key(post, zone === 'A' ? 'B' : 'A')].choices['3'] === 'linked' ? 'Ați găsit amândoi drumul. Felinarul vostru luminează!' : 'Drumul tău ajunge la felinar. Lumina ta este aprinsă!';
   } else if (p.profile === 'age-10-15') {
     v.kind = stage === 2 ? 'probe-builder' : stage === 3 ? 'evidence-verdict' : 'hypothesis';
     v.goal = 'Află dacă semnalul răspunde la ce îi trimitem.';
@@ -159,7 +161,7 @@ function zoneView(p: ScenarioProgress, stage: number, post: Post, zone: Zone): Z
     v.kind = stage === 2 ? 'mandate-test' : 'mandate-rule';
     v.goal = autopilotTasks[post - 1];
     v.instruction = stage === 2 ? 'Testează pilotul în ambele situații' : stage === 3 ? 'După teste, păstrezi sau schimbi regula?' : zone === 'A' ? 'Câtă libertate îi dai pilotului automat?' : 'Când trebuie să ceară acordul echipajului?';
-    const a = rule(p.zones[key(post, 'A')], stage === 3), b = rule(p.zones[key(post, 'B')], stage === 3);
+    const a = playRule(p,post,'A',stage===3), b = playRule(p,post,'B',stage===3);
     v.detail = `A: ${display(a, 'alege libertatea pilotului')} · B: ${display(b, 'alege când cere acordul')}`;
     v.guidance = ['O decizie rapidă înseamnă mai multă autonomie. Confirmarea păstrează echipajul în decizie.', 'Doi senzori pot indica același lucru și totuși să greșească. Testăm regula, nu siguranța unei nave reale.'];
     const cases = mandateCases(p, post, zone);
@@ -201,6 +203,7 @@ export function scenarioView(progress: ScenarioProgress, stage: number, post: Po
 export function applyScenarioAction(progress: ScenarioProgress, action: ScenarioAction): { ok: boolean; reason?: string; progress: ScenarioProgress } {
   const fail = (reason: string) => ({ ok: false, reason, progress });
   if (!Number.isInteger(action.post) || action.post < 1 || action.post > 5 || !['A', 'B'].includes(action.zone) || ![1, 2, 3].includes(action.stage) || action.action !== 'choose' || typeof action.value !== 'string') return fail('invalid-action');
+  if(progress.participants&&!progress.participants.includes(key(action.post,action.zone)))return fail('inactive-seat');
   if (action.value.startsWith('play:')) return applyPlayAction(progress, action);
   const offered = zoneView(progress, action.stage, action.post, action.zone).options.find(o => o.value === action.value);
   if (!offered || offered.disabled) return fail('unavailable-action');
@@ -234,23 +237,23 @@ export function applyScenarioAction(progress: ScenarioProgress, action: Scenario
   return { ok: true, progress: p };
 }
 export function scenarioConditions(p: ScenarioProgress): Set<string> {
-  const result = new Set(['always']), zones = Object.values(p.zones);
+  const result = new Set(['always']), zones = Object.entries(p.zones).filter(([id])=>!p.participants||p.participants.includes(id)).map(([,z])=>z), target=zones.length;
   if (p.profile === 'age-5-10') {
     let total = 0;
-    for (const [stage, name, accepted] of [[1, 'find', 'found'], [2, 'fit', 'fitted'], [3, 'link', 'linked']] as const) { const n = zones.filter(z => z.choices[String(stage)] === accepted).length; total += n; result.add(`${name}_${n === 10 ? 'complete' : n ? 'partial' : 'none'}`); }
-    result.add(`final_${total === 30 ? 'complete' : total ? 'partial' : 'none'}`);
+    for (const [stage, name, accepted] of [[1, 'find', 'found'], [2, 'fit', 'fitted'], [3, 'link', 'linked']] as const) { const n = zones.filter(z => z.choices[String(stage)] === accepted).length; total += n; result.add(`${name}_${target>0&&n === target ? 'complete' : n ? 'partial' : 'none'}`); }
+    result.add(`final_${target>0&&total === target*3 ? 'complete' : total ? 'partial' : 'none'}`);
   } else if (p.profile === 'age-10-15') {
     const votes = zones.filter(z => substantive(z.choices['3'])), r = votes.filter(z => z.choices['3'] === 'relay').length;
     result.add(votes.length === 0 ? 'N' : p.probes.length < 2 ? 'O' : r > votes.length / 2 ? 'V' : 'D');
   } else if (p.profile === 'age-15-18') {
-    let complete = 0, changed = 0;
-    for (let post = 1; post <= 5; post++) { if (rule(p.zones[key(post, 'A')], true) && rule(p.zones[key(post, 'B')], true)) complete++; for (const zone of ['A', 'B'] as const) { const z = p.zones[key(post, zone)]; if (rule(z, true) && rule(z, true) !== rule(z, false)) changed++; } }
-    result.add(complete === 0 ? 'DRAFT' : complete < 5 ? 'PARTIAL' : changed ? 'REVISED' : 'RETAINED');
+    let complete = 0, changed = 0, activePosts=0;
+    for (let post = 1; post <= 5; post++) { if(p.participants&&!p.participants.some(id=>id.startsWith(String(post))))continue;activePosts++;if (playRule(p,post as Post,'A',true) && playRule(p,post as Post,'B',true)) complete++; for (const zone of ['A', 'B'] as const) { const before=playRule(p,post as Post,zone,false),after=playRule(p,post as Post,zone,true);if(after&&after!==before)changed++; } }
+    result.add(complete === 0 ? 'DRAFT' : complete < activePosts ? 'PARTIAL' : changed ? 'REVISED' : 'RETAINED');
   } else if (p.profile === 'adults') {
     const available = zones.filter(z => ['wide', 'fine'].includes(z.choices['1']) || ['protect', 'passive'].includes(z.choices['2'])).length;
     const a = zones.filter(z => z.choices['3'] === 'observation').length, b = zones.filter(z => z.choices['3'] === 'probe').length;
-    result.add(available === 10 ? 'all_channels_have_document' : 'some_channels_have_no_document');
-    result.add(a && b ? 'archive_both_types' : a || b ? 'archive_one_type' : 'archive_empty'); result.add(a + b === 10 ? 'archive_full' : 'archive_partial');
+    result.add(target>0&&available === target ? 'all_channels_have_document' : 'some_channels_have_no_document');
+    result.add(a && b ? 'archive_both_types' : a || b ? 'archive_one_type' : 'archive_empty'); result.add(target>0&&a + b === target ? 'archive_full' : 'archive_partial');
   }
   return result;
 }
@@ -260,12 +263,14 @@ export function summarizeScenario(p: ScenarioProgress): { title: string; lines: 
   if (p.profile === 'age-5-10') { if (conditions.has('find_none')) result.lines.push('Lumina v-a dăruit cercul luminos.'); if (conditions.has('fit_none')) result.lines.push('Natura v-a dăruit frunza de grădină.'); if (!conditions.has('link_complete')) result.lines.push('Lumea tehnologiei v-a dăruit mânerul de călătorie.'); }
   if (p.profile === 'age-10-15') result.lines.push(evidence(p), 'Identitatea expeditorului rămâne necunoscută.');
   for (let post = 1; post <= 5; post++) {
+    if(p.participants&&!p.participants.some(id=>id.startsWith(String(post))))continue;
     const lines: string[] = [];
     for (const zone of ['A', 'B'] as const) {
+      if(p.participants&&!p.participants.includes(key(post,zone))){lines.push(`${zone}: Loc neocupat.`);continue;}
       const z = p.zones[key(post, zone)], c = z.choices;
       if (p.profile === 'age-5-10') { const shape = shapes[post - 1][zone === 'A' ? 0 : 1]; lines.push(`${zone}: piesa „${shape}” · ${c['1'] === 'found' ? 'găsită pe Siwarha' : c['2'] === 'fitted' ? 'primită de la Natură' : 'încă negăsită'} · ${c['2'] === 'fitted' ? 'așezată în felinar' : 'încă neașezată'} · ${c['3'] === 'linked' ? 'drum găsit' : 'drum încă neales'}`); }
       else if (p.profile === 'age-10-15') { const support = c['3'] === 'relay' && z.attachment === 'attach:repeated' ? 'testele susțin această explicație' : c['3'] === 'insufficient' && ['attach:single', 'attach:none'].includes(z.attachment || '') ? 'ai arătat ce ne lipsește' : 'această observație nu susține încă explicația'; const attachment = z.attachment?.startsWith('attach:local:') ? localMeasure(p, post, z.attachment.slice(-1) as Zone) : display(z.attachment, ''); const reception = z.play ? `teste fără răspuns clar: ${z.play.stages['2']?.records?.filter(r => r.received === null).length || 0}` : localMeasure(p, post, zone) || 'nu ai cerut o măsurătoare'; lines.push(`${zone}: presupunere: ${display(c['1'], 'încă nealeasă')} · ${reception} · ritmuri testate: ${z.probes.join(', ') || 'niciunul'} · concluzie: ${display(c['3'], z.pendingVerdict ? 'mai ai de ales dovada' : 'încă nealeasă')}${z.attachment ? ` · ${attachment} · ${support}` : ''}`); }
-      else if (p.profile === 'age-15-18') { const cases = mandateCases(p, post as Post, zone); lines.push(`${zone}: ${display(rule(z, false), 'regulă încă nealeasă')} → ${display(rule(z, true), 'regulă încă nealeasă')} · ${cases.length ? cases.map(t => `${display(t.test, '')}: ${t.result} → ${mandate(p, post, t.test, true)}`).join(' | ') : c['2'] === 'observe' ? 'ai ales să urmărești testele' : 'niciun test rulat'}`); }
+      else if (p.profile === 'age-15-18') { const cases = mandateCases(p, post as Post, zone); const describe=(revised:boolean)=>p.participants?.filter(id=>id.startsWith(String(post))).length===1?`${display(playRule(p,post as Post,'A',revised),'libertate încă nealeasă')} / ${display(playRule(p,post as Post,'B',revised),'acord încă neales')}`:display(rule(z,revised),'regulă încă nealeasă');lines.push(`${zone}: ${describe(false)} → ${describe(true)} · ${cases.length ? cases.map(t => `${display(t.test, '')}: ${t.result} → ${mandate(p, post, t.test, true)}`).join(' | ') : c['2'] === 'observe' ? 'ai ales să urmărești testele' : 'niciun test rulat'}`); }
       else if (p.profile === 'adults') {
         const documents = z.play ? playDocuments(p, post as Post, zone) : [];
         const observation = documents.find(d => d.id === 'observation'), probe = documents.find(d => d.id === 'probe');

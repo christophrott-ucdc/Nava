@@ -1,0 +1,14 @@
+{
+  "provider": "elevenlabs",
+  "model": "music_v2",
+  "requestId": null,
+  "songId": "6FIRvV9J0m7ivngQDDag",
+  "generatedAt": "2026-09-05T20:58:01.39Z",
+  "requestedDurationMs": 360000,
+  "bytes": 8640621,
+  "sha256": "25e8f0ab8b02c5d739809c70b2d83eccaabb19837da7bdef616f5353a883048c",
+  "file": "exodus7-dincolo-de-lumi-v1.mp3",
+  "needsAudition": true,
+  "integratedIntoShow": false,
+  "integratedIntoReception": true
+}

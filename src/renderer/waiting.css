@@ -1,0 +1,14 @@
+.exodus-waiting{position:absolute;inset:0;z-index:34;overflow:hidden;isolation:isolate;display:grid;place-items:center;background:radial-gradient(ellipse at 80% 10%,#706caa66,transparent 55%),radial-gradient(ellipse at 5% 65%,#288d9a77,transparent 55%),#0b2038;color:#fff7dc;font-family:'Segoe UI',sans-serif;pointer-events:none;container-type:size}
+.exodus-waiting[hidden]{display:none}
+.waiting-stars{position:absolute;inset:-3%;animation:waiting-drift 65s ease-in-out infinite alternate}.waiting-stars i{position:absolute;width:var(--size);height:var(--size);border-radius:50%;background:#dfffff;opacity:.65;animation:waiting-star 9s var(--delay) ease-in-out infinite alternate}
+.waiting-planet{position:absolute;width:115cqw;height:115cqw;border-radius:50%;top:72%;left:-7%;background:radial-gradient(ellipse at 48% 0,#90dfdb,#246580 14%,#14344b 35%,#0c2439 65%);box-shadow:0 -1cqh 3cqh #a5f8f988,0 -4cqh 13cqh #7ac8e744;transform:rotate(-8deg)}
+.waiting-orbit{position:absolute;width:100cqw;height:32cqh;left:-3%;top:67%;border:1px solid #c4fff340;border-radius:50%;transform:rotate(-12deg)}
+.waiting-content{position:relative;z-index:2;text-align:center;width:78%;margin-top:-10cqh;animation:waiting-arrive 1.2s ease-out both}
+.waiting-eyebrow{font-size:1.05cqw;font-weight:650;letter-spacing:.32em;color:#bbe7e9;margin:0 0 3cqh}
+.waiting-logo{display:block;width:65cqw!important;height:auto;max-width:100%;margin:0 auto;padding:2cqh 3cqw;box-sizing:border-box;background:linear-gradient(130deg,#fffef2,#dff5f7);border:2px solid #ffffffc9;border-radius:3cqw;filter:drop-shadow(0 2cqh 5cqh #071a2f66);animation:waiting-float 14s ease-in-out infinite alternate}
+.waiting-content h1{font-size:2.7cqw;line-height:1.2;letter-spacing:-.035em;margin:4cqh 0 1.5cqh;font-weight:650}.waiting-note{font-size:1.3cqw;line-height:1.5;max-width:53cqw;margin:auto;color:#d0e7f1}.waiting-status{display:inline-flex;align-items:center;gap:.7cqw;margin:3cqh auto 0;padding:1.2cqh 1.6cqw;border:1px solid #c7f3e044;border-radius:99px;color:#dbf5e9;background:#ffffff0b;font-size:1.05cqw}.waiting-status:before{content:'';width:.45cqw;height:.45cqw;border-radius:50%;background:#a7e6bd}
+.waiting-ship{position:absolute;z-index:1;width:25cqw;height:28cqh;object-fit:contain;right:1cqw;bottom:0;filter:drop-shadow(0 1cqh 2cqh #071d3288);animation:waiting-float 19s ease-in-out infinite alternate}
+@keyframes waiting-float{from{transform:translateY(-.6cqh) rotate(-.3deg)}to{transform:translateY(.6cqh) rotate(.3deg)}}
+@keyframes waiting-star{from{opacity:.3}to{opacity:.8}}@keyframes waiting-drift{to{transform:translate(1.5%,1%)}}@keyframes waiting-arrive{from{opacity:0;transform:translateY(1cqh)}to{opacity:1;transform:none}}
+.exodus-waiting[hidden] *,.exodus-waiting[data-paused=true] *{animation-play-state:paused!important}.exodus-waiting[data-quiet=true] *{animation:none!important}
+@media(prefers-reduced-motion:reduce){.exodus-waiting *{animation:none!important}}

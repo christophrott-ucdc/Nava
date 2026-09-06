@@ -2,6 +2,18 @@ import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import type {MusicManifest} from '../shared/music';
+/** Optional lobby score is independent of the ten timed show tracks. */
+export async function loadWaitingMusic(appRoot:string){
+  const roots=[path.join(appRoot,'assets/music'),...(typeof process.resourcesPath==='string'?[path.join(process.resourcesPath,'assets/music')]:[])];
+  for(const directory of roots)try{
+    const metadata=JSON.parse(await fs.readFile(path.join(directory,'waiting.json'),'utf8')) as {file:string;sha256:string};
+    if(metadata.file!=='M11-simfonie.mp3'||! /^[a-f0-9]{64}$/.test(metadata.sha256))continue;
+    const bytes=await fs.readFile(path.join(directory,metadata.file));
+    if(createHash('sha256').update(bytes).digest('hex')!==metadata.sha256)continue;
+    return {directory,metadata};
+  }catch{/* Missing optional score never prevents the show. */}
+  return null;
+}
 /** Runtime never generates or repairs music. A complete verified pack is optional. */
 export async function loadMusic(appRoot:string):Promise<{manifest:MusicManifest;directory:string}|null>{
   let directory=path.join(appRoot,'assets/music');

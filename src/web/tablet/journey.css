@@ -1,0 +1,21 @@
+/* Shared identity and instruction states, after the individual instruments. */
+.mission-zone>.crew-identity,.play-panel>.crew-identity{position:static;align-self:flex-start;flex:none;gap:12px;padding:4px 18px 4px 4px;margin:0;border:2px solid var(--crew-accent,#78bdd2);border-radius:24px;background:#fffef7;color:#193b50;max-width:100%;box-shadow:0 4px 12px #284b6810}
+.mission-zone>.crew-identity img,.play-panel>.crew-identity img{width:56px;height:56px;flex:none;border-radius:18px;object-fit:cover}
+.crew-identity-name{display:flex;flex-direction:column;gap:2px;font-size:24px;line-height:1.15}.crew-identity-name small{font-size:18px;font-weight:550;color:#38586a}
+.crew-arcade .crew-draft-role,.crew-arcade .crew-select-status,.crew-arcade .crew-select-intro{font-size:20px;line-height:1.2;min-height:24px}
+.crew-arcade .crew-character-state{position:absolute;right:5px;top:5px;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#fff4ba;color:#513c00;font-size:24px;border:2px solid #755b12;line-height:1}
+.crew-arcade .crew-character:disabled .crew-character-state{background:#fff;color:#364b5a;border-color:#364b5a}
+.crew-arcade .crew-character[aria-pressed=true]:before{content:none}
+.experience-options .experience-selected{background:#fff1b9;color:#3e351b;border:2px solid #947011;box-shadow:inset 0 0 0 2px #fff}
+.experience-zone[data-complete=true]{border-color:#9b781a}.play-achievement{background:#fff0b2;color:#4d3d14;border:1px solid #ad8730}
+.play-guidance-tools{display:flex;align-items:center;gap:14px;flex:none;min-height:64px}.gesture-help{flex:none;min-height:64px;padding:10px 20px;border-radius:20px;border:2px solid #47768c;background:#f4fcff;color:#194257;font-family:inherit;font-size:20px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.gesture-help:focus-visible{outline:4px solid #185ba7;outline-offset:3px}.gesture-caption{margin:0;color:#244d62;font-size:20px;line-height:1.25}
+.gesture-guide{position:absolute;inset:0;z-index:15;pointer-events:none;overflow:visible}.gesture-cursor{position:absolute;display:grid;place-items:center;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:#fff0a8;color:#463700;border:3px solid #805f0d;font-size:40px;box-shadow:0 0 0 8px #fff8,0 6px 20px #27445b30;transform-origin:center}
+.play-discovery{flex:none;padding:12px 16px;border:2px solid #8aaf9c;border-radius:20px;background:#effbf2;color:#204c3d}.play-discovery-flow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:20px;font-weight:750}.play-discovery-flow span[data-after=true]:before{content:'→';margin-right:10px;color:#326752}.play-discovery-copy{font-size:20px;line-height:1.3;margin:7px 0 0}
+.experience-memory{border:1px solid #c4d8d9;border-radius:20px;background:#ffffffc9;padding:12px 16px;color:#21475b;flex:none}.experience-memory>strong{font-size:20px}.experience-memory .experience-contribution{margin:5px 0 0;font-size:20px;line-height:1.35}
+.experience-zone[data-empty=true]{background:#edf4f7;border-color:#cfdee7;box-shadow:none}.experience-zone[data-empty=true] .mission-detail{max-width:32ch}.experience-zone[data-empty=true] .mission-delivery{color:#3c5969}
+[hidden].gesture-guide,[hidden].gesture-caption,[hidden].gesture-help,[hidden].play-discovery{display:none!important}
+body[data-mission-contrast=true] .experience-memory,body[data-mission-contrast=true] .play-discovery,body[data-mission-contrast=true] .crew-identity{background:#fff;border:2px solid #23475b;color:#142f40}
+body[data-mission-motion=true] .gesture-cursor,body[data-mission-quiet=true] .gesture-cursor{animation:none!important;transition:none!important;box-shadow:none}
+@media(prefers-reduced-motion:reduce){.gesture-cursor{animation:none!important;transition:none!important}}
+@media(max-height:850px){.mission-zone>.crew-identity img,.play-panel>.crew-identity img{width:44px;height:44px}.crew-identity-name{font-size:21px}.play-guidance-tools{gap:8px}.play-discovery{padding:8px 12px}.experience-memory{padding:8px 12px}}

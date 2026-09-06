@@ -263,6 +263,8 @@ export class ShowDirector {
   private tabletSfxEnabled: boolean;
   private readonly lightsDriver: LightsConfig["driver"];
   private preflight: PreflightProvider | null;
+  private crewReadiness: (()=>{required:number;connected:number;reasons:string[]}|null)|null=null;
+  setCrewReadinessProvider(provider:()=>{required:number;connected:number;reasons:string[]}|null):void {this.crewReadiness=provider;}
   private dynamicVoiceBuilder: DynamicVoiceBuilder | null;
   private pendingPhoto: { cueId: string | null; showSec: number } | null = null;
   private photoEpoch=0;
@@ -400,7 +402,7 @@ export class ShowDirector {
    * R4 — readiness gate. Required screens = autoRun.requireScreens ∪ (master: every configured screen id).
    * When only a count is known (legacy setCounts without ids) the count is compared to the number required.
    */
-  readiness(): Readiness {
+  readiness(includeCrew=true): Readiness {
     const required: string[] = [];
     for (const id of [...this.autoRunCfg.requireScreens, ...(this.role === "master" ? this.configuredScreenIds : [])]) {
       if (id && !required.includes(id)) required.push(id);
@@ -414,7 +416,8 @@ export class ShowDirector {
       screensConnected = [];
       screensMissing = this.screens >= required.length ? [] : required.slice(this.screens);
     }
-    const tabletsRequired = Math.max(0, this.autoRunCfg.requireTablets | 0);
+    const crew=includeCrew?this.crewReadiness?.():null;
+    const tabletsRequired = crew?.required ?? Math.max(0, this.autoRunCfg.requireTablets | 0);
     const videoRequired = required.length > 0;
     const videoReady = this.videoReady;
     let assetsOk: boolean | null = null;
@@ -427,14 +430,15 @@ export class ShowDirector {
     }
     const reasons: string[] = [];
     if (screensMissing.length) reasons.push(`Ecrane lipsă: ${screensMissing.join(", ")}`);
-    if (this.tablets < tabletsRequired) reasons.push(`Tablete conectate: ${this.tablets}/${tabletsRequired}`);
+    if(crew)reasons.push(...crew.reasons);
+    else if (this.tablets < tabletsRequired) reasons.push(`Tablete conectate: ${this.tablets}/${tabletsRequired}`);
     if (videoRequired && !videoReady) reasons.push("Video neîncărcat pe ecranul de referință");
     if (assetsOk === false) reasons.push("Preflight voci: asset-e lipsă sau corupte");
     return {
       ready: reasons.length === 0,
       screensConnected,
       screensMissing,
-      tabletsConnected: this.tablets,
+      tabletsConnected: crew?.connected ?? this.tablets,
       tabletsRequired,
       videoReady,
       assetsOk,

@@ -239,7 +239,7 @@ function onMessage(message: ServerMessage): void {
   switch (message.type) {
     case "mission":
       missionSnapshot = message.snapshot;
-      if (message.snapshot.scenarioId === 'legacy-v3'&&!message.snapshot.experience?.active&&!message.snapshot.experience?.finaleActive) { missionUI.hide(); lastInteractionKey = ''; }
+      if (message.snapshot.scenarioId === 'legacy-v3'&&!message.snapshot.experience?.crew?.open&&!message.snapshot.experience?.active&&!message.snapshot.experience?.finaleActive) { missionUI.hide(); lastInteractionKey = ''; }
       else if (message.snapshot.post) {
         selectedPost = message.snapshot.post;
         state = message.snapshot.state;
@@ -478,7 +478,7 @@ function canOfferStart(): boolean {
 }
 
 function renderInteraction(): void {
-  if (missionSnapshot && (missionSnapshot.scenarioId !== 'legacy-v3'||missionSnapshot.experience?.active||missionSnapshot.experience?.finaleActive) && selectedPost !== null) {
+  if (missionSnapshot && (missionSnapshot.scenarioId !== 'legacy-v3'||missionSnapshot.experience?.crew?.open||missionSnapshot.experience?.active||missionSnapshot.experience?.finaleActive) && selectedPost !== null) {
     telemetry.setVisible(false);
     dom.signal.classList.add("hidden");
     missionUI.update(missionSnapshot, connectionStatus === "online");
@@ -715,6 +715,9 @@ function renderZone(zone: TabletZone, cueId: string | null | undefined, interact
   head.append(seal, title, side);
   panel.append(head);
 
+  if(missionSnapshot?.experience?.crew&&!missionSnapshot.experience.participants.includes(`${selectedPost}${zone}`)){
+    const empty=document.createElement('p');empty.className='zone-result';empty.textContent='Loc liber · Poți urmări aventura pe ecrane.';panel.append(empty);return panel;
+  }
   const selected = cueId ? confirmedChoice(cueId, zone) : undefined;
   if (selected) {
     const result = document.createElement("div");
@@ -776,6 +779,7 @@ function renderZone(zone: TabletZone, cueId: string | null | undefined, interact
 }
 
 function choose(cueId: string | null | undefined, zone: TabletZone, value: string): void {
+  if(missionSnapshot?.experience?.crew&&!missionSnapshot.experience.participants.includes(`${selectedPost}${zone}`))return;
   if (!cueId || !rememberChoice(optimisticChoices, view, cueId, zone, value)) return;
   if (effects.once(effectKey(cueId, `pick:${zone}`))) {
     audio.play("pick");

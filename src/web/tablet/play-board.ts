@@ -1,6 +1,8 @@
 import type { PlayView } from '@shared/play-engine';
 import { createYoungToy } from './play-toys';
 import { createOlderToy } from './play-older';
+import {createGestureGuide} from './gesture-guide';
+import {discovery} from './discovery';
 
 type Context = { blocked: boolean; reduced: boolean; pending: boolean; offline: boolean };
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className: string, text = '') => {
@@ -18,10 +20,14 @@ export function createPlayPanel(zone: 'A' | 'B', send: (value: string) => void) 
   head.append(el('b', 'mission-seat', zone), name, achievement, help);
   const instruction = el('h2', 'mission-instruction play-instruction'); instruction.tabIndex = -1;
   const host = el('div', 'play-host');
+  const tools=el('div','play-guidance-tools');
+  const insight=el('section','play-discovery');insight.hidden=true;insight.setAttribute('aria-label','Ce ai descoperit');
+  const flow=el('div','play-discovery-flow'),takeaway=el('p','play-discovery-copy');takeaway.setAttribute('role','status');insight.append(flow,takeaway);
   const foot = el('footer', 'play-foot');
   const feedback = el('p', 'play-feedback'); feedback.setAttribute('role', 'status'); feedback.setAttribute('aria-live', 'polite');
   const observe = el('button', 'play-observe', 'Doar privesc'); observe.type = 'button'; observe.dataset.play = 'observe';
-  foot.append(feedback, observe); panel.append(head, instruction, host, foot);
+  foot.append(feedback, observe); panel.append(head, instruction, tools, host, insight, foot);
+  const guide=createGestureGuide(host,tools);
   let toy: ReturnType<typeof createYoungToy> | ReturnType<typeof createOlderToy> | undefined;
   let identity = '', context: Context | undefined;
   observe.addEventListener('click', () => { if (!context?.blocked && !context?.pending) send('play:observe'); });
@@ -47,7 +53,10 @@ export function createPlayPanel(zone: 'A' | 'B', send: (value: string) => void) 
       observe.disabled = next.blocked || next.pending || view.observed;
       observe.textContent = view.observed ? 'Privesc' : 'Doar privesc';
       toy!.update(view, { blocked: next.blocked || next.pending, reduced: next.reduced || next.blocked });
+      guide.update(view,{blocked:next.blocked||next.pending,reduced:next.reduced});
+      insight.hidden=!view.solved||view.observed;
+      if(!insight.hidden){const result=discovery(view);if(insight.dataset.content!==JSON.stringify(result)){insight.dataset.content=JSON.stringify(result);takeaway.textContent=result.text;flow.replaceChildren(...result.flow.map((label,i)=>{const step=el('span','',label);if(i)step.dataset.after='true';return step;}));}}
     },
-    dispose() { toy?.dispose(); toy = undefined; },
+    dispose() { guide.dispose();toy?.dispose(); toy = undefined; },
   };
 }
