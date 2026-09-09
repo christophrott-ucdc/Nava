@@ -130,7 +130,7 @@ const TARGETS = [
     options: { platform: "browser", format: "iife", target: WEB_TARGETS, define: NODE_ENV_DEFINE, sourcemap: WATCH ? "linked" : false },
   },
   // R4 web apps (orchestrator: login + debug; Agent D: analytics). Missing entries are skipped.
-  ...["login", "debug", "analytics", "admin"].map((name) => ({
+  ...["login", "debug", "analytics", "admin", "clips"].map((name) => ({
     name: `web/${name}`,
     entry: abs(`src/web/${name}/index.ts`),
     outfile: abs(`dist/web/${name}/app.js`),
@@ -150,6 +150,7 @@ const STATIC_DIRS = [
   { from: abs("src/web/login"), to: abs("dist/web/login") },
   { from: abs("src/web/debug"), to: abs("dist/web/debug") },
   { from: abs("src/web/analytics"), to: abs("dist/web/analytics") },
+  { from: abs("src/web/clips"), to: abs("dist/web/clips") },
 ];
 const STATIC_FILES = [
   {

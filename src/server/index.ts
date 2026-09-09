@@ -63,6 +63,7 @@ import { createCertificatesRouter } from "./features/certificates";
 import { createDialogRouter } from "./features/dialog";
 import { validateShowFile } from "./features/show-validate";
 import { createAnalyticsRouter } from "./features/analytics";
+import { createClipsRouter } from "./features/clips";
 
 const RUNS_KEEP = 20;
 const MAX_PHOTO_BYTES = 1_500_000;
@@ -775,7 +776,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   };
   app.use('/api/show',protectLegacyEditor);app.use('/api/show/*',protectLegacyEditor);
   if (!auth.security.publicState) app.use("/api/state", viewer);
-  for (const p of ["/api/show", "/api/cues", "/api/config", "/api/wall", "/api/tablets", "/api/run", "/api/analytics", "/api/analytics/*", "/api/debug", "/api/debug/*"]) {
+  for (const p of ["/api/show", "/api/cues", "/api/config", "/api/wall", "/api/tablets", "/api/run", "/api/analytics", "/api/analytics/*", "/api/debug", "/api/debug/*", "/api/clips", "/api/clips/*"]) {
     app.use(p, viewer);
   }
   for (const p of ["/api/cmd", "/api/show/reload", "/api/show/*", "/api/player/focus", "/api/tablets/clear"]) {
@@ -908,6 +909,22 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   app.route("/api/dialog", createDialogRouter({ log, cacheDir: opts.cacheDir }));
   app.get("/api/lights", viewer, (c) => c.json(lights.status()));
   app.route("/api/analytics", createAnalyticsRouter({ runsDir: opts.runsDir, log })); // guarded viewer above
+
+  // --- clipurile zidului: metadate + streaming cu Range pentru pagina /clips/ ---------------
+  // Ordinea e cea fizica (stanga -> dreapta din geometria videoWall in mm), nu ordinea din
+  // config.screens: pagina de test asambleaza panourile exact ca peretele din sala.
+  app.route(
+    "/api/clips",
+    createClipsRouter({
+      dir: () => config.video.panelsDir,
+      screenIds: () => {
+        const panels = config.videoWall?.panels;
+        if (panels?.length) return [...panels].sort((a, b) => a.x - b.x).map((p) => p.screenId);
+        return config.screens.map((s) => s.id);
+      },
+      log,
+    }),
+  );
 
   // --- debug / frames (R4) -----------------------------------------------------
   const videoAbsPath = await resolveAssetPath(opts.appRoot, config.video.path);

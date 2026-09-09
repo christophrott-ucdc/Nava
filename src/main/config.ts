@@ -409,6 +409,13 @@ export function loadConfig(opts: { cli: CliArgs; appRoot: string; dataRoot?: str
   config.video.path = nonEmptyString(config.video.path, DEFAULT_CONFIG.video.path);
   if (config.video.fit !== "cover" && config.video.fit !== "contain") config.video.fit = DEFAULT_CONFIG.video.fit;
   config.video.preloadPoster = bool(config.video.preloadPoster, DEFAULT_CONFIG.video.preloadPoster);
+  // Clipurile de panou: cale absoluta sau relativa la appRoot, ca `video.path`. Nu se verifica
+  // existenta aici — /api/clips raporteaza ce lipseste, ca sa nu blocheze pornirea playerului.
+  {
+    const raw = (config.video as { panelsDir?: unknown }).panelsDir;
+    if (typeof raw === "string" && raw.trim()) config.video.panelsDir = path.resolve(appRoot, raw.trim());
+    else delete config.video.panelsDir;
+  }
   config.avatar.glb = nonEmptyString(config.avatar.glb, DEFAULT_CONFIG.avatar.glb);
   if (config.avatar.corner !== "bottom-left" && config.avatar.corner !== "bottom-right") config.avatar.corner = DEFAULT_CONFIG.avatar.corner;
   config.avatar.widthPercent = finiteNumber(config.avatar.widthPercent, DEFAULT_CONFIG.avatar.widthPercent, 5, 60);

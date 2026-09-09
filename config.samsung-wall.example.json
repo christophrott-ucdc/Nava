@@ -10,7 +10,8 @@
   "video": {
     "path": "media/cinema_4k_h264.mp4",
     "fit": "cover",
-    "preloadPoster": true
+    "preloadPoster": true,
+    "panelsDir": "C:/Users/Chris/Documents/GitHub/Video/panels"
   },
   "avatar": {
     "glb": "assets/avatar/avatar-ai.glb",
