@@ -35,22 +35,20 @@ interface ClipsResponse { ok: boolean; dir?: string; reason?: string; hint?: str
 interface WallPanel { screenId: string; x: number; y: number; width: number; height: number }
 interface WallResponse { videoWall: { panels: WallPanel[]; mode: string } | null; screens: Array<{ id: string; showAvatar?: boolean }> }
 
-// Momentele zborului, din suma Wait-urilor din Final-12min.ssp (timp de SCRIPT).
-// Filmul livrat e tiat, deci exista un decalaj fata de timpul de script: se reglează
-// din câmpul de offset si se salveaza local, ca sa nu fie recalibrat la fiecare vizita.
-const BEATS: Array<{ label: string; scriptSec: number }> = [
-  { label: "Decolare", scriptSec: 2 },
-  { label: "Siwarha", scriptSec: 46 },
-  { label: "Kepler-186 d", scriptSec: 148 },
-  { label: "Mann", scriptSec: 251 },
-  { label: "Gargantua", scriptSec: 353 },
-  { label: "Wormhole", scriptSec: 395 },
-  { label: "Saturn", scriptSec: 486 },
-  { label: "Pământul", scriptSec: 576 },
-  { label: "Revelația", scriptSec: 593 },
-  { label: "Hold final", scriptSec: 698 },
+// Repere vizuale măsurate direct din film; ajustarea locală nu schimbă show.json.
+const BEATS: Array<{ label: string; filmSec: number }> = [
+  { label: "Decolare", filmSec: 10 },
+  { label: "Siwarha · apropiere", filmSec: 80 },
+  { label: "Kepler-186 d", filmSec: 180 },
+  { label: "Mann", filmSec: 280 },
+  { label: "Gargantua", filmSec: 345 },
+  { label: "Wormhole", filmSec: 420 },
+  { label: "Saturn", filmSec: 504 },
+  { label: "Pământul", filmSec: 610 },
+  { label: "Revelația", filmSec: 630 },
+  { label: "Stele · final", filmSec: 677 },
 ];
-const OFFSET_KEY = "nava.clips.offsetSec";
+const OFFSET_KEY = "nava.clips.visual-offsetSec";
 
 // ---------------------------------------------------------------- utilitare
 
@@ -316,7 +314,7 @@ function renderMarkers(): void {
 
   const off = document.createElement("label");
   off.className = "rate";
-  off.textContent = "Decalaj script→film · s";
+  off.textContent = "Ajustare locală a reperelor vizuale · s";
   const input = document.createElement("input");
   input.type = "number"; input.step = "0.5"; input.value = String(offsetSec); input.style.maxWidth = "90px";
   input.addEventListener("change", () => {
@@ -329,7 +327,7 @@ function renderMarkers(): void {
 
   const d = duration();
   for (const b of BEATS) {
-    const t = b.scriptSec + offsetSec;
+    const t = b.filmSec + offsetSec;
     if (d > 0 && (t < 0 || t > d)) continue;
     const btn = document.createElement("button");
     btn.type = "button";

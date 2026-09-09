@@ -4,18 +4,18 @@
   "language": "ro",
   "status": "editorial-draft",
   "productionReady": false,
-  "runtimeActivation": "not-loaded",
-  "audioStatus": "not-produced",
-  "timingStatus": "proposed-slots",
+  "runtimeActivation": "operator-selected-package",
+  "audioStatus": "produced-and-validated",
+  "timingStatus": "film-panels-visual",
   "sourceDocument": "docs/scenarii/ADULTI-CE-LASAM-DESCHIS.md",
   "sourceSha256": "4e18272ad7acd5186bacddf836ba22a130a0fe381c9389884edd98cda72c82c9",
-  "conditionSemantics": "See source document; no runtime evaluator supplied.",
+  "conditionSemantics": "Evaluated by scenario-catalog and mission-session; exactly one eligible branch per slot.",
   "cues": [
     {
       "id": "AD-R01",
       "phase": "preshow",
       "at": 2,
-      "maxDurationSec": 12,
+      "maxDurationSec": 13,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -33,7 +33,7 @@
       "id": "AD-R02",
       "phase": "preshow",
       "at": 15,
-      "maxDurationSec": 12,
+      "maxDurationSec": 14,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -51,7 +51,7 @@
       "id": "AD-R03",
       "phase": "preshow",
       "at": 29,
-      "maxDurationSec": 10,
+      "maxDurationSec": 11,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -69,7 +69,7 @@
       "id": "AD-R04",
       "phase": "preshow",
       "at": 40,
-      "maxDurationSec": 9,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -87,7 +87,7 @@
       "id": "AD-R05",
       "phase": "play",
       "at": -8,
-      "maxDurationSec": 7,
+      "maxDurationSec": 20,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -105,7 +105,7 @@
       "id": "AD-R06",
       "phase": "play",
       "at": 12,
-      "maxDurationSec": 10,
+      "maxDurationSec": 28,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -123,7 +123,7 @@
       "id": "AD-R07",
       "phase": "play",
       "at": 40,
-      "maxDurationSec": 9,
+      "maxDurationSec": 25,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -141,7 +141,7 @@
       "id": "AD-R08",
       "phase": "play",
       "at": 65,
-      "maxDurationSec": 10,
+      "maxDurationSec": 14,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
@@ -159,7 +159,7 @@
       "id": "AD-R09",
       "phase": "play",
       "at": 79,
-      "maxDurationSec": 10,
+      "maxDurationSec": 13,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -177,7 +177,7 @@
       "id": "AD-R10",
       "phase": "play",
       "at": 92,
-      "maxDurationSec": 8,
+      "maxDurationSec": 33,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -195,7 +195,7 @@
       "id": "AD-R11",
       "phase": "play",
       "at": 125,
-      "maxDurationSec": 7,
+      "maxDurationSec": 9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -213,7 +213,7 @@
       "id": "AD-R12",
       "phase": "play",
       "at": 134,
-      "maxDurationSec": 8,
+      "maxDurationSec": 17,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
@@ -231,7 +231,7 @@
       "id": "AD-R13",
       "phase": "play",
       "at": 151,
-      "maxDurationSec": 11,
+      "maxDurationSec": 14,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
@@ -249,7 +249,7 @@
       "id": "AD-R14",
       "phase": "play",
       "at": 165,
-      "maxDurationSec": 10,
+      "maxDurationSec": 14,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -267,7 +267,7 @@
       "id": "AD-R15",
       "phase": "play",
       "at": 179,
-      "maxDurationSec": 8,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -285,7 +285,7 @@
       "id": "AD-R16",
       "phase": "play",
       "at": 189,
-      "maxDurationSec": 7.5,
+      "maxDurationSec": 36,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
@@ -303,7 +303,7 @@
       "id": "AD-R17",
       "phase": "play",
       "at": 225,
-      "maxDurationSec": 9,
+      "maxDurationSec": 11,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -321,7 +321,7 @@
       "id": "AD-R18",
       "phase": "play",
       "at": 236,
-      "maxDurationSec": 8,
+      "maxDurationSec": 17.5,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -338,8 +338,8 @@
     {
       "id": "AD-R19",
       "phase": "play",
-      "at": 252,
-      "maxDurationSec": 10,
+      "at": 253.5,
+      "maxDurationSec": 19.5,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
@@ -356,8 +356,8 @@
     {
       "id": "AD-R20",
       "phase": "play",
-      "at": 267,
-      "maxDurationSec": 11,
+      "at": 273,
+      "maxDurationSec": 22,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -374,8 +374,8 @@
     {
       "id": "AD-R21",
       "phase": "play",
-      "at": 284,
-      "maxDurationSec": 10,
+      "at": 295,
+      "maxDurationSec": 19.5,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -392,8 +392,8 @@
     {
       "id": "AD-R22",
       "phase": "play",
-      "at": 299,
-      "maxDurationSec": 9,
+      "at": 314.5,
+      "maxDurationSec": 49,
       "speaker": "AVATAR_AI",
       "condition": "all_channels_have_document",
       "text": {
@@ -410,8 +410,8 @@
     {
       "id": "AD-R23",
       "phase": "play",
-      "at": 299,
-      "maxDurationSec": 9,
+      "at": 314.5,
+      "maxDurationSec": 49,
       "speaker": "AVATAR_AI",
       "condition": "some_channels_have_no_document",
       "text": {
@@ -428,8 +428,8 @@
     {
       "id": "AD-R24",
       "phase": "play",
-      "at": 337,
-      "maxDurationSec": 8,
+      "at": 363.5,
+      "maxDurationSec": 13,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
@@ -446,8 +446,8 @@
     {
       "id": "AD-R25",
       "phase": "play",
-      "at": 347,
-      "maxDurationSec": 7,
+      "at": 376.5,
+      "maxDurationSec": 29,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -464,8 +464,8 @@
     {
       "id": "AD-R26",
       "phase": "play",
-      "at": 363,
-      "maxDurationSec": 8,
+      "at": 405.5,
+      "maxDurationSec": 68,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -482,8 +482,8 @@
     {
       "id": "AD-R27",
       "phase": "play",
-      "at": 390,
-      "maxDurationSec": 9,
+      "at": 473.5,
+      "maxDurationSec": 36.5,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -498,10 +498,73 @@
       "direction": "Melancolie reținută; „cât de mare părea” rostit încet, cu pauză înainte."
     },
     {
+      "id": "v4-saturn-01",
+      "kind": "voice",
+      "phase": "play",
+      "at": 510,
+      "speaker": "CAPITANUL",
+      "text": {
+        "ro": "Priviți inelele! E Saturn. Suntem din nou în Sistemul Solar. De aici, drumul spre casă ne este cunoscut."
+      },
+      "fallback": "silent",
+      "condition": "always",
+      "maxDurationSec": 17,
+      "direction": "cald, clar, uimit fără strigăte; pauze naturale",
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "calm"
+        ]
+      },
+      "publicAtSec": 570
+    },
+    {
+      "id": "v4-saturn-02",
+      "kind": "voice",
+      "phase": "play",
+      "at": 527,
+      "speaker": "AVATAR_AI",
+      "text": {
+        "ro": "De departe, inelele par întregi. De aproape, sunt nenumărate bucăți de gheață și rocă. Fiecare se rotește în jurul lui Saturn."
+      },
+      "fallback": "silent",
+      "condition": "always",
+      "maxDurationSec": 30,
+      "direction": "cald, clar, uimit fără strigăte; pauze naturale",
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "calm"
+        ]
+      },
+      "publicAtSec": 587
+    },
+    {
+      "id": "v4-saturn-03",
+      "kind": "voice",
+      "phase": "play",
+      "at": 557,
+      "speaker": "CAPITANUL",
+      "text": {
+        "ro": "Lăsăm Saturn în urmă. Următoarea oprire este o lume cu oceane, nori și oameni care ne așteaptă."
+      },
+      "fallback": "silent",
+      "condition": "always",
+      "maxDurationSec": 56,
+      "direction": "cald, clar, uimit fără strigăte; pauze naturale",
+      "tts": {
+        "audioTags": [
+          "warmly",
+          "calm"
+        ]
+      },
+      "publicAtSec": 617
+    },
+    {
       "id": "AD-R28",
       "phase": "play",
-      "at": 405,
-      "maxDurationSec": 8,
+      "at": 613,
+      "maxDurationSec": 14.5,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -518,8 +581,8 @@
     {
       "id": "AD-R29",
       "phase": "play",
-      "at": 418,
-      "maxDurationSec": 6,
+      "at": 627.5,
+      "maxDurationSec": 9.5,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
@@ -536,8 +599,8 @@
     {
       "id": "AD-R30",
       "phase": "play",
-      "at": 427,
-      "maxDurationSec": 7,
+      "at": 637,
+      "maxDurationSec": 9.5,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
@@ -554,8 +617,8 @@
     {
       "id": "AD-R31",
       "phase": "play",
-      "at": 436,
-      "maxDurationSec": 7,
+      "at": 646.5,
+      "maxDurationSec": 12,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
@@ -572,8 +635,8 @@
     {
       "id": "AD-R32",
       "phase": "play",
-      "at": 447,
-      "maxDurationSec": 9,
+      "at": 658.5,
+      "maxDurationSec": 12,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -590,8 +653,8 @@
     {
       "id": "AD-R33",
       "phase": "play",
-      "at": 458,
-      "maxDurationSec": 6,
+      "at": 670.5,
+      "maxDurationSec": 7.55,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
@@ -609,7 +672,7 @@
       "id": "AD-R34",
       "phase": "epilogue",
       "at": 5,
-      "maxDurationSec": 12,
+      "maxDurationSec": 18,
       "speaker": "AVATAR_AI",
       "condition": "archive_both_types",
       "text": {
@@ -627,7 +690,7 @@
       "id": "AD-R35",
       "phase": "epilogue",
       "at": 5,
-      "maxDurationSec": 12,
+      "maxDurationSec": 18,
       "speaker": "AVATAR_AI",
       "condition": "archive_one_type",
       "text": {
@@ -645,7 +708,7 @@
       "id": "AD-R36",
       "phase": "epilogue",
       "at": 5,
-      "maxDurationSec": 12,
+      "maxDurationSec": 18,
       "speaker": "AVATAR_AI",
       "condition": "archive_empty",
       "text": {
@@ -663,7 +726,7 @@
       "id": "AD-R37",
       "phase": "epilogue",
       "at": 23,
-      "maxDurationSec": 10,
+      "maxDurationSec": 14,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -681,7 +744,7 @@
       "id": "AD-R38",
       "phase": "epilogue",
       "at": 37,
-      "maxDurationSec": 9,
+      "maxDurationSec": 21,
       "speaker": "AVATAR_AI",
       "condition": "archive_full",
       "text": {
@@ -699,7 +762,7 @@
       "id": "AD-R39",
       "phase": "epilogue",
       "at": 37,
-      "maxDurationSec": 9,
+      "maxDurationSec": 21,
       "speaker": "AVATAR_AI",
       "condition": "archive_partial",
       "text": {
@@ -717,7 +780,7 @@
       "id": "AD-R40",
       "phase": "epilogue",
       "at": 58,
-      "maxDurationSec": 12,
+      "maxDurationSec": 17,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
@@ -732,5 +795,6 @@
       },
       "direction": "Închidere caldă; mulțumirea sinceră, apoi indicația practică, simplu și clar."
     }
-  ]
+  ],
+  "filmDurationSec": 678.05
 }

@@ -1,3 +1,5 @@
+> Actualizare film — 9 septembrie 2026: timpii editoriali de mai jos sunt istorici. Execuția folosește filmul de 678,05 s și pachetele JSON remapate. Reperele vizuale, replicile Saturn și timpii actuali sunt documentați în [REINTEGRARE-FILM](../REINTEGRARE-FILM.md).
+
 # Adulți — Ce lăsăm deschis
 
 **Draft editorial, 5 septembrie 2026.** Dialog nou și experiență propusă, fără modificarea show-ului executabil, a filmului sau a vocilor. Sloturile sunt bugete propuse, nu durate audio măsurate. Pachetul nu este pregătit pentru public înainte de producție vocală, integrare, verificare pe film și repetiție. Perspectiva de public adult este o contribuție editorială AI, nu o consultație efectuată cu un expert uman.

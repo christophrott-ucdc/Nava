@@ -25,6 +25,7 @@ import { createPhoto } from "./photo";
 import { Player } from "./player";
 import { createRoomMic, roomMicRequested } from "./room-mic";
 import { createSpan, pickFocusViewport, scaleViewports, rendererClockSource, type SpanController } from "./span";
+import {createPanelVideos} from './panel-videos';
 import { SyncClient, type SyncStatus } from "./sync";
 import { createCountdown } from "./ui/countdown";
 import { createEntities } from "./ui/entities";
@@ -158,7 +159,7 @@ async function main(): Promise<void> {
   const showOsd = boot.isDev || config.dev.openDevTools;
   const spanMode = boot.displayMode === "span" && Array.isArray(boot.viewports) && boot.viewports.length > 0;
   const wallMode = !!config.videoWall;
-  const isClockSource = rendererClockSource(isMaster, spanMode, screen.id, config.screens);
+  const isClockSource = rendererClockSource(isMaster, spanMode, screen.id, config.screens,!!config.video.panelsDir&&config.videoWall?.mode!=='cinema');
   const wallViewports = spanMode ? boot.viewports! : [{ screenId: screen.id, x: 0, y: 0, width: window.innerWidth, height: window.innerHeight, scaleFactor: window.devicePixelRatio || 1 }];
   const focusWidth = () => pickFocusViewport(scaleViewports(wallViewports, window.innerWidth, window.innerHeight), config.screens, screen.id)?.width ?? window.innerWidth;
   log("info", `boot: screen=${screen.id} role=${config.role} clockSource=${isClockSource} ws=${boot.wsUrl} mode=${spanMode ? `span(${boot.viewports!.length})` : "windows"} v${boot.appVersion}`);
@@ -280,7 +281,8 @@ async function main(): Promise<void> {
   // ---- Player
   const veil = $("veil");
   const player = new Player({
-    isClockSource,
+    isClockSource: isClockSource && !(config.video.panelsDir&&config.videoWall?.mode!=='cinema'),
+    panelPlayback: !!boot.panelVideoUrls,
     video,
     show,
     config,
@@ -311,7 +313,12 @@ async function main(): Promise<void> {
       if (isClockSource) window.nava.sendCommand({ action: "epilogue" });
     },
   });
-  player.attach(boot.videoUrl);
+  player.attach(boot.panelVideoUrls?.[screen.id]??boot.videoUrl);
+  const panelPlayback=boot.panelVideoUrls ? createPanelVideos(
+    spanMode?boot.panelVideoUrls:{[screen.id]:boot.panelVideoUrls[screen.id]},screen.id,video,
+    ()=>player.panelTarget(),config.video.panelSync,id=>log('error',`Panoul ${id}: decodare/redare indisponibilă`)) : null;
+  window.addEventListener('pagehide',()=>panelPlayback?.dispose(),{once:true});
+  if(panelPlayback)player.setPanelReadiness(panelPlayback.ready);
   if(screen.playAudio)void fetch(new URL('/api/music',boot.serverHttpUrl??boot.wsUrl.replace(/^ws/,'http'))).then(async r=>{
     if(!r.ok)throw Error(`HTTP${r.status}`);player.setMusicManifest(await r.json() as MusicManifest);
   }).catch(e=>log('warn',`Music pack unavailable: ${String(e)}`));
@@ -328,6 +335,7 @@ async function main(): Promise<void> {
         stage: $("stage"),
         video,
         viewports: wallViewports,
+        panelVideos: panelPlayback?.videos,
         screens: config.screens,
         fit: config.video.fit,
         centerScreenId: screen.id,
@@ -352,6 +360,7 @@ async function main(): Promise<void> {
     screenToken: boot.screenToken,
     isClockSource,
     clockHz: config.sync.clockHz,
+    serverAuthoritative: !!config.video.panelsDir&&config.videoWall?.mode!=='cinema',
     seekThresholdSec: config.sync.seekThresholdSec,
     rateNudge: config.sync.rateNudge,
     player,

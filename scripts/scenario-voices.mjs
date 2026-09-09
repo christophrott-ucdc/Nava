@@ -32,6 +32,7 @@ async function main() {
     moduleFrom('src/server/tts-providers.ts'), moduleFrom('src/renderer/avatar/lipsync-ro.ts'),
   ]);
   const casting = (await read(path.join(ROOT, 'assets/show/voice-script-v3.json'))).tts;
+  const sharedManifest=await read(path.join(ROOT,'assets/voice/ro/manifest.json'));
   const summary = { generatedAt: new Date().toISOString(), generated: 0, reused: 0, missing: [], overBudget: [], failures: [], profiles: {} };
   let blocked = false;
   for (const profile of profiles) {
@@ -66,7 +67,9 @@ async function main() {
       } catch {}
       let audio;
       try { audio = await fs.readFile(path.join(out, file)); } catch {}
-      const reusable = clip?.generationKey === generationKey && audio?.length > 0 && hash(audio) === clip.sha256;
+      const shared=sharedManifest.clips[cue.id];
+      const sharedMatches=clip?.sharedFrom==='show'&&shared?.generationKey===clip.generationKey&&shared.text===cue.text.ro&&shared.speaker===cue.speaker&&shared.voiceId===voiceId&&clip.text===cue.text.ro;
+      const reusable = (clip?.generationKey === generationKey||sharedMatches) && audio?.length > 0 && hash(audio) === clip.sha256;
       if (dry) { console.log(`${profile}/${cue.id} ${reusable ? 'reuse' : 'generate'} ${cue.text.ro.length} chars`); continue; }
       if (!reusable && (check || blocked)) { summary.missing.push(`${profile}/${cue.id}`); continue; }
       if (!reusable) {

@@ -1,3 +1,5 @@
+> Actualizare film — 9 septembrie 2026: timpii editoriali de mai jos sunt istorici. Execuția folosește filmul de 678,05 s și pachetele JSON remapate. Reperele vizuale, replicile Saturn și timpii actuali sunt documentați în [REINTEGRARE-FILM](REINTEGRARE-FILM.md).
+
 # Scenariu executabil — „A Patra Lume · Protocolul Acasă”
 
 Scenariul regizoral complet, cu dialogurile integrale, inflexiunile, acțiunea pe ecrane și interacțiunile copiilor, este în [`SCENARIU-REGIZORAL-10-MIN.md`](SCENARIU-REGIZORAL-10-MIN.md). Acest document este rezumatul rapid al adaptării scenice românești V3.3. Textele canonice și timpii vocali sunt în `assets/show/voice-script-v3.json` și sunt sincronizați în `assets/show/show.json`.

@@ -46,6 +46,7 @@ export function sayCueId(speaker: string, lang: string, text: string): string {
 }
 
 export interface PlayerDeps {
+  panelPlayback?: boolean;
   isClockSource?: boolean;
   video: HTMLVideoElement;
   show: ShowFile;
@@ -127,6 +128,8 @@ export class Player {
   private playLeadIn = false;
   private avatarVisible = false;
   private videoReady = false;
+  private panelsReady: (()=>boolean)|null=null;
+  setPanelReadiness(check:()=>boolean):void {this.panelsReady=check;}
   private videoError: string | null = null;
   private buffering = false;
   private playProbeGeneration = 0;
@@ -142,6 +145,13 @@ export class Player {
   private perspectiveWarned = false;
   private musicManifest:MusicManifest|null=null;
   private lastFollowAt = 0;
+  private serverAnchor: {time:number;rate:number;at:number;playing:boolean}|null=null;
+  panelTarget() {
+    const a=this.serverAnchor;
+    const time=a?a.time+(a.playing?(performance.now()-a.at)/1000*a.rate:0):0;
+    return a ? {time,rate:a.rate,playing:a.playing&&time>=0}
+      : {time:0,rate:1,playing:false};
+  }
   private videoFrame = 0;
   private presentedFrame: { mediaTime: number; displayTime: number } | null = null;
 
@@ -251,7 +261,7 @@ export class Player {
 
   phaseTime(): number {
     if (this.phaseMode === "preshow" || this.phaseMode === "epilogue") return this.clock.now();
-    if (this.phaseMode === "play") return this.playLeadIn ? this.clock.now() : (this.pendingSeek ?? this.video.currentTime);
+    if (this.phaseMode === "play") return this.playLeadIn ? this.clock.now() : this.deps.panelPlayback&&this.serverAnchor ? Math.min(this.duration(),this.panelTarget().time) : (this.pendingSeek ?? this.video.currentTime);
     return 0;
   }
 
@@ -288,7 +298,7 @@ export class Player {
   }
 
   isVideoReady(): boolean {
-    return this.videoReady && !this.videoError;
+    return this.videoReady && !this.videoError && (this.panelsReady?.()??true);
   }
   isBuffering(): boolean {
     return this.buffering;
@@ -868,6 +878,7 @@ export class Player {
    * in seconds for the OSD, or null when not applicable.
    */
   follow(master: PlaybackState, expected: number, masterRate: number, opts: { seekThresholdSec: number; rateNudge: number }): number | null {
+    this.serverAnchor={time:master==='playing'||master==='paused'?expected:master==='epilogue'||master==='ended'?this.duration():0,rate:masterRate||1,at:performance.now(),playing:master==='playing'&&masterRate>0};
     this.lastFollowAt = performance.now();
     const thr = Math.max(0.05, opts.seekThresholdSec);
     switch (master) {
@@ -988,7 +999,10 @@ export class Player {
 
   /** Drift correction in the play phase. Big jumps use timeline seek semantics (skip cues). */
   private correctVideo(expected: number, thr: number, nudge: number, playing: boolean): number {
+    // One controller corrects all five decoders at the same cadence.
+    if(this.deps.panelPlayback)return expected-this.video.currentTime;
     if (!this.videoReady) return 0;
+    if (this.video.seeking) return expected-this.video.currentTime;
     const frame = this.presentedFrame, now = performance.now();
     const cur = playing && !this.video.paused && !this.video.seeking && frame && now - frame.displayTime >= 0 && now - frame.displayTime < 250
       ? frame.mediaTime + (now - frame.displayTime) / 1000 * this.video.playbackRate

@@ -388,6 +388,7 @@ export interface AppConfig {
      * opreste la 8192, SVT-AV1 la 16384), de aceea zidul se livreaza ca cinci fisiere.
      */
     panelsDir?: string;
+    panelSync?: { deadbandSec?: number; seekThresholdSec?: number; rateNudge?: number };
   };
   avatar: {
     glb: string;

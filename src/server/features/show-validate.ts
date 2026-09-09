@@ -241,13 +241,16 @@ export function validateShowFile(input: unknown): ShowValidation {
   if (outOfOrder) warnings.push(`${outOfOrder} cue-uri nu sunt în ordinea \`at\` în faza lor (vor fi reordonate la salvare)`);
 
   // --- invariante V3 (avertismente) -------------------------------------------------
-  if (json.version === "0.5.0-ro-stage" && !errors.length) {
+  if (["0.5.0-ro-stage","0.6.0-film-panels"].includes(String(json.version)) && !errors.length) {
     const cues = json.cues as Rec[];
     const voices = cues.filter((c) => c.kind === "voice");
-    if (videoDurationSec !== 465 || launchLeadInSec !== 10 || !json.preshowAutoStart || json.epilogueOnVideoEnd === false) {
-      warnings.push("Contractul V3 cere preshowAutoStart + lead-in 10 s + tăietură la 465 s + epilog automat");
+    const panelFilm=json.version==='0.6.0-film-panels';
+    // Three Saturn recordings extend the original 51-voice score; legacy remains loadable.
+    const expectedDuration=panelFilm?678.05:465, expectedVoices=panelFilm?54:51;
+    if (videoDurationSec !== expectedDuration || launchLeadInSec !== 10 || !json.preshowAutoStart || json.epilogueOnVideoEnd === false) {
+      warnings.push(`Contractul cere preshowAutoStart + lead-in 10 s + film ${expectedDuration} s + epilog automat`);
     }
-    if (voices.length !== 51) warnings.push(`Show-ul V3 are ${voices.length} voci în loc de 51 (validate:show va eșua)`);
+    if (voices.length !== expectedVoices) warnings.push(`Show-ul are ${voices.length} voci în loc de ${expectedVoices} (validate:show va eșua)`);
     if (voices.some((c) => c.fallback !== "silent")) warnings.push("Toate vocile V3 trebuie să aibă fallback: silent");
     for (const required of ["pre-tablet-roles", "light-tablet-color", "nature-tablet-pulse", "tech-tablet-perspectives", "epi-tablet-thanks", "tech-adaptive-select"]) {
       if (!cueIds.has(required)) warnings.push(`Lipsește cue-ul V3 obligatoriu ${required}`);

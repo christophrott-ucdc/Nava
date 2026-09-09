@@ -1,12 +1,12 @@
 {
   "title": "A Patra Lume — Protocolul Acasă",
-  "version": "0.5.0-ro-stage",
-  "videoDurationSec": 465,
+  "version": "0.6.0-film-panels",
+  "videoDurationSec": 678.05,
   "timingStatus": "aligned",
   "preshowAutoStart": true,
   "launchLeadInSec": 10,
   "epilogueOnVideoEnd": true,
-  "$comment": "Adaptarea scenică românească V3.3 este sincronizată din assets/show/voice-script-v3.json. Flux public: preshow 0–50 s, countdown 50–60 s, video 0–465 s, epilog 0–75 s; total 600 s. Video-ul sursă are 741,78 s, dar playerul îl oprește determinist la timpul configurat de 465 s.",
+  "$comment": "Sincronizare vizuală autorizată: repere măsurate direct în center.mp4; fără decalaj global script→film. Gargantua 344–345 s, Saturn 504 s, Pământul 610 s. Film 678.05 s; durată publică derivată 813.05 s, fără tutorialul interactiv. Vezi docs/REINTEGRARE-FILM.md.",
   "variants": {
     "7-9": {
       "label": "Copii 7–9 ani",
@@ -32,7 +32,7 @@
       "start": 0,
       "end": 50,
       "theme": "prologue",
-      "spaceEngineBeat": "(în sală; video oprit pe cadrul 0 — Pământul mare în fereastră)"
+      "spaceEngineBeat": "În sală; film oprit pe cadrul ilustrat de deschidere."
     },
     {
       "id": "launch",
@@ -41,7 +41,7 @@
       "start": -10,
       "end": 60,
       "theme": "launch",
-      "spaceEngineBeat": "lead-in -10..0 (numărătoare, cadru înghețat) · EARTH_DEPARTURE: Pământul se îndepărtează 0–20 s · Calea Lactee 20–34 s · nebuloasa țintă apare 36 s și crește"
+      "spaceEngineBeat": "Cadru de deschidere ilustrat; Pământul vizibil la 10 s, ieșit la 20 s; stele și apropiere de sursa luminoasă."
     },
     {
       "id": "light",
@@ -50,7 +50,7 @@
       "start": 60,
       "end": 144,
       "theme": "light",
-      "spaceEngineBeat": "apropiere de nebuloasă 60–72 · Siwarha vizibilă 74–137 (orbită) · viraj de plecare 138–143"
+      "spaceEngineBeat": "Sursă albă strălucitoare în apropiere la 80–100 s; plecare înainte de 110 s. Dialogul continuă prin radio."
     },
     {
       "id": "nature",
@@ -59,34 +59,43 @@
       "start": 144,
       "end": 246,
       "theme": "nature",
-      "spaceEngineBeat": "zbor în câmp de stele 144–178 · Kepler-186 d vizibilă 180–244 (orbită) · plecare 245"
+      "spaceEngineBeat": "Kepler recognoscibil la 180 s, apropiere la 200 s, ieșire din cadrul central între 210 și 220 s. Dialogul continuă prin radio."
     },
     {
       "id": "tech",
       "label": "Scena 5 · Planeta Tehnologiei (Mann · Gargantua)",
       "phase": "play",
       "start": 246,
-      "end": 356,
+      "end": 388,
       "theme": "tech",
-      "spaceEngineBeat": "warp 246–280 · Mann + discul Gargantua 282–352 · viraj 353–358"
+      "spaceEngineBeat": "Mann vizibil la 280–310 s; plecare înainte de 320 s. Gargantua intră între 344 și 345 s și rămâne vizibilă la 380 s."
     },
     {
       "id": "wormhole",
       "label": "Trecerea prin wormhole",
       "phase": "play",
-      "start": 356,
-      "end": 402,
+      "start": 388,
+      "end": 504,
       "theme": "void",
-      "spaceEngineBeat": "dungi de stele / traversare 360–402"
+      "spaceEngineBeat": "Viraj după Gargantua; tunel cu imaginea unei planete cu inele la 420–440 s; traversare și câmp de stele până la apropierea Saturn."
+    },
+    {
+      "id": "saturn",
+      "label": "Saturn · Primul semn de acasă",
+      "phase": "play",
+      "start": 504,
+      "end": 610,
+      "theme": "home",
+      "spaceEngineBeat": "Saturn cu inele recognoscibil la 504 s; apropiere 510–540 s, plecare înainte de 560 s; drumul spre Pământ."
     },
     {
       "id": "revelation",
       "label": "Revelația · Pământul",
       "phase": "play",
-      "start": 402,
-      "end": 465,
+      "start": 610,
+      "end": 678.05,
       "theme": "home",
-      "spaceEngineBeat": "Pământul apare la 403 s; filmul este oprit la 465 s și ultimul cadru persistă în epilog."
+      "spaceEngineBeat": "Pământul recognoscibil la 610 s, mare la 630–640 s; trecere apropiată la 650 s, apoi stele. Nu există hold final pe Pământ."
     },
     {
       "id": "reentry",
@@ -95,7 +104,7 @@
       "start": 0,
       "end": 75,
       "theme": "white",
-      "spaceEngineBeat": "Ultimul cadru persistă; HUD-ul și ambianța continuă fără mutarea publicului sau reset vizibil."
+      "spaceEngineBeat": "Ultimul cadru de stele persistă; finalul interactiv continuă fără reset."
     }
   ],
   "cues": [
@@ -218,7 +227,7 @@
       "to": 0,
       "durationSec": 10,
       "spoken": false,
-      "note": "Pe cadrul înghețat (Pământul mare). „Un val sonor jos” la zero, apoi Pământul se îndepărtează."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "launch-liftoff-sfx",
@@ -228,7 +237,7 @@
       "sfx": "liftoff-rumble",
       "durationSec": 7,
       "gain": 0.9,
-      "note": "Video-ul pornește exact acum: Pământul începe să se îndepărteze (mare la 0 s, mic la 14 s, dispărut la ~20 s)."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0109",
@@ -241,7 +250,7 @@
         "ro": "Pământul rămâne în urmă. Priviți-l bine. Când îl vom revedea, o să-l privim cu alți ochi."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "launch-marker-stars",
@@ -261,7 +270,7 @@
         "ro": "Echipajul e stabil. Nivelul de uimire e peste ce am calculat. Îl las așa."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-ai-0136",
@@ -274,7 +283,7 @@
         "ro": "Postul Navigație confirmă direcția. Semnalul ne duce spre o sursă de lumină. Prima destinație."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "light-theme",
@@ -294,7 +303,7 @@
         "ro": "Siwarha. Aici, emoțiile pe care alegeți să le arătați devin lumină."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește.",
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film.",
       "variants": {
         "7-9": {
           "ro": "Siwarha. Aici, ce simțiți și arătați se transformă în lumină."
@@ -320,7 +329,7 @@
         "ro": "Cuvintele voastre ajung greu până la noi. Culorile ajung într-o clipă."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-light-0236",
@@ -333,7 +342,7 @@
         "ro": "Dacă vreți, alegeți o culoare: cea pe care ați lua-o cu voi prin întuneric."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "light-tablet-color",
@@ -352,7 +361,7 @@
         ],
         "allowObserve": true
       },
-      "note": "Fereastră publică 2:43–2:55; două alegeri independente pe fiecare tabletă."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "light-tablet-close",
@@ -362,7 +371,7 @@
       "interaction": {
         "type": "waiting"
       },
-      "note": "Închide interacțiunea și cere ridicarea privirii."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-light-0258",
@@ -375,12 +384,12 @@
         "ro": "Fiecare culoare schimbă imaginea. Și liniștea dintre culori îi dă adâncime."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "light-entity-hide",
       "phase": "play",
-      "at": 125.2,
+      "at": 125,
       "kind": "entity",
       "entity": "LUMINA",
       "action": "hide"
@@ -396,7 +405,7 @@
         "ro": "Primul indiciu: semnalul are acum culoarea echipajului. Notez în jurnal."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "nature-theme",
@@ -416,7 +425,7 @@
         "ro": "A doua destinație: Kepler o sută optzeci și șase d. Pe lumea asta, nimic viu nu trăiește singur."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "nature-entity-show",
@@ -434,7 +443,7 @@
       "sfx": "rain",
       "durationSec": 45,
       "gain": 0.35,
-      "note": "„O ploaie fină... Ploaia este și sunet în sală.”"
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-nature-0415",
@@ -447,7 +456,7 @@
         "ro": "Voi credeți că „eu” se termină unde se termină trupul. Dar aerul din voi a trecut prin frunze. Iar apa din voi a fost, cândva, un nor."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-nature-0433",
@@ -460,7 +469,7 @@
         "ro": "Când sigiliul pulsează, îl puteți atinge. Nu e nevoie s-o faceți toți deodată."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "nature-tablet-pulse",
@@ -476,7 +485,7 @@
         ],
         "allowObserve": true
       },
-      "note": "Fereastră publică 4:39–4:51; fără scor de viteză sau sincronizare."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "nature-tablet-close",
@@ -486,7 +495,7 @@
       "interaction": {
         "type": "waiting"
       },
-      "note": "Închide interacțiunea și cere ridicarea privirii."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-nature-0453",
@@ -499,19 +508,19 @@
         "ro": "V-am auzit ritmurile. Diferite, dar împreună fac o singură rețea."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "nature-marker-silence",
       "phase": "play",
       "at": 233,
       "kind": "marker",
-      "label": "Tăcere lungă. Planeta iese din cadru la 242–245 s, apoi warp."
+      "label": "Dialog radio după trecerea pe lângă Kepler; pregătirea următoarei lumi."
     },
     {
       "id": "nature-entity-hide",
       "phase": "play",
-      "at": 239.2,
+      "at": 239,
       "kind": "entity",
       "entity": "NATURA",
       "action": "hide"
@@ -524,15 +533,15 @@
       "speaker": "CAPITANUL",
       "direction": "ușor impresionat, cu trei bătăi distincte și fără triumf",
       "text": {
-        "ro": "Cinci posturi. Zece amprente. Un echipaj."
+        "ro": "Ritmuri diferite. Un singur echipaj."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-ai-0512",
       "phase": "play",
-      "at": 252,
+      "at": 253.5,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "curios și prudent; lasă predicția să pară neliniștitor de exactă",
@@ -540,19 +549,19 @@
         "ro": "A treia destinație nu ne trimite un mesaj. Ne așteaptă. Știe deja că venim."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "tech-theme",
       "phase": "play",
-      "at": 268,
+      "at": 274.5,
       "kind": "theme",
       "theme": "tech"
     },
     {
       "id": "v3-ai-0534",
       "phase": "play",
-      "at": 274,
+      "at": 282,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "precis, admirativ dar rece; descriere de sistem, nu avertisment",
@@ -560,12 +569,12 @@
         "ro": "Mann. Aici aproape nu mai există boli. Distanțele aproape au dispărut. Riscul se calculează. Civilizația de aici prevede aproape orice."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "tech-entity-show",
       "phase": "play",
-      "at": 294,
+      "at": 308,
       "kind": "entity",
       "entity": "TEHNOLOGIC",
       "action": "show"
@@ -573,7 +582,7 @@
     {
       "id": "v3-tech-0556",
       "phase": "play",
-      "at": 296,
+      "at": 310.5,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
       "direction": "precis și aproape muzical; predicția sună factual, nu amenințător",
@@ -581,12 +590,12 @@
         "ro": "Bun venit, Exodus Șapte. Știam că veniți. Căpitanul va spune: „Scanați semnalul.”"
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0604",
       "phase": "play",
-      "at": 304,
+      "at": 321,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "reflex procedural instantaneu, scurt și fără ezitare",
@@ -594,12 +603,12 @@
         "ro": "Scanați semnalul."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-tech-0606",
       "phase": "play",
-      "at": 306,
+      "at": 323.5,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
       "direction": "sec, foarte scurt și discret amuzat",
@@ -607,12 +616,12 @@
         "ro": "Știam."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-tech-0610",
       "phase": "play",
-      "at": 310,
+      "at": 328.5,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
       "direction": "curiozitate analitică autentică; întrebarea rămâne deschisă",
@@ -620,7 +629,7 @@
         "ro": "Modelele noastre acceptă un singur răspuns. Spuneți-mi: ce ține o lume în viață?"
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește.",
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film.",
       "variants": {
         "7-9": {
           "ro": "Mașinile noastre vor un singur răspuns. Spuneți-mi voi: ce ține o lume în viață?"
@@ -630,7 +639,7 @@
     {
       "id": "tech-tablet-perspectives",
       "phase": "play",
-      "at": 317,
+      "at": 337.5,
       "kind": "tablet",
       "interaction": {
         "type": "paired-choice",
@@ -645,22 +654,22 @@
         ],
         "allowObserve": true
       },
-      "note": "Fereastră publică 6:17–6:34; răspunsurile pot fi identice sau diferite."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "tech-tablet-close",
       "phase": "play",
-      "at": 334,
+      "at": 359.5,
       "kind": "tablet",
       "interaction": {
         "type": "waiting"
       },
-      "note": "Închide votul înainte de replica adaptivă."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-tech-0635-diverse",
       "phase": "play",
-      "at": 335,
+      "at": 361,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
       "direction": "surpriză analitică reținută; admite limita modelului fără frustrare",
@@ -669,12 +678,12 @@
       },
       "manual": true,
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-tech-0635-observe",
       "phase": "play",
-      "at": 335,
+      "at": 361,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
       "direction": "varianta sigură fără răspunsuri; descrie numai ce știe sistemul, fără să atribuie intenții",
@@ -683,12 +692,12 @@
       },
       "manual": true,
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-tech-0635-same",
       "phase": "play",
-      "at": 335,
+      "at": 361,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
       "direction": "precis, apoi ușor nedumerit pe ideea perspectivelor diferite",
@@ -697,19 +706,19 @@
       },
       "manual": true,
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "tech-adaptive-select",
       "phase": "play",
-      "at": 335,
+      "at": 361,
       "kind": "marker",
       "label": "Serverul selectează exact o replică: diverse, same sau observe."
     },
     {
       "id": "v3-cap-0642",
       "phase": "play",
-      "at": 342,
+      "at": 370,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "liniștit surprins; prima concluzie care nu vine din protocol",
@@ -717,12 +726,12 @@
         "ro": "Atunci nu elimina nimic."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-tech-0645",
       "phase": "play",
-      "at": 345,
+      "at": 374,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
       "direction": "acceptare calmă, fără concluzie moralizatoare",
@@ -730,12 +739,12 @@
         "ro": "Păstrez tot. Adevărul nu are o singură formă."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "tech-entity-hide",
       "phase": "play",
-      "at": 350.5,
+      "at": 381,
       "kind": "entity",
       "entity": "TEHNOLOGIC",
       "action": "hide"
@@ -743,7 +752,7 @@
     {
       "id": "v3-ai-0651",
       "phase": "play",
-      "at": 351,
+      "at": 381.5,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "confirmare tehnică scurtă și limpede",
@@ -751,12 +760,12 @@
         "ro": "Semnal complet. Unda e stabilă."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0654",
       "phase": "play",
-      "at": 354,
+      "at": 385.5,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "decisiv, compact, energie de plecare",
@@ -764,36 +773,36 @@
         "ro": "Urmăm semnalul."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "void-theme",
       "phase": "play",
-      "at": 356,
+      "at": 388,
       "kind": "theme",
       "theme": "void"
     },
     {
       "id": "wormhole-whoosh",
       "phase": "play",
-      "at": 360,
+      "at": 398,
       "kind": "sfx",
       "sfx": "wormhole-whoosh",
-      "durationSec": 8,
+      "durationSec": 20.5,
       "gain": 0.8,
-      "note": "Dungile de stele încep la 360 s."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "wormhole-marker",
       "phase": "play",
-      "at": 360,
+      "at": 398,
       "kind": "marker",
-      "label": "Wormhole / warp 360–402 s (fără replici — muzică/ambient)"
+      "label": "Tunelul și traversarea; Saturn se vede prin lentila tunelului."
     },
     {
       "id": "v3-ai-0718",
       "phase": "play",
-      "at": 378,
+      "at": 443.5,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "prima ezitare audibilă; precizia se fisurează pe «încă nu»",
@@ -801,12 +810,12 @@
         "ro": "Postul Memorie anunță ceva ciudat. Semnalul trece prin tunel în sens invers. Nimeni nu l-a trimis încă."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0727",
       "phase": "play",
-      "at": 387,
+      "at": 466,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "tensiune controlată; o comandă foarte scurtă",
@@ -814,12 +823,12 @@
         "ro": "Repetă."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-ai-0729",
       "phase": "play",
-      "at": 389,
+      "at": 471,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "rar, foarte clar; fiecare propoziție trebuie înțeleasă din prima",
@@ -827,12 +836,12 @@
         "ro": "A ajuns la noi înainte să fie trimis. Și poartă amprentele acestui echipaj."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0738",
       "phase": "play",
-      "at": 398,
+      "at": 494,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "realizare profundă, fără melodramă; accent pe «noi»",
@@ -840,28 +849,80 @@
         "ro": "Atunci... noi îl vom trimite."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "wormhole-exit-swell",
       "phase": "play",
-      "at": 400,
+      "at": 499,
       "kind": "sfx",
       "sfx": "low-swell",
-      "durationSec": 2,
+      "durationSec": 111,
       "gain": 0.6
+    },
+    {
+      "id": "saturn-theme",
+      "kind": "theme",
+      "phase": "play",
+      "at": 504,
+      "theme": "home"
+    },
+    {
+      "id": "saturn-tablets-rest",
+      "kind": "tablet",
+      "phase": "play",
+      "at": 504,
+      "interaction": {
+        "type": "waiting"
+      }
+    },
+    {
+      "id": "v4-saturn-01",
+      "kind": "voice",
+      "phase": "play",
+      "at": 510,
+      "speaker": "CAPITANUL",
+      "text": {
+        "ro": "Priviți inelele! E Saturn. Suntem din nou în Sistemul Solar. De aici, drumul spre casă ne este cunoscut."
+      },
+      "fallback": "silent",
+      "direction": "cald, clar, uimit fără strigăte; pauze naturale"
+    },
+    {
+      "id": "v4-saturn-02",
+      "kind": "voice",
+      "phase": "play",
+      "at": 527,
+      "speaker": "AVATAR_AI",
+      "text": {
+        "ro": "De departe, inelele par întregi. De aproape, sunt nenumărate bucăți de gheață și rocă. Fiecare se rotește în jurul lui Saturn."
+      },
+      "fallback": "silent",
+      "direction": "cald, clar, uimit fără strigăte; pauze naturale"
+    },
+    {
+      "id": "v4-saturn-03",
+      "kind": "voice",
+      "phase": "play",
+      "at": 557,
+      "speaker": "CAPITANUL",
+      "text": {
+        "ro": "Lăsăm Saturn în urmă. Următoarea oprire este o lume cu oceane, nori și oameni care ne așteaptă."
+      },
+      "fallback": "silent",
+      "direction": "cald, clar, uimit fără strigăte; pauze naturale"
     },
     {
       "id": "home-theme",
       "phase": "play",
-      "at": 402,
+      "at": 610,
       "kind": "theme",
       "theme": "home"
     },
     {
       "id": "v3-ai-0742",
       "phase": "play",
-      "at": 402,
+      "at": 610,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "uimire reținută în interiorul unei confirmări tehnice",
@@ -869,12 +930,12 @@
         "ro": "Navigația confirmă. Locul de unde pleacă e chiar în fața noastră."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0750",
       "phase": "play",
-      "at": 410,
+      "at": 618.5,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "aproape șoptit; recunoaștere, nu anunț",
@@ -882,12 +943,12 @@
         "ro": "Pământul."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-ai-0754",
       "phase": "play",
-      "at": 414,
+      "at": 623,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "precis la început, apoi conștient de paradox",
@@ -895,12 +956,12 @@
         "ro": "Semnalul pleacă de aici. Iar clipa în care va fi trimis... n-a venit încă."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0802",
       "phase": "play",
-      "at": 422,
+      "at": 631.5,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "uimire autentică și interiorizată; descoperirea se așază în timp ce vorbește",
@@ -908,12 +969,12 @@
         "ro": "Înțeleg. N-am urmărit semnalul altcuiva. L-am făcut noi, pas cu pas."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-ai-0809",
       "phase": "play",
-      "at": 429,
+      "at": 639,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "cald și revelator; enumerarea are trei trepte, finalul aparține copiilor",
@@ -921,12 +982,12 @@
         "ro": "Lumina i-a dat culoare. Natura i-a dat ritm. Iar voi i-ați dat ceva ce nicio mașină nu poate inventa: alegerile voastre."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-echo-0820",
       "phase": "play",
-      "at": 440,
+      "at": 651,
       "kind": "voice",
       "speaker": "LUMINA",
       "direction": "primul ecou; foarte scurt, îndepărtat și recognoscibil",
@@ -934,12 +995,12 @@
         "ro": "V-am recunoscut după lumină."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-echo-nature-0824",
       "phase": "play",
-      "at": 443.8,
+      "at": 655,
       "kind": "voice",
       "speaker": "NATURA",
       "direction": "al doilea ecou; blând, apropiat, ca o amintire",
@@ -947,12 +1008,12 @@
         "ro": "V-am recunoscut după ritm."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-echo-tech-0826",
       "phase": "play",
-      "at": 446.4,
+      "at": 658,
       "kind": "voice",
       "speaker": "TEHNOLOGIC",
       "direction": "al treilea ecou; precis, dar cu uimire nouă și discretă",
@@ -960,12 +1021,12 @@
         "ro": "V-am recunoscut după alegeri."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0829",
       "phase": "play",
-      "at": 449,
+      "at": 661,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "cald, limpede, cu greutate pe «noi»; replica-titlu, fără ton de slogan",
@@ -973,12 +1034,12 @@
         "ro": "Corectez jurnalul. A patra lume nu era ascunsă. Noi încă nu știam s-o vedem."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-ai-0838",
       "phase": "play",
-      "at": 458,
+      "at": 670.5,
       "kind": "voice",
       "speaker": "AVATAR_AI",
       "direction": "confirmare calmă și decisivă; mesajul citat este perfect articulat",
@@ -986,12 +1047,12 @@
         "ro": "Mesaj complet: „Găsiți a patra lume.”"
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "v3-cap-0843",
       "phase": "play",
-      "at": 463,
+      "at": 676,
       "kind": "voice",
       "speaker": "CAPITANUL",
       "direction": "foarte simplu și definitiv; fără triumf",
@@ -999,31 +1060,31 @@
         "ro": "Trimite-l."
       },
       "fallback": "silent",
-      "note": "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "home-transmit-chime",
       "phase": "play",
-      "at": 463.5,
+      "at": 676.5,
       "kind": "sfx",
       "sfx": "arrival-chime",
-      "durationSec": 1.4,
+      "durationSec": 1.5,
       "gain": 0.65,
-      "note": "Nota a patra confirmă trimiterea semnalului înainte de tăietura de la 465 s."
+      "note": "Sincronizat după filmul panoramic; timpii sunt secunde de film."
     },
     {
       "id": "home-transmit-marker",
       "phase": "play",
-      "at": 463.5,
+      "at": 676.5,
       "kind": "marker",
-      "label": "Semnalul celor cinci posturi este transmis; unda înconjoară Pământul."
+      "label": "Semnalul echipajului este transmis după apropierea de Pământ."
     },
     {
       "id": "rev-hold-marker",
       "phase": "play",
-      "at": 465,
+      "at": 678,
       "kind": "marker",
-      "label": "La 465 s filmul se oprește determinist pe Pământ și continuă fără tăietură în epilog."
+      "label": "Filmul se termină; epilogul continuă pe ultimul cadru de stele."
     },
     {
       "id": "epi-theme",

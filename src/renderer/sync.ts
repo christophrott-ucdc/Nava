@@ -21,6 +21,7 @@ export interface SyncOptions {
   /** R4 — `security.screenToken` from boot; sent in `hello` (server closes 4401 without it when configured). */
   screenToken?: string;
   isClockSource: boolean;
+  serverAuthoritative?: boolean;
   clockHz: number;
   seekThresholdSec: number;
   rateNudge: number;
@@ -194,7 +195,7 @@ export class SyncClient {
           }
         }
         this.opts.onWelcome?.(msg);
-        if (!this.opts.isClockSource && msg.state) {
+        if ((!this.opts.isClockSource || this.opts.serverAuthoritative) && msg.state) {
           const s = msg.state;
           const expected = this.extrapolate(s.phaseTime, s.serverTimeMs, s.rate);
           this.driftSec = this.opts.player.follow(s.suspended&&s.state==='playing'?'paused':s.state, expected, s.rate, this.params());
@@ -204,7 +205,7 @@ export class SyncClient {
       }
       case "clock": {
         this.sampleOffset(msg.serverTimeMs);
-        if (this.opts.isClockSource) return;
+        if (this.opts.isClockSource && !this.opts.serverAuthoritative) return;
         if(this.suspended)return;
         const expected = this.extrapolate(msg.phaseTime, msg.serverTimeMs, msg.rate);
         this.driftSec = this.opts.player.follow(msg.state, expected, msg.rate, this.params());

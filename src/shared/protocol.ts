@@ -287,6 +287,7 @@ export interface NavaBridge {
     wsUrl: string;
     /** file:// URL-uri absolute, gata de pus in <video src> / loader GLB. */
     videoUrl: string;
+    panelVideoUrls?: Record<string, string>;
     avatarUrl: string;
     voiceBaseUrl: string; // file:///.../assets/voice/
     showUrl: string; // file:///.../assets/show/show.json

@@ -11,7 +11,12 @@
     "path": "media/cinema_4k_h264.mp4",
     "fit": "cover",
     "preloadPoster": true,
-    "panelsDir": "C:/Users/Chris/Documents/GitHub/Video/panels"
+    "panelsDir": "../Video/panels",
+    "panelSync": {
+      "deadbandSec": 0.025,
+      "seekThresholdSec": 0.12,
+      "rateNudge": 0.05
+    }
   },
   "avatar": {
     "glb": "assets/avatar/avatar-ai.glb",
@@ -121,7 +126,7 @@
     "resetAfterSec": 0
   },
   "videoWall": {
-    "mode": "cinema",
+    "mode": "panorama",
     "fit": "cover",
     "focusX": 0.5,
     "focusY": 0.5,

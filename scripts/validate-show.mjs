@@ -116,13 +116,14 @@ for (const [index, cue] of (show.cues ?? []).entries()) {
   }
 }
 
-if (show.version === "0.5.0-ro-stage") {
+if (["0.5.0-ro-stage","0.6.0-film-panels"].includes(show.version)) {
+  const film=show.version==='0.6.0-film-panels',duration=film?678.05:465,voiceCount=film?54:51;
   const voices = show.cues.filter((cue) => cue.kind === "voice");
   const adaptive = voices.filter((cue) => cue.id.startsWith("v3-tech-0635-"));
-  if (show.videoDurationSec !== 465 || show.launchLeadInSec !== 10 || !show.preshowAutoStart || !show.epilogueOnVideoEnd) {
-    fail("V3 timing contract must be preshow auto-start + 10s lead-in + 465s film cut + automatic epilogue");
+  if (show.videoDurationSec !== duration || show.launchLeadInSec !== 10 || !show.preshowAutoStart || !show.epilogueOnVideoEnd) {
+    fail(`Timing contract: preshow auto-start + 10s lead-in + ${duration}s film + automatic epilogue`);
   }
-  if (voices.length !== 51) fail(`V3 show must contain 51 voice assets, found ${voices.length}`);
+  if (voices.length !== voiceCount) fail(`Show must contain ${voiceCount} voice assets, found ${voices.length}`);
   if (voices.some((cue) => cue.fallback !== "silent")) fail("every V3 voice must block browser/Windows TTS");
   if (adaptive.length !== 3 || adaptive.some((cue) => !cue.manual)) fail("the three V3 adaptive voices must exist and remain manual");
   if (!cueIds.has("tech-adaptive-select")) fail("V3 show is missing the adaptive selection marker");

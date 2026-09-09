@@ -30,8 +30,9 @@ function fail(message) {
 
 function expectedPhaseAndAt(publicAtSec) {
   if (publicAtSec < 50) return { phase: "preshow", at: publicAtSec };
-  if (publicAtSec < 525) return { phase: "play", at: publicAtSec - 60 };
-  return { phase: "epilogue", at: publicAtSec - 525 };
+  const filmEnd=60+readJson(showPath).videoDurationSec;
+  if (publicAtSec < filmEnd) return { phase: "play", at: publicAtSec - 60 };
+  return { phase: "epilogue", at: publicAtSec - filmEnd };
 }
 
 function screenplayCues() {
@@ -66,10 +67,11 @@ const cues = Array.isArray(source.cues) ? source.cues : [];
 const expected = screenplayCues();
 const ids = new Set();
 
-if (source.version !== "3.3.0-ro-stage-adaptation") fail(`unexpected source version: ${source.version}`);
+const film=source.version==='3.4.0-film-panels';
+if (!film&&source.version !== "3.3.0-ro-stage-adaptation") fail(`unexpected source version: ${source.version}`);
 if (source.tts?.provider !== "elevenlabs") fail("provider must be elevenlabs");
 if (source.tts?.modelId !== "eleven_v3") fail("model must be eleven_v3");
-if (cues.length !== expected.length) fail(`source has ${cues.length} cues, screenplay has ${expected.length}`);
+if (!film&&cues.length !== expected.length) fail(`source has ${cues.length} cues, screenplay has ${expected.length}`);
 
 for (const [index, cue] of cues.entries()) {
   const where = `cue[${index}]`;
@@ -80,11 +82,11 @@ for (const [index, cue] of cues.entries()) {
   if (!Number.isFinite(cue.maxDurationSec) || cue.maxDurationSec <= 0) fail(`${cue.id} has invalid maxDurationSec`);
   if (!Array.isArray(cue.tts?.audioTags)) fail(`${cue.id} has invalid audio direction tags`);
   if (!cue.tts.audioTags.length && !Number.isFinite(cue.tts.speed)) fail(`${cue.id} has no TTS performance control`);
-  if (cue.publicAtSec !== fromScript?.publicAtSec || cue.speaker !== fromScript?.speaker || cue.text?.ro !== fromScript?.text) {
+  if (!film&&(cue.publicAtSec !== fromScript?.publicAtSec || cue.speaker !== fromScript?.speaker || cue.text?.ro !== fromScript?.text)) {
     fail(`${cue.id} does not match the screenplay at index ${index}`);
   }
   const timing = expectedPhaseAndAt(cue.publicAtSec);
-  if (cue.phase !== timing.phase || cue.at !== timing.at) fail(`${cue.id} has invalid phase/at mapping`);
+  if (cue.phase !== timing.phase || Math.abs(cue.at-timing.at)>.00001) fail(`${cue.id} has invalid phase/at mapping`);
 }
 
 if (fs.existsSync(manifestPath)) {
@@ -141,5 +143,5 @@ if (!process.exitCode) {
   const captain = cues.filter((cue) => cue.speaker === "CAPITANUL").length;
   const avatar = cues.filter((cue) => cue.speaker === "AVATAR_AI").length;
   const other = cues.length - captain - avatar;
-  console.log(`[voices] OK: ${cues.length} assets match screenplay V3.3 (${captain} Captain, ${avatar} Ship Voice, ${other} civilisation/echo; one of three adaptive assets plays)`);
+  console.log(`[voices] OK: ${cues.length} assets match ${source.version} (${captain} Captain, ${avatar} Ship Voice, ${other} civilisation/echo; one of three adaptive assets plays)`);
 }

@@ -1,3 +1,5 @@
+> Actualizare film — 9 septembrie 2026: timpii editoriali de mai jos sunt istorici. Execuția folosește filmul de 678,05 s și pachetele JSON remapate. Reperele vizuale, replicile Saturn și timpii actuali sunt documentați în [REINTEGRARE-FILM](../REINTEGRARE-FILM.md).
+
 # 10–15 ani — Semnalul fără semnătură
 
 Stare: scenariu editorial nou, cu dialog integral propus și contract de interacțiune; neintegrat, fără MP3-uri produse. Revizie 1, 5 septembrie 2026. Profil propus `age-10-15`. Consultare prin perspectivă AI de dramaturgie pentru adolescenți, nu consultare sau validare de către un specialist uman. Alegerea profilului aparține operatorului, inclusiv la limitele de vârstă.

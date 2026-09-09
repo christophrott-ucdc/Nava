@@ -175,9 +175,10 @@ try {
         opacity: transporter ? getComputedStyle(transporter).opacity : "0",
         canvasWidth: canvas?.width ?? 0, canvasHeight: canvas?.height ?? 0,
         cssWidth: r?.width ?? 0, cssHeight: r?.height ?? 0,
+        panelWidth: host?.closest('#span-focus')?.getBoundingClientRect().width ?? innerWidth,
         contextLost: gl?.isContextLost() ?? true };
     })()`),
-    (sample) => sample.shown && Number(sample.opacity) > 0.9 && sample.cssWidth > 100 && sample.cssHeight > 100 && !sample.contextLost,
+    (sample) => sample.shown && Number(sample.opacity) > 0.9 && sample.cssWidth > sample.panelWidth*.1 && sample.cssHeight > sample.panelWidth*.1 && !sample.contextLost,
     15_000,
     "Captain avatar visibility at its first cue",
   );

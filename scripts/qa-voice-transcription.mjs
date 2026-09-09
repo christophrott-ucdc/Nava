@@ -71,6 +71,21 @@ async function transcribe(file) {
   return response.json();
 }
 
+const selected=process.argv.slice(2);
+if(selected.length){
+ const report=[];
+ for(const id of selected){
+  const cue=source.cues.find(c=>c.id===id);if(!cue)throw Error(`Unknown cue ${id}`);
+  const transcript=await transcribe(path.join(voiceDir,id+'.mp3'));
+  const expected=words(cue.text.ro),actual=words(String(transcript.text??''));
+  const wer=editDistance(expected,actual)/Math.max(1,expected.length);
+  report.push({id,expected:cue.text.ro,transcript:transcript.text,wer});
+  if(wer>.18||actual.some(w=>['warmly','calm','authoritative','precise'].includes(w)))process.exitCode=1;
+ }
+ await fs.mkdir(path.join(root,'runs/film-reintegration'),{recursive:true});
+ await fs.writeFile(path.join(root,'runs/film-reintegration/new-voices-qa.json'),JSON.stringify(report,null,2));
+ console.log(JSON.stringify(report,null,2));process.exit(process.exitCode??0);
+}
 for (const [speaker, file, selectCue] of [
   ["CAPITANUL", "preview-capitan-v3.mp3", (cue) => cue.speaker === "CAPITANUL"],
   ["AVATAR_AI", "preview-avatar-v3.mp3", (cue) => cue.speaker === "AVATAR_AI"],

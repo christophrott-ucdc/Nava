@@ -1,3 +1,5 @@
+> Actualizare film — 9 septembrie 2026: timpii editoriali de mai jos sunt istorici. Execuția folosește filmul de 678,05 s și pachetele JSON remapate. Reperele vizuale, replicile Saturn și timpii actuali sunt documentați în [REINTEGRARE-FILM](../REINTEGRARE-FILM.md).
+
 # 5–10 ani — Bucățile de acasă
 
 Profil propus: `age-5-10`. Stare: scenariu editorial complet pentru revizie și producție, **neintegrat în player**. Replicile înlocuiesc dialogul numai în viitorul pachet de vârstă; acest document nu modifică show-ul legacy, vocile sau filmul.

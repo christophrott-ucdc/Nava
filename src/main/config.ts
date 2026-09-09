@@ -415,6 +415,9 @@ export function loadConfig(opts: { cli: CliArgs; appRoot: string; dataRoot?: str
     const raw = (config.video as { panelsDir?: unknown }).panelsDir;
     if (typeof raw === "string" && raw.trim()) config.video.panelsDir = path.resolve(appRoot, raw.trim());
     else delete config.video.panelsDir;
+    const sync=config.video.panelSync;
+    const deadbandSec=finiteNumber(sync?.deadbandSec,.025,.001,.1);
+    config.video.panelSync={deadbandSec,seekThresholdSec:finiteNumber(sync?.seekThresholdSec,.12,deadbandSec+.001,2),rateNudge:finiteNumber(sync?.rateNudge,.05,0,.25)};
   }
   config.avatar.glb = nonEmptyString(config.avatar.glb, DEFAULT_CONFIG.avatar.glb);
   if (config.avatar.corner !== "bottom-left" && config.avatar.corner !== "bottom-right") config.avatar.corner = DEFAULT_CONFIG.avatar.corner;

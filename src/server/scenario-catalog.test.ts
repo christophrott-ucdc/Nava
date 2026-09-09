@@ -11,7 +11,7 @@ test('all production packages have aligned offline voices, unambiguous branch sc
   const root=process.cwd(),legacy=JSON.parse(await readFile(path.join(root,'assets/show/show.json'),'utf8')) as ShowFile;
   for(const id of ['age-5-10','age-10-15','age-15-18','adults'] as const){
     const pack=await loadScenario(root,id,legacy);
-    assert.deepEqual(pack.issues,[],id);assert.deepEqual(pack.show.scenes,legacy.scenes);assert.equal(pack.show.videoDurationSec,465);
+    assert.deepEqual(pack.issues,[],id);assert.deepEqual(pack.show.scenes,legacy.scenes);assert.equal(pack.show.videoDurationSec,legacy.videoDurationSec);
     assert.equal(pack.show.launchLeadInSec,10);
     for(const entries of Object.values(pack.branches))assert.equal(new Set(entries.map(e=>e.condition)).size,entries.length);
     assert(pack.show.cues.filter(c=>c.kind==='voice').every(c=>c.kind==='voice'&&c.fallback==='silent'));

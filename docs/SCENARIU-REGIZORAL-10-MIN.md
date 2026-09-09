@@ -1,3 +1,5 @@
+> Actualizare film panoramic, 2026-09-09: cronologia curentă, sursele celor cinci panouri și vocile Saturn sunt descrise în [REINTEGRARE-FILM.md](REINTEGRARE-FILM.md). Timpii istorici de 10 minute / 465 s nu mai sunt contractul filmului curent. Tutorialul adaugă timp variabil.
+
 # A PATRA LUME
 
 ## PROTOCOLUL ACASĂ

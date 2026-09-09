@@ -1,3 +1,5 @@
+> Actualizare film panoramic, 2026-09-09: cronologia curentă, sursele celor cinci panouri și vocile Saturn sunt descrise în [REINTEGRARE-FILM.md](docs/REINTEGRARE-FILM.md). Timpii istorici de 10 minute / 465 s nu mai sunt contractul filmului curent. Tutorialul adaugă timp variabil.
+
 # EXODUS-7 · „A Patra Lume” — instalare
 
 Acest fișier acoperă **doar instalarea**. Pentru folosirea de zi cu zi (pornirea unui spectacol, tablete, consolă, depanare) deschide `MANUAL-UTILIZARE.docx` din aceeași arhivă.
@@ -11,7 +13,8 @@ Acest fișier acoperă **doar instalarea**. Pentru folosirea de zi cu zi (pornir
 | `NavaPlayer-0.1.0-x64-portable.exe` | aplicația completă, într-un singur fișier; nu se instalează, se rulează |
 | `NavaPlayer-0.1.0-x64-setup.exe` | aceeași aplicație, ca instalator clasic (creează scurtătură în meniul Start) |
 | `config.json` | configurația de pornire; se citește de lângă executabil |
-| `media/cinema_4k_h264.mp4` | filmul, 2,4 GB; **nu** este în executabil, stă separat |
+| `video.panelsDir` / cinci fișiere `<screenId>.mp4` | filmul panoramic; separat de executabil. Copiile optimizate și configurarea sunt în `docs/REINTEGRARE-FILM.md` |
+| `media/cinema_4k_h264.mp4` | filmul vechi, păstrat pentru fallback și modul cinema |
 | `README-INSTALARE.md` | fișierul acesta |
 | `MANUAL-UTILIZARE.docx` | manualul de utilizare, pe capitole |
 

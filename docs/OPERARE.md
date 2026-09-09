@@ -1,3 +1,5 @@
+> Actualizare film panoramic, 2026-09-09: cronologia curentă, sursele celor cinci panouri și vocile Saturn sunt descrise în [REINTEGRARE-FILM.md](REINTEGRARE-FILM.md). Timpii istorici de 10 minute / 465 s nu mai sunt contractul filmului curent. Tutorialul adaugă timp variabil.
+
 # Manual de operare — NavaPlayer („A Patra Lume · Protocolul Acasă")
 
 > Actualizat 2026-09-05 (agentul E, E-02) pentru runda 4 (R4). Fiecare afirmație are sursa în paranteză. Pentru **starea live** a pachetelor R4 (ce este gata, ce este schelet) citiți `HANDOFF-LIVE.md` §2 — unde scrie „în lucru" mai jos, acel pachet nu era bifat `[x]` la data actualizării.
@@ -99,7 +101,7 @@ Pornirea **automată** (trecerea preshow → lansare după 50 s când `preshowAu
 3. Lansarea pornește automat după pre-show (dacă readiness este verde). Urmează countdown-ul T−10…0 pe cadrul înghețat, apoi filmul. **SARI LA LANSARE** / `S` / **START EXPERIENCE** omit pre-show-ul; `P` pornește explicit pre-show-ul.
 4. **PAUSE/PLAY** numai dacă este necesar. Pentru repetiții: slider, salt la scenă, `fireCue` manual, sau modul de repetiție (§8).
 5. La întrebarea Tehnologicei (6:17–6:34), lăsați copiii să aleagă; la 6:35 serverul alege singur una dintre cele trei replici (`diverse`/`same`/`observe`).
-6. Playerul oprește determinist filmul la 465 s și continuă automat în epilog (75 s) pe aceleași ecrane și posturi.
+6. Playerul oprește determinist filmul la durata videoDurationSec din show.json și continuă automat în epilog (75 s) pe aceleași ecrane și posturi.
 7. După ultima replică, **RESTART** pentru următorul grup (șterge și răspunsurile tabletelor și posturile revendicate; `src/server/index.ts`, `handleCommand`).
 
 ## 6. Taste pe ecranul-sursă de ceas (`src/renderer/index.ts`; main: `src/main/shortcuts.ts`)
@@ -215,7 +217,7 @@ Alegerea în așteptare și confirmarea sunt afișate diferit copiilor. Focusul 
 
 Profilul separat `config.auto.local.json` este pregătit pentru 98–98–115–98–98. Pornește cu `npm run auto:start`. Inventarul detectează display-urile Windows; desktopul clonat și ieșirile lipsă nu sunt acceptate ca panoramă completă. Pentru calibrarea optică urmează atelierul: marcaje pe toate TV-urile, imagine din poziția publicului, procesare locală, import și Aplică proiecția calibrată în pregătire. Python/OpenCV sunt necesare numai pentru procesarea calibrării.
 
-Misiunile sunt în `data/nava.sqlite`; certificatele și fotografiile rămân în `runs/`. Nu șterge baza pentru a rezolva o recuperare: continuă explicit sau pregătește un grup nou. Rulările tehnice sunt separate de public. Repetiția completă durează aproximativ zece minute și poate fi anulată din dialog; nu dovedește singură audibilitatea sau alinierea fizică.
+Misiunile sunt în `data/nava.sqlite`; certificatele și fotografiile rămân în `runs/`. Nu șterge baza pentru a rezolva o recuperare: continuă explicit sau pregătește un grup nou. Rulările tehnice sunt separate de public. Repetiția completă durează durata calculată din scenariul activ (afișată în consolă) și poate fi anulată din dialog; nu dovedește singură audibilitatea sau alinierea fizică.
 
 Ghidul complet și limitele de acceptare sunt în [IMPLEMENTARE-SCENARII-DISPLAY.md](IMPLEMENTARE-SCENARII-DISPLAY.md).
 ## Tutorialul și încheierea interactivă

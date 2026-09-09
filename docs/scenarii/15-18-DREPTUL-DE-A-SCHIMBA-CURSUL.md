@@ -1,3 +1,5 @@
+> Actualizare film — 9 septembrie 2026: timpii editoriali de mai jos sunt istorici. Execuția folosește filmul de 678,05 s și pachetele JSON remapate. Reperele vizuale, replicile Saturn și timpii actuali sunt documentați în [REINTEGRARE-FILM](../REINTEGRARE-FILM.md).
+
 # 15–18 ani — Dreptul de a schimba cursul
 
 Stare: scenariu editorial nou, cu dialog integral propus; neintegrat, fără audio produs. Revizie 1, 5 septembrie 2026. Profil propus `age-15-18`. Perspectivă editorială AI pentru adolescenți, nu consultare umană acreditată. Profilul este selectat de operator, inclusiv pentru grupurile aflate la limita categoriilor.

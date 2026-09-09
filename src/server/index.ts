@@ -13,6 +13,7 @@ import { createServer as createHttpServer, type IncomingMessage, type Server } f
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import {publicDurationSec} from '../shared/film-timing';
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createAdaptorServer } from "@hono/node-server";
@@ -617,6 +618,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   });
   const diagnosticDir=path.join(path.dirname(opts.runsDir),'data','diagnostics');
   rehearsal=new TechnicalRehearsal({directory:diagnosticDir,scenario:()=>({id:activePackage.id,hash:activePackage.hash}),state:()=>({...director.getState(),readiness:director.readiness(false)}),samples:()=>perf.snapshot(),
+    durationSec:()=>publicDurationSec(director.getShow()),
     start:()=>{
       mission.reset(activePackage.id,activePackage.hash);mission.record.mode='diagnostic';
       delete mission.record.progress.participants;
@@ -1033,7 +1035,8 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     if (clockSource && client) log("warn", "clock source replaced", { from: clockSource.id, to: client.id });
     if (clockSource) clockSource.isClockSource = false;
     clockSource = client;
-    director.setClockSourceConnected(client !== null);
+    // Retain the privileged audio/photo renderer while the server owns panel-film time.
+    director.setClockSourceConnected(client !== null && !(config.video.panelsDir && config.videoWall?.mode !== 'cinema'));
   };
 
   const onHello = (client: Client, msg: HelloMsg): void => {
@@ -1064,7 +1067,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       msg.client !== "tablet" && typeof msg.name === "string"
         ? msg.name.replace(/[\x00-\x1f\x7f]/g, " ").trim().slice(0, 32)
         : undefined;
-    const expectedClockId = config.displayMode === "span" ? spanPrimaryId() : config.screens[0]?.id;
+    const expectedClockId = config.displayMode === "span" || (config.video.panelsDir&&config.videoWall?.mode!=='cinema') ? spanPrimaryId() : config.screens[0]?.id;
     client.isClockSource = msg.client === "screen" && !!msg.isClockSource && client.id === expectedClockId;
     if (msg.client === "screen" && msg.isClockSource && !client.isClockSource) {
       log("warn", "ws rejected unexpected clock-source claim", { id: client.id, expectedClockId, remote: client.remote });
@@ -1199,7 +1202,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
             msg.rate >= 0 &&
             msg.rate <= 8 // rehearse mode runs up to 8x
           ) {
-            director.onReport(msg);
+            director.onReport(msg, !(config.video.panelsDir && config.videoWall?.mode !== 'cinema'));
           }
           break;
         }

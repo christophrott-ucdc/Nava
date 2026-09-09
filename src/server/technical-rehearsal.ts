@@ -6,11 +6,13 @@ import type {PerfSample,ShowState} from '../shared/types';
 export interface RehearsalReport {
   id:string;kind:'rehearsal';status:'running'|'passed'|'failed'|'cancelled';startedAt:string;finishedAt?:string;
   scenario:string;contentHash:string;elapsedSec:number;sampleCount:number;
+  expectedDurationSec?:number;
   checks:Array<{name:string;status:'passed'|'failed'|'not-tested'|'not-observable';detail:string}>;
 }
 interface Dependencies {
   directory:string;scenario:()=>{id:string;hash:string};state:()=>ShowState;samples:()=>PerfSample[];
   start:()=>void;finish:()=>void;
+  durationSec?:()=>number;
 }
 export function assessRehearsalVideo(first:PerfSample,last:PerfSample,elapsedSec:number,now=Date.now()){
   const frames=last.videoTotal-first.videoTotal,dropped=Math.max(0,last.videoDropped-first.videoDropped);
@@ -32,6 +34,7 @@ export class TechnicalRehearsal {
     if(this.running)throw new Error('Repetiție deja activă');
     const s=this.deps.scenario();this.started=Date.now();this.first.clear();this.last.clear();
     this.report={id:randomUUID(),kind:'rehearsal',status:'running',startedAt:new Date().toISOString(),scenario:s.id,contentHash:s.hash,elapsedSec:0,sampleCount:0,checks:[]};
+    this.report.expectedDurationSec=this.deps.durationSec?.()??600;
     this.deps.start();
     this.timer=setInterval(()=>{void this.tick().catch(()=>{void this.cancel('Eroare la colectarea sau salvarea raportului.').catch(()=>{});});},1000);
     try{await this.save();}catch(error){await this.cancel('Raportul nu poate fi salvat.').catch(()=>{});throw error;}return this.report;
@@ -46,7 +49,7 @@ export class TechnicalRehearsal {
       }
       if(state.suspended){await this.cancel('Topologia sau misiunea a fost suspendată.');return;}
       if(state.state==='ended'){await this.complete();return;}
-      if(this.report.elapsedSec>650){await this.cancel('Misiunea nu s-a încheiat în intervalul maxim.');return;}
+      if(this.report.elapsedSec>(this.deps.durationSec?.()??600)+50){await this.cancel('Misiunea nu s-a încheiat în intervalul maxim.');return;}
       const bucket=Math.floor(this.report.elapsedSec/5);if(bucket!==this.lastSavedBucket){await this.save();this.lastSavedBucket=bucket;}
     }finally{this.busy=false;}
   }

@@ -10,6 +10,7 @@ export interface SpanOptions {
   centerScreenId: string; overlays: HTMLElement[]; log?: Logger; wall?: VideoWallConfig;
   /** Same show clock as the film/timeline, never a separate wall clock. */
   getTime?: () => number;
+  panelVideos?: ReadonlyMap<string,HTMLVideoElement>;
 }
 export interface SpanController {
   start(): void; stop(): void; refresh(): void; setWall(wall: VideoWallConfig): void;
@@ -33,8 +34,9 @@ export function scaleViewports(viewports:readonly SpanViewport[],width:number,he
   const bottom=Math.max(1,...viewports.map(v=>v.y+v.height));
   return viewports.map(v=>({...v,x:v.x*width/right,y:v.y*height/bottom,width:v.width*width/right,height:v.height*height/bottom}));
 }
-export function rendererClockSource(master:boolean,span:boolean,screenId:string,screens:readonly ScreenConfig[]):boolean {
-  return master && (span || (screens[0]?.id ?? screenId)===screenId);
+export function rendererClockSource(master:boolean,span:boolean,screenId:string,screens:readonly ScreenConfig[],panelPlayback=false):boolean {
+  const primary=panelPlayback?(screens.find(s=>s.playAudio)??screens[0]):screens[0];
+  return master && (span || (primary?.id ?? screenId)===screenId);
 }
 /** Deterministic global star positions: adjacent panels see pieces of one coordinate field. */
 export function wallStar(index:number):{x:number;y:number;size:number;phase:number} {
@@ -143,14 +145,21 @@ export function createSpan(opts:SpanOptions):SpanController {
     const frameChanged=revision!==lastVideoRevision;
     const now=performance.now();
     const ambientDue=wall?.mode==='cinema'&&!wall.calibration&&!reduced.matches&&time!==lastAmbientTime&&now-lastAmbientDraw>=1000/30-.5;
-    if(!dirty&&(!frameChanged||wall?.calibration)&&!ambientDue)return;
+    if(!opts.panelVideos?.size&&!dirty&&(!frameChanged||wall?.calibration)&&!ambientDue)return;
     const redrawAll=dirty;dirty=false;lastVideoRevision=revision;
     if(ambientDue||redrawAll){lastAmbientTime=time;lastAmbientDraw=now;}
     for(const p of panels){
       const ctx=p.ctx;if(!ctx)continue;const W=p.canvas.width,H=p.canvas.height;
+      const panelVideo=opts.panelVideos?.get(p.vp.screenId);
+      // Keep the last presented image during a seek instead of flashing black.
+      if(panelVideo&&wall?.mode!=='cinema'&&!wall?.calibration&&panelVideo.readyState<2)continue;
       if(wall?.mode==='cinema'&&p.vp.screenId!==centralId&&!redrawAll&&!ambientDue)continue;
       ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
       if(wall?.calibration){calibration(ctx,W,H,p.vp.screenId);continue;}
+      if(panelVideo&&wall?.mode!=='cinema'){
+        if(panelVideo.readyState>=2)try{ctx.drawImage(panelVideo,0,0,panelVideo.videoWidth,panelVideo.videoHeight,0,0,W,H);}catch{/* wait for decoded frame */}
+        continue;
+      }
       const cinema=wall?.mode==='cinema';
       if(cinema)ambient(ctx,W,H,p.vp.screenId,time);
       if(ready&&(!cinema||p.vp.screenId===centralId)){
