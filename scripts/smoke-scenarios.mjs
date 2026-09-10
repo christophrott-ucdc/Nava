@@ -15,7 +15,7 @@ import WebSocket from 'ws';
 export const ROOT = path.resolve(import.meta.dirname, '..');
 const require = createRequire(import.meta.url);
 export const PROFILES = ['age-5-10', 'age-10-15', 'age-15-18', 'adults'];
-export const WINDOWS = { 'age-5-10': [100, 208, 310], 'age-10-15': [100, 200, 311], 'age-15-18': [100, 196, 310], adults: [104, 201, 315] };
+export const WINDOWS = { 'age-5-10': [100, 208, 329], 'age-10-15': [100, 200, 330], 'age-15-18': [100, 196, 329], adults: [104, 201, 335] };
 export async function waitFor(read, predicate, label, timeout = 8000) {
   const until = Date.now() + timeout; let value;
   while (Date.now() < until) { value = await read(); if (predicate(value)) return value; await new Promise(r => setTimeout(r, 30)); }

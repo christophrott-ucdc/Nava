@@ -377,7 +377,19 @@ export interface AppConfig {
   server: { port: number; bindHost: string };
   lang: Lang;
   show: string;
-  video: { path: string; fit: "cover" | "contain"; preloadPoster: boolean };
+  video: {
+    path: string;
+    fit: "cover" | "contain";
+    preloadPoster: boolean;
+    /**
+     * Folder cu cele cinci clipuri de panou (`<screenId>.mp4`, 3840x2160), tiate din masterul
+     * panoramic randat in SpaceEngine. Cand e setat, pagina /clips/ le poate reda si verifica
+     * sincronizarea. SpaceEngine nu poate encoda un singur fisier de 19200 px latime (NVENC se
+     * opreste la 8192, SVT-AV1 la 16384), de aceea zidul se livreaza ca cinci fisiere.
+     */
+    panelsDir?: string;
+    panelSync?: { deadbandSec?: number; seekThresholdSec?: number; rateNudge?: number };
+  };
   avatar: {
     glb: string;
     corner: "bottom-left" | "bottom-right";

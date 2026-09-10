@@ -28,6 +28,20 @@ const voices = source.cues.map((cue) => ({
   note: "Pistă V3 pre-generată; nu folosi vocea Windows/browser dacă asset-ul lipsește.",
 }));
 
+// The measured film cue sheet owns timing and non-voice events after reintegration.
+// Never reapply the historical 465-second staging below to a panoramic show.
+if (source.version === '3.4.0-film-panels') {
+  const byId=new Map(voices.map(c=>[c.id,c]));
+  show.cues=show.cues.map(c=>c.kind==='voice'?{...c,...byId.get(c.id)}:c);
+  const existing=new Set(show.cues.map(c=>c.id));
+  show.cues.push(...voices.filter(c=>!existing.has(c.id)));
+  const rank={preshow:0,play:1,epilogue:2};
+  show.cues.sort((a,b)=>rank[a.phase]-rank[b.phase]||a.at-b.at);
+  await fs.writeFile(showPath,JSON.stringify(show,null,2)+'\n');
+  console.log(`[voice-sync] ${voices.length} voices; measured film timing preserved`);
+  process.exit(0);
+}
+
 const roles = ["NAVIGAȚIE", "PROPULSIE", "COMUNICAȚII", "BIOSEMNALE", "MEMORIE"];
 const retiredTabletCues = new Set(["tech-tablet-question", "rev-tablet-message"]);
 const managedV3CueIds = new Set([

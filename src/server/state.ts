@@ -565,10 +565,11 @@ export class ShowDirector {
   }
 
   /** Report from the clock-source screen (~4 Hz). */
-  onReport(r: ReportMsg): void {
+  onReport(r: ReportMsg, useMediaClock = true): void {
     const nowMs = this.clock();
     const prevReady = this.videoReady;
     this.videoReady = !!r.videoReady;
+    if (!useMediaClock) { if(prevReady!==this.videoReady)this.emitStateIfChanged('videoReady'); return; }
     if (nowMs - this.lastCmdAtMs < REPORT_GRACE_MS) {
       // The screen has not applied the last command yet; do not let its stale time win.
       if (prevReady !== this.videoReady) this.emitStateIfChanged("videoReady");

@@ -1,4 +1,5 @@
 import {PROTOCOL_VERSION} from '@shared/protocol';
+import {publicDurationSec} from '@shared/film-timing';
 import { ROLE_LABELS, PLAYBACK_LABELS, THEME_LABELS, OPTIONAL_TABLETS_LABEL } from "@shared/ui-labels";
 import { SessionError, sessionFetch as fetch } from "../shared/session";
 import { createPresentation } from "./presentation";
@@ -222,6 +223,7 @@ function onMessage(message: ServerMessage): void {
   switch (message.type) {
     case "welcome":
       show = message.show;
+      {const button=document.getElementById('mission-rehearsal-start');const duration=Math.round(publicDurationSec(show));if(button)button.textContent=`Repetiție completă · ${Math.floor(duration/60)}:${String(duration%60).padStart(2,'0')}`;}
       state = message.state;
       clock = null;
       dom.language.value = message.config.lang;
@@ -932,12 +934,13 @@ const editor = createTimelineEditor({
   },
 });
 
-createPresentation({
+let experienceControl: ReturnType<typeof createExperienceControl>;
+const presentation = createPresentation({
   snapshot: () => ({ state, show, tablets, statuses: cueStatuses, time: phaseTime(), role: sessionUser?.role ?? null }),
-  dispatch, focusPlayer, describe: cueDescription, formatTime,
+  dispatch, focusPlayer, openExperience: () => experienceControl?.open(), describe: cueDescription, formatTime,
 });
 createMissionControl({snapshot:()=>({state,role:sessionUser?.role??null}),dispatch});
-createExperienceControl({snapshot:()=>({state,role:sessionUser?.role??null})});
+experienceControl = createExperienceControl({snapshot:()=>({state,role:sessionUser?.role??null}),onUpdate:presentation.updateExperience});
 
 renderSpeakers();
 window.setInterval(renderClock, 100);

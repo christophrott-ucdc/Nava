@@ -10,7 +10,13 @@
   "video": {
     "path": "media/cinema_4k_h264.mp4",
     "fit": "cover",
-    "preloadPoster": true
+    "preloadPoster": true,
+    "panelsDir": "../Video/panels",
+    "panelSync": {
+      "deadbandSec": 0.025,
+      "seekThresholdSec": 0.12,
+      "rateNudge": 0.05
+    }
   },
   "avatar": {
     "glb": "assets/avatar/avatar-ai.glb",
@@ -120,7 +126,7 @@
     "resetAfterSec": 0
   },
   "videoWall": {
-    "mode": "cinema",
+    "mode": "panorama",
     "fit": "cover",
     "focusX": 0.5,
     "focusY": 0.5,
@@ -135,28 +141,28 @@
       },
       {
         "screenId": "port-inner",
-        "x": 2170,
+        "x": 2670,
         "y": 106,
         "width": 2170,
         "height": 1220
       },
       {
         "screenId": "center",
-        "x": 4340,
+        "x": 5340,
         "y": 0,
         "width": 2546,
         "height": 1432
       },
       {
         "screenId": "starboard-inner",
-        "x": 6886,
+        "x": 8386,
         "y": 106,
         "width": 2170,
         "height": 1220
       },
       {
         "screenId": "starboard-outer",
-        "x": 9056,
+        "x": 11056,
         "y": 106,
         "width": 2170,
         "height": 1220

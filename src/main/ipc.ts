@@ -19,6 +19,7 @@ export interface IpcDeps {
   screenIdFor(webContentsId: number): string | undefined;
   log(level: LogLevel, msg: string, data: unknown, src: string): void;
   dispatchCommand(cmd: Command): void;
+  startTvDemo?(): Promise<{ok:boolean;reason?:string}>;
   allowQuit?: boolean;
 }
 
@@ -34,6 +35,10 @@ function isCommand(v: unknown): v is Command {
 
 export function registerIpc(deps: IpcDeps): void {
   ipcMain.handle(IPC.getBoot, (event) => deps.getBoot(event.sender.id));
+  ipcMain.handle(IPC.startTvDemo, async event => {
+    if (!deps.screenIdFor(event.sender.id)) return {ok:false,reason:'Fereastră neautorizată.'};
+    return deps.startTvDemo?.() ?? {ok:false,reason:'Demo TV se pornește pe PC-ul principal.'};
+  });
 
   ipcMain.on(IPC.log, (event, level: unknown, msg: unknown, data?: unknown) => {
     const src = `renderer:${deps.screenIdFor(event.sender.id) ?? `wc${event.sender.id}`}`;

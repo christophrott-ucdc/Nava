@@ -12,7 +12,9 @@ function gestureFor(v:PlayView):Gesture{
 export function createGestureGuide(host:HTMLElement,toolbar:HTMLElement){
   const button=document.createElement('button');button.type='button';button.className='gesture-help';button.textContent='Arată-mi';toolbar.append(button);
   const layer=document.createElement('div');layer.className='gesture-guide';layer.hidden=true;layer.setAttribute('aria-hidden','true');
-  const cursor=document.createElement('span');cursor.className='gesture-cursor';cursor.textContent='☝';layer.append(cursor);
+  const cursor=document.createElement('span');cursor.className='gesture-cursor';
+  cursor.innerHTML='<svg viewBox="0 0 48 48" width="38" height="38" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 25V10a4 4 0 0 1 8 0v13-5a3 3 0 0 1 6 0v6-3a3 3 0 0 1 6 0v5-2a3 3 0 0 1 6 0v9c0 7-5 11-12 11h-4c-4 0-7-2-9-5l-8-11a4 4 0 0 1 6-5l4 5"/></svg>';
+  layer.append(cursor);
   const caption=document.createElement('p');caption.className='gesture-caption';caption.hidden=true;caption.setAttribute('role','status');toolbar.append(caption);
   let current:PlayView|undefined,blocked=true,reduced=false,timer:ReturnType<typeof setTimeout>|undefined,frame=0,animation:Animation|undefined,active=false;
   const seen=new Set<string>(),abort=new AbortController();

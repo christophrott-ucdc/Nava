@@ -1,6 +1,7 @@
 import type { ScenarioId, ScenarioProgress, scenarioView, summarizeScenario } from "./scenario-engine";
 import type { ShowState, TabletPost } from "./types";
 import type {ExperienceState,ExperienceSnapshot} from './experience';
+import {remapFilmTime} from './film-timing';
 
 export const SCENARIO_LABELS: Record<ScenarioId, string> = {
   'legacy-v3': 'Protocolul Acasă · original',
@@ -14,6 +15,9 @@ export const STAGE_WINDOWS: Record<ScenarioId, readonly (readonly [number, numbe
   'age-10-15': [[96,124],[193,223],[307,333]],
   'age-15-18': [[96,124],[192,222],[306,334]], adults: [[100,124],[197,224],[311,336]],
 };
+for (const id of Object.keys(STAGE_WINDOWS) as ScenarioId[]) {
+  STAGE_WINDOWS[id] = STAGE_WINDOWS[id].map(([a,b])=>[remapFilmTime(a),remapFilmTime(b)] as const);
+}
 export interface PostAccessibility {
   textScale: number; contrastMode: boolean; reducedMotion: boolean; reducedStimuli: boolean;
   simplifiedChrome: boolean; showVisualGuidance: boolean; sfxEnabled: boolean;

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ro" data-theme="void">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Nava · Testarea clipurilor</title><link rel="stylesheet" href="/shared/glass.css"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<header><a class="brand" href="/control/">NAVA <span>GLASS</span></a><a class="back" href="/control/">Înapoi la consolă</a></header>
+
+<main>
+  <section class="intro">
+    <div>
+      <p class="eyebrow">CINCI FIȘIERE · UN SINGUR ZID</p>
+      <h1>Testarea clipurilor</h1>
+      <p>Cele cinci panouri redate simultan, în geometria reală a sălii.<br>Verifică îmbinările, sincronizarea și încadrarea înainte de spectacol.</p>
+    </div>
+    <div class="intro-mark" aria-hidden="true">▦</div>
+  </section>
+
+  <div id="load-status" role="status">Căutăm clipurile…</div>
+
+  <section class="glass stage-card" aria-label="Zidul reconstituit">
+    <div class="section-top">
+      <div><p class="eyebrow">VEDERE DIN SALĂ</p><h2>Zidul reconstituit</h2></div>
+      <span class="pill" id="wall-pill">—</span>
+    </div>
+    <div id="wall" class="wall" aria-label="Cele cinci panouri redate simultan"></div>
+    <p class="help" id="stage-note">Fiecare dreptunghi e un televizor, la proporțiile și distanțele din configurație. Panoul central are ramă mai groasă: e cel de 115″.</p>
+  </section>
+
+  <section class="glass transport" aria-label="Transport">
+    <div class="transport-row">
+      <button id="play" type="button" class="primary">▶ Redă</button>
+      <button id="back10" type="button">−10 s</button>
+      <button id="fwd10" type="button">+10 s</button>
+      <label class="rate">Viteză
+        <select id="rate">
+          <option value="0.25">0,25×</option>
+          <option value="0.5">0,5×</option>
+          <option value="1" selected>1×</option>
+          <option value="2">2×</option>
+        </select>
+      </label>
+      <span class="time"><output id="time">0:00</output> / <span id="duration">—</span></span>
+    </div>
+    <input id="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Poziția în clip">
+    <div id="markers" class="markers" aria-label="Momentele zborului"></div>
+  </section>
+
+  <div class="workspace">
+    <section class="glass checks">
+      <p class="eyebrow">01 · VERIFICĂRI</p>
+      <h2>Ce te uiți să vezi</h2>
+      <label class="check"><input type="checkbox" id="seams"> Marchează îmbinările dintre ecrane</label>
+      <label class="check"><input type="checkbox" id="grid"> Grilă de aliniere</label>
+      <label class="check"><input type="checkbox" id="labels" checked> Numele panourilor</label>
+      <label class="check"><input type="checkbox" id="solo-mode"> Izolează un panou la click</label>
+      <p class="help">Îmbinările sunt locul unde se vede dacă tăierea în cinci a fost corectă: o linie continuă din film trebuie să treacă fără cot și fără salt de scară.</p>
+    </section>
+
+    <section class="glass sync">
+      <div class="section-top">
+        <div><p class="eyebrow">02 · SINCRONIZARE</p><h2>Derivă între fluxuri</h2></div>
+        <span class="pill" id="sync-verdict">—</span>
+      </div>
+      <p class="help">Cinci decodoare independente nu rămân singure împreună. Panoul central e ceasul; celelalte se corectează continuu. Corecția fină e prin viteză de redare, iar peste prag se face salt.</p>
+      <table class="sync-table"><thead><tr><th>Panou</th><th>Derivă</th><th>Corecție</th><th>Rezoluție</th><th>Bitrate</th></tr></thead><tbody id="sync-body"></tbody></table>
+      <div class="inline">
+        <label>Prag de salt · ms<input id="hard-ms" type="number" value="120" min="40" max="1000" step="10"></label>
+        <label>Prag de corecție fină · ms<input id="soft-ms" type="number" value="25" min="5" max="200" step="5"></label>
+        <button id="resync" type="button">Resincronizează acum</button>
+      </div>
+    </section>
+  </div>
+
+  <section class="glass files" aria-label="Fișiere">
+    <div class="section-top"><div><p class="eyebrow">03 · FIȘIERE</p><h2>Ce s-a încărcat</h2></div><span class="pill" id="dir-pill">—</span></div>
+    <ul id="issues" class="issues"></ul>
+    <table class="files-table"><thead><tr><th>Ecran</th><th>Fișier</th><th>Rezoluție</th><th>Durată</th><th>Bitrate</th><th>Mărime</th></tr></thead><tbody id="files-body"></tbody></table>
+    <p class="help">Dacă lipsește <code>panelsDir</code> din configurație, pagina nu are ce reda. Clipurile se produc cu <code>split-wall.ps1</code> din masterul panoramic.</p>
+  </section>
+</main>
+
+<footer>Nava Glass · Testarea clipurilor · Redarea în browser nu confirmă comportamentul pe televizoarele reale.</footer>
+<script src="./app.js"></script>
+</body>
+</html>

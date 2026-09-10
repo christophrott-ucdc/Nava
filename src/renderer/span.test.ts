@@ -1,12 +1,22 @@
 import assert from 'node:assert/strict';
 import {describe,it} from 'node:test';
-import {canvasBacking,panelFilmRect,pickFocusViewport,rendererClockSource,scaleViewports,wallStar} from './span';
+import {canvasBacking,panelFilmRect,pickFocusViewport,rendererClockSource,scaleViewports,wallStar,panoramaSlices} from './span';
 import {samsungWallPreset} from '../shared/video-wall';
 import type {ScreenConfig,SpanViewport} from '../shared/types';
 const ids=['left-outer','left-inner','center','right-inner','right-outer'];
 const screens:ScreenConfig[]=ids.map((id,i)=>({id,displayIndex:i,showAvatar:i===2,showSubtitles:i===2,showEntities:i===2,playAudio:i===2,kiosk:true}));
 const panels:SpanViewport[]=ids.map((screenId,i)=>({screenId,x:3840*i,y:0,width:3840,height:2160,scaleFactor:1}));
 describe('physical wall renderer layout',()=>{
+ it('letterboxes a tall preview without stretching any TV or changing the physical scale',()=>{
+  const p=scaleViewports(panels,1920,1080);
+  assert.equal(p[2].width/p[2].height,16/9);
+  assert.equal(p[2].y,432);assert.equal(p[2].height,216);
+ });
+ it('splits a physical crop crossing tile boundaries without gaps or per-tile scaling',()=>{
+  const slices=panoramaSlices({sx:2300,sy:80,sw:3000,sh:1200,dx:0,dy:0,dw:1500,dh:600},[2560,2560,2560]);
+  assert.deepEqual(slices.map(s=>[s.index,s.sx,s.sw,s.dx,s.dw]),[[0,2300,260,0,130],[1,0,2560,130,1280],[2,0,180,1410,90]]);
+  assert(slices.every(s=>s.dw/s.sw===s.dh/s.sh));
+ });
  it('chooses only the captain screen for central overlays even if it is not first',()=>{
   assert.equal(pickFocusViewport(panels,screens,'center')?.screenId,'center');
   assert.equal(pickFocusViewport(panels,screens.map(s=>({...s,showAvatar:false,showSubtitles:true})),'center')?.screenId,'left-outer');

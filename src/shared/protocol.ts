@@ -287,6 +287,7 @@ export interface NavaBridge {
     wsUrl: string;
     /** file:// URL-uri absolute, gata de pus in <video src> / loader GLB. */
     videoUrl: string;
+    panelVideoUrls?: Record<string, string>;
     avatarUrl: string;
     voiceBaseUrl: string; // file:///.../assets/voice/
     showUrl: string; // file:///.../assets/show/show.json
@@ -308,6 +309,8 @@ export interface NavaBridge {
   log(level: "info" | "warn" | "error", msg: string, data?: unknown): void;
   /** Comenzi locale din tastatura ecranului master (trimise serverului prin main). */
   sendCommand(cmd: Command): void;
+  /** Local Electron presentation: children’s film and voices, without a tablet roster. */
+  startTvDemo?(): Promise<{ok:boolean;reason?:string}>;
   /** Cere inchiderea aplicatiei (Esc x2 pe ecranul master in modul dev). */
   quit(): void;
 }

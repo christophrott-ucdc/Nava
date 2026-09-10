@@ -29,7 +29,7 @@ function clock(seconds) {
 function publicAt(cue) {
   if (cue.phase === "preshow") return cue.at;
   if (cue.phase === "play") return 60 + cue.at;
-  return 525 + cue.at;
+  return 60 + show.videoDurationSec + cue.at;
 }
 
 function escapeCell(value) {
@@ -61,7 +61,7 @@ const lines = [
   "",
   "> Generat din `assets/show/show.json` cu `npm run docs:cues`. Nu editați manual tabelul.",
   "",
-  `Flux public: pre-show 0:00–0:50 · lead-in 0:50–1:00 · film 1:00–8:45 · epilog 8:45–10:00. Masterul fizic poate fi mai lung, dar playerul se oprește determinist la ${show.videoDurationSec} s.`,
+  `Flux public: pre-show 0:00–0:50 · lead-in 0:50–1:00 · film 1:00–${clock(60+show.videoDurationSec)} · epilog ${clock(60+show.videoDurationSec)}–${clock(60+show.videoDurationSec+Math.max(...show.scenes.filter(s=>s.phase==='epilogue').map(s=>s.end)))}. Filmul se încheie la ${show.videoDurationSec} s. Tutorialul interactiv adaugă timp variabil.`,
   "",
   "| Cue | Fază | Timp fază | Timp public | Tip | Conținut |",
   "|---|---|---:|---:|---|---|",

@@ -16,6 +16,7 @@ import { rememberChoice, reconcileChoices, type PendingChoices } from "./choice-
 import type { MissionSnapshot } from "@shared/mission";
 import { createMissionUI } from "./mission-ui";
 import { hasChildIllustrations, illustrationPath } from "../shared/illustrations";
+import { tabletEventId } from './event-id';
 
 const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
 if (memory !== undefined && memory <= 4) document.documentElement.dataset.glassQuality = "low";
@@ -115,9 +116,7 @@ const telemetry = createTelemetry(dom.telemetry);
 const tabletId = (() => {
   const existing = storageGet(STORAGE.id);
   if (existing) return existing;
-  const id = typeof crypto.randomUUID === "function"
-    ? crypto.randomUUID()
-    : `tablet-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+  const id = tabletEventId();
   storageSet(STORAGE.id, id);
   return id;
 })();

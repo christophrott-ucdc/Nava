@@ -147,7 +147,7 @@ try {
   r = await fetch(`${base}/api/cmd`, { method: "POST", headers: asOp, body: JSON.stringify({ cmd: { action: "preflight" } }) });
   const pf = await r.json();
   assert.ok(pf.preflight, "preflight object returned");
-  assert.equal(pf.preflight.voice.total, 51);
+  assert.equal(pf.preflight.voice.total, 54);
   step(`operator POST /api/cmd preflight -> ${r.status} (voci ${pf.preflight.voice.ok}/${pf.preflight.voice.total}, ok=${pf.preflight.ok})`);
   r = await fetch(`${base}/api/debug/summary`, { headers: asOp });
   assert.equal(r.status, 200);

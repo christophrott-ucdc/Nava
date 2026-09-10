@@ -1,12 +1,14 @@
+> Actualizare film panoramic, 2026-09-09: cronologia curentă, sursele celor cinci panouri și vocile Saturn sunt descrise în [REINTEGRARE-FILM.md](REINTEGRARE-FILM.md). Timpii istorici de 10 minute / 465 s nu mai sunt contractul filmului curent. Tutorialul adaugă timp variabil.
+
 # Manual de operare — NavaPlayer („A Patra Lume · Protocolul Acasă")
 
-> Actualizat 2026-09-05 (agentul E, E-02) pentru runda 4 (R4). Fiecare afirmație are sursa în paranteză. Pentru **starea live** a pachetelor R4 (ce este gata, ce este schelet) citiți `HANDOFF-LIVE.md` §2 — unde scrie „în lucru" mai jos, acel pachet nu era bifat `[x]` la data actualizării.
+> Pentru prezentarea din 10 septembrie 2026 urmați [ghidul curent](PREZENTARE-2026-09-10.md): profil copii 5–10 ani, personaje confirmate, tutorial, lansare, final și jurnal. `PREZENTARE.bat` construiește sursele curente și deschide preview-ul; `--live` folosește instalația fizică. Lista de participanți confirmată înlocuiește cerința istorică de a ocupa toate posturile. Secțiunile R4 de mai jos sunt referință operațională; mențiunile datate despre pachete „în lucru” descriu starea de atunci. Jurnalele se află în `AI/HANDOFF*.md`.
 
 ---
 
 ## 1. Pregătirea PC-ului master
 
-1. Puneți executabilul, `config.json` și folderul `media/` în același director. Filmul trebuie să fie `media/cinema_4k_h264.mp4` (H.264 High 4:2:0), dacă nu ați schimbat calea în `config.video.path`.
+1. Pentru panorama curentă, verificați `video.panelsDir` din configurația folosită: trebuie să conțină câte un MP4 pentru fiecare ID din `screens`. Profilul local utilizează `../Video/panels-playback-1440`; originalele 4K sunt păstrate separat. Preflight verifică fiecare sursă, chiar dacă filmul legacy există. Modul cinema folosește `config.video.path`.
 2. Conectați televizoarele, selectați modul desktop extins și confirmați ordinea display-urilor în Windows (sortate stânga → dreapta; `displayIndex 0` = cel mai din stânga, `src/main/windows.ts`). Setați **scale 100 %** pe toate TV-urile — obligatoriu pentru `displayMode: "span"` (`config.5screens.example.json`).
 3. Porniți PC-ul și routerul dedicat. Permiteți NavaPlayer în Windows Firewall pe rețeaua **privată** (portul `4321`).
 4. Verificați sunetul pe ieșirea dorită (`config.audio.outputDeviceId`; rutarea prin `AudioContext.setSinkId`, `src/renderer/voice/context.ts`) și opriți notificările Windows. Sleep-ul display-ului este blocat de aplicație cât rulează (`powerSaveBlocker("prevent-display-sleep")`, `src/main/main.ts`).
@@ -27,7 +29,8 @@ Argumente ale executabilului (`src/main/config.ts`): `--config <cale>`, `--dev`,
 | `http://<ip-lan>:4321/control/` | consola operatorului | necesită login cu PIN (redirecționează la `/login/`) |
 | `http://<ip-lan>:4321/login/` | pagina de PIN (tastatură numerică) | oricine, cu limită de încercări |
 | `http://<ip-lan>:4321/debug/` | pagina de depanare | necesită login (rol `viewer` sau mai mult) |
-| `http://<ip-lan>:4321/analytics/` | analitică din jurnalele rulărilor | pagina (`src/web/analytics`) și routerul (`src/server/features/analytics.ts`) există; **montarea `/api/analytics` în `src/server/index.ts` de către orchestrator lipsea la 10:30** — până atunci pagina nu primește date (D-05) |
+| `http://<ip-lan>:4321/analytics/` | analitică din jurnalele rulărilor | login; routerul `/api/analytics` este integrat în server |
+| `http://<ip-lan>:4321/admin/` | conturi, sesiuni și audit | rol admin |
 | `http://<ip-lan>:4321/tablet/?post=1..5` | aplicația copiilor | **fără autentificare** |
 | `http://<ip-lan>:4321/api/health` | stare scurtă (rol, ecrane, tablete, `videoReady`, `state`) | public |
 
@@ -35,7 +38,7 @@ Adresa LAN și QR-ul tabletelor sunt afișate în consolă (`/api/urls`, `/api/q
 
 ### 2.1 Login cu PIN
 
-- Deschideți `/login/` (sau orice pagină protejată — vă trimite acolo cu `?next=`), tastați PIN-ul, **OK**. Serverul pune cookie-ul `nava_session` (HttpOnly, `SameSite=Lax`) și întoarce tokenul de sesiune, pe care consola îl trimite în mesajul WebSocket `hello` (`src/server/auth.ts`, `src/web/login/index.ts`, `src/web/control/index.ts`).
+- Deschideți `/login/` (sau orice pagină protejată — vă trimite acolo cu `?next=`), tastați PIN-ul, **OK**. Serverul pune cookie-ul `nava_session` (HttpOnly, `SameSite=Lax`); tokenul nu este întors în JSON și nu este stocat de interfață. WebSocket-ul browserului se autentifică prin cookie (`src/server/auth.ts`, `src/web/shared/session.ts`).
 - Sesiunea durează `security.sessionTtlMin` minute (**implicit 720 = 12 h**) și supraviețuiește repornirii serverului (`data/sessions.json`). **IEȘI** în `/debug/` sau `POST /api/auth/logout` o închide.
 - PIN-ul este singurul identificator (nu există nume de utilizator la login), deci **PIN-urile sunt unice între utilizatori** (4–8 cifre).
 - Limită: **8 încercări per IP la 5 minute**; a noua primește `429 Prea multe încercări. Așteaptă 5 minute.`
@@ -99,7 +102,7 @@ Pornirea **automată** (trecerea preshow → lansare după 50 s când `preshowAu
 3. Lansarea pornește automat după pre-show (dacă readiness este verde). Urmează countdown-ul T−10…0 pe cadrul înghețat, apoi filmul. **SARI LA LANSARE** / `S` / **START EXPERIENCE** omit pre-show-ul; `P` pornește explicit pre-show-ul.
 4. **PAUSE/PLAY** numai dacă este necesar. Pentru repetiții: slider, salt la scenă, `fireCue` manual, sau modul de repetiție (§8).
 5. La întrebarea Tehnologicei (6:17–6:34), lăsați copiii să aleagă; la 6:35 serverul alege singur una dintre cele trei replici (`diverse`/`same`/`observe`).
-6. Playerul oprește determinist filmul la 465 s și continuă automat în epilog (75 s) pe aceleași ecrane și posturi.
+6. Playerul oprește determinist filmul la durata videoDurationSec din show.json și continuă automat în epilog (75 s) pe aceleași ecrane și posturi.
 7. După ultima replică, **RESTART** pentru următorul grup (șterge și răspunsurile tabletelor și posturile revendicate; `src/server/index.ts`, `handleCommand`).
 
 ## 6. Taste pe ecranul-sursă de ceas (`src/renderer/index.ts`; main: `src/main/shortcuts.ts`)
@@ -215,7 +218,7 @@ Alegerea în așteptare și confirmarea sunt afișate diferit copiilor. Focusul 
 
 Profilul separat `config.auto.local.json` este pregătit pentru 98–98–115–98–98. Pornește cu `npm run auto:start`. Inventarul detectează display-urile Windows; desktopul clonat și ieșirile lipsă nu sunt acceptate ca panoramă completă. Pentru calibrarea optică urmează atelierul: marcaje pe toate TV-urile, imagine din poziția publicului, procesare locală, import și Aplică proiecția calibrată în pregătire. Python/OpenCV sunt necesare numai pentru procesarea calibrării.
 
-Misiunile sunt în `data/nava.sqlite`; certificatele și fotografiile rămân în `runs/`. Nu șterge baza pentru a rezolva o recuperare: continuă explicit sau pregătește un grup nou. Rulările tehnice sunt separate de public. Repetiția completă durează aproximativ zece minute și poate fi anulată din dialog; nu dovedește singură audibilitatea sau alinierea fizică.
+Misiunile sunt în `data/nava.sqlite`; certificatele și fotografiile rămân în `runs/`. Nu șterge baza pentru a rezolva o recuperare: continuă explicit sau pregătește un grup nou. Rulările tehnice sunt separate de public. Repetiția completă durează durata calculată din scenariul activ (afișată în consolă) și poate fi anulată din dialog; nu dovedește singură audibilitatea sau alinierea fizică.
 
 Ghidul complet și limitele de acceptare sunt în [IMPLEMENTARE-SCENARII-DISPLAY.md](IMPLEMENTARE-SCENARII-DISPLAY.md).
 ## Tutorialul și încheierea interactivă

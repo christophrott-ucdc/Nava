@@ -5,11 +5,13 @@ import {DEFAULT_ACCESSIBILITY,SCENARIO_LABELS,STAGE_WINDOWS,type MissionRecord,t
 import {MissionStore} from './mission-store';
 import {freshExperience,acceptExperience,tutorialSatisfied,ALL_PARTICIPANTS} from './experience';
 import {crewCharacter,occupiedSeats} from '../shared/crew';
+import type {ExperienceState} from '../shared/experience';
 
 export class MissionSession {
   readonly serverEpoch=randomUUID();
   record:MissionRecord;
   recovery:MissionRecord|null;
+  narrationReady:(experience:ExperienceState)=>boolean=e=>!e.narration;
   constructor(readonly store:MissionStore){this.recovery=store.recoverable();this.record=this.fresh('legacy-v3','');}
   private fresh(id:ScenarioId,hash:string):MissionRecord{return {runId:randomUUID(),scenarioId:id,contentHash:hash,revision:0,timelineEpoch:0,createdAt:new Date().toISOString(),status:'prepared',progress:{...createProgress(id),participants:[]},checkpoint:null,accessibility:{},mode:'public',experience:freshExperience()};}
   reset(id=this.record.scenarioId,hash=this.record.contentHash):void {
@@ -31,7 +33,7 @@ export class MissionSession {
     if(state.state!=='playing'&&state.state!=='paused')return 0;
     return STAGE_WINDOWS[this.record.scenarioId].findIndex(([a,b])=>state.phaseTime>=a&&state.phaseTime<b)+1;
   }
-  finaleActive(state:ShowState):boolean{return state.state==='ended'||(state.state==='epilogue'&&state.phaseTime>=60);}
+  finaleActive(state:ShowState):boolean{return !this.record.experience?.tvOnly&&(state.state==='ended'||(state.state==='epilogue'&&state.phaseTime>=60));}
   instance(state:ShowState):string{
     const e=this.record.experience;
     const scope=e?.status==='tutorial'?`tutorial-${e.epoch}-${e.step}`:this.finaleActive(state)?'finale':this.stage(state);
@@ -49,7 +51,8 @@ export class MissionSession {
       }
     }
     const experience=r.experience??{...freshExperience(),crew:undefined,participants:[...ALL_PARTICIPANTS],status:'skipped' as const};
-    return {experience:{...experience,active:experience.status==='tutorial',finaleActive:this.finaleActive(state),paused:experience.pausedAt!==undefined||!!state.suspended,canContinue:tutorialSatisfied(experience)},runId:r.runId,serverEpoch:this.serverEpoch,scenarioId:r.scenarioId,label:SCENARIO_LABELS[r.scenarioId],revision:r.revision,
+    const narrationComplete=experience.pausedAt===undefined&&!state.suspended&&this.narrationReady(experience);
+    return {experience:{...experience,active:experience.status==='tutorial',finaleActive:this.finaleActive(state),paused:experience.pausedAt!==undefined||!!state.suspended,narrationComplete,canContinue:tutorialSatisfied(experience)&&narrationComplete&&!experience.launchRequested},runId:r.runId,serverEpoch:this.serverEpoch,scenarioId:r.scenarioId,label:SCENARIO_LABELS[r.scenarioId],revision:r.revision,
       lantern:r.scenarioId==='age-5-10'?Object.entries(r.progress.zones).filter(([seat])=>!progress.participants||progress.participants.includes(seat)).map(([seat,z])=>({seat,found:z.choices['1']==='found',mounted:z.choices['2']==='fitted',linked:z.choices['3']==='linked'})):undefined,
       cueInstanceId:this.instance(state),stage,endsAt:stage?STAGE_WINDOWS[r.scenarioId][stage-1][1]:null,
       suspended:!!state.suspended,state,post,view,

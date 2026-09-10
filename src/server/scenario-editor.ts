@@ -21,7 +21,7 @@ export async function editScenarioDraft(root:string,id:ScenarioId,body:unknown){
     const draft=JSON.parse(raw),cue=draft.cues.find((c:{id:string})=>c.id===b.cueId);
     if(!cue)throw new Error('Replica nu există.');
     if(b.text!==undefined){if(typeof b.text!=='string'||!b.text.trim()||b.text.length>1600)throw new Error('Text invalid.');cue.text.ro=b.text.trim();}
-    if(b.at!==undefined){const end=cue.phase==='play'?465:cue.phase==='preshow'?50:75;
+    if(b.at!==undefined){const end=cue.phase==='play'?(draft.filmDurationSec??465):cue.phase==='preshow'?50:75;
       if(!Number.isFinite(b.at)||b.at<(cue.phase==='play'?-10:0)||b.at>=end)throw new Error('Momentul depășește faza.');cue.at=b.at;}
     const backupDir=path.join(dir,'backups');await fs.mkdir(backupDir,{recursive:true});
     const backup=path.join(backupDir,`${Date.now()}-${hash(raw).slice(0,12)}.json`);

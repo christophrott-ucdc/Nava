@@ -51,10 +51,11 @@ try {
   const { CueTracker } = await bundle("src/server/cues.ts", "cues");
   const firedByTracker = [];
   const tracker = new CueTracker(show, { onFired: (cue) => firedByTracker.push(cue.id) });
-  tracker.enterPhase("play", 335);
-  tracker.advance(335);
-  tracker.advance(334.4); // a delayed video report after seek, not a second explicit seek
-  tracker.advance(335.1);
+  const adaptiveAt=show.cues.find(c=>c.id==='tech-adaptive-select').at;
+  tracker.enterPhase("play", adaptiveAt);
+  tracker.advance(adaptiveAt);
+  tracker.advance(adaptiveAt-.6); // a delayed video report after seek, not a second explicit seek
+  tracker.advance(adaptiveAt+.1);
   assert.equal(
     firedByTracker.filter((id) => id === "tech-adaptive-select").length,
     1,
@@ -222,7 +223,7 @@ try {
   });
 
   player.apply({ action: "start" });
-  assert.equal(player.duration(), 465, "configured V3 cut must win over the longer physical master");
+  assert.equal(player.duration(), show.videoDurationSec, "configured V3 cut must win over the longer physical master");
   assert.equal(player.getPlaybackState(), "playing");
   assert.ok(player.phaseTime() >= -10 && player.phaseTime() < -9.9, "renderer launch lead-in must begin at T-10");
   assert.equal(playCalls, 0, "video must remain frozen during launch lead-in");
@@ -245,9 +246,9 @@ try {
   assert.equal(playCalls, 1, "video must start when launch lead-in reaches zero");
   assert.ok(player.phaseTime() >= 0);
 
-  video.currentTime = 465;
+  video.currentTime = show.videoDurationSec;
   nextFrame?.(13_100);
-  assert.equal(player.getPlaybackState(), "epilogue", "renderer must enter epilogue immediately at the configured 465s cut");
+  assert.equal(player.getPlaybackState(), "epilogue", "renderer must enter epilogue immediately at the configured film cut");
   assert.equal(player.phase(), "epilogue");
   assert.equal(themeName, "white", "the continuous white transition must start at the cut, without a hold state");
   assert.equal(publishedVideoEnds, 1, "the clock source must publish the local cut exactly once");

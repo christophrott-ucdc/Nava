@@ -32,6 +32,7 @@ const bridge: NavaBridge = {
   sendCommand: (cmd: Command) => {
     ipcRenderer.send(IPC.sendCommand, cmd);
   },
+  startTvDemo: () => ipcRenderer.invoke(IPC.startTvDemo),
   quit: () => {
     ipcRenderer.send(IPC.quit);
   },

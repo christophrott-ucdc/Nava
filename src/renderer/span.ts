@@ -1,15 +1,19 @@
-/** One decoder and physically coordinated panel crops. All overlays live in a panel-sized container. */
+/** One physical panorama and an atomic decoded-frame commit across its panels.
+ * The legacy single-film path remains available for cinema and older sources. */
 import type { ScreenConfig, SpanViewport, VideoWallConfig } from "../shared/types";
 import { wallBounds, wallSourceRect, type WallSourceRect } from "../shared/video-wall";
 import type { Logger } from "./log";
 import { yawSourceRect, type Fit } from "./perspective";
 import {createOpticalProjector} from './optical-projector';
+import type {PanelFrames} from './panel-frames';
 
 export interface SpanOptions {
   stage: HTMLElement; video: HTMLVideoElement; viewports: SpanViewport[]; screens: ScreenConfig[]; fit: Fit;
   centerScreenId: string; overlays: HTMLElement[]; log?: Logger; wall?: VideoWallConfig;
   /** Same show clock as the film/timeline, never a separate wall clock. */
   getTime?: () => number;
+  panelVideos?: ReadonlyMap<string,HTMLVideoElement>;
+  panelFrames?: PanelFrames<VideoFrame>;
 }
 export interface SpanController {
   start(): void; stop(): void; refresh(): void; setWall(wall: VideoWallConfig): void;
@@ -27,14 +31,26 @@ export function canvasBacking(v: SpanViewport,dpr:number,maxSide=4096):{width:nu
   const k=Math.min(Math.max(1,dpr||1),maxSide/Math.max(1,v.width,v.height));
   return {width:Math.max(1,Math.round(v.width*k)),height:Math.max(1,Math.round(v.height*k))};
 }
-/** Uniform viewports rescale from boot window coordinates when a development window changes size. */
+/** One uniform scale preserves TV proportions even when the preview window is resized arbitrarily. */
 export function scaleViewports(viewports:readonly SpanViewport[],width:number,height:number):SpanViewport[] {
   const right=Math.max(1,...viewports.map(v=>v.x+v.width));
   const bottom=Math.max(1,...viewports.map(v=>v.y+v.height));
-  return viewports.map(v=>({...v,x:v.x*width/right,y:v.y*height/bottom,width:v.width*width/right,height:v.height*height/bottom}));
+  const scale=Math.min(width/right,height/bottom),x=(width-right*scale)/2,y=(height-bottom*scale)/2;
+  return viewports.map(v=>({...v,x:x+v.x*scale,y:y+v.y*scale,width:v.width*scale,height:v.height*scale}));
 }
-export function rendererClockSource(master:boolean,span:boolean,screenId:string,screens:readonly ScreenConfig[]):boolean {
-  return master && (span || (screens[0]?.id ?? screenId)===screenId);
+
+/** Intersect one physical crop with the ordered source tiles. No giant canvas,
+ * no independent fit per TV: the 115-inch panel uses the same physical scale. */
+export function panoramaSlices(rect:WallSourceRect,widths:readonly number[]) {
+  let x=0;return widths.flatMap((width,index)=>{
+    const left=Math.max(x,rect.sx),right=Math.min(x+width,rect.sx+rect.sw),origin=x;x+=width;
+    return right>left?[{index,sx:left-origin,sy:rect.sy,sw:right-left,sh:rect.sh,
+      dx:rect.dx+(left-rect.sx)/rect.sw*rect.dw,dy:rect.dy,dw:(right-left)/rect.sw*rect.dw,dh:rect.dh}]:[];
+  });
+}
+export function rendererClockSource(master:boolean,span:boolean,screenId:string,screens:readonly ScreenConfig[],panelPlayback=false):boolean {
+  const primary=panelPlayback?(screens.find(s=>s.playAudio)??screens[0]):screens[0];
+  return master && (span || (primary?.id ?? screenId)===screenId);
 }
 /** Deterministic global star positions: adjacent panels see pieces of one coordinate field. */
 export function wallStar(index:number):{x:number;y:number;size:number;phase:number} {
@@ -51,6 +67,7 @@ export function createSpan(opts:SpanOptions):SpanController {
   const screens=new Map(opts.screens.map(s=>[s.id,s]));
   let wall=opts.wall, running=false, raf=0, dirty=true;
   let videoHandle=0,videoRevision=0,lastVideoRevision=-1,lastAmbientTime=NaN,lastAmbientDraw=-Infinity;
+  let lastPanelKey=-1;
   const hasFrameCallback=typeof video.requestVideoFrameCallback==='function';
   let ambientAccent='#7cc4ff';
   let viewports=opts.viewports.map(v=>({...v}));
@@ -139,18 +156,41 @@ export function createSpan(opts:SpanOptions):SpanController {
   const draw=()=>{
     const vw=video.videoWidth,vh=video.videoHeight,ready=vw>0&&vh>0&&video.readyState>=2;
     const time=reduced.matches?0:(opts.getTime?.()??video.currentTime);
+    const frameSet=opts.panelFrames?.select(Math.max(0,opts.getTime?.()??video.currentTime));
+    const fullPanorama=wall&&opts.panelVideos?.size===wall.panels.length;
+    const filmTiles=(fullPanorama&&wall?wall.panels.slice().sort((a,b)=>a.x-b.x).map(p=>p.screenId):[...opts.panelVideos?.keys()??[]]).map(id=>({id,frame:frameSet?.frames.get(id)}));
+    const tileWidths=filmTiles.map(t=>t.frame?.displayWidth??0);
+    const coherent=!!frameSet&&filmTiles.every(t=>!!t.frame);
     const revision=hasFrameCallback?videoRevision:(video.getVideoPlaybackQuality?.().totalVideoFrames??video.currentTime);
     const frameChanged=revision!==lastVideoRevision;
     const now=performance.now();
     const ambientDue=wall?.mode==='cinema'&&!wall.calibration&&!reduced.matches&&time!==lastAmbientTime&&now-lastAmbientDraw>=1000/30-.5;
-    if(!dirty&&(!frameChanged||wall?.calibration)&&!ambientDue)return;
+    if(opts.panelFrames&&wall?.mode!=='cinema'&&!wall?.calibration&&!dirty&&frameSet?.key===lastPanelKey)return;
+    if(!opts.panelVideos?.size&&!dirty&&(!frameChanged||wall?.calibration)&&!ambientDue)return;
     const redrawAll=dirty;dirty=false;lastVideoRevision=revision;
     if(ambientDue||redrawAll){lastAmbientTime=time;lastAmbientDraw=now;}
     for(const p of panels){
       const ctx=p.ctx;if(!ctx)continue;const W=p.canvas.width,H=p.canvas.height;
+      const panelVideo=opts.panelVideos?.get(p.vp.screenId);
+      if(opts.panelFrames&&wall?.mode!=='cinema'&&!wall?.calibration&&!coherent)continue;
+      // Keep the last presented image during a seek instead of flashing black.
+      if(panelVideo&&!opts.panelFrames&&wall?.mode!=='cinema'&&!wall?.calibration&&panelVideo.readyState<2)continue;
       if(wall?.mode==='cinema'&&p.vp.screenId!==centralId&&!redrawAll&&!ambientDue)continue;
       ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
       if(wall?.calibration){calibration(ctx,W,H,p.vp.screenId);continue;}
+      if(panelVideo&&wall?.mode!=='cinema'){
+        if(coherent&&wall&&frameSet&&fullPanorama){
+          const r=wallSourceRect(wall,p.vp.screenId,tileWidths.reduce((a,b)=>a+b,0),filmTiles[0].frame!.displayHeight,W,H);
+          if(r)for(const slice of panoramaSlices(r,tileWidths)){
+            ctx.drawImage(filmTiles[slice.index].frame!,slice.sx,slice.sy,slice.sw,slice.sh,slice.dx,slice.dy,slice.dw,slice.dh);
+          }
+        }else{
+          const source=frameSet?.frames.get(p.vp.screenId)??(!opts.panelFrames&&panelVideo.readyState>=2?panelVideo:null);
+          if(source){const r=yawSourceRect(0,W,H,panelVideo.videoWidth,panelVideo.videoHeight,'contain');ctx.drawImage(source,r.sx,r.sy,r.sw,r.sh,r.dx,r.dy,r.dw,r.dh);}
+        }
+        if(frameSet){p.canvas.dataset.frame=String(frameSet.key);p.canvas.dataset.mediaTime=String(frameSet.time);}
+        continue;
+      }
       const cinema=wall?.mode==='cinema';
       if(cinema)ambient(ctx,W,H,p.vp.screenId,time);
       if(ready&&(!cinema||p.vp.screenId===centralId)){
@@ -160,6 +200,7 @@ export function createSpan(opts:SpanOptions):SpanController {
         if(r)try{ctx.drawImage(video,r.sx,r.sy,r.sw,r.sh,r.dx,r.dy,r.dw,r.dh);}catch{/* next decoded frame */}
       }
     }
+    if(coherent&&frameSet)lastPanelKey=frameSet.key;
     if(focusBox)focusBox.classList.toggle('wall-calibrating',!!wall?.calibration);
     for(const p of panels){p.white.style.display=wall?.calibration?'none':'';p.vignette.style.display=wall?.calibration?'none':'';}
   };

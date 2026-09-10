@@ -46,7 +46,7 @@ export async function loadScenario(root:string,id:ScenarioId,legacy:ShowFile):Pr
       }catch{issues.push(`${c.id}: fișier lipsă`);}
       if(!meta.words?.length||!meta.visemes?.length||!(meta.durationMs>0))issues.push(`${c.id}: sincronizare incompletă`);
       // Natural delivery may use the following silent gap, but never overlap another voice or phase.
-      const next=Math.min(...draft.cues.filter(x=>x.phase===c.phase&&x.at>c.at).map(x=>x.at),c.phase==='preshow'?50:c.phase==='play'?465:75);
+      const next=Math.min(...draft.cues.filter(x=>x.phase===c.phase&&x.at>c.at).map(x=>x.at),c.phase==='preshow'?50:c.phase==='play'?legacy.videoDurationSec:75);
       if(meta.durationMs/1000>next-c.at)issues.push(`${c.id}: durata depășește următoarea replică (${meta.durationMs/1000}s)`);
     }
     const manual=c.condition!=='always';

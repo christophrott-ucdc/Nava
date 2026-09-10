@@ -141,6 +141,16 @@ function reportVideoReady(h: Harness): void {
   h.director.onReport({ type: "report", state: h.director.playbackState, phaseTime: h.director.now(), rate: h.director.currentRate(), videoReady: true, sceneId: null });
 }
 
+test('panel renderer readiness reports cannot move or stop the authoritative server clock',()=>{
+ const h=harness();h.director.dispatchCommand({action:'start'});runFor(h,12000);
+ const before=h.director.now();
+ h.director.onReport({type:'report',state:'ended',phaseTime:119,rate:0,videoReady:true,sceneId:null},false);
+ assert.equal(h.director.now(),before);assert.equal(h.director.playbackState,'playing');assert.equal(h.director.getState().videoReady,true);
+ runFor(h,1000);assert.equal(h.director.now(),before+1);
+ h.director.onReport({type:'report',state:'paused',phaseTime:0,rate:0,videoReady:false,sceneId:null},false);
+ assert.equal(h.director.getState().videoReady,false);assert.equal(h.director.now(),before+1);
+});
+
 // ---------------------------------------------------------------------------
 // Readiness
 

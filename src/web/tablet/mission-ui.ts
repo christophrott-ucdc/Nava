@@ -11,6 +11,8 @@ import { drawCertificateImage, preloadCertificateArtwork } from './certificate';
 import { createCrewStage, type CrewViewport } from '../shared/crew-stage';
 import { crewRelay, crewMark } from '../shared/crew-relay';
 import { crewSelection, attachCrewIdentity } from './crew-selection';
+import { tabletEventId } from './event-id';
+import { crewCharacter } from '@shared/crew';
 
 type Zone = 'A' | 'B';
 type Pending = { event: MissionEvent; epoch: string; sentAt: number; attempts?: number; exhausted?: boolean };
@@ -53,7 +55,7 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
   function send(zone: Zone, value: string) {
     if (!snapshot || !online || snapshot.suspended || snapshot.experience?.paused || pending[zone]) return;
     if (value.startsWith('play:') && snapshot.state.state !== 'playing') return;
-    const event: MissionEvent = { type: 'missionAction', runId: snapshot.runId, cueInstanceId: snapshot.cueInstanceId, eventId: crypto.randomUUID(), zone, value };
+    const event: MissionEvent = { type: 'missionAction', runId: snapshot.runId, cueInstanceId: snapshot.cueInstanceId, eventId: tabletEventId(), zone, value };
     pending[zone] = { event, epoch: snapshot.serverEpoch, sentAt: Date.now(), attempts: 1 }; save();
     options.send(event); render();
   }
@@ -62,10 +64,14 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
     const artwork = await preloadCertificateArtwork();
     const canvas = document.createElement('canvas'); canvas.width = 1800; canvas.height = 1300;
     const ctx = canvas.getContext('2d'); if (!ctx) return null;
-    const lines = [...(current.summary.posts.find(p => p.post === current.post)?.lines || [])];
+    const localSeats = current.experience?.participants.filter(seat => seat.startsWith(String(current.post)));
+    const lines = (current.summary.posts.find(p => p.post === current.post)?.lines || []).filter(line => {
+      const zone = /^([AB]):/.exec(line)?.[1];
+      return !localSeats || !zone || localSeats.includes(`${current.post}${zone}`);
+    });
     for (const zone of ['A', 'B'] as const) {
       const identity=current.experience?.crew?.characters[`${current.post}${zone}`];
-      if(identity)lines.push(`${zone} · Personajul tău: ${identity.charAt(0).toUpperCase()+identity.slice(1)}.`);
+      if(identity)lines.push(`${zone} · Personajul tău: ${crewCharacter(identity)?.name || identity}.`);
       const value = current.experience?.finale[`${current.post}${zone}`];
       const label = FINALE_CHOICES[current.scenarioId].options.find(choice => choice.value === value)?.label;
       if (label) lines.push(`${zone} · La final: ${label}.`);
@@ -86,7 +92,7 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
     if (hasChildIllustrations(current.scenarioId) && artwork.emblem) drawCertificateImage(ctx, artwork.emblem, 1520, 60, 190, 190);
     ctx.fillStyle = '#142b46'; ctx.font = 'bold 36px system-ui'; ctx.fillText('A PATRA LUME · JURNAL DE EXPEDIȚIE', artwork.logo ? 420 : 90, 110, artwork.logo ? 1060 : 1420);
     ctx.font = 'bold 58px system-ui'; ctx.fillText(current.summary.title, 90, 210, 1390);
-    ctx.font = '30px system-ui'; ctx.fillText(`Postul ${current.post} · Siwarha → Natură → Mann → Pământ`, 90, 278, 1620);
+    ctx.font = '30px system-ui'; ctx.fillText(`Postul ${current.post} · Siwarha → Kepler-186 d → Mann → Saturn → Pământ`, 90, 278, 1620);
     let y = 365;
     ctx.font = '28px system-ui';
     for (const paragraph of lines) {
@@ -96,7 +102,7 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
       }
       ctx.fillText(line, 90, y); y += 70;
     }
-    ctx.fillStyle = '#4f6277'; ctx.font = '23px system-ui'; ctx.fillText('O amintire a alegerilor voastre din această călătorie.', 90, canvas.height - 100);
+    ctx.fillStyle = '#4f6277'; ctx.font = '23px system-ui'; ctx.fillText(localSeats?.length === 1 ? 'O amintire a alegerilor tale din această călătorie.' : 'O amintire a alegerilor voastre din această călătorie.', 90, canvas.height - 100);
     return canvas;
   }
   // A retry reuses the exact PNG; other posts completing later must not redraw an immutable artifact.

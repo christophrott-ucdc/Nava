@@ -24,6 +24,7 @@ type Summary = {
     ok: boolean; checkedAt: string; lang: string; variant: string | null; durationMs: number;
     voice: { total: number; ok: number; withVisemes: number; issues: Array<{ cueId: string; problem: string; detail?: string }>; manifestPath: string | null };
     video: { path: string; exists: boolean; bytes: number }; avatar: { path: string; exists: boolean; bytes: number }; reasons: string[];
+    panels?: Array<{id: string; path: string; exists: boolean; bytes: number}>;
   };
   perf: { latest: unknown[]; summary: Array<{ screenId: string; samples: number; lastSeenMs: number; droppedPct: number | null; videoFps: number | null; avatarFps: number | null; lipsyncLatencyMs: number | null; worstDriftSec: number | null; roomLevel: number | null; heapMb: number | null; audioOutput: string | null }> };
   tts: Record<string, unknown>;
@@ -127,11 +128,12 @@ function render(s: Summary): void {
   if (!pf) pfEl.innerHTML = `<span class="dim">Nu s-a rulat încă.</span>`;
   else {
     const hard = pf.voice.issues.filter((i) => i.problem !== "variant-missing");
+    const films = pf.panels?.length ? pf.panels.map(panel => ({...panel, label: panel.id, valid: panel.exists && panel.bytes >= 1024})) : [{...pf.video, label: 'film', valid: pf.video.exists && pf.video.bytes > 0}];
     pfEl.innerHTML =
       `<div class="kv">` +
       `<div class="k">rezultat</div><div class="v ${pf.ok ? "ok" : "bad"}">${pf.ok ? "OK" : "PROBLEME"} · ${new Date(pf.checkedAt).toLocaleTimeString("ro-RO")} · ${pf.durationMs} ms</div>` +
       `<div class="k">voci</div><div class="v ${pf.voice.ok === pf.voice.total ? "ok" : "bad"}">${pf.voice.ok}/${pf.voice.total} valide · ${pf.voice.withVisemes} cu viseme · ${esc(pf.lang)}${pf.variant ? ` · varianta ${esc(pf.variant)}` : ""}</div>` +
-      `<div class="k">film</div><div class="v ${pf.video.exists ? "ok" : "bad"}">${pf.video.exists ? fmtBytes(pf.video.bytes) : "LIPSEȘTE"} · ${esc(pf.video.path)}</div>` +
+      films.map(film => `<div class="k">${esc(film.label)}</div><div class="v ${film.valid ? "ok" : "bad"}">${film.valid ? fmtBytes(film.bytes) : "LIPSEȘTE / GOL"} · ${esc(film.path)}</div>`).join('') +
       `<div class="k">avatar</div><div class="v ${pf.avatar.exists ? "ok" : "bad"}">${pf.avatar.exists ? fmtBytes(pf.avatar.bytes) : "LIPSEȘTE"} · ${esc(pf.avatar.path)}</div>` +
       `</div>` +
       (hard.length ? `<div style="margin-top:8px">${hard.slice(0, 30).map((i) => `<div class="issue">${esc(i.cueId)} — ${esc(i.problem)}${i.detail ? ` (${esc(i.detail)})` : ""}</div>`).join("")}</div>` : "");

@@ -18,6 +18,7 @@
  */
 import { app, crashReporter, dialog, Menu, powerSaveBlocker, screen as electronScreen, session } from "electron";
 import path from "node:path";
+import {panelSources} from './panel-sources';
 import fs from "node:fs";
 import type { Command } from "../shared/protocol";
 import { startServer, type ServerHandle } from "../server/index";
@@ -446,6 +447,8 @@ async function main(): Promise<void> {
         screen,
         wsUrl,
         videoUrl: toFileUrl(video.abs),
+        // All-or-nothing selection: an incomplete installation retains legacy playback.
+        panelVideoUrls: panelSources(config.video.panelsDir,config.screens.map(s=>s.id),config.videoWall?.mode),
         avatarUrl: toFileUrl(avatar.abs),
         voiceBaseUrl: toDirFileUrl(voiceDir.abs),
         showUrl: toFileUrl(show.abs),
@@ -463,6 +466,7 @@ async function main(): Promise<void> {
     screenIdFor: (webContentsId) => wm.screenFor(webContentsId)?.id,
     log: (level, msg, data, src) => log(level, msg, data, src),
     dispatchCommand,
+    startTvDemo: () => server?.startTvDemo() ?? Promise.resolve({ok:false,reason:'Demo TV se pornește pe PC-ul principal.'}),
   });
 
   wm.open(config.screens);
