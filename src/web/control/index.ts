@@ -934,12 +934,13 @@ const editor = createTimelineEditor({
   },
 });
 
-createPresentation({
+let experienceControl: ReturnType<typeof createExperienceControl>;
+const presentation = createPresentation({
   snapshot: () => ({ state, show, tablets, statuses: cueStatuses, time: phaseTime(), role: sessionUser?.role ?? null }),
-  dispatch, focusPlayer, describe: cueDescription, formatTime,
+  dispatch, focusPlayer, openExperience: () => experienceControl?.open(), describe: cueDescription, formatTime,
 });
 createMissionControl({snapshot:()=>({state,role:sessionUser?.role??null}),dispatch});
-createExperienceControl({snapshot:()=>({state,role:sessionUser?.role??null})});
+experienceControl = createExperienceControl({snapshot:()=>({state,role:sessionUser?.role??null}),onUpdate:presentation.updateExperience});
 
 renderSpeakers();
 window.setInterval(renderClock, 100);

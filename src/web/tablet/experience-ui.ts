@@ -38,6 +38,7 @@ export function experienceHeader(snapshot:MissionSnapshot, finale:boolean) {
 export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boolean, pending:boolean, send:(zone:Zone,value:string)=>void, finale:boolean, draft?:string, select?:(value:string)=>void) {
   const exp=snapshot.experience!, key=`${snapshot.post}${zone}`, observer=exp.observed.includes(key), included=exp.participants.includes(key), blocked=!online||snapshot.suspended||exp.paused||pending;
   const character=crewCharacter(exp.crew?.characters[key]), personal=character?.name??`locul ${key}`, paired=exp.participants.includes(`${snapshot.post}${zone==='A'?'B':'A'}`);
+  const personalTarget=character?`personajul ${character.name}`:`locul ${key}`;
   const panel=el('section',`mission-zone mission-zone-${zone.toLowerCase()} experience-zone`); panel.dataset.zone=zone; panel.dataset.kind=finale?'experience-finale':`tutorial-${exp.step}`;
   panel.setAttribute('aria-label',`Zona ${zone}, ${zone==='A'?'stânga':'dreapta'}`);
   const head=el('div','mission-zone-head'); head.append(el('b','mission-seat',zone),el('span','',zone==='A'?'Locul din stânga':'Locul din dreapta')); panel.append(head);
@@ -48,7 +49,7 @@ export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boole
     const b=button(label,value,'experience-beacon crew-trigger',disabled);
     b.dataset.confirmed=String(done);b.setAttribute('aria-busy',String(pending));
     const model=el('span','crew-trigger-art');model.setAttribute('aria-hidden','true');model.dataset.seat=key;
-    b.prepend(model);b.append(el('small','crew-trigger-hint',pending?'Trimitem către navă…':done?`Caută ${personal} pe ecran`:`${CREW_POSTS[(snapshot.post||1)-1]} · ${key}`));
+    b.prepend(model);b.append(el('small','crew-trigger-hint',pending?'Trimitem către navă…':done?`Caută ${personalTarget} pe ecran`:`${CREW_POSTS[(snapshot.post||1)-1]} · ${key}`));
     return b;
   };
   let status='';
@@ -58,7 +59,7 @@ export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boole
     const config=FINALE_CHOICES[snapshot.scenarioId], chosen=exp.finale[key];title.textContent=chosen==='observe'?'Momentul tău de liniște':chosen?'Alegerea ta este la bord':`Simbolul tău · ${key}`;
     const contribution=snapshot.summary.posts.find(p=>p.post===snapshot.post)?.lines[zone==='A'?0:1];
     if(contribution){const journal=el('section','experience-memory');journal.setAttribute('aria-label','Contribuția ta la expediție');journal.append(el('strong','','Din călătoria ta'),el('p','experience-contribution',contribution.replace(/^[AB]: /,'')));panel.append(journal);}
-    detail.textContent=chosen==='observe'?'Poți urmări nava și alegerile echipajului.':chosen?`Caută ${personal} și simbolul tău pe ecranul central.`:'Alege un simbol. Apoi trimite-l pe ecran.';
+    detail.textContent=chosen==='observe'?'Poți urmări nava și alegerile echipajului.':chosen?`Caută ${personalTarget} și simbolul tău pe ecranul central.`:'Alege un simbol. Apoi trimite-l pe ecran.';
     for(const choice of config.options.filter(choice=>!chosen||choice.value===chosen)){
       const selected=chosen===choice.value||(!chosen&&draft===choice.value);
       const b=el('button',`mission-option crew-choice ${selected?'experience-selected':''}`);b.type='button';b.dataset.value=`draft:${choice.value}`;b.disabled=blocked||!!chosen;b.setAttribute('aria-pressed',String(selected));b.append(el('span','',choice.label));
@@ -77,7 +78,7 @@ export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boole
     title.textContent='Urmărește călătoria';panel.append(art('orbit'));detail.textContent=exp.step==='ready'?'Proba s-a încheiat. Privește începutul călătoriei.':'Poți privi sau poți încerca împreună cu noi.';if(exp.step!=='ready')button('Vreau să particip','tutorial:touch','experience-primary');status=exp.step==='ready'?'Pornim împreună.':'Te poți alătura când ești gata.';
   } else if(exp.step==='touch') {
     const done=exp.touched.includes(key);title.textContent=done?'Bun venit în echipaj!':'Salută nava';
-    detail.textContent=done?'Lumina ta a ajuns pe ecran. Privește cum se adună echipajul.':`Atinge butonul și caută ${personal} pe ecranul central. Culoarea personajului îți arată lumina de pe navă.`;
+    detail.textContent=done?'Lumina ta a ajuns pe ecran. Privește cum se adună echipajul.':`Atinge butonul și caută ${personalTarget} pe ecranul central. Culoarea personajului îți arată lumina de pe navă.`;
     beacon(done?'Salut primit':'Salut, navă!','tutorial:touch',done,done);status=done?`Privește ecranul central: ${personal} este la bord.`:'O singură atingere este suficientă.';panel.dataset.complete=String(done);
   } else if(exp.step==='practice') {
     const config=EXPERIENCE_PRACTICE[snapshot.scenarioId], chosen=exp.practice[key], done=exp.practiced.includes(key);title.textContent=done?'Ai încheiat proba':config.title;detail.textContent=done?'Comanda ta a ajuns la navă. Mai avem un pas înainte de decolare.':config.instruction;

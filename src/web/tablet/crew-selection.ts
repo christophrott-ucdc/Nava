@@ -46,5 +46,6 @@ export function attachCrewIdentity(panel:HTMLElement,snapshot:MissionSnapshot,zo
   const existing=panel.querySelector<HTMLElement>('.crew-identity');if(existing?.dataset.character===character?.id&&character)return;existing?.remove();if(!character)return;
   const badge=el('div','crew-identity'),image=el('img','');image.src=characterPortrait(character.id);image.alt='';image.draggable=false;
   badge.dataset.character=character.id;const label=el('span','crew-identity-name',character.name);label.append(el('small','',`${snapshot.post}${zone} · ${character.role}`));
-  badge.append(image,label);badge.style.setProperty('--crew-accent',character.color);panel.style.setProperty('--crew-accent',character.color);panel.prepend(badge);
+  badge.append(image,label);badge.style.setProperty('--crew-accent',character.color);panel.style.setProperty('--crew-accent',character.color);
+  (panel.querySelector('.play-head')||panel).prepend(badge);
 }

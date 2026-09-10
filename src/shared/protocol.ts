@@ -309,6 +309,8 @@ export interface NavaBridge {
   log(level: "info" | "warn" | "error", msg: string, data?: unknown): void;
   /** Comenzi locale din tastatura ecranului master (trimise serverului prin main). */
   sendCommand(cmd: Command): void;
+  /** Local Electron presentation: children’s film and voices, without a tablet roster. */
+  startTvDemo?(): Promise<{ok:boolean;reason?:string}>;
   /** Cere inchiderea aplicatiei (Esc x2 pe ecranul master in modul dev). */
   quit(): void;
 }

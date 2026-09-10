@@ -466,6 +466,7 @@ async function main(): Promise<void> {
     screenIdFor: (webContentsId) => wm.screenFor(webContentsId)?.id,
     log: (level, msg, data, src) => log(level, msg, data, src),
     dispatchCommand,
+    startTvDemo: () => server?.startTvDemo() ?? Promise.resolve({ok:false,reason:'Demo TV se pornește pe PC-ul principal.'}),
   });
 
   wm.open(config.screens);

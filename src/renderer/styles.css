@@ -454,6 +454,12 @@ kbd {
 }
 
 /* ----------------------------------------------------------------- veil */
+#demo-controls { z-index: 115; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 3cqh; pointer-events: none; }
+#demo-tv { pointer-events: auto; cursor: pointer; min-height: 58px; padding: 18px 34px; border: 1px solid #ffffffc9; border-radius: 22px; background: linear-gradient(135deg,#e8fbff,#a5ecff); color: #102b42; font: 800 clamp(17px,2.5cqh,30px)/1.2 var(--font); letter-spacing: .06em; box-shadow: 0 8px 34px #031e4880; }
+#demo-tv:hover { filter: brightness(1.08); }
+#demo-tv:focus-visible { outline: 4px solid #ffd27c; outline-offset: 5px; }
+#demo-tv:disabled { cursor: progress; opacity: .8; }
+#demo-status { max-width: 85%; margin: 10px 0 0; padding: 8px 16px; border-radius: 14px; background: #102237ed; color: #fff; text-align: center; font: 500 clamp(12px,1.8cqh,20px)/1.4 var(--font); }
 #veil {
   z-index: 110;
   inset: 0;

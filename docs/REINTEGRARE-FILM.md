@@ -198,3 +198,24 @@ Setarea locală recomandată pentru această mașină este `video.panelsDir: ../
 Dovezi locale în `runs/film-reintegration/`: `check-final.log`, `smoke-wall.log`, `smoke-experience.log`, `smoke-cinema.log`, `smoke-renderer-final.log`, `new-voices-qa.json`, `panel-playback.json`, `panel-playback-steady.json`; capturi `renderer-80.png` până la `renderer-630.png`, `renderer-cinema.png` și `renderer-panorama-final.png`.
 
 Rămâne obligatorie repetiția integrală pe cele cinci televizoare fizice, cu ieșiri 4K, îmbinări/spații, refresh rate și întârzieri reale ale TV-urilor, sunetul în sală, nivelul vocilor față de muzică și tabletele fizice. Regresia cinema confirmă funcționarea căii vechi de redare; filmul vechi nu este remapat editorial la traseul nou. Nu s-au modificat filmele originale, scripturile SpaceEngine sau manualul DOCX; nu s-a făcut push, release ori deploy.
+
+## 9 septembrie 2026 — corecție de geometrie și sincronizare la cadrul afișat
+
+Raportarea anterioară a diferențelor între `video.currentTime` nu garanta că imaginile prezentate de cele cinci decodoare corespundeau aceluiași cadru. În plus, preview-ul scala separat axele X/Y, iar filmul fiecărui panou era întins independent pe suprafața lui; ecranul central de 115″ mărea imaginea diferit de lateralele de 98″.
+
+Implementarea actuală:
+
+- Preview-ul folosește un singur factor de scalare și păstrează proporțiile când fereastra este redimensionată. Spațiul suplimentar rămâne liber, fără deformarea planetelor.
+- Cele cinci fișiere sunt tratate ca segmente ale aceleiași surse panoramice. Un singur calcul în milimetri stabilește decupajele pentru TV-uri; un panou poate citi din două sau trei segmente, fără canvas intermediar de 12800/19200 px.
+- Profilul Samsung exemplu și profilele locale includ intervalele de 500 mm comunicate de utilizator. Alinierea pe centre existentă este păstrată; aceasta trebuie confirmată prin măsurători în sală.
+- `requestVideoFrameCallback` anunță disponibilitatea unui cadru; `VideoFrame` păstrează imaginea și timestamp-ul nativ al decodorului, fără rescriere cu `currentTime`. Evenimentul `seeked` capturează și cadrul rezultat dintr-un salt făcut pe pauză. Compositorul span publică un set nou numai când toate cele cinci surse au același indice de cadru la 60 fps. Cadrele vechi sunt eliberate explicit, iar cozile sunt limitate la 12 cadre/sursă.
+- Seek-ul este o operație de grup: pauză, o poziție comună, așteptarea tuturor decodoarelor și reluare. Ultima panoramă coerentă rămâne vizibilă până la înlocuire. Reglajele fine urmează în continuare ceasul serverului; un watchdog urmărește și progresul imaginii afișate, nu doar ceasurile media.
+- Modurile cu film unic și cinema rămân disponibile. Publicarea atomică pentru toate cele cinci TV-uri cere configurația `displayMode: span`, folosită de instalația locală. Ferestrele independente nu au un compositor comun și nu oferă această garanție.
+
+Probe reproductibile: `node scripts/review-frame-sync.mjs`, cu Electron pornit pe portul CDP 19191. Scriptul verifică timestamp-uri identice pe toate canvasurile la salturi înainte/înapoi, progres efectiv al filmului, pauză/reluare, recuperare după blocarea forțată a unui decodor și proporții la 1920×1080. Dovezi și capturi: `runs/frame-sync/presentation.json`, `recovery.json`, `renderer-80.png`, `renderer-300.png`, `renderer-527.png`, `renderer-630.png`, `renderer-10.png`, `renderer-tall.png`.
+
+Această sincronizare este verificată în compositorul Electron. Refresh-ul și procesarea internă ale televizoarelor fizice pot introduce alte întârzieri; acestea necesită proba pe cele cinci Samsung. Replicile, fișierele vocale, muzica și timpii show-ului nu au fost schimbate în această corecție.
+
+Verificarea corecției: `npm run check` trecut (211/211 teste), `smoke:wall` trecut, proba de cadre comune și recuperare trecută, `smoke:renderer` trecut cu film/GLB/subtitrări. În ultima rulare, stabilizarea salturilor 80/300/527/630/10 s a durat 3526/1192/2397/1189/987 ms. Niciun amestec de timestamp-uri în probele de prezentare; nu este o afirmație despre scanarea sincronă a celor cinci TV-uri fizice. Jurnale: `runs/film-reintegration/check-frame-sync.log`, `frame-sync-review.log`, `smoke-wall-frame-sync.log`, `smoke-renderer-frame-sync.log`.
+
+Extinderea finală a probei: seek la 40,25 s în stare de pauză a afișat 40,25 s pe toate cele cinci suprafețe. Capturarea cadrului nativ la `seeked` acoperă lipsa unui callback de prezentare cât elementul video rămâne oprit. Regresia cinema a trecut (`smoke-cinema-frame-sync.log`); captura se află în `runs/frame-sync/renderer-cinema.png`.

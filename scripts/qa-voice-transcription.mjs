@@ -6,8 +6,13 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const voiceDir = path.join(root, "assets", "voice", "ro");
-const source = JSON.parse(await fs.readFile(path.join(root, "assets", "show", "voice-script-v3.json"), "utf8"));
+const args = process.argv.slice(2);
+const scenarioIndex = args.indexOf('--scenario');
+const scenario = scenarioIndex >= 0 ? args.splice(scenarioIndex, 2)[1] : undefined;
+if (scenarioIndex >= 0 && !['age-5-10', 'age-10-15', 'age-15-18', 'adults'].includes(scenario)) throw Error('Invalid --scenario');
+if (scenario && !args.length) throw Error('Scenario QA requires explicit cue IDs');
+const voiceDir = path.join(root, 'assets', ...(scenario ? ['scenarios', scenario] : []), 'voice', 'ro');
+const source = JSON.parse(await fs.readFile(path.join(root, 'assets', ...(scenario ? ['scenarios', scenario, 'dialogue.ro.draft.json'] : ['show', 'voice-script-v3.json'])), 'utf8'));
 
 function unquoteEnv(value) {
   const trimmed = value.trim();
@@ -71,7 +76,7 @@ async function transcribe(file) {
   return response.json();
 }
 
-const selected=process.argv.slice(2);
+const selected=args;
 if(selected.length){
  const report=[];
  for(const id of selected){
@@ -82,8 +87,9 @@ if(selected.length){
   report.push({id,expected:cue.text.ro,transcript:transcript.text,wer});
   if(wer>.18||actual.some(w=>['warmly','calm','authoritative','precise'].includes(w)))process.exitCode=1;
  }
- await fs.mkdir(path.join(root,'runs/film-reintegration'),{recursive:true});
- await fs.writeFile(path.join(root,'runs/film-reintegration/new-voices-qa.json'),JSON.stringify(report,null,2));
+ const reportDir=path.join(root,scenario?'runs/presentation-2026-09-10':'runs/film-reintegration');
+ await fs.mkdir(reportDir,{recursive:true});
+ await fs.writeFile(path.join(reportDir,'new-voices-qa.json'),JSON.stringify(report,null,2));
  console.log(JSON.stringify(report,null,2));process.exit(process.exitCode??0);
 }
 for (const [speaker, file, selectCue] of [

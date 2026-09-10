@@ -141,28 +141,28 @@
       },
       {
         "screenId": "port-inner",
-        "x": 2170,
+        "x": 2670,
         "y": 106,
         "width": 2170,
         "height": 1220
       },
       {
         "screenId": "center",
-        "x": 4340,
+        "x": 5340,
         "y": 0,
         "width": 2546,
         "height": 1432
       },
       {
         "screenId": "starboard-inner",
-        "x": 6886,
+        "x": 8386,
         "y": 106,
         "width": 2170,
         "height": 1220
       },
       {
         "screenId": "starboard-outer",
-        "x": 9056,
+        "x": 11056,
         "y": 106,
         "width": 2170,
         "height": 1220

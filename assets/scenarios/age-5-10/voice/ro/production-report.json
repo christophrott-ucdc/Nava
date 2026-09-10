@@ -1,54 +1,13 @@
 {
-  "generatedAt": "2026-09-06T12:45:35.070Z",
+  "generatedAt": "2026-09-10T08:03:48.758Z",
   "profile": "age-5-10",
-  "expected": 42,
-  "available": 42,
-  "sourceSha256": "0ee1e0ee6147cc2d6b159133d8baff543737caf5bc96cb2e60b9379893c3bfab",
+  "expected": 45,
+  "available": 45,
+  "sourceSha256": "26fdcce1324d3788bf7c72ec25c7ff63f9523870b8fbf05e704ee911294f68f0",
   "missing": [],
-  "overBudget": [
-    {
-      "profile": "age-5-10",
-      "cueId": "k510-007",
-      "phase": "play",
-      "at": 5,
-      "durationSec": 8.72,
-      "budgetSec": 8
-    },
-    {
-      "profile": "age-5-10",
-      "cueId": "k510-011",
-      "phase": "play",
-      "at": 110,
-      "durationSec": 7.12,
-      "budgetSec": 7
-    },
-    {
-      "profile": "age-5-10",
-      "cueId": "k510-019",
-      "phase": "play",
-      "at": 284,
-      "durationSec": 8.24,
-      "budgetSec": 8
-    },
-    {
-      "profile": "age-5-10",
-      "cueId": "k510-026",
-      "phase": "play",
-      "at": 405,
-      "durationSec": 7.36,
-      "budgetSec": 7
-    },
-    {
-      "profile": "age-5-10",
-      "cueId": "k510-031-C",
-      "phase": "epilogue",
-      "at": 19,
-      "durationSec": 9.12,
-      "budgetSec": 9
-    }
-  ],
+  "overBudget": [],
   "failures": [],
-  "totalAudioMs": 287280,
-  "providerCharacterCost": 4179,
+  "totalAudioMs": 317360,
+  "providerCharacterCost": 4243,
   "postprocessTempo": 1
 }

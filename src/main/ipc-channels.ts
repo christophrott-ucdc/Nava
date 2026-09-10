@@ -6,5 +6,6 @@ export const IPC = {
   getBoot: "nava:getBoot",
   log: "nava:log",
   sendCommand: "nava:sendCommand",
+  startTvDemo: "nava:startTvDemo",
   quit: "nava:quit",
 } as const;

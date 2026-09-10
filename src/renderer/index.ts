@@ -176,6 +176,8 @@ async function main(): Promise<void> {
   const subtitles = createSubtitles($("subtitles"), { enabled: screen.showSubtitles });
   const countdown = createCountdown($("countdown"), { enabled: !wallMode || screen.showAvatar || screen.showSubtitles });
   const launchControls = $("launch-controls");
+  const demoControls=$("demo-controls"),demoButton=$("demo-tv") as HTMLButtonElement,demoStatus=$("demo-status");
+  const updateDemo=(state:string,suspended=false)=>{demoControls.hidden=!isClockSource||(!suspended&&state!=='idle'&&state!=='ended');};
   let crewWelcomeActive=false;
   const waitingScreen=createWaitingScreen($("stage"));
   let waitingActive=false;
@@ -306,6 +308,7 @@ async function main(): Promise<void> {
       if(state!=='idle')ambient.stopWaiting();
       if(state!=="idle"){waitingActive=false;waitingScreen.update(false);}
       launchControls.hidden = waitingActive || crewWelcomeActive || !isClockSource || state !== "idle";
+      updateDemo(state);
     },
     onConfiguredVideoEnd: () => {
       // The player has already entered epilogue locally without a visible hold. Tell the server at
@@ -323,6 +326,7 @@ async function main(): Promise<void> {
     if(!r.ok)throw Error(`HTTP${r.status}`);player.setMusicManifest(await r.json() as MusicManifest);
   }).catch(e=>log('warn',`Music pack unavailable: ${String(e)}`));
   launchControls.hidden = !isClockSource || player.getPlaybackState() !== "idle";
+  updateDemo(player.getPlaybackState());
 
   const missionOverlay=createMissionOverlay($("stage"));
   const experienceOverlay=createExperienceOverlay($("stage"),{audio:screen.playAudio,visual:screen.showAvatar,baseUrl:boot.serverHttpUrl??boot.wsUrl.replace(/^ws/, 'http'),volume:config.audio.voiceVolume,outputDeviceId:config.audio.outputDeviceId,clockOffset:()=>syncStatus.offsetMs,onNarration:(instance,status)=>sync.sendRaw({type:'experienceAudio',instance,status}),onAudioActive:active=>ambient.setDucked(active,'narrator')});
@@ -336,10 +340,11 @@ async function main(): Promise<void> {
         video,
         viewports: wallViewports,
         panelVideos: panelPlayback?.videos,
+        panelFrames: panelPlayback?.frames,
         screens: config.screens,
         fit: config.video.fit,
         centerScreenId: screen.id,
-        overlays: [waitingScreen.element,missionOverlay.element,experienceOverlay.element,$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl, $("osd"), $("rehearse"), $("identify"), $("spinner"), $("error-banner"), launchControls, veil, ...Array.from(document.querySelectorAll<HTMLElement>("#photo"))],
+        overlays: [waitingScreen.element,missionOverlay.element,experienceOverlay.element,$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl, $("osd"), $("rehearse"), $("identify"), $("spinner"), $("error-banner"), launchControls, demoControls, veil, ...Array.from(document.querySelectorAll<HTMLElement>("#photo"))],
         wall: config.videoWall,
         getTime: () => player.phaseTime(),
         log,
@@ -393,6 +398,7 @@ async function main(): Promise<void> {
       if(waitingActive)experienceOverlay.element.hidden=true;
       crewWelcomeActive=!!s.experience?.active||!!s.experience?.crew?.open;
       launchControls.hidden=waitingActive||crewWelcomeActive||!isClockSource||s.state.state!=='idle';
+      updateDemo(s.state.state,s.suspended);
       if(screen.showAvatar)missionOverlay.update(s);
       if(s.runId!==missionRun||s.suspended!==missionSuspended){
         player.apply({action:'stopVoice'});
@@ -461,6 +467,16 @@ async function main(): Promise<void> {
     voice.unlock().catch(() => {});
     const target = ev.target instanceof Element ? ev.target : null;
     dispatch({ action: target?.closest("#launch-start") ? "start" : "preshow" });
+  });
+  demoButton.addEventListener('click',async()=>{
+    if(demoButton.disabled)return;
+    demoButton.disabled=true;demoButton.textContent='PREGĂTIM DEMO…';demoStatus.textContent='Încărcăm filmul și vocile. Pornirea este automată.';
+    gesture();
+    try{
+      const result=await window.nava.startTvDemo?.();
+      demoStatus.textContent=result?.ok?'Demo pornit · fără tablete':result?.reason??'Repornește Electron pentru a activa DEMO TV.';
+    }catch(error){demoStatus.textContent='Repornește Electron pentru a activa DEMO TV.';log('error','Demo TV IPC failed',{error:String(error)});}
+    finally{demoButton.disabled=false;demoButton.textContent='▶ DEMO TV';}
   });
   let lastEsc = 0;
   window.addEventListener("keydown", (ev) => {

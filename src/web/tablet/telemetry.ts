@@ -11,6 +11,7 @@
  */
 
 import { TABLET_POSTS, type SceneTheme, type ShowState, type TabletPost } from "@shared/types";
+import { FILM_DURATION } from '@shared/film-timing';
 
 export interface TelemetryInput {
   state: ShowState | null;
@@ -35,12 +36,12 @@ const THEME_PROFILE: Record<SceneTheme, { bpm: number; energy: number; signal: n
   light: { bpm: 70, energy: 0.6, signal: 0.85, headingDrift: 5, label: "PLANETA LUMINII" },
   nature: { bpm: 58, energy: 0.5, signal: 0.75, headingDrift: 3, label: "PLANETA NATURII" },
   tech: { bpm: 74, energy: 0.8, signal: 0.95, headingDrift: 6, label: "PLANETA TEHNOLOGIEI" },
-  void: { bpm: 96, energy: 0.3, signal: 0.15, headingDrift: 40, label: "GARGANTUA · TUNEL" },
+  void: { bpm: 96, energy: 0.3, signal: 0.15, headingDrift: 40, label: "TRECERE IMAGINARĂ" },
   home: { bpm: 66, energy: 0.55, signal: 0.9, headingDrift: 2, label: "ÎNTOARCERE · SATURN" },
   white: { bpm: 60, energy: 0.2, signal: 1, headingDrift: 0, label: "ACASĂ" },
 };
 
-const MISSION_LENGTH_SEC = 475;
+const MISSION_LENGTH_SEC = FILM_DURATION + 10;
 const MEMORY_MAX = 6;
 
 function fmtClock(t: number): string {

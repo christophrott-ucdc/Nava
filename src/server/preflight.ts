@@ -26,6 +26,7 @@ export interface PreflightResult {
   assetsDir: string | null;
   voice: { total: number; ok: number; withVisemes: number; issues: PreflightIssue[]; manifestPath: string | null };
   video: { path: string; exists: boolean; bytes: number };
+  panels?:Array<{id:string;path:string;exists:boolean;bytes:number}>;
   avatar: { path: string; exists: boolean; bytes: number };
   reasons: string[];
 }
@@ -131,7 +132,16 @@ export async function runPreflight(show: ShowFile, lang: Lang, variant: string |
 
   const videoPath = (await firstExisting(candidatesFor(deps.appRoot, deps.config.video.path))) ?? path.resolve(deps.appRoot, deps.config.video.path);
   const video = await statSize(videoPath);
-  if (!video.exists || video.bytes === 0) reasons.push(`filmul lipsește: ${deps.config.video.path}`);
+  const panels:NonNullable<PreflightResult['panels']>=[];
+  if(deps.config.video.panelsDir&&deps.config.videoWall?.mode!=='cinema'&&deps.config.screens.length){
+    for(const screen of deps.config.screens){
+      const id=screen.id;
+      if(!/^[\w-]+$/.test(id)){reasons.push('ID de panou invalid.');continue;}
+      const file=path.resolve(deps.appRoot,deps.config.video.panelsDir,id+'.mp4'),st=await statSize(file);
+      panels.push({id,path:file,...st});
+      if(!st.exists||st.bytes<1024)reasons.push(`Filmul panoramic pentru ${id} lipsește sau este gol. Verifică video.panelsDir; filmul vechi de rezervă nu validează panorama.`);
+    }
+  }else if (!video.exists || video.bytes === 0) reasons.push(`filmul lipsește: ${deps.config.video.path}`);
 
   const avatarPath = (await firstExisting(candidatesFor(deps.appRoot, deps.config.avatar.glb))) ?? path.resolve(deps.appRoot, deps.config.avatar.glb);
   const avatar = await statSize(avatarPath);
@@ -146,6 +156,7 @@ export async function runPreflight(show: ShowFile, lang: Lang, variant: string |
     assetsDir,
     voice: { total: voiceCues.length, ok: okCount, withVisemes, issues, manifestPath },
     video: { path: videoPath, ...video },
+    ...(panels.length?{panels}:{}),
     avatar: { path: avatarPath, ...avatar },
     reasons,
   };

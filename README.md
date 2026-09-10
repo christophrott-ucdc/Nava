@@ -4,7 +4,9 @@
 
 NavaPlayer este playerul și serverul local al experienței imersive „A Patra Lume" de la UCDC HUB AI: un singur executabil Windows (Electron + Node) redă filmul 4K sincronizat pe cinci ecrane, suprapune Căpitanul 3D cu lip-sync și subtitrările, rulează scenariul sincronizat după filmul panoramic (durată derivată din show.json; aproximativ 13:33, plus tutorialul interactiv) și servește consola operatorului, pagina de depanare și cele cinci tablete folosite de participanți.
 
-**Citiți întâi:** [HANDOFF.md](HANDOFF.md) (imaginea proiectului) și [HANDOFF-LIVE.md](HANDOFF-LIVE.md) (starea live a rundei 4 — ce este gata și ce este schelet). Arhitectura ratificată: [docs/BRIEF.md](docs/BRIEF.md).
+**Prezentarea curentă:** [Ghidul din 10 septembrie](docs/PREZENTARE-2026-09-10.md) — experiența copiilor 5–10 ani, inclusiv cu un singur participant. `PREZENTARE.bat` verifică filmele și GLB-ul, construiește sursele curente și pornește preview-ul panoramei; `PREZENTARE.bat --live` folosește televizoarele configurate. Închide instanța veche înainte de relansare. Executabilele istorice din `dist-app/` nu includ automat modificările acestei runde.
+
+Jurnalele și briefurile istorice se află local în `AI/`: [HANDOFF](AI/HANDOFF.md), [HANDOFF-LIVE](AI/HANDOFF-LIVE.md), [BRIEF](AI/docs/BRIEF.md). Folderul este ignorat de Git; documentația de operare curentă este în `docs/`.
 
 ## Pornire în dezvoltare
 

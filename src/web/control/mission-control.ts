@@ -33,7 +33,7 @@ export function createMissionControl(deps:{snapshot():{state:ShowState|null;role
   let catalog:Catalog|null=null,mission:MissionSnapshot|null=null,recovery:Recovery|null=null,wall:DisplayAutomationStatus|null=null;
   let settings:Record<string,PostAccessibility>={},busy=false,refreshing=false,tab='crew',lastRun='';
   let accessDirty=false,rehearsalRunning=false;
-  const status=(text:string,error=false)=>{el('mission-action-status').textContent=text;el('mission-action-status').dataset.error=String(error);};
+  const status=(text:string,error=false)=>{el('mission-action-status').textContent=text;el('mission-action-status').dataset.error=String(error);if(!dialog.open){el('mission-profile-note').textContent=text;el('mission-profile-note').dataset.error=String(error);}};
   async function api<T>(url:string,body?:unknown):Promise<T>{
     const response=await fetch(url,{credentials:'same-origin',cache:'no-store',...(body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})});
     if(response.status===401){location.assign('/login/?next=%2Fcontrol%2F');throw new Error('Sesiunea a expirat.');}
@@ -67,7 +67,9 @@ export function createMissionControl(deps:{snapshot():{state:ShowState|null;role
     select.value=catalog.catalog.some(p=>p.id===previous&&p.ready)?previous:catalog.selected;
     if(lastRun!==mission?.runId){select.value=catalog.selected;lastRun=mission?.runId??'';}
     const current=catalog.catalog.find(p=>p.id===catalog!.selected);
-    el('mission-profile-note').textContent=current?`Activ: ${current.label}${current.issues.length?` · ${current.issues.join('; ')}`:''}`:'Alege experiența înainte de show.';
+    const pending=catalog.catalog.find(p=>p.id===select.value&&p.id!==catalog!.selected);
+    el('mission-profile-note').textContent=current?`Activ: ${current.label}${current.issues.length?` · ${current.issues.join('; ')}`:''}${pending?` · ${pending.label} nu este încă aplicat.`:''}`:'Alege experiența înainte de show.';
+    el('mission-profile-note').dataset.error=String(!!current?.issues.length);
   }
   function renderAccess():void{
     if(accessDirty)return;const chosen=settings[el<HTMLSelectElement>('mission-post').value]??DEFAULT_ACCESSIBILITY;
@@ -118,7 +120,7 @@ export function createMissionControl(deps:{snapshot():{state:ShowState|null;role
   el('mission-close').addEventListener('click',()=>dialog.close());
   el('mission-recovery-alert').addEventListener('click',()=>{dialog.showModal();selectTab('recovery');});
   dialog.querySelectorAll<HTMLButtonElement>('[data-mission-tab]').forEach(button=>button.addEventListener('click',()=>selectTab(button.dataset.missionTab!)));
-  el('mission-profile').addEventListener('change',renderControls);
+  el('mission-profile').addEventListener('change',()=>{renderCatalog();renderControls();});
   el('mission-select').addEventListener('click',()=>void action(()=>api('/api/scenarios/select',{id:el<HTMLSelectElement>('mission-profile').value}),'Experiența este încărcată și verificată.'));
   el('mission-post').addEventListener('change',()=>{accessDirty=false;renderAccess();});
   el('mission-accessibility').addEventListener('input',()=>{accessDirty=true;});

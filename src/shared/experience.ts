@@ -5,6 +5,8 @@ export interface ExperienceState {
   version:1; status:'pending'|'tutorial'|'complete'|'skipped'; step:TutorialStep; epoch:number;
   pausedAt?:number; launchRequested?:boolean;
   finaleNarrated?:boolean;
+  /** Explicit TV presentation; no participants, tutorial or interactive finale. */
+  tvOnly?:boolean;
   crew?:CrewRegistration;
   participants:string[]; observed:string[]; touched:string[]; practiced:string[]; linked:string[];
   practice:Record<string,string>; finale:Record<string,string>;
@@ -12,6 +14,8 @@ export interface ExperienceState {
 }
 export interface ExperienceSnapshot extends ExperienceState {
   active:boolean; finaleActive:boolean; canContinue:boolean; paused:boolean;
+  /** Server clock and the authorized renderer have both confirmed narration end. */
+  narrationComplete?:boolean;
 }
 export interface NarratorClip {file:string;durationSec:number;text:string;sha256:string}
 export interface NarratorManifest {voiceId:string;voiceName:string;clips:Record<string,NarratorClip>}

@@ -76,6 +76,7 @@ export interface ServerHandle {
   stop(): Promise<void>;
   /** Command coming from the master screen's keyboard (via IPC) — treated like a console command. */
   dispatchCommand(cmd: Command): void;
+  startTvDemo(): Promise<DispatchResult>;
 }
 
 export interface StartServerOptions {
@@ -224,6 +225,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   if(!musicPack)log('warn','Music: complete verified pack unavailable; procedural ambience remains available.');
   let narratorDirectory='';
   let narratorEnded='';
+  mission.narrationReady=e=>narrationFinished(e,narrator,Date.now())&&(!e.narration||narratorEnded===e.narration.instance);
   try{
     let root=path.join(opts.appRoot,'assets','experience','voice','ro');
     try{await fs.access(root);}catch{if(typeof process.resourcesPath==='string')root=path.join(process.resourcesPath,'assets','experience','voice','ro');}
@@ -339,7 +341,9 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const lights = createLightsAdapter(config.lights, log);
 
   const crewReadiness=()=>{
-    const e=mission.record.experience;if(!e?.crew||mission.record.mode==='diagnostic')return null;
+    const e=mission.record.experience;
+    if(e?.tvOnly)return {required:0,connected:0,reasons:[]};
+    if(!e?.crew||mission.record.mode==='diagnostic')return null;
     const posts=[...new Set(e.participants.map(seat=>Number(seat[0])))];
     const connected=new Set([...tablets.tablets.values()].filter(t=>t.connected&&t.post).map(t=>Number(t.post)));
     const missing=posts.filter(post=>!connected.has(post));
@@ -349,6 +353,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const director = new ShowDirector(show, config, {
     beforeCommand:(cmd,source)=>{
       if(source==='diagnostic')return;
+      if(preparingPackage&&source!=='tv-demo')return {ok:false,reason:'Pregătirea scenariului este în curs.'};
       const e=mission.record.experience;
       if(['preshow','start'].includes(cmd.action)&&director.getState().state==='idle'){
         if(e?.crew?.open&&source.startsWith('autoRun'))return {ok:false,reason:'Operatorul confirmă încheierea îmbarcării înainte de plecare.'};
@@ -551,6 +556,49 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     ()=>executeCommand(cmd,source),
     error=>{log('error','Command failed',{source,action:cmd.action,error:String(error)});return {ok:false,reason:'Comanda nu a putut fi aplicată. Verifică starea navei înainte să reîncerci.'};},
   );
+
+  // Native Electron only: a real children's film run, never fabricated tablet answers.
+  // Start at the launch countdown so missing tablet/display readiness cannot strand a TV demo in preshow.
+  const startTvDemo=async():Promise<DispatchResult>=>{
+    const state=director.getState();
+    if(stopped||preparingPackage||topologyApplying||rehearsal?.running)return {ok:false,reason:'Pregătirea este în curs. Încearcă din nou în câteva secunde.'};
+    if(!state.suspended&&!['idle','ended'].includes(state.state))return {ok:false,reason:'Experiența rulează deja.'};
+    preparingPackage=true;
+    try{
+      const next=await loadScenario(opts.appRoot,'age-5-10',legacyShow);
+      if(next.issues.length)return {ok:false,reason:next.issues.join('; ')};
+      const checked=await runPreflight(next.show,'ro',null,{appRoot:opts.appRoot,config,log});
+      if(!checked.ok)return {ok:false,reason:checked.reasons.join('; ')};
+      if(config.videoWall?.calibration)return {ok:false,reason:'Dezactivează grila de calibrare TV înainte de demo.'};
+      if(!clockSource)return {ok:false,reason:'Ecranul principal se conectează. Reîncearcă în câteva secunde.'};
+      director.resumeSuspended();mission.recovery=null;recoveryIssue=null;
+      director.dispatchCommand({action:'restart'},'tv-demo');
+      activePackage=next;mission.reset(next.id,next.hash);
+      mission.record.mode='rehearsal';
+      mission.record.experience={...freshExperience(),crew:undefined,participants:[],status:'skipped',tvOnly:true};
+      mission.record.progress.participants=[];
+      mission.store.save(mission.record);
+      director.setShow(next.show);
+      director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:0});
+      // packageReady e WeakMap (clienții deconectați se colectează singuri), deci nu are `clear`.
+      // Se șterg intrările clienților CURENȚI — singurii care contează — ca fiecare ecran să
+      // raporteze din nou pregătirea pentru hash-ul nou.
+      preflight=checked;tablets.clearAnswers();for(const client of clients)packageReady.delete(client);
+      for(const client of clients)if(client.kind)send(client,makeWelcome());
+      pushMission();
+      const deadline=Date.now()+45000;
+      while(!stopped&&Date.now()<deadline&&(!clockSource||!voicesPrepared()||!director.readiness(false).videoReady)){
+        await new Promise(resolve=>setTimeout(resolve,100));
+      }
+      if(stopped||!clockSource||!voicesPrepared()||!director.readiness(false).videoReady)return {ok:false,reason:'Filmul sau vocile nu sunt încă pregătite. Apasă din nou DEMO TV.'};
+      director.dispatchCommand({action:'setRate',rate:1},'tv-demo');
+      const result=director.dispatchCommand({action:'start'},'tv-demo');
+      guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Demo checkpoint failed',{error:String(error)}));
+      pushMission();log('info','Demo TV: scenariu copii, fără tablete',{ok:result.ok});
+      return result;
+    }catch(error){log('error','Demo TV failed',{error:String(error)});return {ok:false,reason:'Demo TV nu a putut porni. Verifică fișierele filmului și vocilor.'};}
+    finally{preparingPackage=false;}
+  };
 
   // --- HTTP -------------------------------------------------------------------
   const app = new Hono<AuthEnv>();
@@ -1295,7 +1343,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   // --- timers --------------------------------------------------------------------
   const clockHz = Math.min(30, Math.max(1, config.sync.clockHz || 4));
   const clockTimer = setInterval(() => {
-    if(director.getState().state==='ended'&&mission.record.experience&&!mission.record.experience.finaleNarrated&&narrator?.clips.finale){
+    if(director.getState().state==='ended'&&mission.record.experience&&!mission.record.experience.tvOnly&&!mission.record.experience.finaleNarrated&&narrator?.clips.finale){
       const record=structuredClone(mission.record);record.experience!.finaleNarrated=true;narrate(record.experience!,'finale',Date.now());record.revision++;
       try{mission.store.save(record);mission.record=record;}catch{log('error','Finale checkpoint failed; will retry.');}
     }
@@ -1352,6 +1400,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   return {
     port,
     urls,
+    startTvDemo,
     dispatchCommand(cmd: Command): void {
       if (stopped) return;
       const valid = validateCommand(cmd);

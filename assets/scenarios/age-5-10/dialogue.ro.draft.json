@@ -433,7 +433,7 @@
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Fiecare atinge capătul lui de fir. Lumina ține minte amândouă atingerile. Pe rând e bine."
+        "ro": "Pe tabletă ai o baterie, un bec și două legături. Rotește legăturile până când firele se unesc. Atunci becul se aprinde."
       },
       "tts": {
         "audioTags": [
@@ -451,7 +451,7 @@
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "Primul capăt te ține minte. Al doilea poate veni mai târziu. Firul are răbdare."
+        "ro": "Urmărește firul de la baterie, prin bec și înapoi. Dacă drumul e întrerupt, mai rotește legătura."
       },
       "tts": {
         "audioTags": [
@@ -469,7 +469,7 @@
       "speaker": "TEHNOLOGIC",
       "condition": "link_complete",
       "text": {
-        "ro": "Toate cele cinci fire sunt legate. Felinarul are acum cinci mânere de lumină."
+        "ro": "Ați închis circuitele! Bateriile dau energie becurilor, iar felinarul echipajului luminează."
       },
       "tts": {
         "audioTags": [
