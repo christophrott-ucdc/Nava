@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "lang": "en",
+  "sourceSha256": "cdf0789202cb44ce2f182ecda9d10e7eb49660286f8fef4192e7058109728aa3",
+  "cues": {
+    "intro": "Welcome aboard! Our ship doesn't ask for passwords. It asks for something much rarer: a little light. Let's see if you have some.",
+    "touch": "Each of you has half a screen, half a sky. Touch the light in front of you. See? It answered. You can just watch if you like. That's all the stars ever do.",
+    "age-5-10-practice": "The ship has lost a piece. Ships do that when they can't wait to leave. Find the matching shape on your screen and tap it. Ships are repaired with patience, not hurry.",
+    "age-10-15-practice": "A signal keeps repeating. What is it telling us? Look at the gaps between signals. Choose the answer that matches what you see, then confirm.",
+    "age-15-18-practice": "Every decision starts with a proposal. Read the situation on your screen, choose what you think is appropriate, then confirm. Next, we'll see how we work together.",
+    "adults-practice": "A good choice starts with a question. Look at the information and the displayed cost. Choose, then confirm. This is just practice. The mission loses nothing.",
+    "legacy-v3-practice": "Look at the clue on your screen. Find the star, then confirm. This is just a warm-up.",
+    "cooperate": "Now, everyone: touch the signal on your half of the screen. Look ahead. Every touch lights up a part of the ship. That's how a crew is born: lights answering one another.",
+    "ready": "The controls are responding. Take a deep breath. Somewhere far away, three worlds await us, and a question older than every ship.",
+    "handoff": "The crew is ready, Commander. We're ready to depart.",
+    "hint": "Look for the glowing spot on your half of the screen. Take your time. Stars don't hurry. And if you need help, the operator is here.",
+    "finale": "The journey lives on in what you choose now. Three gifts await you: a light, care for others, an explorer's courage. Choose yours and send it. Each gift lights a ray in Humanity's Star. Your ray. You set out to find other worlds. You returned with your own, seen for the first time."
+  }
+}

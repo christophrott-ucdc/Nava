@@ -21,5 +21,9 @@ test('tablet audio requires a gesture and obeys operator mute including active s
   audio.setEnabled(false);assert.ok(instances.every(a=>a.paused&&a.currentTime===0));
   audio.play('thanks');assert.equal(audible.length,1);
   audio.setEnabled(true);audio.play('confirm');assert.equal(audible.at(-1),'/tablet/sfx/confirm.mp3');
+  audio.setVolume(.5);assert.ok(instances.every(a=>a.volume===.175));
+  audio.setVolume(0);assert.ok(instances.every(a=>a.volume===0));
+  audio.setVolume(NaN);assert.ok(instances.every(a=>a.volume===0));
+  audio.setVolume(1);assert.ok(instances.every(a=>a.volume===.35));
  } finally {Object.assign(globalThis,{document:oldDocument,Audio:oldAudio})}
 });

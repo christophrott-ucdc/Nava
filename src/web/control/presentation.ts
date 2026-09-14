@@ -31,6 +31,7 @@ function momentTitle(cue: Cue, voiceTitle: () => string): string {
     }
     case "entity": return `${cue.action === "show" ? "Ne întâmpină" : "Ne luăm rămas-bun de la"} ${SPEAKERS[cue.entity].label}`;
     case "sfx": return {
+      "rocket-departure":"Impuls discret al motoarelor la plecare",
       "liftoff-rumble": "Se aud motoarele navei", "low-swell": "Sunetul călătoriei crește ușor",
       "wormhole-whoosh": "Traversăm spațiul", "arrival-chime": "Semnalul sosirii",
       rain: "Se aude ploaia", "white-fade": "Sunetul se stinge în lumină",
@@ -78,6 +79,7 @@ export function createPresentation(deps: {
     <p class="eyebrow" id="present-stage">PREGĂTIM CĂLĂTORIA</p>
     <h2 id="present-title">Un echipaj. O singură navă.</h2>
     <p class="present-guidance" id="present-guidance"></p>
+    <label class="present-language">Limba experienței <select id="present-language" data-no-translate><option value="ro">Română</option><option value="en">English</option><option value="fr">Français</option></select></label>
     <div class="present-checks" id="present-checks" aria-live="polite"></div>
     <div class="present-actions">
       <button type="button" class="present-primary" id="present-boarding">${icon("rocket")} Pregătește echipajul și tutorialul</button>
@@ -100,6 +102,12 @@ export function createPresentation(deps: {
   let missionAvailable = false;
   let previousPlayback: ShowState["state"] | undefined;
   let lastSignature = "";
+  let languageBusy=false;
+  el<HTMLSelectElement>('present-language').addEventListener('change',async()=>{
+    const select=el<HTMLSelectElement>('present-language');languageBusy=true;select.disabled=true;
+    try{await deps.dispatch({action:'setLang',lang:select.value as 'ro'|'en'|'fr'});}
+    finally{languageBusy=false;select.value=deps.snapshot().state?.lang??'ro';lastSignature='';render();}
+  });
   function setMode(next: Mode): void {
     mode = next;
     document.body.dataset.operatorMode = mode;
@@ -152,6 +160,7 @@ export function createPresentation(deps: {
       row.innerHTML = icon(check.ok ? "check" : "warning"); const text = document.createElement("span"); text.textContent = check.text; row.append(text); return row;
     }));
     const disabled = !role || role === "viewer";
+    const languageSelect=el<HTMLSelectElement>('present-language');languageSelect.value=state?.lang??'ro';languageSelect.disabled=disabled||!idle||!!experience?.active||!!state?.suspended||languageBusy;
     el<HTMLButtonElement>("present-focus").disabled = disabled;
     el("present-role-note").textContent = disabled ? "Mod de vizualizare · comenzile necesită rol operator." : state?.suspended ? "Misiunea este suspendată. Deschide „Misiune și instalație” → Recuperare." : !readiness?.ready ? readiness?.reasons.join(" · ") || "Așteptăm starea instalației înainte de pornire." : idle && !missionAvailable ? "Așteptăm confirmarea listei echipajului de la server." : "Instalația este pregătită. Locurile libere nu blochează călătoria.";
     const boarding = el<HTMLButtonElement>("present-boarding");
@@ -160,10 +169,10 @@ export function createPresentation(deps: {
     boarding.textContent = experience?.launchRequested ? "Urmărește predarea către Căpitan" : experience?.active ? "Urmărește tutorialul și pregătește lansarea" : "Pregătește echipajul și tutorialul";
     panel.querySelectorAll<HTMLButtonElement>("[data-present-command]").forEach(button => {
       const action = button.dataset.presentCommand;
-      const allowed = action === "preshow" || action === "start" ? state?.state === "idle" || state?.state === "preshow" : action === "pause" ? state?.state === "playing" : action === "play" ? state?.state === "paused" : action === "restart" ? !!state && state.state !== "idle" : !!state;
+      const allowed = action === "preshow" || action === "start" ? state?.state === "idle" || state?.state === "preshow" : action === "pause" ? state?.state === "playing" || !!state?.planetHold : action === "play" ? state?.state === "paused" : action === "restart" ? !!state && state.state !== "idle" : !!state;
       button.disabled = disabled || !allowed || !!state?.suspended || (action === "start" && !readiness?.ready);
       button.classList.toggle("present-primary", action !== "start" && action === (state?.state === "idle" ? "preshow" : state?.state === "preshow" ? "start" : state?.state === "paused" ? "play" : closing ? "restart" : "pause"));
-      button.hidden = action === "preshow" || (action === "start" ? state?.state !== "preshow" : action === "restart" ? !closing : action === "pause" ? state?.state !== "playing" : action === "play" ? state?.state !== "paused" : idle || closing || !state);
+      button.hidden = action === "preshow" || (action === "start" ? state?.state !== "preshow" : action === "restart" ? !closing : action === "pause" ? state?.state !== "playing" && !state?.planetHold : action === "play" ? state?.state !== "paused" : idle || closing || !state);
     });
     const names = ["NAVIGAȚIE", "PROPULSIE", "COMUNICAȚII", "BIOSEMNALE", "MEMORIE"];
     el("present-posts").replaceChildren(...([1, 2, 3, 4, 5] as const).map(post => {

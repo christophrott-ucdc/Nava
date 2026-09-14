@@ -1,5 +1,5 @@
 .older-toy { margin:0; display:flex; flex:1 1 440px; min-height:0; flex-direction:column; gap:10px; color:var(--ink); }
-.older-stage { position:relative; aspect-ratio:840/340; min-height:220px; flex:1 1 300px; max-height:355px; overflow:hidden; border-radius:26px; background:#edf6fa; }
+.older-stage { position:relative; aspect-ratio:840/340; min-height:100px; flex:1 1 300px; max-height:355px; overflow:hidden; border-radius:26px; background:#edf6fa; }
 .older-scene,.older-overlay { position:absolute; inset:0; width:100%; height:100%; }
 .older-overlay { pointer-events:none; }
 .older-overlay>* { pointer-events:auto; }
@@ -19,7 +19,9 @@
 .older-primary:hover:not(:disabled) { background:#1e465b; color:#fff; }
 .older-button:disabled { opacity:.68; cursor:default; }
 .older-button:focus-visible,.older-scan-window:focus-visible,.older-record-card:focus-visible,.older-capsule:focus-visible,.older-lever-range:focus-visible { outline:4px solid #154e78; outline-offset:3px; }
-.older-readout { font:500 calc(20px * var(--mission-text-scale,1))/1.2 system-ui,sans-serif; margin:0; min-height:48px; color:var(--ink); }
+.older-readout { flex:none; font:500 calc(20px * var(--mission-text-scale,1))/1.2 system-ui,sans-serif; margin:0; min-height:48px; color:var(--ink); }
+/* The confirmed discovery and footer already explain the result. Reserve their space in every language. */
+.play-panel[data-solved=true] .older-readout { display:none; }
 .older-lever { display:grid; grid-template-columns:minmax(0,1fr) 100px minmax(0,1fr); gap:10px; width:100%; align-items:center; }
 .older-lever-range { appearance:none; width:100%; height:64px; margin:0; border:2px solid #a0bdce; border-radius:34px; background:linear-gradient(#cadde5,#e6f2f5); cursor:ew-resize; }
 .older-lever-range::-webkit-slider-thumb { appearance:none; width:54px; height:54px; background:radial-gradient(circle at 35% 30%,#fff,#8fbfb5); border:3px solid #337a68; border-radius:50%; box-shadow:0 3px 8px #25485a30; }

@@ -82,6 +82,8 @@ const COMMON = {
 };
 
 const TARGETS = [
+  { name: "web/logs", entry: abs("src/web/logs/index.ts"), outfile: abs("dist/web/logs/app.js"), options: { platform: "browser", format: "iife", target: WEB_TARGETS } },
+  { name: "public/diploma", entry: abs("src/web/diploma/index.ts"), outfile: abs("dist/public-diploma/app.js"), options: { platform: "browser", format: "iife", target: WEB_TARGETS } },
   { name: "web/wall", entry: abs("src/web/wall/index.ts"), outfile: abs("dist/web/wall/app.js"), options: { platform: "browser", format: "iife", target: WEB_TARGETS } },
   { name: "web/preview", entry: abs("src/web/shared/preview.ts"), outfile: abs("dist/web/shared/preview.js"), options: { platform: "browser", format: "iife", target: WEB_TARGETS } },
   {
@@ -140,6 +142,8 @@ const TARGETS = [
 
 /** Static (non-TS) files copied verbatim. */
 const STATIC_DIRS = [
+  { from: abs("src/web/logs"), to: abs("dist/web/logs") },
+  { from: abs("src/web/diploma"), to: abs("dist/public-diploma") },
   { from: abs("src/web/admin"), to: abs("dist/web/admin") },
   { from: abs("src/web/wall"), to: abs("dist/web/wall") },
   { from: abs("src/web/shared"), to: abs("dist/web/shared") },
@@ -153,6 +157,7 @@ const STATIC_DIRS = [
   { from: abs("src/web/clips"), to: abs("dist/web/clips") },
 ];
 const STATIC_FILES = [
+  { from: abs("src/web/shared/brand/exodus7-v1.png"), to: abs("dist/public-diploma/logo.png") },
   {
     from: abs("node_modules/@met4citizen/talkinghead/modules/playback-worklet.js"),
     to: abs("dist/renderer/playback-worklet.js"),

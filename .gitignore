@@ -4,7 +4,7 @@ dist/
 dist-app/
 *.tsbuildinfo
 
-# media (too large for git) - see docs/HANDOFF.md for how to regenerate
+# media (too large for git) - see docs/OPERARE.md and production/
 media/*.mp4
 media/*.mkv
 media/*.mov
@@ -37,6 +37,11 @@ Thumbs.db
 # continuity heartbeat (scripts/heartbeat.ps1) + unit test bundles
 HEARTBEAT.log
 .tmp-tests/
+# Disposable QA bundles and language-tool caches
+/.tmp-*/
+/coverage/
+__pycache__/
+*.py[cod]
 data/users.json
 data/sessions.json
 data/nava.sqlite*
@@ -50,9 +55,10 @@ assets/music/qa/
 *.api-pcm
 data/audit*.jsonl
 
-# AI-authored process documentation and retired development files: kept on disk, out of git
-AI/
-Old/
+# Local process notes, retired code, prompts and distribution archives.
+# Cleanup inventory and SHA-256 manifest live under AI/archive/.
+/AI/
+/Old/
 
 # Test/distribution archives built from dist-app
 *.zip

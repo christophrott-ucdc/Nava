@@ -1,3 +1,5 @@
+> Ediția curentă pentru copii: **Steaua Omenirii**, 10 septembrie 2026. Voci Eleven v3 și muzică remontată; reporniți Electron și resetați sesiunea veche. [Partitura și limitele verificării](STEAUA-OMENIRII-INTEGRARE.md).
+
 # Prezentarea EXODUS7 — 10 septembrie 2026
 
 ## Pornire rapidă — doar TV, fără tablete
@@ -8,7 +10,7 @@ Modul păstrează sincronizarea TV, Căpitanul GLB, subtitrările și muzica. Nu
 
 Implementare compilată cu `npm run build`; pornirea noului buton nu a fost testată în runtime în această livrare urgentă. Nu folosi executabilul portabil vechi: buildul curent este cel pornit prin lansatorul repository-ului.
 
-Se prezintă **experiența copiilor de 5–10 ani**, „Bucățile de acasă”, către Dumitru Prunariu. Profilul rămâne `age-5-10`, chiar dacă evaluatorul este adult. Ghidul operează consola, iar evaluatorul poate parcurge experiența cu **un singur personaj confirmat**.
+Se prezintă **experiența copiilor de 5–10 ani**, „Steaua Omenirii”, către Dumitru Prunariu. Profilul rămâne `age-5-10`, chiar dacă evaluatorul este adult. Ghidul operează consola, iar evaluatorul poate parcurge experiența cu **un singur personaj confirmat**.
 
 Pentru demonstrația individuală recomandăm **postul 2, zona A, în stânga**: piesa „Aripă” face vizibil exercițiul de rotație. Postul 1A are piesa „Cerc”; rămâne valid, dar rotația unui cerc se observă mai greu. Alegerea personajului nu schimbă postul fizic sau forma din joc.
 
@@ -38,7 +40,7 @@ Nu lansa o a doua instanță peste una deja pornită. Preview-ul arată compozi�
 
 | Verificare | Ce trebuie observat efectiv |
 |---|---|
-| Profil | **5–10 ani · Bucățile de acasă** este afișat ca activ. Schimbarea selectului singură nu aplică profilul. |
+| Profil | **5–10 ani · Steaua Omenirii** este afișat ca activ. Schimbarea selectului singură nu aplică profilul. |
 | Starea sesiunii | Grup nou, cu lista de personaje liberă; nicio recuperare suspendată și nicio repetiție tehnică în curs. |
 | Readiness | Ecranele cerute sunt conectate, filmul pregătit, activele verificate; sunt conectate posturile care au participanți confirmați. |
 | Film și avatar | Redare reală pe cele cinci suprafețe, imagine continuă, Căpitanul GLB și subtitrările numai pe centrul configurat. |
@@ -50,7 +52,7 @@ Rulează o sesiune completă cu un participant înainte de prezentare. După rep
 
 ## Parcursul demonstrației
 
-1. **Alege profilul.** În „Înainte de show”, selectează **5–10 ani · Bucățile de acasă** și apasă **Aplică**, dacă nu este deja activ. Așteaptă verificarea vocilor. Dacă există o misiune suspendată, folosește „Misiune și instalație → Recuperare” pentru o decizie explicită de continuare sau grup nou.
+1. **Alege profilul.** În „Înainte de show”, selectează **5–10 ani · Steaua Omenirii** și apasă **Aplică**, dacă nu este deja activ. Așteaptă verificarea vocilor. Dacă există o misiune suspendată, folosește „Misiune și instalație → Recuperare” pentru o decizie explicită de continuare sau grup nou.
 2. **Deschide postul 2.** Evaluatorul folosește jumătatea A. Alege un personaj și confirmă-l pe tabletă. În consolă trebuie să apară **1 participant**, la postul 2, zona A. Nu confirma alte personaje pentru a umple lista.
 3. **Pregătește tutorialul.** Apasă **Pregătește echipajul și tutorialul**, apoi **Începe tutorialul**. Personajele se fixează pentru grupul curent. Atingerea inițială permite și redarea sunetelor locale ale tabletei.
 4. **Lasă proba să se desfășoare.** Participantul își confirmă prezența, alege steaua la proba comenzilor, apoi confirmă legătura cu echipajul. Pașii avansează automat când contribuțiile necesare și vocea naratorului sunt încheiate. Nu trebuie apăsate simultan două zone și nu este necesar un al doilea participant.

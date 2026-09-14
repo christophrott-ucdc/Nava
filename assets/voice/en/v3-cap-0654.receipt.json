@@ -1,0 +1,81 @@
+{
+  "cueId": "v3-cap-0654",
+  "lang": "en",
+  "speaker": "CAPITANUL",
+  "text": "Follow the signal.",
+  "file": "v3-cap-0654.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Follow",
+    "the",
+    "signal"
+  ],
+  "wtimes": [
+    0,
+    360,
+    560
+  ],
+  "wdurations": [
+    320,
+    120,
+    480
+  ],
+  "durationMs": 1200,
+  "visemes": [
+    "FF",
+    "aa",
+    "nn",
+    "O",
+    "TH",
+    "aa",
+    "SS",
+    "I",
+    "kk",
+    "nn",
+    "aa",
+    "nn"
+  ],
+  "vtimes": [
+    0,
+    84,
+    165,
+    239,
+    360,
+    422,
+    560,
+    657,
+    730,
+    826,
+    895,
+    970
+  ],
+  "vdurations": [
+    84,
+    81,
+    74,
+    81,
+    62,
+    58,
+    97,
+    73,
+    96,
+    69,
+    75,
+    70
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "4bf1d9e67d0addd1f5e3333afb0b0c48c8f5a4111f49c501f6b5172810700683",
+  "sha256": "d9b7bc6c6ae2db9d2849e49d46c21dfc2d02ed9d5d6901f91ec8bba61dd6447e",
+  "generatedAt": "2026-09-13T13:28:42.421Z",
+  "requestId": "JtsKDQx2vjhOFR0YLjXb",
+  "historyItemId": "trhx0c9YgiVfv9tXVe6t",
+  "characterCost": "18",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

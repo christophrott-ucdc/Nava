@@ -1,3 +1,11 @@
+> RO / EN / FR, 13 septembrie: toate profilurile au dialog și voci locale EN/FR (508 MP3 noi), tutorial, jocuri, TV și diplome localizate. Limba se alege în **Înainte de show → Limba experienței**. [Operare, contracte și verificări](docs/MULTILINGUAL-RO-EN-FR.md). Portalul QR public și împachetările necesită actualizare separată.
+
+> QA actualizat, 14 septembrie: 256 teste trecute și renderer smoke cu film/GLB reale. [Organizarea repository-ului, arhiva QA și limite](docs/STRUCTURA-REPOSITORY.md). Notele istorice „netestat” de mai jos descriu livrările respective; EXE-ul și instalația fizică necesită verificare separată.
+
+> Corecție QR: acces public independent de LAN, cu portal static pregătit și DIPLOMA_PUBLIC_URL încă de configurat după publicare. Nu există încă un domeniu public activ confirmat. [Stare curentă și telemetria pe laterale](docs/DIPLOME-PUBLICE-SI-TELEMETRIE-PERETE.md).
+
+> Ediția curentă pentru copii: **Steaua Omenirii**, 10 septembrie 2026. Voci Eleven v3 și muzică remontată; reporniți Electron și resetați sesiunea veche. [Partitura și limitele verificării](docs/STEAUA-OMENIRII-INTEGRARE.md).
+
 > Actualizare film panoramic, 2026-09-09: cronologia curentă, sursele celor cinci panouri și vocile Saturn sunt descrise în [REINTEGRARE-FILM.md](docs/REINTEGRARE-FILM.md). Timpii istorici de 10 minute / 465 s nu mai sunt contractul filmului curent. Tutorialul adaugă timp variabil.
 
 # NavaPlayer — „A Patra Lume · Protocolul Acasă"
@@ -138,3 +146,23 @@ Actualizare UX EXODUS7 (2026-09-05): identitate persistentă, demonstrații, con
 
 Administrare: schelet /admin/ cu acces admin-only și liste reale de conturi/sesiuni. Continuare: [Fable — Admin RBAC](docs/FABLE-ADMIN-RBAC-HANDOFF.md). Build neexecutat în această tură.
 
+
+
+### Instrumente și diplomă — 11 septembrie 2026
+
+Telemetrie calculată într-un model educativ, hartă interactivă sincronizată cu filmul și diplomă PDF prin QR la final. Reporniți Electron și reîncărcați tabletele. Telefonul trebuie să poată accesa rețeaua navei. [Model, operare și limite](docs/NAVIGATIE-TELEMETRIE-DIPLOME.md).
+
+
+### Loguri
+
+Pagina `/logs/` reunește jurnalele aplicației, show-ului și administrării, cu niveluri, căutare, live și export. Necesită autentificare viewer sau superior și repornirea Electron după actualizare. [Detalii și retenție](docs/LOGURI.md).
+
+
+### Robot și actualizări administrate
+
+Pregătirea Unitree H2 EDU, simulatorul narativ și actualizările NSIS/multimedia sunt descrise în [ghidul de integrare](docs/ROBOT-SI-ACTUALIZARI.md). [Research H2 EDU și surse oficiale locale](docs/unitree-h2-edu/README.md). Driverul fizic și distribuția de producție necesită configurare și verificare pe instalație.
+
+
+## TV-uri adaptive (13 septembrie 2026)
+
+Configurațiile locale detectează automat 2/3/4/5 TV-uri și aleg exportul panoramic corespunzător. Detalii despre conectare, excluderea operatorului și verificare: [TV-uri adaptive](docs/ADAPTIVE-DISPLAYS.md).

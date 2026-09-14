@@ -1,0 +1,75 @@
+{
+  "cueId": "v3-tech-0606",
+  "lang": "fr",
+  "speaker": "TEHNOLOGIC",
+  "text": "Nous le savions.",
+  "file": "v3-tech-0606.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Nous",
+    "le",
+    "savions"
+  ],
+  "wtimes": [
+    0,
+    133,
+    320
+  ],
+  "wdurations": [
+    80,
+    107,
+    400
+  ],
+  "durationMs": 1280,
+  "visemes": [
+    "nn",
+    "U",
+    "nn",
+    "SS",
+    "aa",
+    "FF",
+    "I",
+    "O",
+    "nn",
+    "SS"
+  ],
+  "vtimes": [
+    0,
+    38,
+    133,
+    320,
+    388,
+    443,
+    497,
+    546,
+    604,
+    652
+  ],
+  "vdurations": [
+    38,
+    42,
+    107,
+    68,
+    55,
+    54,
+    49,
+    58,
+    48,
+    68
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "3z9q8Y7plHbvhDZehEII",
+  "generationKey": "c2fb03f27ebd914104033ba8b423186c72f82044cfaf6f47e3f7693ccb5754bb",
+  "sha256": "2a14f4d64e9e8f6c54a13a8772658563ac3754044b60dc45ab2592801ccdc1c9",
+  "generatedAt": "2026-09-13T13:28:47.841Z",
+  "requestId": "n9LbjhYsH6BLaocPeDKv",
+  "historyItemId": "McTbtcIFEnaHnCBvkTfR",
+  "characterCost": "16",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

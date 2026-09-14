@@ -1,3 +1,4 @@
+import '../shared/client-errors';
 import { ROLE_LABELS } from "@shared/ui-labels";
 import { icon } from "../shared/glass";
 /** Authentication uses the server-owned HttpOnly cookie only. */
@@ -62,6 +63,7 @@ async function submit(): Promise<void> {
     setMsg(`Serverul nu răspunde (${String(err)})`);
   } finally {
     busy = false;
+    pinInput.focus({preventScroll:true});
   }
 }
 
@@ -76,7 +78,9 @@ pad.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (busy || e.ctrlKey || e.metaKey || e.altKey || e.target === pinInput) return;
+  if (busy || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "Enter") { e.preventDefault(); void submit(); return; }
+  if (e.target === pinInput) return;
   if (/^\d$/.test(e.key) && pin.length < 8) {
     pin += e.key;
     renderDots();
@@ -126,3 +130,5 @@ void fetch("/api/auth/me", { credentials: "same-origin" })
 renderDots();
 
 document.querySelectorAll<HTMLElement>("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon!); });
+import {startUiLocalization} from '../shared/localization';
+startUiLocalization();

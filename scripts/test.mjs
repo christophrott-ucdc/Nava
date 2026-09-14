@@ -26,10 +26,10 @@ function walk(dir, acc = []) {
   return acc;
 }
 
-const tests = walk(path.join(root, "src")).filter((p) => filter.length === 0 || filter.some((f) => p.includes(f)));
+const tests = walk(path.join(root, "src")).filter((p) => filter.length === 0 || filter.some((f) => p.replaceAll('\\','/').includes(f.replaceAll('\\','/'))));
 if (tests.length === 0) {
   console.log("[test] no *.test.ts files found" + (filter.length ? ` for filter ${filter.join(",")}` : ""));
-  process.exit(0);
+  process.exit(1);
 }
 
 fs.rmSync(outDir, { recursive: true, force: true });

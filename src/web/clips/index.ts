@@ -16,6 +16,8 @@
  */
 
 import { sessionFetch } from "../shared/session";
+import { startUiLocalization } from "../shared/localization";
+startUiLocalization();
 
 // ---------------------------------------------------------------- tipuri API
 
@@ -158,11 +160,11 @@ function buildWall(clips: ClipInfo[], wall: WallResponse): void {
   }
 
   master = panels.find((p) => p.central) ?? panels[Math.floor(panels.length / 2)] ?? null;
-  if (master && !master.central) master.box.querySelector(".panel-name")!.textContent = `${master.info.screenId} · ceas`;
+  if (master && !master.central) {master.central=true;master.box.dataset.central='true';master.box.querySelector(".panel-name")!.textContent = `${master.info.screenId} · ceas`;}
 
   $("stage-note").textContent = fallback
     ? "Configurația nu are geometrie videoWall, deci panourile sunt afișate în benzi egale — proporțiile NU sunt cele din sală."
-    : "Fiecare dreptunghi e un televizor, la proporțiile și distanțele din configurație. Panoul central are ramă mai groasă: e cel de 115″.";
+    : "Fiecare dreptunghi e un televizor, la proporțiile și distanțele din configurație. Rama mai groasă marchează ecranul de referință pentru sincronizare.";
 
   const wallPill = $("wall-pill");
   const totalW = usable.reduce((s, c) => s + (c.width ?? 0), 0);
@@ -261,8 +263,8 @@ function wireTransport(): void {
 
   playBtn.addEventListener("click", async () => {
     if (!master) return;
-    if (master.video.paused) { await playAll(); playBtn.textContent = "⏸ Pauză"; }
-    else { pauseAll(); playBtn.textContent = "▶ Redă"; }
+    if (master.video.paused) { await playAll(); playBtn.dataset.playing='true';playBtn.textContent = "⏸ Pauză"; }
+    else { pauseAll();playBtn.dataset.playing='false'; playBtn.textContent = "▶ Redă"; }
   });
   $("back10").addEventListener("click", () => master && seekAll(master.video.currentTime - 10));
   $("fwd10").addEventListener("click", () => master && seekAll(master.video.currentTime + 10));
@@ -299,7 +301,7 @@ function wireTransport(): void {
       $("time").textContent = fmtTime(t);
       $("duration").textContent = d > 0 ? fmtTime(d) : "—";
       if (!dragging && d > 0) seek.value = String(Math.round((t / d) * 1000));
-      if (master.video.paused && playBtn.textContent !== "▶ Redă") playBtn.textContent = "▶ Redă";
+      if (master.video.paused && playBtn.dataset.playing==='true') {playBtn.dataset.playing='false';playBtn.textContent = "▶ Redă";}
     }
     requestAnimationFrame(tick);
   };

@@ -64,6 +64,7 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
     const artwork = await preloadCertificateArtwork();
     const canvas = document.createElement('canvas'); canvas.width = 1800; canvas.height = 1300;
     const ctx = canvas.getContext('2d'); if (!ctx) return null;
+    localizeCanvas(ctx,current.state.lang);
     const localSeats = current.experience?.participants.filter(seat => seat.startsWith(String(current.post)));
     const lines = (current.summary.posts.find(p => p.post === current.post)?.lines || []).filter(line => {
       const zone = /^([AB]):/.exec(line)?.[1];
@@ -76,6 +77,7 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
       const label = FINALE_CHOICES[current.scenarioId].options.find(choice => choice.value === value)?.label;
       if (label) lines.push(`${zone} · La final: ${label}.`);
     }
+    for(let i=0;i<lines.length;i++)lines[i]=translateText(lines[i],current.state.lang);
     ctx.font = '28px system-ui';
     let requiredHeight = 365;
     for (const paragraph of lines) {
@@ -364,7 +366,7 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
         if (ok) options.notice('');
         if (ok && !seen.has(eventId)) { seen.add(eventId); if (seen.size > 200) seen.delete(seen.values().next().value!); if (!item.event.value.startsWith('play:')) options.onConfirmed(item.event.value); }
         if (!ok) {
-          const hints: Record<string, string> = { 'character-taken': 'Acest personaj tocmai a fost ales. Alege alt prieten!', 'registration-closed': 'Echipajul a fost confirmat. Ghidul poate redeschide alegerea.', 'inactive-seat': 'Acest loc nu are un personaj confirmat.', 'piece-not-aligned': 'Semnul auriu trebuie să ajungă sus. Mai rotește piesa!', 'route-stops-early': 'Drumul se oprește înainte de felinar. Încearcă altul!', 'route-returns-to-start': 'Acest drum te aduce înapoi. Caută drumul spre felinar!', 'try-matching-shape': 'Compară contururile și încearcă încă o dată.', 'probe-already-sent': 'Ai testat deja acest ritm. Schimbă ordinea intervalelor.' };
+          const hints: Record<string, string> = { 'character-taken': 'Acest personaj tocmai a fost ales. Alege alt prieten!', 'registration-closed': 'Echipajul a fost confirmat. Ghidul poate redeschide alegerea.', 'inactive-seat': 'Acest loc nu are un personaj confirmat.', 'piece-not-aligned': 'Mai rotește piesa până când contururile se potrivesc.', 'route-stops-early': 'Drumul se oprește prea devreme. Încearcă altul!', 'route-returns-to-start': 'Acest drum te aduce înapoi. Caută o altă legătură!', 'try-matching-shape': 'Compară contururile și încearcă încă o dată.', 'probe-already-sent': 'Ai testat deja acest ritm. Schimbă ordinea intervalelor.' };
           options.notice(hints[status] || (item.event.value === 'tutorial:confirm' ? 'Privește indiciul de sus. Poți schimba alegerea și încerca din nou.' : 'Nu am putut trimite alegerea. Poți încerca din nou dacă etapa este încă deschisă.'));
         }
         if (ok && (item.event.value.startsWith('tutorial:') || item.event.value.startsWith('finale:')) && !item.event.value.includes(':pick:') && !item.event.value.endsWith(':observe')) requestAnimationFrame(() => {
@@ -377,3 +379,5 @@ export function createMissionUI(options: { host: HTMLElement; send: (event: Miss
   };
 }
 
+import {localizeCanvas} from '../shared/localization';
+import {translateText} from '../../shared/localization';

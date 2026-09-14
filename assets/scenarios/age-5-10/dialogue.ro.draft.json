@@ -2,104 +2,104 @@
   "schemaVersion": 1,
   "scenarioId": "age-5-10",
   "language": "ro",
-  "status": "editorial-draft",
+  "status": "integrated-author-revision",
   "productionReady": false,
   "runtimeActivation": "operator-selected-package",
-  "audioStatus": "produced-and-validated",
-  "timingStatus": "film-panels-visual",
-  "sourceDocument": "docs/scenarii/05-10-BUCATILE-DE-ACASA.md",
-  "sourceSha256": "afec95b335eafda8d0be8b183f8cb912aadf92447b48b88c9e676c26a2cdbcf3",
+  "audioStatus": "produced-eleven-v3",
+  "timingStatus": "measured-v3-aligned-to-film",
+  "sourceDocument": "docs/scenarii/surse/Steaua-Omenirii.docx",
+  "sourceSha256": "dca40f412c52f306d71ebd27e414097ba593b3a2f130ed21b16370da73fe4f52",
   "conditionSemantics": "Evaluated by scenario-catalog and mission-session; exactly one eligible branch per slot.",
   "cues": [
     {
       "id": "k510-001",
       "phase": "preshow",
       "at": 1,
-      "maxDurationSec": 10,
+      "maxDurationSec": 12.2,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Bun venit la bord! Eu sunt Căpitanul. Azi avem o valiză goală și un drum lung de tot."
+        "ro": "Bun venit la bord, exploratori. Eu sunt Comandantul. Plecăm să aflăm ce se întreabă oamenii de când privesc cerul: suntem singuri?"
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "inviting"
+          "confident"
         ]
       },
-      "direction": "Accent pe „valiză goală”; pauză scurtă înainte de „drum lung”."
+      "direction": "Voce gravă, fără grabă; întrebarea, cu greutatea vechimii ei.",
+      "authorRef": "R07"
     },
     {
       "id": "k510-002",
       "phase": "preshow",
-      "at": 11,
-      "maxDurationSec": 9,
+      "at": 13.2,
+      "maxDurationSec": 13.9,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "În valiză încape un felinar. Bucățile lui sunt prin trei lumi."
+        "ro": "Se spune că, demult, oamenii aveau o stea numai a lor. Într-o noapte, s-a risipit în bucăți prin trei lumi. Nimeni n-a mai văzut-o de atunci."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "matter-of-fact"
+          "warmly"
         ]
       },
-      "direction": "Informație limpede; mică pauză înainte de „trei lumi”."
+      "direction": "Legenda, rostită ca un adevăr păstrat; pauză înainte de „trei lumi”.",
+      "authorRef": "R08"
     },
     {
       "id": "k510-003",
       "phase": "preshow",
-      "at": 20,
-      "maxDurationSec": 9,
+      "at": 27.1,
+      "maxDurationSec": 9.9,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Le căutăm împreună. Nu taie, nu înțeapă. Sunt bucăți moi de lumină."
+        "ro": "Noi o aducem acasă. Și nu vă temeți: bucățile de stea nu ard, nu taie. Sunt moi, ca lumina de dimineață."
       },
       "tts": {
         "audioTags": [
-          "reassuring",
-          "gentle"
+          "confident"
         ]
       },
-      "direction": "Liniștitor; apasă pe „moi de lumină”, fără grabă."
+      "direction": "Hotărât, apoi liniștitor; „lumina de dimineață” cu blândețe.",
+      "authorRef": "R09"
     },
     {
       "id": "k510-004",
       "phase": "preshow",
-      "at": 29,
-      "maxDurationSec": 10,
+      "at": 37,
+      "maxDurationSec": 8.2,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "A lucrează în stânga tabletei, B în dreapta. Fiecare are locul lui."
+        "ro": "A lucrează în stânga tabletei, B în dreapta. Fiecare cu partea lui de cer."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "brief"
+          "warmly"
         ]
       },
-      "direction": "Instrucțiune curată: stânga, dreapta, pauză, „locul lui”."
+      "direction": "Instrucțiune curată, înnobilată de imagine.",
+      "authorRef": "R10"
     },
     {
       "id": "k510-005",
       "phase": "preshow",
-      "at": 39,
-      "maxDurationSec": 11,
+      "at": 45.2,
+      "maxDurationSec": 14.8,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Puteți atinge formele. Puteți și doar să priviți. Eu rămân cu voi. Călătoria începe oricum."
+        "ro": "Cine vrea atinge, cine vrea privește. Eu rămân cu voi oricum. Așa încep lucrurile mari: cu toată lumea la bord."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "encouraging"
+          "confident"
         ]
       },
-      "direction": "Accent pe „Eu rămân cu voi”; final ferm, cald."
+      "direction": "Cald, ferm; libertatea de a privi, ridicată la rang de cinste.",
+      "authorRef": "R11"
     },
     {
       "id": "k510-006",
@@ -109,303 +109,429 @@
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Valiza e la bord. Priviți spre stele. Pornim să vedem ce găsim."
+        "ro": "Steaua noastră e undeva în față. Priviți cerul — și țineți-vă bine. Pornim!"
       },
       "tts": {
         "audioTags": [
-          "decisive",
-          "excited"
+          "confident"
         ]
       },
-      "direction": "Pornire; pauză după „Priviți spre stele”, apoi avânt."
+      "direction": "Pornire; „țineți-vă bine de el” cu un zâmbet în colțul gurii.",
+      "authorRef": "R12"
     },
     {
       "id": "k510-007",
       "phase": "play",
       "at": 5,
-      "maxDurationSec": 23,
+      "maxDurationSec": 12,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Pământul rămâne în urmă. Eu țin minte drumul înapoi. Acum putem privi în jur."
+        "ro": "Pământul rămâne în urmă. Eu țin minte drumul înapoi — asta e meseria mea. A voastră e să țineți minte albastrul."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "reassuring"
+          "warmly"
         ]
       },
-      "direction": "Siguranță blândă: „Eu țin minte drumul înapoi” e miezul."
+      "direction": "Siguranță blândă; împărțirea meseriilor, ca un legământ.",
+      "authorRef": "R13"
+    },
+    {
+      "id": "star-r13a",
+      "phase": "play",
+      "at": 17,
+      "maxDurationSec": 11,
+      "speaker": "CAPITANUL",
+      "condition": "always",
+      "text": {
+        "ro": "Priviți Pământul. Acolo jos e toată lumea pe care o știți."
+      },
+      "direction": "Aproape șoptit; momentul de tăcere al decolării.",
+      "authorRef": "R13a",
+      "tts": {
+        "audioTags": [
+          "confident"
+        ]
+      }
     },
     {
       "id": "k510-008",
       "phase": "play",
       "at": 28,
-      "maxDurationSec": 48,
+      "maxDurationSec": 31,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Uite câte lumini! Dacă aș avea buzunare cât nava, tot n-ar încăpea toate."
+        "ro": "Câte lumini! Dacă aș avea buzunare cât nava, tot n-ar încăpea toate. Dar noi nu căutăm toate stelele. Căutăm una singură."
       },
       "tts": {
         "audioTags": [
-          "delighted",
-          "playful"
+          "confident"
         ]
       },
-      "direction": "Mirare jucăușă; gluma cu buzunarele, ușor zâmbită."
+      "direction": "Mirare jucăușă; ultima propoziție întoarce gluma în misiune.",
+      "authorRef": "R14"
+    },
+    {
+      "id": "star-r14a",
+      "phase": "play",
+      "at": 59,
+      "maxDurationSec": 13,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Prima lume. Locuitorii ei n-au trup ca al nostru — sunt făcuți din lumină și vorbesc prin ea. Aici cuvintele nu se traduc: se simt."
+      },
+      "direction": "Prezentarea civilizației; uimire reținută, profesională.",
+      "authorRef": "R14a",
+      "tts": {
+        "audioTags": [
+          "warmly"
+        ]
+      }
+    },
+    {
+      "id": "star-r14b",
+      "phase": "play",
+      "at": 72,
+      "maxDurationSec": 11,
+      "speaker": "LUMINA",
+      "condition": "always",
+      "text": {
+        "ro": "La noi, cine iubește — strălucește. Cine înțelege — se face far pentru alții. Vă vedem de departe, călători: pâlpâiți frumos."
+      },
+      "direction": "Incantatoriu, ca un cor îndepărtat; cadență de verset.",
+      "authorRef": "R14b",
+      "tts": {
+        "audioTags": [
+          "gentle"
+        ]
+      }
     },
     {
       "id": "k510-009",
       "phase": "play",
-      "at": 76,
-      "maxDurationSec": 11,
+      "at": 83,
+      "maxDurationSec": 10.2,
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Bun venit pe Siwarha. V-am găsit bucăți pentru felinar. Fiecare are forma ei."
+        "ro": "Bine ați venit pe Siwarha. Aici au căzut, demult, bucățile stelei voastre. Le-am păstrat printre ale noastre — lumina nu se aruncă."
       },
       "tts": {
         "audioTags": [
-          "ethereal",
-          "warmly"
+          "gentle"
         ]
       },
-      "direction": "Voce de lume de lumină; „forma ei” plutește la final."
+      "direction": "Gazdă luminoasă; ultima propoziție, aproape o lege.",
+      "authorRef": "R15"
     },
     {
       "id": "k510-010",
       "phase": "play",
-      "at": 87,
-      "maxDurationSec": 23,
+      "at": 93.2,
+      "maxDurationSec": 21.8,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Uită-te la forma mare de sus. Atinge bucata care seamănă cu ea. Ai timp destul."
+        "ro": "Privește forma mare de sus. Atinge bucata care îi seamănă. Nu te grăbi: lumina așteaptă de o mie de ani — mai poate un minut."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "encouraging"
+          "warmly"
         ]
       },
-      "direction": "Instrucțiune clară; „Ai timp destul” spus foarte liniștit."
+      "direction": "Instrucțiune clară; finalul, cu răbdare de mileniu.",
+      "authorRef": "R16"
     },
     {
       "id": "k510-011",
       "phase": "play",
-      "at": 110,
-      "maxDurationSec": 12,
+      "at": 115,
+      "maxDurationSec": 14.5,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Eu țin valiza deschisă. Bucățile pe care le găsiți vin la mine, pe rând."
+        "ro": "Bucățile găsite nu se pun nicăieri. Vin singure lângă navă — și zboară cu noi. Priviți-le."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "reassuring"
+          "confident"
         ]
       },
-      "direction": "Accent pe „valiza deschisă”; „pe rând” rar, răbdător."
+      "direction": "Calm de punte; constatare, nu explicație.",
+      "authorRef": "R17"
     },
     {
       "id": "k510-012-C",
       "phase": "play",
-      "at": 122,
-      "maxDurationSec": 11,
+      "at": 129.5,
+      "maxDurationSec": 10.2,
       "speaker": "LUMINA",
       "condition": "find_complete",
       "text": {
-        "ro": "Toate cele zece bucăți sunt în valiză. Cercuri, aripi, frunze. Cum mai luminează!"
+        "ro": "Toate bucățile zboară acum lângă voi — și s-au și găsit între ele. Mii de ani despărțite, și tot se țin minte."
       },
       "tts": {
         "audioTags": [
-          "delighted",
-          "proud"
+          "gentle"
         ]
       },
-      "direction": "Bucurie crescândă; „Cum mai luminează!” e vârful replicii."
+      "direction": "",
+      "authorRef": "R18"
     },
     {
       "id": "k510-012-P",
       "phase": "play",
-      "at": 122,
-      "maxDurationSec": 11,
+      "at": 129.5,
+      "maxDurationSec": 10.2,
       "speaker": "LUMINA",
       "condition": "find_partial",
       "text": {
-        "ro": "În valiză stau bucățile găsite de voi. Restul locurilor rămân goale. E bine și așa."
+        "ro": "Bucățile găsite de voi zboară lângă navă. Celelalte rămân să lumineze Siwarha. Nicio lumină nu e pierdută — doar împrumutată."
       },
       "tts": {
         "audioTags": [
-          "gentle",
-          "reassuring"
+          "gentle"
         ]
       },
-      "direction": "Acceptare caldă; „E bine și așa” spus foarte simplu."
+      "direction": "",
+      "authorRef": "R19"
     },
     {
       "id": "k510-012-Z",
       "phase": "play",
-      "at": 122,
-      "maxDurationSec": 11,
+      "at": 129.5,
+      "maxDurationSec": 10.2,
       "speaker": "LUMINA",
       "condition": "find_none",
       "text": {
-        "ro": "Valiza a rămas goală. Vă dau eu un cerc de lumină pentru drum."
+        "ro": "N-ați luat nimic? Atunci primiți un cerc de lumină de la noi, să zboare cu voi. Pe Siwarha, oaspetele nu pleacă pe întuneric."
       },
       "tts": {
         "audioTags": [
-          "softly",
           "gentle"
         ]
       },
-      "direction": "Consolare senină, fără regret; darul e oferit firesc."
+      "direction": "",
+      "authorRef": "R20"
     },
     {
       "id": "k510-013",
       "phase": "play",
-      "at": 133,
-      "maxDurationSec": 50,
+      "at": 139.7,
+      "maxDurationSec": 10.3,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Mulțumim. Închidem valiza cu grijă. La următoarea oprire e un atelier nemaivăzut."
+        "ro": "Mulțumim, Siwarha. Nava n-a mai avut niciodată escortă de lumini. Urmează atelierul unde bucățile își găsesc locul."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "curious"
+          "confident"
         ]
       },
-      "direction": "Mulțumire scurtă, apoi curiozitate pe „atelier nemaivăzut”."
+      "direction": "Mândrie reținută, de ofițer.",
+      "authorRef": "R21"
+    },
+    {
+      "id": "star-r21a",
+      "phase": "play",
+      "at": 150,
+      "maxDurationSec": 19,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "A doua lume seamănă cu a noastră — dar nu e. Aici planeta gândește. Rădăcinile sunt nervii ei, râurile — sângele. Când bate vântul, pădurea vorbește cu ea însăși."
+      },
+      "direction": "Ton coborât, aproape de șoaptă; anatomia lumii, ca o poezie de știință.",
+      "authorRef": "R21a",
+      "tts": {
+        "audioTags": [
+          "warmly"
+        ]
+      }
+    },
+    {
+      "id": "star-r21b",
+      "phase": "play",
+      "at": 169,
+      "maxDurationSec": 9,
+      "speaker": "NATURA",
+      "condition": "always",
+      "text": {
+        "ro": "La noi, nimeni nu e singur. Nu se poate. Când suferă un copac, știe toată pădurea. Când râde un râu, râde și marea."
+      },
+      "direction": "Grav, blând, foarte vechi; fiecare frază, un inel de copac.",
+      "authorRef": "R21b",
+      "tts": {
+        "audioTags": [
+          "warmly"
+        ]
+      }
     },
     {
       "id": "k510-014",
       "phase": "play",
-      "at": 183,
-      "maxDurationSec": 11,
+      "at": 178,
+      "maxDurationSec": 12.5,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
-        "ro": "Aduceți piesele găsite. Dacă vă lipsește o piesă, vă dau eu una din atelier."
+        "ro": "Poftiți în atelier. Aici fiecare piesă își găsește locul, ca sămânța în pământ. Și cui îi lipsește vreuna, îi dau din grădina mea. Grădinile de-aia sunt."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "inviting"
+          "warmly"
         ]
       },
-      "direction": "Gazdă primitoare; a doua propoziție liniștește imediat."
+      "direction": "Gazdă de demult; finalul, cu haz de bunic.",
+      "authorRef": "R22"
     },
     {
       "id": "k510-015",
       "phase": "play",
-      "at": 194,
-      "maxDurationSec": 22,
+      "at": 190.5,
+      "maxDurationSec": 24.5,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Pune piesa în conturul ei. O poți trage sau poți atinge piesa, apoi locul."
+        "ro": "Așază piesa în conturul ei. Poți s-o tragi — sau o atingi, apoi îi atingi locul. Fiecare formă știe unde îi e casa. Ajut-o doar să ajungă."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "brief"
+          "warmly"
         ]
       },
-      "direction": "Doi pași clari; pauză între „trage” și „atinge”."
+      "direction": "Doi pași limpezi; finalul dă gestului un rost.",
+      "authorRef": "R23"
     },
     {
       "id": "k510-016",
       "phase": "play",
-      "at": 216,
-      "maxDurationSec": 10,
+      "at": 215,
+      "maxDurationSec": 14.5,
       "speaker": "NATURA",
       "condition": "always",
       "text": {
-        "ro": "Fiecare fereastră are două locuri. Piesele stau întregi, una lângă alta."
+        "ro": "Fiecare fereastră are două locuri. Piesele stau întregi, una lângă alta. Ca voi. Nimic nu luminează singur."
       },
       "tts": {
         "audioTags": [
-          "gentle",
-          "matter-of-fact"
+          "warmly"
         ]
       },
-      "direction": "Explicație simplă; „una lângă alta” rostit rar."
+      "direction": "Explicație simplă; ultima propoziție — legea acestei lumi.",
+      "authorRef": "R24"
     },
     {
       "id": "k510-017-C",
       "phase": "play",
-      "at": 226,
-      "maxDurationSec": 10,
+      "at": 229.5,
+      "maxDurationSec": 10.2,
       "speaker": "NATURA",
       "condition": "fit_complete",
       "text": {
-        "ro": "Cele cinci ferestre sunt gata. Fiecare piesă stă la locul ei, cu forma ei."
+        "ro": "Ferestrele sunt gata. Fiecare piesă la locul ei — și locul, bucuros de piesa lui. Steaua voastră prinde chip."
       },
       "tts": {
         "audioTags": [
-          "proud",
-          "delighted"
+          "warmly"
         ]
       },
-      "direction": "Mândrie caldă; accent pe „la locul ei”."
+      "direction": "Mândrie caldă; „prinde chip” cu uimire mică.",
+      "authorRef": "R25"
     },
     {
       "id": "k510-017-P",
       "phase": "play",
-      "at": 226,
-      "maxDurationSec": 10,
+      "at": 229.5,
+      "maxDurationSec": 10.2,
       "speaker": "NATURA",
       "condition": "fit_partial",
       "text": {
-        "ro": "Fiecare piesă pusă de voi rămâne acolo. Printre ele rămân locuri goale, pe unde trece lumina."
+        "ro": "Ce ați așezat voi rămâne așezat. Printre piese rămân și locuri goale — pe-acolo trece lumina. Și golul e bun la ceva."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "thoughtful"
+          "warmly"
         ]
       },
-      "direction": "Acceptare; „pe unde trece lumina” spus aproape zâmbind."
+      "direction": "Împăcare de grădinar; golul, reabilitat.",
+      "authorRef": "R26"
     },
     {
       "id": "k510-017-Z",
       "phase": "play",
-      "at": 226,
-      "maxDurationSec": 10,
+      "at": 229.5,
+      "maxDurationSec": 10.2,
       "speaker": "NATURA",
       "condition": "fit_none",
       "text": {
-        "ro": "Piesele au rămas pe masă. Pun în valiză o frunză din grădina mea."
+        "ro": "Trimit o frunză din grădina mea, să zboare cu voi. Frunza ține minte soarele."
       },
       "tts": {
         "audioTags": [
-          "softly",
-          "storytelling"
+          "warmly"
         ]
       },
-      "direction": "Fără reproș; „frunză din grădina mea” e un dar intim."
+      "direction": "Fără reproș; darul, cu o taină în el.",
+      "authorRef": "R27"
     },
     {
       "id": "k510-018",
       "phase": "play",
-      "at": 236,
-      "maxDurationSec": 59,
+      "at": 239.7,
+      "maxDurationSec": 14.3,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Felinarul are deja ceva de povestit. Mai are nevoie de lumină ca să vină cu noi."
+        "ro": "Steaua are trup și ferestre. Îi lipsește lumina dinăuntru. Iar lumina nu se găsește și nu se așază — lumina se aprinde. Mergem mai departe."
       },
       "tts": {
         "audioTags": [
-          "thoughtful",
-          "encouraging"
+          "confident"
         ]
       },
-      "direction": "Reflexiv la început; ultima propoziție deschide drumul înainte."
+      "direction": "Reflexiv; aforismul final deschide drumul — și tensiunea.",
+      "authorRef": "R28"
+    },
+    {
+      "id": "star-r28a",
+      "phase": "play",
+      "at": 254,
+      "maxDurationSec": 16,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "A treia lume e din cristal. Locuitorii ei au învins boala, au învins depărtarea. Știu tot. Socotesc tot. De un milion de ani, nu i-a mai mirat nimic."
+      },
+      "direction": "Admirație măsurată, fără căldură; ultima frază cade ca o piatră.",
+      "authorRef": "R28a",
+      "tts": {
+        "audioTags": [
+          "warmly"
+        ]
+      }
+    },
+    {
+      "id": "star-r28b",
+      "phase": "play",
+      "at": 270,
+      "maxDurationSec": 25,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "Bine ați venit. Nimic nu ne mai surprinde, nimic nu ne mai doare. De aceea ne plac musafirii: voi încă vă mirați. La noi, acest lucru se întâmplă rar."
+      },
+      "direction": "Clar, șlefuit, aproape muzical; finalul, cu o eleganță de negustor de lucruri rare.",
+      "authorRef": "R28b",
+      "tts": {
+        "audioTags": [
+          "thoughtful"
+        ]
+      }
     },
     {
       "id": "k510-019",
@@ -415,15 +541,15 @@
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "Atelierul Mann e deschis! Reparăm felinare, umbrele, câteodată umbre. Ce aduceți?"
+        "ro": "Atelierul Mann, la dispoziția dumneavoastră! Reparăm stele, umbrele... câteodată și umbre. Ați picat la timp: afară se lasă un întuneric cum n-am mai calculat."
       },
       "tts": {
         "audioTags": [
-          "playful",
-          "excited"
+          "thoughtful"
         ]
       },
-      "direction": "Anunț teatral; mică pauză hazlie înainte de „umbre”."
+      "direction": "Anunț de meșter cu firmă veche; pauza hazlie înainte de „umbre”, ton serios pe final.",
+      "authorRef": "R29"
     },
     {
       "id": "k510-020",
@@ -433,123 +559,141 @@
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Pe tabletă ai o baterie, un bec și două legături. Rotește legăturile până când firele se unesc. Atunci becul se aprinde."
+        "ro": "Pe tabletă ai o baterie, un bec și două legături. Rotește legăturile până se întâlnesc firele. Când drumul e întreg, becul se aprinde."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "encouraging"
+          "warmly"
         ]
       },
-      "direction": "Instrucțiune limpede; „Pe rând e bine” liniștitor."
+      "direction": "Instrucțiune limpede; ultima frază leagă gestul de poveste.",
+      "authorRef": "R30"
     },
     {
       "id": "k510-021",
       "phase": "play",
       "at": 337.5,
-      "maxDurationSec": 21,
+      "maxDurationSec": 19,
       "speaker": "TEHNOLOGIC",
       "condition": "always",
       "text": {
-        "ro": "Urmărește firul de la baterie, prin bec și înapoi. Dacă drumul e întrerupt, mai rotește legătura."
+        "ro": "Urmărește firul: de la baterie, prin bec, și înapoi. S-a rupt drumul? Mai rotește o dată. Firul are răbdare. Întunericul — ceva mai puțină. La lucru!"
       },
       "tts": {
         "audioTags": [
-          "playful",
-          "reassuring"
+          "thoughtful"
         ]
       },
-      "direction": "Ușor amuzat; „Firul are răbdare” spus cald, rar."
+      "direction": "Meșter care încurajează; ritm de lucru, cu un ochi la fereastră.",
+      "authorRef": "R31"
     },
     {
       "id": "k510-022-C",
       "phase": "play",
-      "at": 358.5,
-      "maxDurationSec": 14,
+      "at": 356.5,
+      "maxDurationSec": 12.7,
       "speaker": "TEHNOLOGIC",
       "condition": "link_complete",
       "text": {
-        "ro": "Ați închis circuitele! Bateriile dau energie becurilor, iar felinarul echipajului luminează."
+        "ro": "Circuite închise — steaua s-a aprins! Poftim, întuneric, uită-te bine: lumina asta n-am făcut-o noi, care știm tot. Au făcut-o ei, care se miră."
       },
       "tts": {
         "audioTags": [
-          "delighted",
-          "proud"
+          "thoughtful"
         ]
       },
-      "direction": "Triumf jucăuș; apasă pe „cinci mânere de lumină”."
+      "direction": "Triumf; sfidarea, aruncată spre fereastră; ultima frază — mărturisirea meșterului.",
+      "authorRef": "R32"
     },
     {
       "id": "k510-022-P",
       "phase": "play",
-      "at": 358.5,
-      "maxDurationSec": 14,
+      "at": 356.5,
+      "maxDurationSec": 12.7,
       "speaker": "TEHNOLOGIC",
       "condition": "link_partial",
       "text": {
-        "ro": "Rămân capetele atinse și firele legate de voi. Mânerul de drum îl pun eu. Felinarul vine cu voi."
+        "ro": "Ce ați legat voi rămâne legat. Restul îl lipesc eu — de-aia sunt meșter. Steaua luminează și vine cu voi."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "matter-of-fact"
+          "thoughtful"
         ]
       },
-      "direction": "Practic și cald; „Felinarul vine cu voi” e promisiunea."
+      "direction": "Practic, cald; promisiunea, cu onoare de breaslă.",
+      "authorRef": "R33"
     },
     {
       "id": "k510-022-Z",
       "phase": "play",
-      "at": 358.5,
-      "maxDurationSec": 14,
+      "at": 356.5,
+      "maxDurationSec": 12.7,
       "speaker": "TEHNOLOGIC",
       "condition": "link_none",
       "text": {
-        "ro": "Firele au rămas pe masă. Mânerul de drum îl pun eu. Felinarul e gata de plecare."
+        "ro": "Firele au rămas pe masă? Le leg eu, cu o scânteie din atelier. Dar să se știe la voi acasă: scânteia e de la noi!"
       },
       "tts": {
         "audioTags": [
-          "gentle",
-          "subtly amused"
+          "thoughtful"
         ]
       },
-      "direction": "Fără dramă; „gata de plecare” spus vesel, simplu."
+      "direction": "Fără dramă; orgoliul de firmă, cu haz.",
+      "authorRef": "R34"
+    },
+    {
+      "id": "star-r34a",
+      "phase": "play",
+      "at": 369.2,
+      "maxDurationSec": 13.5,
+      "speaker": "TEHNOLOGIC",
+      "condition": "always",
+      "text": {
+        "ro": "O întrebare de drum, călători. Dacă nimic nu te mai miră și nimic nu te mai doare — ce mai rămâne viu în tine? Nu-mi răspundeți mie. Duceți-o acasă."
+      },
+      "direction": "Întrebarea lumii de cristal; calm perfect, fără apăsare. Rămâne suspendată, ca un ac de cristal în aer.",
+      "authorRef": "R34a",
+      "tts": {
+        "audioTags": [
+          "thoughtful"
+        ]
+      }
     },
     {
       "id": "k510-023",
       "phase": "play",
-      "at": 372.5,
-      "maxDurationSec": 25.5,
+      "at": 382.7,
+      "maxDurationSec": 14.3,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Un felinar cu mâner de drum. Exact ce ne trebuia. Îl țin aici, lângă mine."
+        "ro": "O stea aprinsă, cu coadă de drum. De-acum nu mai e stea — e cometă. Și e a noastră. O țin lângă mine: pe întuneric, ea vede prima."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "proud"
+          "confident"
         ]
       },
-      "direction": "Satisfacție liniștită; „lângă mine” foarte aproape, cald."
+      "direction": "După o pauză lungă; satisfacție liniștită, „ea vede prima” cu încredere deplină.",
+      "authorRef": "R35"
     },
     {
       "id": "k510-024",
       "phase": "play",
-      "at": 398,
-      "maxDurationSec": 55.5,
+      "at": 397,
+      "maxDurationSec": 56.5,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Intrăm într-un tunel de stele. Tabletele se odihnesc acum. Felinarul vine cu noi până la capăt."
+        "ro": "Intrăm în tunelul de stele. Tabletele se odihnesc — și-au făcut treaba. De-acum ne duce cometa: ați aprins-o exact la timp."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "authoritative"
+          "confident"
         ]
       },
-      "direction": "Autoritate blândă; pauză înainte de „până la capăt”."
+      "direction": "Autoritate blândă, apoi recunoștință.",
+      "authorRef": "R36"
     },
     {
       "id": "k510-025",
@@ -559,15 +703,15 @@
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "După tunel începe drumul cunoscut. Puteți urmări lumina sau doar stelele."
+        "ro": "Stelele curg pe lângă noi ca un râu. Puteți urmări cometa noastră sau cerul întreg. De aici, toate drumurile duc acasă."
       },
       "tts": {
         "audioTags": [
-          "softly",
-          "calm"
+          "warmly"
         ]
       },
-      "direction": "Voce joasă, de tunel; ofertă, nu comandă."
+      "direction": "Voce joasă, de tunel; ofertă, nu comandă.",
+      "authorRef": "R37"
     },
     {
       "id": "v4-saturn-01",
@@ -576,19 +720,19 @@
       "at": 510,
       "speaker": "CAPITANUL",
       "text": {
-        "ro": "Priviți inelele! E Saturn. Suntem din nou în Sistemul Solar. De aici, drumul spre casă ne este cunoscut."
+        "ro": "Inelele! E Saturn. Suntem din nou în Sistemul Solar, aproape de casă. De aici, drumul îl știu și cu ochii închiși."
       },
       "fallback": "silent",
       "condition": "always",
       "maxDurationSec": 17,
-      "direction": "cald, clar, uimit fără strigăte; pauze naturale",
+      "direction": "Cald, uimit fără strigăte; „cu ochii închiși” cu mândrie de navigator.",
       "tts": {
         "audioTags": [
-          "warmly",
-          "calm"
+          "confident"
         ]
       },
-      "publicAtSec": 570
+      "publicAtSec": 570,
+      "authorRef": "R38"
     },
     {
       "id": "v4-saturn-02",
@@ -597,19 +741,19 @@
       "at": 527,
       "speaker": "AVATAR_AI",
       "text": {
-        "ro": "De departe, inelele par întregi. De aproape, sunt nenumărate bucăți de gheață și rocă. Fiecare se rotește în jurul lui Saturn."
+        "ro": "De departe, inelele par întregi. De aproape — nenumărate bucăți de gheață și piatră. Ca steaua noastră. Ca orice lucru care ține: multe bucăți, o singură lumină."
       },
       "fallback": "silent",
       "condition": "always",
       "maxDurationSec": 30,
-      "direction": "cald, clar, uimit fără strigăte; pauze naturale",
+      "direction": "Observația care închide tema; ultima frază, rostită rar, ca o descoperire.",
       "tts": {
         "audioTags": [
-          "warmly",
-          "calm"
+          "warmly"
         ]
       },
-      "publicAtSec": 587
+      "publicAtSec": 587,
+      "authorRef": "R39"
     },
     {
       "id": "v4-saturn-03",
@@ -618,55 +762,91 @@
       "at": 557,
       "speaker": "CAPITANUL",
       "text": {
-        "ro": "Lăsăm Saturn în urmă. Următoarea oprire este o lume cu oceane, nori și oameni care ne așteaptă."
+        "ro": "Rămâi cu bine, Saturn. Urmează o lume cu oceane, cu nori — și cu oameni care ne așteaptă la fereastră."
       },
       "fallback": "silent",
       "condition": "always",
-      "maxDurationSec": 56,
-      "direction": "cald, clar, uimit fără strigăte; pauze naturale",
+      "maxDurationSec": 42,
+      "direction": "Rămas-bun scurt; „la fereastră” cu drag.",
       "tts": {
         "audioTags": [
-          "warmly",
-          "calm"
+          "confident"
         ]
       },
-      "publicAtSec": 617
+      "publicAtSec": 617,
+      "authorRef": "R40"
+    },
+    {
+      "id": "star-r40a",
+      "phase": "play",
+      "at": 599,
+      "maxDurationSec": 14,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Am văzut trei lumi. Una de lumină. Una vie, ca un singur suflet. Una de cristal. Priviți-o acum pe a patra."
+      },
+      "direction": "Bilanțul celor trei lumi, rostit rar; „a patra”, cu o pauză înainte, ca o ușă care se deschide.",
+      "authorRef": "R40a",
+      "tts": {
+        "audioTags": [
+          "warmly"
+        ]
+      }
     },
     {
       "id": "k510-026",
       "phase": "play",
       "at": 613,
-      "maxDurationSec": 15.5,
+      "maxDurationSec": 10,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Pământul! Uite ce albastru e. Pe aici era drumul nostru spre casă."
+        "ro": "Pământul! Uite ce albastru e. De aici am plecat pe întuneric — și uite cu ce alai ne întoarcem."
       },
       "tts": {
         "audioTags": [
-          "with awe",
-          "excited"
+          "confident"
         ]
       },
-      "direction": "Uimire adevărată pe „Pământul!”; apoi glas mai domol, cald."
+      "direction": "Uimire adevărată pe „Pământul!”; apoi glas domol.",
+      "authorRef": "R41"
     },
     {
       "id": "k510-027",
       "phase": "play",
-      "at": 628.5,
-      "maxDurationSec": 17,
+      "at": 623,
+      "maxDurationSec": 10,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Pun felinarul la fereastră. Nu luminează planeta, ci colțul nostru de navă."
+        "ro": "Priviți partea de noapte. Se aprind luminile orașelor — una câte una. Milioane de lumini mici."
       },
       "tts": {
         "audioTags": [
-          "quietly",
-          "thoughtful"
+          "warmly"
         ]
       },
-      "direction": "Aproape șoptit; accent pe „colțul nostru de navă”."
+      "direction": "Aproape șoptit; enumerarea luminilor, fără grabă, ca o ninsoare.",
+      "authorRef": "R42"
+    },
+    {
+      "id": "star-r42a",
+      "phase": "play",
+      "at": 633,
+      "maxDurationSec": 12.5,
+      "speaker": "AVATAR_AI",
+      "condition": "always",
+      "text": {
+        "ro": "Steaua oamenilor nu s-a pierdut niciodată. Doar că nu stă pe cer. Stă în oameni — lumină cu lumină."
+      },
+      "direction": "Revelația; fiecare cuvânt așezat. Răspunsul la întrebarea lumii de cristal.",
+      "authorRef": "R42a",
+      "tts": {
+        "audioTags": [
+          "warmly"
+        ]
+      }
     },
     {
       "id": "k510-028",
@@ -676,15 +856,15 @@
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Am adus cu noi o lumină de departe. Acum are unde să stea."
+        "ro": "Iar bucata noastră s-a întors acasă. O așez la fereastră: poate chiar acum cineva de jos o vede. Și se miră."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "reflective"
+          "confident"
         ]
       },
-      "direction": "Emoție reținută; pauză înainte de „are unde să stea”."
+      "direction": "Emoție reținută; gestul de la fereastră, mic și mare deodată.",
+      "authorRef": "R43"
     },
     {
       "id": "k510-029",
@@ -694,142 +874,171 @@
       "speaker": "LUMINA",
       "condition": "always",
       "text": {
-        "ro": "Când o să vă amintiți de stele, poate vă amintiți și de valiza asta mică."
+        "ro": "Când o să priviți cerul, călători, nu vă căutați steaua sus. Căutați-o unii în alții. Acolo am pus-o."
       },
       "tts": {
         "audioTags": [
-          "ethereal",
-          "softly"
+          "gentle"
         ]
       },
-      "direction": "Ca o urare de rămas-bun; „valiza asta mică” foarte blând."
+      "direction": "Ca o binecuvântare de rămas-bun; ultimele patru cuvinte, foarte încet.",
+      "authorRef": "R44"
     },
     {
       "id": "k510-030",
       "phase": "epilogue",
-      "at": 5,
-      "maxDurationSec": 14,
+      "at": 2,
+      "maxDurationSec": 13,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Călătoria s-a terminat. Pe ecran rămân felinarul și drumul prin cele trei lumi."
+        "ro": "Călătoria s-a încheiat. Pe ecran rămân steaua și drumul prin cele trei lumi. Fiecare lumină de acolo are o mână care a atins-o."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "gentle"
+          "warmly"
         ]
       },
-      "direction": "Închidere lină; enumerarea rostită fără grabă."
+      "direction": "Închidere lină; ultima propoziție dă fiecărei lumini un stăpân.",
+      "authorRef": "R45"
     },
     {
       "id": "k510-031-C",
       "phase": "epilogue",
-      "at": 19,
+      "at": 15,
       "maxDurationSec": 15,
       "speaker": "CAPITANUL",
       "condition": "final_complete",
       "text": {
-        "ro": "Aici sunt bucățile găsite, ferestrele montate și firele legate de voi. Acesta e felinarul echipajului."
+        "ro": "Aici sunt bucățile găsite, ferestrele așezate, firele legate — toate de voi. Aceasta e Steaua Omenirii. Partea voastră din ea."
       },
       "tts": {
         "audioTags": [
-          "proud",
-          "warmly"
+          "confident"
         ]
       },
-      "direction": "Mândria echipajului; apasă pe „legate de voi”."
+      "direction": "Mândria echipajului; „partea voastră din ea” apăsat, cu onoare.",
+      "authorRef": "R46"
     },
     {
       "id": "k510-031-P",
       "phase": "epilogue",
-      "at": 19,
+      "at": 15,
       "maxDurationSec": 15,
       "speaker": "CAPITANUL",
       "condition": "final_partial",
       "text": {
-        "ro": "Aici se văd atingerile voastre și ce au adăugat atelierele. Acesta e felinarul călătoriei noastre."
+        "ro": "Aici se văd atingerile voastre — și ce au dăruit lumile pe deasupra. O stea făcută împreună. Ca toate stelele care țin."
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "encouraging"
+          "confident"
         ]
       },
-      "direction": "Accent pe „atingerile voastre”; final cald, împăcat."
+      "direction": "Accent pe „atingerile voastre”; final împăcat.",
+      "authorRef": "R47"
     },
     {
       "id": "k510-031-Z",
       "phase": "epilogue",
-      "at": 19,
+      "at": 15,
       "maxDurationSec": 15,
       "speaker": "CAPITANUL",
       "condition": "final_none",
       "text": {
-        "ro": "Acesta e felinarul primit pe drum. Are un cerc, o frunză și un mâner. Îl păstrăm ca amintire."
+        "ro": "Aceasta e steaua primită pe drum: un cerc, o frunză, o scânteie și o coadă de cometă. O păstrăm ca amintire. Amintirile, la urma urmei, tot lumină sunt."
       },
       "tts": {
         "audioTags": [
-          "gentle",
-          "reflective"
+          "confident"
         ]
       },
-      "direction": "Senin; „îl păstrăm ca amintire” spus rar, cu tandrețe."
+      "direction": "Senin; ultimul gând, spus rar, cu tandrețe.",
+      "authorRef": "R48"
     },
     {
       "id": "k510-032",
       "phase": "epilogue",
-      "at": 34,
-      "maxDurationSec": 14,
+      "at": 30,
+      "maxDurationSec": 16,
       "speaker": "AVATAR_AI",
       "condition": "always",
       "text": {
-        "ro": "Nu mai e nimic de apăsat. Puteți privi felinarul sau puteți vorbi încet cu vecinul."
+        "ro": "Tabletele se odihnesc. Puteți privi steaua sau puteți vorbi în șoaptă cu vecinul. Mai avem de ales un singur dar — cel mai important."
       },
       "tts": {
         "audioTags": [
-          "softly",
-          "calm"
+          "warmly"
         ]
       },
-      "direction": "Permisiune blândă; vocea coboară până la „vorbiți încet”."
+      "direction": "Respiro blând; anunțul darului, ca un cadou păstrat la urmă.",
+      "authorRef": "R49"
     },
     {
       "id": "k510-033",
       "phase": "epilogue",
-      "at": 48,
-      "maxDurationSec": 12,
+      "at": 46,
+      "maxDurationSec": 16,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Închid valiza și las felinarul la vedere. Mulțumesc pentru călătorie, echipaj. Bun venit acasă!"
+        "ro": "Steaua rămâne la vedere — locul ei e printre oameni. Vă întoarceți acasă, dar nu cum ați plecat. Bun venit acasă, echipaj!"
       },
       "tts": {
         "audioTags": [
-          "warmly",
-          "delighted"
+          "confident"
         ]
       },
-      "direction": "Mulțumire sinceră; „Bun venit acasă!” deschis, luminos."
+      "direction": "Mulțumire sinceră; adevărul călătoriilor, apoi „Bun venit acasă!” deschis, luminos.",
+      "authorRef": "R50"
     },
     {
       "id": "k510-034",
       "phase": "epilogue",
-      "at": 60,
-      "maxDurationSec": 15,
+      "at": 62,
+      "maxDurationSec": 13,
       "speaker": "CAPITANUL",
       "condition": "always",
       "text": {
-        "ro": "Rămâneți la posturi. Ghidul din sală vă spune când vă ridicați și pe unde mergem."
+        "ro": "Rămâneți la posturi. Ghidul vă spune când și pe unde. Steaua rămâne de veghe."
       },
       "tts": {
         "audioTags": [
-          "calm",
-          "authoritative"
+          "confident"
         ]
       },
-      "direction": "Ordin practic, prietenos; ritm rar, ca la final de zbor."
+      "direction": "Ordin practic, prietenos; ritm rar, ca la final de zbor.",
+      "authorRef": "R51"
     }
   ],
-  "filmDurationSec": 678.05
+  "filmDurationSec": 678.05,
+  "title": "Steaua Omenirii",
+  "timing": {
+    "preshowDurationSec": 60,
+    "epilogueDurationSec": 75,
+    "videoDurationSec": 678.05,
+    "stageWindows": [
+      [
+        106,
+        129
+      ],
+      [
+        205,
+        229
+      ],
+      [
+        323.5,
+        355.5
+      ]
+    ],
+    "musicSilence": {
+      "phase": "play",
+      "startSec": 368.9,
+      "endSec": 382.2
+    },
+    "ignitionSec": 356.5,
+    "questionSec": 369.2,
+    "cometSec": 382.7,
+    "revelationSec": 633
+  }
 }

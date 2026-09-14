@@ -33,7 +33,7 @@ export function createMusicFiles(ctx:AudioContext,destination:AudioNode,baseUrl:
       for(const c of active){const s=c.source!,b=buffers.get(s.file);if(!b){void load(c);continue;}
         const offset=musicOffset(c,time,b.duration);if(!s.loop&&offset>=b.duration){stop(c.id);continue;}
         let p=playing.get(c.id);
-        if(p){let expected=p.offset+(ctx.currentTime-p.started)*p.rate;if(s.loop)expected%=b.duration;const drift=Math.abs(expected-offset);if(drift>.12||Math.abs(p.rate-rate)>.0005){stop(c.id);p=undefined;}}
+        if(p){let expected=p.offset+(ctx.currentTime-p.started)*p.rate;if(s.loop)expected%=b.duration;const distance=Math.abs(expected-offset),drift=s.loop?Math.min(distance,b.duration-distance):distance;if(drift>.12||Math.abs(p.rate-rate)>.0005){stop(c.id);p=undefined;}}
         if(!p){const source=ctx.createBufferSource(),gain=ctx.createGain();gain.gain.value=0;source.buffer=b;source.loop=s.loop;source.playbackRate.value=rate;source.connect(gain).connect(destination);p={source,gain,started:ctx.currentTime,offset,rate};const entry=p;source.onended=()=>{if(playing.get(c.id)===entry)playing.delete(c.id);disconnect(entry);};playing.set(c.id,p);source.start(0,offset);source.stop(ctx.currentTime+(s.windowSec-(time-c.at))/rate);}
         const elapsed=time-c.at,remaining=s.windowSec-elapsed,level=10**(s.gainDb/20)*Math.min(1,elapsed/Math.max(.001,c.fadeSec??.5),s.fadeOutSec?remaining/s.fadeOutSec:1);
         p.gain.gain.setTargetAtTime(Math.max(0,level),ctx.currentTime,.02);

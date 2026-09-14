@@ -1,0 +1,81 @@
+{
+  "cueId": "v3-cap-0604",
+  "lang": "fr",
+  "speaker": "CAPITANUL",
+  "text": "Scannez le signal.",
+  "file": "v3-cap-0604.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Scannez",
+    "le",
+    "signal"
+  ],
+  "wtimes": [
+    0,
+    507,
+    640
+  ],
+  "wdurations": [
+    480,
+    53,
+    480
+  ],
+  "durationMs": 1280,
+  "visemes": [
+    "SS",
+    "kk",
+    "aa",
+    "nn",
+    "E",
+    "nn",
+    "SS",
+    "I",
+    "nn",
+    "I",
+    "aa",
+    "nn"
+  ],
+  "vtimes": [
+    0,
+    114,
+    223,
+    314,
+    394,
+    507,
+    640,
+    743,
+    818,
+    890,
+    965,
+    1047
+  ],
+  "vdurations": [
+    114,
+    109,
+    91,
+    80,
+    86,
+    53,
+    103,
+    75,
+    72,
+    75,
+    82,
+    73
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "409059306ec3aeaf18f04f205bc1ad1455f4023de20cb41bbb886bdf0affc702",
+  "sha256": "d623115e60f1924406f2b0b67617b9440dfea213cd56db11a83960309d195c81",
+  "generatedAt": "2026-09-13T13:28:46.531Z",
+  "requestId": "Xlrk0Q7Lw1VKQ8RcJDqO",
+  "historyItemId": "EgA6inD0Gl6yv79lsvhb",
+  "characterCost": "18",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

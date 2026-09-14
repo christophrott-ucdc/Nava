@@ -1,7 +1,7 @@
 /**
  * WebSocket client to the master server (ws://host:port/ws).
  *   - `hello` on connect (client "screen", isClockSource for the master's first screen)
- *   - clock-source screen: sends `report` at config.sync.clockHz
+ *   - every screen sends readiness `report` at config.sync.clockHz; server owns clock authority
  *   - other screens: on `clock` compute the expected phaseTime and correct drift
  *     (seek if |drift| > seekThresholdSec, else playbackRate 1 ± rateNudge)
  *   - ALL screens apply commands only via `applyCmd` (the server is the authority)
@@ -14,6 +14,9 @@ import { describeError, type Logger } from "./log";
 import type { Player } from "./player";
 
 export interface SyncOptions {
+  onPreparationStatus?:(message:string|null)=>void;
+  prepareLaunch?:()=>Promise<string[]>;
+  presentedFilmTime?:()=>number;
   onMission?: (snapshot:import('../shared/mission').MissionSnapshot)=>void;
   wsUrl: string;
   screenId: string;
@@ -47,6 +50,9 @@ const OFFSET_WINDOW = 40;
 
 export class SyncClient {
   private ws: WebSocket | null = null;
+  private launch:{id:string;at:number;applied:boolean;timer?:ReturnType<typeof setTimeout>}|null=null;
+  private launchPreparation='';
+  private cancelLaunch(){if(this.launch?.timer)clearTimeout(this.launch.timer);this.launch=null;this.launchPreparation='';}
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reportTimer: ReturnType<typeof setInterval> | null = null;
   private attempts = 0;
@@ -59,6 +65,13 @@ export class SyncClient {
   private clockHz: number;
   private suspended=false;
   private identity:{runId?:string;serverEpoch?:string;timelineEpoch?:number}={};
+  private pendingWall:(import('./wall-health').WallHealthEvent&{runId:string;serverEpoch:string;timelineEpoch:number})|null=null;
+  reportWallHealth(event:import('./wall-health').WallHealthEvent):void{
+    const {runId,serverEpoch,timelineEpoch}=this.identity;
+    if(!runId||!serverEpoch||timelineEpoch===undefined)return;
+    const report={...event,runId,serverEpoch,timelineEpoch};
+    if(this.isConnected())this.send({type:'wallPlayback',...report});else this.pendingWall=report;
+  }
 
   constructor(private readonly opts: SyncOptions) {
     this.seekThresholdSec = opts.seekThresholdSec;
@@ -112,6 +125,7 @@ export class SyncClient {
       if (ws !== this.ws) return;
       this.opts.log("warn", `ws closed (${ev.code}) — reconectare`);
       this.ws = null;
+      this.cancelLaunch();
       this.opts.player.resetSyncRate();
       this.stopReporting();
       this.driftSec = null;
@@ -126,6 +140,7 @@ export class SyncClient {
 
   dispose(): void {
     this.disposed = true;
+    this.cancelLaunch();
     this.opts.player.resetSyncRate();
     this.clearReconnect();
     this.stopReporting();
@@ -180,8 +195,21 @@ export class SyncClient {
 
   private handle(msg: ServerMessage): void {
     switch (msg.type) {
+      case 'preparationStatus':this.opts.onPreparationStatus?.(msg.message);break;
+      case 'launchPrepare':{
+        this.cancelLaunch();this.launchPreparation=msg.id;
+        void this.opts.prepareLaunch?.().then(screens=>{if(this.launchPreparation===msg.id)this.send({type:'launchReady',id:msg.id,screens});}).catch(error=>this.opts.log('warn','Pregătire TV: '+String(error)));
+        break;
+      }
+      case 'launchCommit':{
+        if(this.launchPreparation!==msg.id||!Number.isFinite(msg.startAtMs))break;
+        const launch={id:msg.id,at:msg.startAtMs,applied:false,timer:undefined as ReturnType<typeof setTimeout>|undefined};this.launch=launch;
+        launch.timer=setTimeout(()=>{if(this.launch===launch&&this.isConnected()){launch.applied=true;this.opts.player.apply({action:'start'});}},Math.max(0,msg.startAtMs-this.serverNow()));break;
+      }
+      case 'launchCancel':if(this.launchPreparation===msg.id){if(this.launch?.applied&&this.serverNow()-this.launch.at<3000)this.opts.player.apply({action:'pause'});this.cancelLaunch();}break;
       case 'mission':
         this.identity={runId:msg.snapshot.runId,serverEpoch:msg.snapshot.serverEpoch,timelineEpoch:msg.snapshot.state.timelineEpoch};
+        if(this.pendingWall){const report=this.pendingWall;this.pendingWall=null;if(report.runId===this.identity.runId&&report.serverEpoch===this.identity.serverEpoch&&report.timelineEpoch===this.identity.timelineEpoch)this.send({type:'wallPlayback',...report});}
         this.suspended=msg.snapshot.suspended;
         this.opts.onMission?.(msg.snapshot);break;
       case "welcome": {
@@ -204,6 +232,7 @@ export class SyncClient {
         break;
       }
       case "clock": {
+        if(this.launch&&(!this.launch.applied||msg.serverTimeMs<this.launch.at||(msg.state!=='playing'&&this.serverNow()-this.launch.at<3000)))return;
         this.sampleOffset(msg.serverTimeMs);
         if (this.opts.isClockSource && !this.opts.serverAuthoritative) return;
         if(this.suspended)return;
@@ -213,6 +242,8 @@ export class SyncClient {
         break;
       }
       case "applyCmd":
+        if(msg.launchId&&msg.launchId===this.launch?.id)break;
+        if(msg.cmd.action==='restart')this.cancelLaunch();
         this.sampleOffset(msg.serverTimeMs);
         this.opts.player.apply(msg.cmd);
         break;
@@ -268,7 +299,6 @@ export class SyncClient {
 
   private startReporting(): void {
     this.stopReporting();
-    if (!this.opts.isClockSource) return;
     const hz = Math.min(30, Math.max(1, this.clockHz || 4));
     this.reportTimer = setInterval(() => this.report(), Math.round(1000 / hz));
     this.report();
@@ -284,7 +314,7 @@ export class SyncClient {
   private report(): void {
     if (!this.isConnected()) return;
     const s = this.opts.player.getState();
-    this.send({ type: "report", ...this.identity,state: s.state, phaseTime: s.phaseTime, rate: s.rate, videoReady: s.videoReady, sceneId: s.sceneId });
+    this.send({ type: "report", presentedFilmTime:this.opts.presentedFilmTime?.(), ...this.identity,state: s.state, phaseTime: s.phaseTime, rate: s.rate, videoReady: s.videoReady, sceneId: s.sceneId });
   }
 
   private scheduleReconnect(): void {

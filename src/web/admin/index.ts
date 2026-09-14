@@ -1,3 +1,5 @@
+import {mountIntegrations} from './integrations';
+import '../shared/client-errors';
 /**
  * Administrare (/admin/) — accounts, sessions and the audit journal for administrators.
  *
@@ -20,7 +22,7 @@ const VIEWS: Record<ViewId, { title: string; eyebrow: string; cta: boolean }> = 
   utilizatori: { title: "Utilizatori", eyebrow: "Conturi și roluri", cta: true },
   sesiuni: { title: "Sesiuni", eyebrow: "Cine este conectat", cta: false },
   audit: { title: "Audit", eyebrow: "Istoricul modificărilor", cta: false },
-  instalatie: { title: "Instalație", eyebrow: "Planificat", cta: false },
+  instalatie: { title: "Instalație", eyebrow: "Robot și actualizări", cta: false },
 };
 
 const ACTION_LABELS: Record<AuditEntry["action"], string> = {
@@ -762,3 +764,7 @@ document.addEventListener("click", (e) => {
 
 route();
 void load();
+
+mountIntegrations();
+import {startUiLocalization} from '../shared/localization';
+startUiLocalization();

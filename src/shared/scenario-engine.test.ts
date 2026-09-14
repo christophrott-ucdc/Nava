@@ -8,6 +8,12 @@ function choose(p: ScenarioProgress, stage: number, post: Post, zone: Zone, valu
   return result.progress;
 }
 const rejected = (p: ScenarioProgress, stage: number, post: Post, zone: Zone, value: string) => assert.equal(applyScenarioAction(p, { stage, post, zone, action: 'choose', value }).ok, false);
+test('live summaries do not announce final gifts before the journey has ended',()=>{
+  const p=createProgress('age-5-10');
+  assert.deepEqual(summarizeScenario(p,false).lines,[]);
+  assert.equal(summarizeScenario(p,true).lines.length,3);
+  assert.equal(summarizeScenario(p,false).posts.length,5);
+});
 function align(p: ScenarioProgress, post: Post, zone: Zone): ScenarioProgress {
   while (p.zones[`${post}${zone}`].game?.rotation) p = choose(p, 2, post, zone, 'rotate');
   return p;

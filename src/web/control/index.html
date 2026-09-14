@@ -17,6 +17,7 @@
         <div><strong>EXODUS-7</strong><span>Consolă operator</span></div>
       </div>
       <nav class="topnav" aria-label="Pagini">
+        <a class="nav-link" href="/logs/">LOGURI</a>
         <a class="nav-link" href="/debug/">DEPANARE</a>
         <a class="nav-link" href="/analytics/">ANALITICĂ</a>
         <a class="nav-link" href="/clips/">CLIPURI</a>
@@ -50,6 +51,17 @@
           <div><span>Pornire automată</span><strong id="autorun-label">Oprit</strong></div>
           <div><span>Ambianță</span><strong id="ambient-label">—</strong></div>
           <div><span>Lumini</span><strong id="lights-label">—</strong></div>
+        </div>
+        <div class="audio-mixer" role="group" aria-label="Volum sunet">
+          <label>Dialog <output id="voice-output">100%</output>
+            <input id="voice-volume" type="range" min="0" max="1" step="0.05" value="1" />
+          </label>
+          <label>Muzică <output id="music-output">80%</output>
+            <input id="music-volume" type="range" min="0" max="1" step="0.05" value="0.8" />
+          </label>
+          <label>Efecte <output id="sfx-output">100%</output>
+            <input id="sfx-volume" type="range" min="0" max="1" step="0.05" value="1" />
+          </label>
         </div>
       </section>
 
@@ -100,13 +112,7 @@
             <span class="inline-field"><select id="scene-select" aria-label="Scenă"></select><button class="button compact" id="scene-go">SALT</button></span>
           </label>
           <label>Limbă
-            <select id="language" aria-label="Limba vocilor"><option value="ro">Română</option><option value="en">English</option><option value="fr">Français</option></select>
-          </label>
-          <label>Voce <output id="voice-output">100%</output>
-            <input id="voice-volume" type="range" min="0" max="1" step="0.05" value="1" />
-          </label>
-          <label>Efecte <output id="sfx-output">100%</output>
-            <input id="sfx-volume" type="range" min="0" max="1" step="0.05" value="1" />
+            <select id="language" aria-label="Limba experienței"><option value="ro" data-no-translate>Română</option><option value="en" data-no-translate>English</option><option value="fr" data-no-translate>Français</option></select>
           </label>
         </div>
 

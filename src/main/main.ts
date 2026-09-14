@@ -1,3 +1,6 @@
+import {activeContent,contentPanelSets} from '../server/content-updates';
+import {ApplicationUpdates} from './app-updates';
+import {renderDiplomaPdf} from './diploma-pdf';
 /**
  * NavaPlayer — Electron main process entry (bundled to dist/main/main.js by scripts/build.mjs).
  *
@@ -18,7 +21,7 @@
  */
 import { app, crashReporter, dialog, Menu, powerSaveBlocker, screen as electronScreen, session } from "electron";
 import path from "node:path";
-import {panelSources} from './panel-sources';
+import {panelSources,adaptivePanelDirectory} from './panel-sources';
 import fs from "node:fs";
 import type { Command } from "../shared/protocol";
 import { startServer, type ServerHandle } from "../server/index";
@@ -289,23 +292,40 @@ async function main(): Promise<void> {
   const openDevTools = isDev || config.dev.openDevTools;
   if (cli.kiosk) log("info", "--kiosk: kiosk/fullscreen forced");
 
+  const content=await activeContent(path.join(paths.dataRoot,'data','content'),app.getVersion());
+  const assetPaths=content?{...paths,appRoot:content.root,resourcesRoot:content.root}:paths;
+  if(content){
+    config.show=path.join(content.root,'assets/show/show.json');
+    config.video.path=path.join(content.root,content.release.video.path);
+    config.video.panelsDir=content.release.video.panelsDir?path.join(content.root,content.release.video.panelsDir):undefined;
+    config.video.panelsByCount=contentPanelSets(content.root,content.release);
+    config.video.panelsDir=config.video.panelsByCount[String(config.screens.length)]??config.video.panelsDir;
+    log('info','Immutable content package selected',{id:content.release.id});
+  }
+
+  const adaptiveSets=config.video.panelsByCount;
+
   if (config.autoDisplays && !cli.wallPreview && !cli.screen) {
     displayInventory = new DisplayInventoryManager({
-      config:config.autoDisplays,appRoot:paths.appRoot,resourcesRoot:paths.resourcesRoot,log,
+      config:config.autoDisplays,appRoot:paths.appRoot,dataRoot:paths.dataRoot,resourcesRoot:paths.resourcesRoot,log,
+      validateCandidate:(candidate)=>{if(config.autoDisplays?.countMode==='adaptive')adaptivePanelDirectory(adaptiveSets,candidate.screens.map(s=>s.id));},
+      onReady:async()=>{await server?.applyDetectedTopology?.();},
       onTopologyChanged:(reason)=>{
         if (server?.onDisplayTopologyChanged) server.onDisplayTopologyChanged(reason);
         else if (server) server.dispatchCommand({action:'pause'});
         else if (link) link.dispatch({action:'pause'});
       },
       apply:async(candidate)=>{
-        const previous={screens:config.screens,videoWall:config.videoWall,displayMode,required:[...config.autoRun!.requireScreens]};
+        const selectedPanels=config.autoDisplays?.countMode==='adaptive'?adaptivePanelDirectory(adaptiveSets,candidate.screens.map(s=>s.id)):config.video.panelsDir;
+        const previous={panelsDir:config.video.panelsDir,screens:config.screens,videoWall:config.videoWall,displayMode,required:[...config.autoRun!.requireScreens]};
         const restore=async()=>{
-          config.screens=previous.screens;config.videoWall=previous.videoWall;config.displayMode=previous.displayMode;displayMode=previous.displayMode;config.autoRun!.requireScreens=previous.required;
+          config.video.panelsDir=previous.panelsDir;config.screens=previous.screens;config.videoWall=previous.videoWall;config.displayMode=previous.displayMode;displayMode=previous.displayMode;config.autoRun!.requireScreens=previous.required;
           if(windows)await windows.reconfigure(config.screens,displayMode,config.videoWall);
         };
+        config.video.panelsDir=selectedPanels;
         config.screens=candidate.screens;config.videoWall=candidate.videoWall;config.displayMode=candidate.displayMode;displayMode=candidate.displayMode;
         config.autoRun!.requireScreens=candidate.screens.map(s=>s.id);
-        try{if(windows)await windows.reconfigure(config.screens,displayMode,config.videoWall);}catch(err){config.screens=previous.screens;config.videoWall=previous.videoWall;config.displayMode=previous.displayMode;displayMode=previous.displayMode;config.autoRun!.requireScreens=previous.required;throw err;}
+        try{if(windows)await windows.reconfigure(config.screens,displayMode,config.videoWall);}catch(err){config.video.panelsDir=previous.panelsDir;config.screens=previous.screens;config.videoWall=previous.videoWall;config.displayMode=previous.displayMode;displayMode=previous.displayMode;config.autoRun!.requireScreens=previous.required;throw err;}
         return restore;
       },
     });
@@ -321,7 +341,7 @@ async function main(): Promise<void> {
   const video = resolveConfigPath(config.video.path, paths);
   const avatar = resolveConfigPath(config.avatar.glb, paths);
   const show = resolveConfigPath(config.show, paths);
-  const voiceDir = resolveConfigPath("assets/voice", paths);
+  const voiceDir = resolveConfigPath("assets/voice", assetPaths);
   const assetReport: Array<[string, typeof video]> = [
     ["video", video],
     ["avatar GLB", avatar],
@@ -335,6 +355,13 @@ async function main(): Promise<void> {
     );
   }
 
+  const panelIssues=()=>{
+    const issues:string[]=[];
+    panelSources(config.video.panelsDir,config.screens.map(s=>s.id),config.videoWall?.mode,issues);
+    return issues;
+  };
+  for(const issue of panelIssues())log('warn',issue+' · Pornirea publică este blocată; fallback-ul nu validează panorama.');
+
   // --- server (master) / master link (follower) -------------------------------------------------
   let wsUrl: string;
   /** http(s)://host:port of the master's server (for /api/tts, /api/dialog); null when unreachable by design. */
@@ -342,8 +369,13 @@ async function main(): Promise<void> {
   if (config.role === "master") {
     try {
       server = await startServer({
+        renderPdf:renderDiplomaPdf,
+        updates:new ApplicationUpdates(),
         config,
-        appRoot: paths.appRoot,
+        appRoot: content?.root??paths.appRoot,
+        restartApplication:()=>{setTimeout(()=>{app.relaunch();app.quit();},750);},
+        applicationVersion:app.getVersion(),
+        contentManaged:!!content,
         dataRoot: paths.dataRoot,
         webDir: paths.webDir,
         showPath: show.abs,
@@ -353,7 +385,7 @@ async function main(): Promise<void> {
         focusPlayer: () => windows?.focusFirst() ?? false,
         wallRuntime: () => {
           const runtime=windows?.wallRuntime(config.screens)??{preview:true,displays:[],issues:["Player în curs de pornire."],verifiedScreenIds:[]};
-          const issues=displayInventory?.readinessIssues()??[];
+          const issues=[...(displayInventory?.readinessIssues()??[]),...panelIssues()];
           return {...runtime,issues:[...runtime.issues,...issues],verifiedScreenIds:issues.length?[]:runtime.verifiedScreenIds};
         },
         displayAutomation:displayInventory?{inventory:()=>displayInventory!.inventory(),detect:()=>displayInventory!.detect(),apply:(optical?:unknown)=>displayInventory!.apply(optical)}:undefined,
@@ -447,7 +479,7 @@ async function main(): Promise<void> {
         screen,
         wsUrl,
         videoUrl: toFileUrl(video.abs),
-        // All-or-nothing selection: an incomplete installation retains legacy playback.
+        // Incomplete panel sets use fallback for display only; wall readiness reports every missing source.
         panelVideoUrls: panelSources(config.video.panelsDir,config.screens.map(s=>s.id),config.videoWall?.mode),
         avatarUrl: toFileUrl(avatar.abs),
         voiceBaseUrl: toDirFileUrl(voiceDir.abs),

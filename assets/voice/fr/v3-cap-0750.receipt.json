@@ -1,0 +1,54 @@
+{
+  "cueId": "v3-cap-0750",
+  "lang": "fr",
+  "speaker": "CAPITANUL",
+  "text": "La Terre.",
+  "file": "v3-cap-0750.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "La",
+    "Terre"
+  ],
+  "wtimes": [
+    0,
+    220
+  ],
+  "wdurations": [
+    160,
+    420
+  ],
+  "durationMs": 1680,
+  "visemes": [
+    "nn",
+    "aa",
+    "DD",
+    "RR"
+  ],
+  "vtimes": [
+    0,
+    75,
+    220,
+    420
+  ],
+  "vdurations": [
+    75,
+    85,
+    200,
+    220
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "da54f25305b4f892db4d997ad6390eda3f6f9201e377d9a2af055a2f145e942b",
+  "sha256": "42c35f853ea2ceb0f3aefda94c30e4563d52a8a95363ae93fdbbc954ef74fb45",
+  "generatedAt": "2026-09-13T13:29:45.302Z",
+  "requestId": "lYToN8rtIN0u0UfJ3Ww9",
+  "historyItemId": "vWZv81bq9iUPlrrtBSkL",
+  "characterCost": "9",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

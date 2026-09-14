@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import type { AppConfig, Cue, ShowFile, ShowState } from "../shared/types";
 import type { Command } from "../shared/protocol";
 import { ShowDirector, validateCommand, type DirectorHooks } from "./state";
+import {withPlanetStops,PLANET_STOPS} from '../shared/planet-stops';
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -56,6 +57,13 @@ test('suspension freezes the negative launch lead-in until explicit resume',()=>
   const h=harness();h.director.dispatchCommand({action:'start'},'test');
   runFor(h,1000);h.director.suspend();const at=h.director.now();runFor(h,2000);assert.equal(h.director.now(),at);
   h.director.resumeSuspended();runFor(h,1000);assert.equal(h.director.now(),at+1);
+});
+
+test('a delayed video-ended report cannot advance a suspended show into epilogue',()=>{
+  const h=harness();h.director.dispatchCommand({action:'start'},'test');runFor(h,12000);
+  h.director.suspend();const time=h.director.now();h.clock.advance(2000);
+  h.director.onReport({type:'report',state:'ended',phaseTime:120,rate:0,videoReady:true,sceneId:null});
+  assert.equal(h.director.playbackState,'playing');assert.equal(h.director.now(),time);assert.equal(h.director.getState().suspended,true);
 });
 
 function makeConfig(overrides: Partial<AppConfig> = {}): AppConfig {
@@ -470,4 +478,48 @@ test("validateCommand accepts/normalizes the R4 commands and rejects malformed o
   assert.deepEqual(validateCommand({ action: "preflight" }), { action: "preflight" });
   assert.equal(validateCommand({ action: "nope" }), null);
   assert.equal(validateCommand(null), null);
+});
+test('planet close-ups hold the authoritative clock for ten real seconds once per run',()=>{
+ const h=harness(makeShow({planetStops:[{id:'test',at:5,durationSec:10}]}));
+ h.director.dispatchCommand({action:'start'});runFor(h,15000);
+ assert.equal(h.director.now(),5);assert.equal(h.director.playbackState,'paused');
+ runFor(h,9750);assert.equal(h.director.now(),5);assert.equal(h.director.playbackState,'paused');
+ runFor(h,250);assert.equal(h.director.playbackState,'playing');runFor(h,1000);assert.equal(h.director.now(),6);
+ h.director.dispatchCommand({action:'seek',time:4});runFor(h,2000);assert.equal(h.director.playbackState,'playing');
+ assert.equal(h.log.filter(x=>x.kind==='planet.hold.start').length,1);
+ h.director.dispatchCommand({action:'restart'});h.director.dispatchCommand({action:'start'});runFor(h,15000);assert.equal(h.director.playbackState,'paused');
+});
+
+test('planet hold recovery preserves remaining time and waits for explicit operator recovery',()=>{
+ const show=makeShow({planetStops:[{id:'test',at:5,durationSec:10}]});const h=harness(show);
+ h.director.dispatchCommand({action:'start'});runFor(h,18000);h.director.suspend();runFor(h,60000);
+ const saved=JSON.parse(JSON.stringify(h.director.getState()));assert.equal(saved.planetHold.remainingMs,7000);
+ const recovered=harness(show);recovered.director.restoreCheckpoint(saved);runFor(recovered,60000);assert.equal(recovered.director.now(),5);
+ recovered.director.resumeSuspended();runFor(recovered,6750);assert.equal(recovered.director.playbackState,'paused');runFor(recovered,250);assert.equal(recovered.director.playbackState,'playing');
+});
+
+test('operator pause owns the pause; manual seek skips past holds without rewinding the film',()=>{
+ const h=harness(makeShow({planetStops:[{id:'test',at:5,durationSec:10}]}));h.director.dispatchCommand({action:'start'});runFor(h,15000);
+ h.director.dispatchCommand({action:'pause'});runFor(h,20000);assert.equal(h.director.playbackState,'paused');assert.equal(h.director.getState().planetHold,undefined);
+ h.director.dispatchCommand({action:'play'});runFor(h,1000);assert.equal(h.director.now(),6);
+ h.director.dispatchCommand({action:'restart'});h.director.dispatchCommand({action:'start'});h.director.dispatchCommand({action:'seek',time:20});runFor(h,1000);assert.equal(h.director.now(),21);
+});
+
+test('all production planet stops and subtle departure cues are deterministic and idempotent',()=>{
+ const show=withPlanetStops(makeShow({videoDurationSec:678.05}));assert.equal(show.planetStops?.length,5);
+ assert.equal(show.planetStops?.reduce((n,s)=>n+s.durationSec,0),50);
+ assert.deepEqual(withPlanetStops(show),show);
+ assert.equal(show.cues.filter(c=>c.kind==='sfx'&&c.sfx==='rocket-departure').length,5);
+ assert.equal(withPlanetStops(makeShow()).planetStops,undefined);
+ for(const stop of PLANET_STOPS){const h=harness(show);h.director.dispatchCommand({action:'start'});h.director.dispatchCommand({action:'seek',time:stop.at-1});runFor(h,1000);assert.equal(h.director.getState().planetHold?.id,stop.id);}
+});
+
+test('music, dialogue and effects are independent, broadcast and checkpointed',()=>{
+ const h=harness();const oldSfx=h.director.volumes.sfx;
+ assert.deepEqual(validateCommand({action:'setVolume',music:2}),{action:'setVolume',music:1});
+ assert.equal(validateCommand({action:'setVolume',music:NaN}),null);
+ h.director.dispatchCommand({action:'setVolume',music:.25});assert.equal(h.director.volumes.sfx,oldSfx);
+ h.director.dispatchCommand({action:'setVolume',voice:.65,sfx:0});assert.deepEqual(h.director.getState().volumes,{music:.25,voice:.65,sfx:0});
+ assert.deepEqual(h.states.at(-1)?.volumes,h.director.volumes);
+ const recovered=harness();recovered.director.restoreCheckpoint(JSON.parse(JSON.stringify(h.director.getState())));assert.deepEqual(recovered.director.volumes,h.director.volumes);
 });

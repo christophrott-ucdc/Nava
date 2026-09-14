@@ -1,0 +1,54 @@
+{
+  "cueId": "v3-cap-0727",
+  "lang": "fr",
+  "speaker": "CAPITANUL",
+  "text": "Répète.",
+  "file": "v3-cap-0727.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Répète"
+  ],
+  "wtimes": [
+    0
+  ],
+  "wdurations": [
+    560
+  ],
+  "durationMs": 880,
+  "visemes": [
+    "RR",
+    "E",
+    "PP",
+    "E",
+    "DD"
+  ],
+  "vtimes": [
+    0,
+    124,
+    226,
+    345,
+    447
+  ],
+  "vdurations": [
+    124,
+    102,
+    119,
+    102,
+    113
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "9f7b6e137c5e790a5ef7e75c3df973f738c967a386b426e805f135c06519a337",
+  "sha256": "84762f4b46adb59fb1cdcabc561774181a97d86b619a085e9e65890cfd0cef05",
+  "generatedAt": "2026-09-13T13:29:18.500Z",
+  "requestId": "zLlPCtcGpfGfTXEAiexL",
+  "historyItemId": "weZfiefuZ6wVSuFhrJMi",
+  "characterCost": "7",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

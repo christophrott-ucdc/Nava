@@ -2,7 +2,7 @@
  * Authentication for the LAN show server.
  *
  *   - Operators log in with a PIN (POST /api/auth/login) and get a session token, delivered as the
- *     HttpOnly cookie `nava_session` AND in the JSON body (for WS `hello.token`).
+ *     HttpOnly cookie `nava_session`; browser WebSockets reuse that cookie.
  *   - Screens (renderers) authenticate with the shared `security.screenToken`
  *     (WS `hello.token`, or `Authorization: Bearer <token>` on /api/tts, /api/dialog, /api/frame).
  *   - Tablets are anonymous (they only speak the tablet WS protocol).
@@ -252,21 +252,21 @@ export function createAuth(deps: AuthDeps): Auth {
 
   // ---- login rate limit -----------------------------------------------------
   let globalAttempts={count:0,resetAt:0};
-  const loginAllowed = (ip: string): boolean => {
+  const reserveLogin = (ip: string): (() => void) | null => {
     const now = Date.now();
     for(const [key,value] of loginAttempts)if(value.resetAt<=now)loginAttempts.delete(key);
     if(globalAttempts.resetAt<=now)globalAttempts={count:0,resetAt:now+LOGIN_WINDOW_MS};
-    if(++globalAttempts.count>80)return false;
-    if(!loginAttempts.has(ip)&&loginAttempts.size>=1024)return false;
-    const rec = loginAttempts.get(ip);
-    if (!rec || rec.resetAt <= now) {
-      loginAttempts.set(ip, { count: 1, resetAt: now + LOGIN_WINDOW_MS });
-      return true;
-    }
-    rec.count += 1;
-    return rec.count <= LOGIN_MAX_ATTEMPTS;
-  };
-  const clientIp = (c: Context<AuthEnv>): string =>
+    if(globalAttempts.count>=80)return null;
+    if(!loginAttempts.has(ip)&&loginAttempts.size>=1024)return null;
+    let rec=loginAttempts.get(ip);
+    if(!rec){rec={count:0,resetAt:now+LOGIN_WINDOW_MS};loginAttempts.set(ip,rec);}
+    if(rec.count>=LOGIN_MAX_ATTEMPTS)return null;
+    const bucket=rec,globalBucket=globalAttempts;
+    bucket.count++;globalBucket.count++;
+    // Reserve before asynchronous hashing: concurrent bad PINs cannot bypass the limit.
+    // Successful verification refunds only its own slot; earlier failures still count.
+    return ()=>{bucket.count=Math.max(0,bucket.count-1);globalBucket.count=Math.max(0,globalBucket.count-1);};
+  };  const clientIp = (c: Context<AuthEnv>): string =>
     (c.env as { incoming?: { socket?: { remoteAddress?: string } } })?.incoming?.socket?.remoteAddress || "unknown-peer";
 
   // ---- same-origin guard for mutations ----------------------------------------
@@ -300,7 +300,8 @@ export function createAuth(deps: AuthDeps): Auth {
       return c.json({ ok: false, reason: "Corp JSON invalid" }, 400);
     }
     const ip = clientIp(c);
-    if (!loginAllowed(ip)) {
+    const successfulLogin=reserveLogin(ip);
+    if (!successfulLogin) {
       log("warn", "auth: login rate limited", { ip });
       return c.json({ ok: false, reason: "Prea multe încercări. Așteaptă 5 minute." }, 429);
     }
@@ -310,6 +311,7 @@ export function createAuth(deps: AuthDeps): Auth {
       log("warn", "auth: bad PIN", { ip });
       return c.json({ ok: false, reason: "PIN incorect" }, 401);
     }
+    successfulLogin();
     const s = createSession(user.id, user.name, user.role);
     await users.touchLogin(user.id);
     setCookie(c, SESSION_COOKIE, s.token, {

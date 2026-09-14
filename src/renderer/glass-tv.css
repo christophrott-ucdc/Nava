@@ -34,6 +34,7 @@ body:has(#avatar.right:not([hidden]) .nava-transporter.is-shown) #subtitles{left
 #avatar::before{content:"";position:absolute;left:12%;right:12%;bottom:0;height:5%;border-radius:50%;background:radial-gradient(ellipse,#ffffffa6,#c9dfff66 55%,#ffffff0a 72%);border:1px solid #ffffff80;box-shadow:0 8px 24px #b5d2ff33,inset 0 1px 0 #fff;opacity:0;transition:opacity .28s ease}
 #avatar:has(.nava-transporter.is-shown)::before{opacity:1}
 #avatar::after{content:"CĂPITANUL";position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);padding:8px 20px;border-radius:999px;background:var(--tv-glass);color:var(--ink);font-size:clamp(12px,1.1cqh,24px);font-weight:700;letter-spacing:.06em;white-space:nowrap;opacity:0;box-shadow:var(--tv-shadow)}
+body[data-scenario="age-5-10"] #avatar::after{content:"COMANDANTUL";}
 body:has(#subtitles.on[data-speaker="CAPITANUL"]) #avatar:has(.nava-transporter.is-shown)::after{opacity:1}
 #osd,#rehearse,#error-banner{background:var(--tv-glass);color:var(--ink);border:1px solid #ffffffc9;border-radius:var(--r-md);box-shadow:var(--tv-shadow);text-shadow:none}
 #osd{padding:16px 24px;font-size:clamp(12px,1cqh,22px);line-height:1.55;max-width:44cqw}
@@ -97,6 +98,7 @@ body[data-theme="white"] #subtitles .text{color:var(--ink);text-shadow:none}
 #span-focus.wall-calibrating #span-content > :not(#osd):not(#rehearse):not(#error-banner) {visibility:hidden;}
 #span-content > #vignette, #span-content > #white-fade {visibility:hidden;}
 [hidden] { display:none !important; }
+.preparation-notice{position:absolute;top:3%;left:20%;right:20%;z-index:80;margin:0;padding:1cqh 2cqw;border-radius:2cqh;background:#edf6f3ed;color:#20334a;text-align:center;font:600 2cqh/1.35 'Segoe UI',sans-serif;pointer-events:none;box-shadow:0 8px 32px #0002;}
 .mission-glass { position:absolute; z-index:25; top:3%; right:3%; width:33%; max-height:25%; padding:1.2%; border-radius:24px; color:#fff; background:linear-gradient(120deg,rgba(26,34,56,.88),rgba(43,60,79,.8)); border:1px solid #ffffff55; box-shadow:0 8px 28px #0003; font-family:'Segoe UI',sans-serif; pointer-events:none; }
 .mission-glass h2 {font-size:clamp(18px,1.1vw,42px);margin:0 0 8px;}
 .mission-glass p {font-size:clamp(14px,.75vw,28px);margin:0 0 10px;}
@@ -111,3 +113,25 @@ body[data-theme="white"] #subtitles .text{color:var(--ink);text-shadow:none}
 .mission-object {display:grid;justify-items:center;text-align:center;}
 .mission-object svg {height:30cqh;max-width:100%;}
 .mission-object p {margin:0 0 12px;font-weight:600;}
+/* Narrative holograms use one modest central-panel canvas. The original film,
+   Captain GLB and caption strip remain visible around them. */
+.star-worlds{position:absolute;right:3%;top:5%;width:37%;height:61%;z-index:22;pointer-events:none;color:#fff;display:flex;flex-direction:column;align-items:center;--world-accent:#ffdda0;font-family:var(--font,'Segoe UI',sans-serif)}
+.star-worlds-stage{position:relative;width:100%;height:80%;min-height:0;background:radial-gradient(ellipse at 50% 55%,color-mix(in srgb,var(--world-accent) 13%,transparent),transparent 65%);}
+.star-worlds-stage canvas{display:block;width:100%;height:100%;}
+.star-worlds-copy{text-align:center;padding:1.1cqh 1.8cqw;border:1px solid #ffffff45;background:linear-gradient(135deg,#182d47dc,#24344ebd);border-radius:2.2cqh;box-shadow:inset 0 1px #ffffff30,0 1cqh 4cqh #05121f35;max-width:95%;}
+.star-worlds-copy strong{font-size:2cqh;letter-spacing:.12em;color:var(--world-accent);font-weight:750;}
+.star-worlds-copy p{font-size:1.8cqh;line-height:1.35;margin:.7cqh 0;}
+.star-worlds-copy small{font-size:1.1cqh;letter-spacing:.05em;color:#dce7ee;}
+.star-worlds[data-world=earth]{right:27%;top:4%;width:42%;height:64%;}
+.star-worlds[data-world=star]{right:24%;top:3%;width:48%;height:65%;}
+.crew-world .star-worlds.star-worlds-embedded{position:relative;inset:auto;width:100%;height:100%;}
+.star-worlds-embedded .star-worlds-stage{height:100%;}
+.star-worlds-embedded .star-worlds-copy{display:none;}
+.star-worlds-active #entities,.star-worlds-active .mission-glass{visibility:hidden;}
+.star-worlds[data-fallback=true] .star-worlds-stage::before{content:'✦';position:absolute;inset:0;display:grid;place-items:center;font-size:25cqh;color:var(--world-accent);text-shadow:0 0 5cqh var(--world-accent);}
+.star-worlds[data-fallback=true] canvas{display:none;}
+@media(prefers-reduced-motion:reduce){.star-worlds{transition:none;}}
+
+/* Keep worlds separate from the center screen navigation console. */
+body.flight-nav-active #subtitles{bottom:8cqh}
+body.flight-nav-active #avatar{bottom:max(8cqh,var(--avatar-margin,40px))}

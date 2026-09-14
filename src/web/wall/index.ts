@@ -1,3 +1,4 @@
+import '../shared/client-errors';
 import { sessionFetch as fetch } from "../shared/session";
 import type {ScreenConfig,VideoWallConfig} from '../../shared/types';
 import { createOpticalWorkshop } from './optical';
@@ -118,3 +119,5 @@ window.setInterval(async()=>{
   catch(error){showRuntime({preview:true,displays:[],verifiedScreenIds:[],issues:[error instanceof Error?error.message:'Conexiunea cu playerul s-a întrerupt; verificarea hardware trebuie refăcută.']},false)}
   finally{refreshing=false}
 },5000);
+import {startUiLocalization} from '../shared/localization';
+startUiLocalization();

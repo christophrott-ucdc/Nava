@@ -1,10 +1,12 @@
 import {videoCorrection,type DriftSettings} from '../shared/film-timing';
 import {PanelFrames} from './panel-frames';
+import {WallHealth,type WallHealthEvent} from './wall-health';
 
 /** One transport barrier for all decoders and one PTS barrier for presentation.
  * Seeking freezes the whole wall; individual panels never publish a new epoch. */
 export function createPanelVideos(urls:Record<string,string>,primaryId:string,primary:HTMLVideoElement,
-  target:()=>{time:number;rate:number;playing:boolean},settings:DriftSettings={},onError:(id:string)=>void=()=>{}) {
+  target:()=>{time:number;rate:number;playing:boolean},settings:DriftSettings={},onError:(id:string)=>void=()=>{},onHealth:(event:WallHealthEvent)=>void=()=>{}) {
+  const health=new WallHealth();
   const videos=new Map<string,HTMLVideoElement>([[primaryId,primary]]);
   for(const [id,url] of Object.entries(urls))if(id!==primaryId){
     const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='auto';v.src=url;
@@ -13,6 +15,8 @@ export function createPanelVideos(urls:Record<string,string>,primaryId:string,pr
   const frames=new PanelFrames<VideoFrame>([...videos.keys()]);
   const prepared=new Set<string>(),failed=new Set<string>(),pending=new Set<string>();
   const callbacks=new Map<string,number>(),listeners:Array<()=>void>=[];
+  const captureFrames=new Map<string,()=>void>();
+  let lastPausedCapture=-Infinity;
   let raf=0,stopped=false,lastResync=-Infinity,seekLead=.3;
   let barrier:{time:number;started:number;measured:boolean}|null=null;
   let previous:{time:number;at:number;playing:boolean;rate:number}|null=null;
@@ -26,10 +30,11 @@ export function createPanelVideos(urls:Record<string,string>,primaryId:string,pr
       if(!v.seeking&&v.readyState>=2){
         // Preserve the decoder's native PTS. Do not overwrite it with currentTime
         // or a callback timestamp: callback delivery can itself arrive late.
-        try{const frame=new VideoFrame(v);frames.push(id,frame.timestamp/1e6,frame);}
+        try{const frame=new VideoFrame(v);frames.push(id,frame.timestamp/1e6,frame);if(!v.error){failed.delete(id);if(v.readyState>=3)prepared.add(id);}}
         catch{failed.add(id);onError(id);}
       }
     };
+    captureFrames.set(id,captureFrame);
     const capture=()=>{captureFrame();if(!stopped)callbacks.set(id,v.requestVideoFrameCallback(capture));};
     // A paused seek can finish without another presentation callback. Snapshot
     // the actual decoded frame at seeked as well, retaining its native PTS.
@@ -87,9 +92,17 @@ export function createPanelVideos(urls:Record<string,string>,primaryId:string,pr
         if(state.playing)playAll();
       }
     }
+    // A decoder can become ready again while paused without firing seeked or a
+    // video-frame callback (e.g. the seek completed while HAVE_CURRENT_DATA was
+    // unavailable). Re-snapshot every member, at most 4 Hz, until the compositor
+    // publishes the held frame. Preserve each decoder's native PTS unchanged.
+    const pausedFrameMissing=!state.playing&&(!!barrier||health.stalled()||frames.time()===null||Math.abs((frames.time()??0)-state.time)>.025);
+    if(pausedFrameMissing&&now-lastPausedCapture>=250){lastPausedCapture=now;for(const capture of captureFrames.values())capture();}
+    const event=health.update({now,playing:state.playing,target:state.time,shown:frames.time(),ready:!barrier&&[...videos.values()].every(v=>!v.seeking&&v.readyState>=2)&&failed.size===0,jumped});
+    if(event)onHealth(event);
     raf=requestAnimationFrame(tick);
   };
   raf=requestAnimationFrame(tick);
-  return {videos,frames,ready:()=>prepared.size===videos.size&&failed.size===0,
+  return {videos,frames,ready:()=>prepared.size===videos.size&&failed.size===0&&!barrier&&!health.stalled(),recovering:()=>!!barrier||health.stalled(),
     dispose(){stopped=true;cancelAnimationFrame(raf);for(const [id,v] of videos){v.cancelVideoFrameCallback(callbacks.get(id)??0);if(v!==primary){v.pause();v.removeAttribute('src');v.load();v.remove();}}for(const remove of listeners)remove();frames.dispose();videos.clear();}};
 }

@@ -64,8 +64,8 @@ export function experienceVisual(snapshot: MissionSnapshot, zone: Zone, finale: 
     const confirmed = active.filter(key => state(key) === 'confirmed').length;
     const observed = active.filter(key => state(key) === 'observed').length;
     return {
-      kind: 'constellation', title: 'Jurnalul echipajului',
-      caption: 'Fiecare răspuns aprinde un loc în amintirea noastră comună.', objects, links,
+      kind: 'constellation', title: snapshot.scenarioId==='age-5-10'?'Steaua Omenirii':'Jurnalul echipajului',
+      caption: snapshot.scenarioId==='age-5-10'?'Razele trimise de voi însoțesc steaua mai departe.':'Fiecare răspuns aprinde un loc în amintirea noastră comună.', objects, links,
       facts: [`Tu · ${status(own)}`, `Colegul · ${status(partner)}`,
         `${confirmed} ${confirmed === 1 ? 'răspuns primit' : 'răspunsuri primite'} · ${observed} ${observed === 1 ? 'persoană privește' : 'persoane privesc'}.`],
     };

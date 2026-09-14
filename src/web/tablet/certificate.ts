@@ -67,7 +67,7 @@ const THEME_INK: Record<SceneTheme, string> = {
 };
 
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
-  const words = text.split(/\s+/);
+  const words = uiText(text).split(/\s+/);
   const lines: string[] = [];
   let current = "";
   for (const word of words) {
@@ -100,6 +100,7 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   canvas.height = CERT_H;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
+  localizeCanvas(ctx);
   const ink = THEME_INK[input.theme] ?? THEME_INK.home;
   const W = CERT_W;
   const H = CERT_H;
@@ -258,3 +259,5 @@ export function drawCertificate(canvas: HTMLCanvasElement, input: CertificateInp
   ctx.font = "500 16px 'Segoe UI', Inter, system-ui, sans-serif";
   ctx.fillText("Certificat anonim: aparține postului, nu unui nume.", W / 2, H - 125);
 }
+import {localizeCanvas} from '../shared/localization';
+import {uiText} from '../../shared/localization';

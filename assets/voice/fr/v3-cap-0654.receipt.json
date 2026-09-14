@@ -1,0 +1,90 @@
+{
+  "cueId": "v3-cap-0654",
+  "lang": "fr",
+  "speaker": "CAPITANUL",
+  "text": "Suivons le signal.",
+  "file": "v3-cap-0654.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Suivons",
+    "le",
+    "signal"
+  ],
+  "wtimes": [
+    0,
+    373,
+    549
+  ],
+  "wdurations": [
+    320,
+    107,
+    411
+  ],
+  "durationMs": 1120,
+  "visemes": [
+    "SS",
+    "I",
+    "U",
+    "I",
+    "FF",
+    "O",
+    "nn",
+    "SS",
+    "nn",
+    "SS",
+    "I",
+    "nn",
+    "I",
+    "aa",
+    "nn"
+  ],
+  "vtimes": [
+    0,
+    49,
+    84,
+    121,
+    156,
+    196,
+    237,
+    271,
+    373,
+    549,
+    637,
+    701,
+    763,
+    827,
+    898
+  ],
+  "vdurations": [
+    49,
+    35,
+    37,
+    35,
+    40,
+    41,
+    34,
+    49,
+    107,
+    88,
+    64,
+    62,
+    64,
+    71,
+    62
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "3423c55c98914115443740325cc08b867dffdd7414c2cbaf3e12099ea43e0a38",
+  "sha256": "d6d5ae79abe59f6eb85fbd435769b9a2ccd0562aae7012ccbaacf16d21836e83",
+  "generatedAt": "2026-09-13T13:29:13.832Z",
+  "requestId": "SVZJvjHYMvvY4IIy7Z20",
+  "historyItemId": "5JPz0vuTEJkNpwhPJQsc",
+  "characterCost": "18",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "cueId": "v3-cap-0738",
+  "lang": "fr",
+  "speaker": "CAPITANUL",
+  "text": "Alors... nous l'enverrons.",
+  "file": "v3-cap-0738.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Alors",
+    "nous",
+    "l'enverrons"
+  ],
+  "wtimes": [
+    0,
+    912,
+    1080
+  ],
+  "wdurations": [
+    560,
+    128,
+    520
+  ],
+  "durationMs": 1920,
+  "visemes": [
+    "aa",
+    "nn",
+    "O",
+    "RR",
+    "sil",
+    "nn",
+    "U",
+    "nn",
+    "E",
+    "nn",
+    "FF",
+    "E",
+    "RR",
+    "O",
+    "nn"
+  ],
+  "vtimes": [
+    0,
+    137,
+    258,
+    402,
+    560,
+    912,
+    974,
+    1080,
+    1139,
+    1203,
+    1262,
+    1329,
+    1393,
+    1470,
+    1541
+  ],
+  "vdurations": [
+    137,
+    121,
+    144,
+    158,
+    352,
+    62,
+    66,
+    59,
+    64,
+    59,
+    67,
+    64,
+    77,
+    71,
+    59
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "3f1f90d53a9fc4c305093ab5c29be892447ff15464a6c32efac745ec649838b9",
+  "sha256": "62f4d70d7e3392012dd3ac23dd2a392e1c108ed8a7d9dc1e21fa7accd9ce2d4a",
+  "generatedAt": "2026-09-13T13:29:23.068Z",
+  "requestId": "XhQOCXkNMWOwTqbTMnwf",
+  "historyItemId": "9d0QdV9iX8wpBT87wDga",
+  "characterCost": "26",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

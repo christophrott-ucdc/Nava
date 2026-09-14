@@ -33,6 +33,8 @@ export function parseClientMessage(raw:string):ClientMessage|null{
     case 'hello':valid=['screen','control','tablet'].includes(String(v.client))&&string(v.id,128)&&v.id.length>0&&(v.name===undefined||string(v.name,128))&&(v.post===undefined||post(v.post))&&(v.token===undefined||string(v.token,512))&&(v.isClockSource===undefined||typeof v.isClockSource==='boolean')&&(v.protocolVersion===undefined||Number.isInteger(v.protocolVersion));break;
     case 'cmd':valid=!!validateCommand(v.cmd);break;
     case 'report':valid=states.includes(String(v.state))&&finite(v.phaseTime)&&finite(v.rate)&&v.rate>=0&&v.rate<=8&&typeof v.videoReady==='boolean'&&(v.sceneId===undefined||v.sceneId===null||string(v.sceneId))&&(v.runId===undefined||string(v.runId))&&(v.serverEpoch===undefined||string(v.serverEpoch))&&(v.timelineEpoch===undefined||Number.isInteger(v.timelineEpoch));break;
+    case 'launchReady':valid=string(v.id,100)&&Array.isArray(v.screens)&&v.screens.length<=32&&v.screens.every(id=>string(id,128));break;
+    case 'wallPlayback':valid=['stalled','recovered'].includes(String(v.status))&&string(v.detail,500)&&finite(v.filmTime)&&v.filmTime>=0&&finite(v.stalledForMs)&&v.stalledForMs>=0&&string(v.runId)&&string(v.serverEpoch)&&Number.isInteger(v.timelineEpoch);break;
     case 'packageReady':valid=string(v.contentHash,128)&&typeof v.ok==='boolean';break;
     case 'experienceAudio':valid=string(v.instance)&&['ended','error'].includes(String(v.status));break;
     case 'missionAction':valid=string(v.runId)&&string(v.cueInstanceId)&&string(v.eventId,100)&&string(v.value)&&['A','B'].includes(String(v.zone));break;

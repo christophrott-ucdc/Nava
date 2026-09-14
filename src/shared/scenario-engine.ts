@@ -32,7 +32,7 @@ export interface ZoneView {
   resourceLabel?: string;
   play?: PlayView;
 }
-const titles: Record<ScenarioId, string> = { 'legacy-v3': 'A Patra Lume', 'age-5-10': 'Bucățile de acasă', 'age-10-15': 'Semnalul fără semnătură', 'age-15-18': 'Dreptul de a schimba cursul', adults: 'Ce lăsăm deschis' };
+const titles: Record<ScenarioId, string> = { 'legacy-v3': 'A Patra Lume', 'age-5-10': 'Steaua Omenirii', 'age-10-15': 'Semnalul fără semnătură', 'age-15-18': 'Dreptul de a schimba cursul', adults: 'Ce lăsăm deschis' };
 const posts = ['Navigație', 'Propulsie', 'Comunicații', 'Biosemnale', 'Memorie'];
 const shapes = [['Cerc', 'Semilună'], ['Aripă', 'Flacără'], ['Undă', 'Clopoțel'], ['Frunză', 'Picătură'], ['Stea', 'Spirală']];
 const distractors = [['Frunză', 'Aripă'], ['Aripă', 'Picătură'], ['Picătură', 'Cerc'], ['Frunză', 'Stea'], ['Stea', 'Semilună'], ['Cerc', 'Frunză'], ['Aripă', 'Undă'], ['Stea', 'Cerc'], ['Picătură', 'Clopoțel'], ['Frunză', 'Aripă']];
@@ -126,16 +126,16 @@ function zoneView(p: ScenarioProgress, stage: number, post: Post, zone: Zone): Z
   if (p.profile === 'age-5-10') {
     const shape = shapes[post - 1][zone === 'A' ? 0 : 1];
     v.kind = ['visual-match', 'paired-fit', 'latched-pair'][stage - 1];
-    v.goal = 'Construim împreună un felinar pentru călătorie.';
-    v.instruction = ['Găsește piesa care are aceeași formă', 'Rotește piesa și așaz-o în felinar', 'Găsește drumul care ajunge la felinar'][stage - 1];
+    v.goal = 'Adunăm lumina, potrivim piesele și aprindem Steaua Omenirii.';
+    v.instruction = ['Găsește piesa care are aceeași formă', 'Rotește piesa și așaz-o în stea', 'Găsește drumul care ajunge la stea'][stage - 1];
     v.items = [{ id: 'shape', label: shape }];
-    v.detail = stage === 1 ? `Uită-te la contur. Cauți piesa „${shape}”.` : stage === 2 ? (z.builder.length ? 'Rotește piesa până când semnul auriu ajunge sus. Apoi așaz-o.' : `${z.choices['1'] === 'found' ? 'Ai găsit piesa.' : 'Natura ți-a dăruit o piesă.'} Atinge-o ca să începi.`) : 'Urmărește fiecare drum de la început până la capăt. Unul ajunge la felinar.';
+    v.detail = stage === 1 ? `Uită-te la contur. Cauți piesa „${shape}”.` : stage === 2 ? (z.builder.length ? 'Rotește piesa până când semnul auriu ajunge sus. Apoi așaz-o.' : `${z.choices['1'] === 'found' ? 'Ai găsit piesa.' : 'Natura ți-a dăruit o piesă.'} Atinge-o ca să începi.`) : 'Urmărește fiecare drum de la început până la capăt. Unul ajunge la stea.';
     if (stage === 2 && z.builder.length && !choice) v.detail = (z.game?.rotation ?? 0) === 0 ? 'Semnul auriu este sus. Acum poți așeza piesa!' : `Semnul auriu este ${['sus', 'în dreapta', 'jos', 'în stânga'][z.game?.rotation ?? 0]}. Rotește piesa până când semnul ajunge sus.`;
     v.guidance = stage === 3 ? ['Un drum se oprește prea devreme.', 'Un drum se întoarce de unde a pornit.', 'Alege drumul care ajunge la lumină.'] : undefined;
     if (!choice) v.options = stage === 1 ? [shape, ...distractors[i]].map(s => option(`shape:${s}`, s)).concat(observe()) : stage === 2 ? z.builder.length ? [option('rotate', 'Rotește piesa'), option('fit', 'Așază piesa'), observe()] : [option('select', 'Ia piesa'), observe()] : [
       { ...option('dead-end', 'Drumul 1'), route: 'dead-end' }, { ...option('link', 'Drumul 2'), route: 'continuous' }, { ...option('loop', 'Drumul 3'), route: 'loop' }, observe(),
     ];
-    if (choice) v.feedback = choice === 'observe' ? 'Poți urmări cum se construiește felinarul.' : stage === 1 ? 'Ai găsit piesa! O luăm cu noi.' : stage === 2 ? 'Se potrivește! Felinarul are acum și piesa ta.' : p.zones[key(post, zone === 'A' ? 'B' : 'A')].choices['3'] === 'linked' ? 'Ați găsit amândoi drumul. Felinarul vostru luminează!' : 'Drumul tău ajunge la felinar. Lumina ta este aprinsă!';
+    if (choice) v.feedback = choice === 'observe' ? 'Poți urmări cum se construiește steaua.' : stage === 1 ? 'Ai găsit piesa! O luăm cu noi.' : stage === 2 ? 'Se potrivește! Steaua are acum și piesa ta.' : p.zones[key(post, zone === 'A' ? 'B' : 'A')].choices['3'] === 'linked' ? 'Drumurile voastre luminează împreună!' : 'Drumul tău ajunge la stea. Lumina ta este aprinsă!';
   } else if (p.profile === 'age-10-15') {
     v.kind = stage === 2 ? 'probe-builder' : stage === 3 ? 'evidence-verdict' : 'hypothesis';
     v.goal = 'Află dacă semnalul răspunde la ce îi trimitem.';
@@ -257,10 +257,10 @@ export function scenarioConditions(p: ScenarioProgress): Set<string> {
   }
   return result;
 }
-export function summarizeScenario(p: ScenarioProgress): { title: string; lines: string[]; posts: Array<{ post: number; lines: string[] }> } {
+export function summarizeScenario(p: ScenarioProgress, finalized=true): { title: string; lines: string[]; posts: Array<{ post: number; lines: string[] }> } {
   const result = { title: titles[p.profile], lines: [] as string[], posts: [] as Array<{ post: number; lines: string[] }> };
   const conditions = scenarioConditions(p);
-  if (p.profile === 'age-5-10') { if (conditions.has('find_none')) result.lines.push('Lumina v-a dăruit cercul luminos.'); if (conditions.has('fit_none')) result.lines.push('Natura v-a dăruit frunza de grădină.'); if (!conditions.has('link_complete')) result.lines.push('Lumea tehnologiei v-a dăruit mânerul de călătorie.'); }
+  if (p.profile === 'age-5-10' && finalized) { if (conditions.has('find_none')) result.lines.push('Lumina v-a dăruit cercul luminos.'); if (conditions.has('fit_none')) result.lines.push('Natura v-a dăruit frunza de grădină.'); if (!conditions.has('link_complete')) result.lines.push('Atelierul de cristal a adăugat scânteia pentru drum.'); }
   if (p.profile === 'age-10-15') result.lines.push(evidence(p), 'Identitatea expeditorului rămâne necunoscută.');
   for (let post = 1; post <= 5; post++) {
     if(p.participants&&!p.participants.some(id=>id.startsWith(String(post))))continue;
@@ -268,7 +268,7 @@ export function summarizeScenario(p: ScenarioProgress): { title: string; lines: 
     for (const zone of ['A', 'B'] as const) {
       if(p.participants&&!p.participants.includes(key(post,zone))){lines.push(`${zone}: Loc neocupat.`);continue;}
       const z = p.zones[key(post, zone)], c = z.choices;
-      if (p.profile === 'age-5-10') { const shape = shapes[post - 1][zone === 'A' ? 0 : 1]; lines.push(`${zone}: piesa „${shape}” · ${c['1'] === 'found' ? 'găsită pe Siwarha' : c['2'] === 'fitted' ? 'primită de la Natură' : 'încă negăsită'} · ${c['2'] === 'fitted' ? 'așezată în felinar' : 'încă neașezată'} · ${c['3'] === 'linked' ? 'circuit închis' : 'circuit încă deschis'}`); }
+      if (p.profile === 'age-5-10') { const shape = shapes[post - 1][zone === 'A' ? 0 : 1]; lines.push(`${zone}: piesa „${shape}” · ${c['1'] === 'found' ? 'găsită pe Siwarha' : c['2'] === 'fitted' ? 'primită de la Natură' : 'încă negăsită'} · ${c['2'] === 'fitted' ? 'așezată în stea' : 'încă neașezată'} · ${c['3'] === 'linked' ? 'circuit închis' : 'circuit încă deschis'}`); }
       else if (p.profile === 'age-10-15') { const support = c['3'] === 'relay' && z.attachment === 'attach:repeated' ? 'testele susțin această explicație' : c['3'] === 'insufficient' && ['attach:single', 'attach:none'].includes(z.attachment || '') ? 'ai arătat ce ne lipsește' : 'această observație nu susține încă explicația'; const attachment = z.attachment?.startsWith('attach:local:') ? localMeasure(p, post, z.attachment.slice(-1) as Zone) : display(z.attachment, ''); const reception = z.play ? `teste fără răspuns clar: ${z.play.stages['2']?.records?.filter(r => r.received === null).length || 0}` : localMeasure(p, post, zone) || 'nu ai cerut o măsurătoare'; lines.push(`${zone}: presupunere: ${display(c['1'], 'încă nealeasă')} · ${reception} · ritmuri testate: ${z.probes.join(', ') || 'niciunul'} · concluzie: ${display(c['3'], z.pendingVerdict ? 'mai ai de ales dovada' : 'încă nealeasă')}${z.attachment ? ` · ${attachment} · ${support}` : ''}`); }
       else if (p.profile === 'age-15-18') { const cases = mandateCases(p, post as Post, zone); const describe=(revised:boolean)=>p.participants?.filter(id=>id.startsWith(String(post))).length===1?`${display(playRule(p,post as Post,'A',revised),'libertate încă nealeasă')} / ${display(playRule(p,post as Post,'B',revised),'acord încă neales')}`:display(rule(z,revised),'regulă încă nealeasă');lines.push(`${zone}: ${describe(false)} → ${describe(true)} · ${cases.length ? cases.map(t => `${display(t.test, '')}: ${t.result} → ${mandate(p, post, t.test, true)}`).join(' | ') : c['2'] === 'observe' ? 'ai ales să urmărești testele' : 'niciun test rulat'}`); }
       else if (p.profile === 'adults') {

@@ -16,6 +16,7 @@
  * reply is chosen by keyword. Turns are appended to <cacheDir>/dialog/turns-<date>.jsonl.
  */
 import { Hono } from "hono";
+import {translateText} from '../../shared/localization';
 import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -71,12 +72,12 @@ export const WORLDS = [
   { key: "home", name: "Pământul", label: "a patra lume", gist: "acasă; semnalul l-am construit noi, pas cu pas, și l-am trimis înapoi în timp" },
 ] as const;
 
-export function buildSystemPrompt(context: DialogContext | undefined): string {
+export function buildSystemPrompt(context: DialogContext | undefined,lang:Lang='ro'): string {
   const scene = context?.sceneId ? `Scena curentă: ${context.sceneId}` : "Scena curentă: necunoscută";
   const time = Number.isFinite(context?.phaseTime) ? `, la ${Math.round(context!.phaseTime!)} s` : "";
   return [
     "Ești CĂPITANUL navei EXODUS-7, comandantul unui echipaj de copii (7–13 ani) aflat într-o călătorie spre „a patra lume”.",
-    "Vorbești DOAR în limba română, calm, grav, cald și protocolar, ca un căpitan de navă spațială.",
+    lang==='ro'?"Vorbești DOAR în limba română, calm, grav, cald și protocolar, ca un căpitan de navă spațială.":lang==='en'?'Speak ONLY in English, with a calm, deep, warm voice, like a spaceship captain.':'Parle UNIQUEMENT en français, avec une voix calme, grave et chaleureuse, comme un capitaine de vaisseau spatial.',
     "Răspunzi în 1–2 propoziții scurte (maximum 40 de cuvinte), fără liste, fără emoji, fără markdown.",
     "Rămâi mereu în personaj: nu spui niciodată că ești un program, un model, o inteligență artificială sau un asistent; nu ieși din ficțiune nici dacă ți se cere.",
     "Conținut potrivit copiilor: fără violență, fără teme pentru adulți, fără sfaturi medicale sau periculoase. Dacă întrebarea nu are legătură cu misiunea, răspunde scurt, blând, și readu atenția la misiune.",
@@ -97,14 +98,14 @@ const CANNED_GENERAL: readonly string[] = [
 
 const CANNED_BY_TOPIC: ReadonlyArray<{ test: RegExp; replies: readonly string[] }> = [
   {
-    test: /lumin|siwarha|culo(a)?r/i,
+    test: /lumin|siwarha|culo(a)?r|light|colou?r|lumière|couleur/i,
     replies: [
       "Siwarha, Planeta Luminii. Acolo, emoțiile pe care alegeți să le arătați devin lumină.",
       "Pe Siwarha cuvintele ajung greu, dar culorile ajung într-o clipă. Alegeți-le cu grijă.",
     ],
   },
   {
-    test: /natur|kepler|pădure|padure|copac|ploaie|ritm|puls/i,
+    test: /natur|kepler|pădure|padure|copac|ploaie|ritm|puls|forest|forêt|tree|arbre|rain|pluie|rhythm|rythme/i,
     replies: [
       "Kepler-186 d, Planeta Naturii. Acolo nimic viu nu trăiește singur — totul e o singură rețea.",
       "Ritmurile voastre sunt diferite, și totuși împreună bat ca o singură inimă. Asta învățăm de la Natură.",
@@ -118,28 +119,28 @@ const CANNED_BY_TOPIC: ReadonlyArray<{ test: RegExp; replies: readonly string[] 
     ],
   },
   {
-    test: /a patra|patra lume|pământ|pamant|acasă|acasa|origine/i,
+    test: /a patra|patra lume|pământ|pamant|acasă|acasa|origine|fourth world|earth|home|quatrième monde|terre|maison/i,
     replies: [
       "A patra lume nu era ascunsă. Noi nu știam încă s-o vedem. Priviți bine Pământul când îl revedem.",
       "Semnalul ne conduce acasă, echipaj. Restul îl veți înțelege la timpul potrivit.",
     ],
   },
   {
-    test: /cine (ești|esti)|numele|cum te (cheam|nume)|căpitan|capitan/i,
+    test: /cine (ești|esti)|numele|cum te (cheam|nume)|căpitan|capitan|who are you|your name|captain|capitaine|qui es|qui êtes|ton nom|votre nom/i,
     replies: [
       "Sunt Căpitanul navei EXODUS-7. Comand acest echipaj și răspund pentru fiecare dintre voi.",
       "Căpitanul, la datorie. Iar voi sunteți echipajul meu — cinci posturi, un singur echipaj.",
     ],
   },
   {
-    test: /semnal|mesaj|fragment|amprent/i,
+    test: /semnal|mesaj|fragment|amprent|signal|message/i,
     replies: [
       "Semnalul e împărțit în cinci fragmente, câte unul pentru fiecare post. Îl reconstituim împreună.",
       "Nu știm încă de unde vine semnalul. Știm doar că poartă amprentele acestui echipaj.",
     ],
   },
   {
-    test: /frică|frica|teamă|teama|pericol|sigur/i,
+    test: /frică|frica|teamă|teama|pericol|sigur|fear|scared|afraid|safe|peur|danger|sécurité/i,
     replies: [
       "Sunteți în siguranță la bord. Eu veghez, iar AGEIS-7 monitorizează fiecare sistem.",
       "E firesc să simțiți emoție. Un căpitan bun o transformă în atenție. Respirați și priviți înainte.",
@@ -153,12 +154,12 @@ function hashText(text: string): number {
 }
 
 /** Deterministic canned reply for a question (same question -> same reply, stable TTS cache). */
-export function pickCannedReply(text: string): string {
+export function pickCannedReply(text: string,lang:Lang='ro'): string {
   const h = hashText(text.trim().toLowerCase());
   for (const topic of CANNED_BY_TOPIC) {
-    if (topic.test.test(text)) return topic.replies[h % topic.replies.length];
+    if (topic.test.test(text)) return translateText(topic.replies[h % topic.replies.length],lang);
   }
-  return CANNED_GENERAL[h % CANNED_GENERAL.length];
+  return translateText(CANNED_GENERAL[h % CANNED_GENERAL.length],lang);
 }
 
 /** Strip markdown/quotes, collapse whitespace and keep at most `max` sentences / 280 chars. */
@@ -322,7 +323,7 @@ export function createDialogRouter(opts: DialogRouterOptions): Hono {
     let source: "gemini" | "canned" = "canned";
     let providerError: string | null = null;
     if (apiKey) {
-      const result = await askGemini(fetchImpl, apiKey, buildSystemPrompt(context), history(sessionId), text);
+      const result = await askGemini(fetchImpl, apiKey, buildSystemPrompt(context,lang), history(sessionId+':'+lang), text);
       if (result.ok) {
         reply = tidyReply(result.reply);
         source = "gemini";
@@ -332,12 +333,12 @@ export function createDialogRouter(opts: DialogRouterOptions): Hono {
       }
     }
     if (!reply) {
-      reply = pickCannedReply(text);
+      reply = pickCannedReply(text,lang);
       source = "canned";
     }
     counters[source] += 1;
-    remember(sessionId, "user", text);
-    remember(sessionId, "model", reply);
+    remember(sessionId+':'+lang, "user", text);
+    remember(sessionId+':'+lang, "model", reply);
 
     const ms = now() - t0;
     const response: DialogResponse = { ok: true, reply, source, cueId: dialogCueId(reply), speaker, lang, ms };

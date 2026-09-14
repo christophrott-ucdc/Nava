@@ -1,6 +1,35 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildDisplayTopology, validateAutoDisplays, validatePersistentWallProfile, type InventoryDisplay, type PersistentWallProfile } from './display-topology';
+import { audiencePanelIds, buildDisplayTopology, validateAutoDisplays, validatePersistentWallProfile, type InventoryDisplay, type PersistentWallProfile } from './display-topology';
+
+test('adaptive wall follows 5→4→3→2→1→5 using centered export IDs and one presenter',()=>{
+  let saved:PersistentWallProfile|undefined;
+  for(const n of [5,4,3,2,1,5]){
+    const c=buildDisplayTopology(displays(n),{enabled:true,countMode:'adaptive',layout:'samsung-5',expectedAudienceCount:5,panelGapMm:500},saved);
+    assert.equal(c.canApply,true,c.issues.join(';'));assert.equal(c.expectedAudienceCount,n);
+    assert.deepEqual(c.screens.map(s=>s.id),audiencePanelIds(n));
+    const primary=c.screens.filter(s=>s.playAudio);assert.equal(primary.length,1);
+    assert.equal(primary[0].id,audiencePanelIds(n)![Math.floor(n/2)]);
+    assert.equal(c.screens.filter(s=>s.showSubtitles).length,1);
+    assert.equal(c.screens.filter(s=>s.showAvatar).length,1);
+    assert.equal(c.geometryStatus,'estimated');
+    saved={schemaVersion:1,installationId:'room',revision:1,savedAt:new Date().toISOString(),assignments:c.assignments,expectedAudienceCount:n,videoWall:c.videoWall,screens:c.screens,geometryStatus:c.geometryStatus};
+    validatePersistentWallProfile(saved,'room');
+  }
+});
+
+test('adaptive excludes operator/internal/virtual and discards stale optical geometry',()=>{
+  const list=displays(5),saved=profile(list);saved.geometryStatus='measured';saved.measurementSource='survey';
+  saved.assignments.push({hardwareKey:'operator',runtimeId:99,role:'operator'});
+  const operator={...list[4],runtimeId:100,hardwareKey:'operator'},internal={...list[4],hardwareKey:'internal',internal:true},virtual={...list[4],hardwareKey:'virtual',virtual:true};
+  const c=buildDisplayTopology([...list.slice(0,2),operator,internal,virtual],{enabled:true,countMode:'adaptive'},saved);
+  assert.equal(c.canApply,true,c.issues.join(';'));assert.equal(c.screens.length,2);
+  assert.equal(c.geometryStatus,'estimated');assert.equal(c.measurementSource,undefined);assert.equal(c.videoWall.optical,undefined);
+  assert.equal(c.assignments.find(a=>a.hardwareKey==='operator')?.role,'operator');
+  assert.equal(buildDisplayTopology([],{enabled:true,countMode:'adaptive'},saved).canApply,false);
+  assert.throws(()=>validateAutoDisplays({enabled:true,countMode:'guess'}));
+  assert.throws(()=>validateAutoDisplays({enabled:true,panelGapMm:-1}));
+});
 
 const displays=(count:number):InventoryDisplay[]=>Array.from({length:count},(_,i)=>({runtimeId:i+10,index:i,hardwareKey:`serial:SAM:tv-${i}`,identityConfidence:'serial',label:'Samsung',boundsDip:{x:i*3840,y:0,width:3840,height:2160},pixelSize:{width:3840,height:2160},scaleFactor:1,rotation:0,refreshHz:60,internal:false,virtual:false,physicalSizeMm:{width:2170,height:1220},physicalSizeSource:'edid'}));
 const profile=(inventory:InventoryDisplay[]):PersistentWallProfile=>{

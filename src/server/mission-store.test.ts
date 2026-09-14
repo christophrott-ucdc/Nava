@@ -56,3 +56,34 @@ test('shared probe builder opens after a measurement or the observation window, 
     assert.equal(s.record.accessibility['1'].textScale,1.3);assert.equal(s.record.accessibility['1'].reducedMotion,true);
   }finally{store.close();rmSync(dir,{recursive:true,force:true});}
 });
+
+
+test('recovery includes prepared crew and never resurrects an older active run after completion',()=>{
+  const dir=mkdtempSync(path.join(os.tmpdir(),'nava-recovery-')),file=path.join(dir,'db.sqlite');
+  let store=new MissionStore(file);
+  try{
+    const s=new MissionSession(store);s.reset('age-5-10','hash');activeCrew(s);
+    s.checkpoint({state:'idle',phaseTime:0,rate:0,lang:'ro'} as ShowState);
+    const id=s.record.runId;
+    store.close();store=new MissionStore(file);
+    assert.equal(store.recoverable()?.runId,id);
+    assert(store.recoverable()?.checkpointSavedAt);
+    const old={...store.get(id)!,status:'active' as const};store.save(old);
+    store.save({...old,runId:'new-completed-run',status:'completed'});
+    assert.equal(store.recoverable(),null);
+  }finally{store.close();rmSync(dir,{recursive:true,force:true});}
+});
+
+test('a failed checkpoint does not replace the last committed state or suppress retry',()=>{
+  const dir=mkdtempSync(path.join(os.tmpdir(),'nava-checkpoint-')),store=new MissionStore(path.join(dir,'db.sqlite'));
+  try{
+    const s=new MissionSession(store);
+    const state={state:'playing',phaseTime:10,rate:1,lang:'ro'} as ShowState;
+    s.checkpoint(state);const committed=structuredClone(s.record);
+    const save=store.save.bind(store);store.save=()=>{throw Error('disk unavailable');};
+    assert.throws(()=>s.checkpoint({...state,phaseTime:10.25}));
+    assert.deepEqual(s.record,committed);
+    store.save=save;s.checkpoint({...state,phaseTime:10.25});
+    assert.equal(store.get(s.record.runId)?.checkpoint?.phaseTime,10.25);
+  }finally{store.close();rmSync(dir,{recursive:true,force:true});}
+});

@@ -55,9 +55,10 @@ async function main() {
         .filter(tag => /^[\p{L}\p{N} ,.'’!?-]{1,48}$/u.test(tag))
         .slice(0, 3);
       const text = tags.length ? `${tags.map(tag => `[${tag}]`).join(' ')} ${cue.text.ro}` : cue.text.ro;
-      const settings = { ...voice.voiceSettings, stability: 0.5, speed: 1, ...(cue.tts?.voiceSettings ?? {}) };
-      const request = { text, model_id: 'eleven_v3', language_code: 'ro', voice_settings: settings, seed: parseInt(hash(`${profile}:${cue.id}`).slice(0, 8), 16) };
-      const generationKey = hash(JSON.stringify({ voiceId, request, format: 'mp3_44100_192' }));
+      const star=profile==='age-5-10'&&source.title==='Steaua Omenirii';
+      const settings = star?{stability:0.5,similarity_boost:0.8,speed:1}:{ ...voice.voiceSettings, stability: 0.5, speed: 1, ...(cue.tts?.voiceSettings ?? {}) };
+      const request = { text, model_id: 'eleven_v3', language_code: 'ro', voice_settings: settings, seed: parseInt(hash(`${star?'steaua':profile}:${cue.id}`).slice(0, 8), 16) };
+      const generationKey = hash(JSON.stringify({ voiceId, request, format: 'mp3_44100_192',...(star?{edition:source.sourceSha256}:{}) }));
       const file = `${cue.id}.mp3`;
       const receiptPath = path.join(out, `${cue.id}.receipt.json`);
       let clip = manifest.clips[cue.id];

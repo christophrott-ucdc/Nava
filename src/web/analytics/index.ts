@@ -1,3 +1,4 @@
+import '../shared/client-errors';
 import { sessionFetch as fetch } from "../shared/session";
 import { applyTheme, icon } from "../shared/glass";
 import { createMissionAnalytics } from "./missions";
@@ -115,7 +116,7 @@ async function api<T>(url: string): Promise<T> {
     goToLogin();
     throw new Error("Sesiune expirată");
   }
-  if (res.status === 404) throw new Error("Analitica nu este montată pe server (/api/analytics). Vezi src/server/features/INTEGRATION.md.");
+  if (res.status === 404) throw new Error("Analitica nu este disponibilă. Verifică starea serverului în pagina de depanare.");
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { reason?: string };
     throw new Error(body.reason ?? `Eroare ${res.status}`);
@@ -134,6 +135,7 @@ interface BarOptions {
 }
 
 function drawBars(canvas: HTMLCanvasElement, labels: string[], values: number[], opts: BarOptions = {}): void {
+  labels=labels.map(uiText);
   const dpr = window.devicePixelRatio || 1;
   const cssW = canvas.clientWidth || canvas.width;
   const cssH = canvas.clientHeight || canvas.height;
@@ -496,3 +498,7 @@ async function syncTheme(): Promise<void> {
 void syncTheme();
 window.setInterval(() => void syncTheme(), 500);
 document.querySelectorAll<HTMLElement>("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon!); });
+import {startUiLocalization} from '../shared/localization';
+import {uiText} from '../../shared/localization';
+startUiLocalization();
+window.addEventListener('nava:language',()=>{if(summary){renderDurations(summary.runs);renderCommands(summary.aggregate);renderChoices(summary.aggregate);}});

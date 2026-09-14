@@ -3,6 +3,7 @@ import { createYoungToy } from './play-toys';
 import { createOlderToy } from './play-older';
 import {createGestureGuide} from './gesture-guide';
 import {discovery} from './discovery';
+import {createStoryWorld} from './story-world';
 
 type Context = { blocked: boolean; reduced: boolean; pending: boolean; offline: boolean };
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className: string, text = '') => {
@@ -15,6 +16,8 @@ export function createPlayPanel(zone: 'A' | 'B', send: (value: string) => void) 
   panel.dataset.zone = zone; panel.setAttribute('aria-label', `Zona ${zone}, ${zone === 'A' ? 'stânga' : 'dreapta'}`);
   const head = el('header', 'play-head');
   const name = el('span', 'play-name'), achievement = el('span', 'play-achievement');
+  const world = createStoryWorld(), nameLabel=el('span','play-name-label');
+  name.append(world.element,nameLabel);
   const help = el('details', 'play-help'), helpButton = el('summary', '', 'Ce descoperim');
   const lesson = el('p', ''); help.append(helpButton, lesson);
   head.append(el('b', 'mission-seat', zone), name, help);
@@ -43,8 +46,9 @@ export function createPlayPanel(zone: 'A' | 'B', send: (value: string) => void) 
       }
       panel.dataset.kind = `play-${view.kind}`; panel.dataset.stage = String(view.stage);
       panel.dataset.solved = String(view.solved); panel.dataset.blocked = String(next.blocked);
-      name.textContent = view.title;
-      const milestones = { light: ['Piesă găsită', 'Piesă montată', 'Felinar aprins'], signal: ['Idee păstrată', 'Două ritmuri testate', 'Concluzie păstrată'], pilot: ['Regulă aleasă', 'Ambele probe', 'Regulă păstrată'], survey: ['Scanare păstrată', 'Raport creat', 'Copie trimisă'] };
+      nameLabel.textContent = view.title;
+      world.update(view.kind==='light'?view.stage:0,next.reduced||next.blocked,view.solved&&!view.observed);
+      const milestones = { light: ['Lumină găsită', 'Piesă montată', 'Circuit închis'], signal: ['Idee păstrată', 'Două ritmuri testate', 'Concluzie păstrată'], pilot: ['Regulă aleasă', 'Ambele probe', 'Regulă păstrată'], survey: ['Scanare păstrată', 'Raport creat', 'Copie trimisă'] };
       achievement.textContent = view.solved ? milestones[view.kind][view.stage - 1] : '';
       achievement.hidden = !view.solved;
       instruction.textContent = view.instruction;
@@ -57,6 +61,6 @@ export function createPlayPanel(zone: 'A' | 'B', send: (value: string) => void) 
       insight.hidden=!view.solved||view.observed;
       if(!insight.hidden){const result=discovery(view);if(insight.dataset.content!==JSON.stringify(result)){insight.dataset.content=JSON.stringify(result);takeaway.textContent=result.text;flow.replaceChildren(...result.flow.map((label,i)=>{const step=el('span','',label);if(i)step.dataset.after='true';return step;}));}}
     },
-    dispose() { guide.dispose();toy?.dispose(); toy = undefined; },
+    dispose() { world.dispose();guide.dispose();toy?.dispose(); toy = undefined; },
   };
 }

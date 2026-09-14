@@ -129,8 +129,8 @@ export function createClipsRouter(deps: ClipsDeps): Hono {
     const present = panels.filter((p) => p.exists);
     for (const p of panels) if (!p.exists) issues.push(`lipsește ${path.basename(p.file)}`);
     for (const p of present) {
-      if (p.width !== 3840 || p.height !== 2160) {
-        issues.push(`${p.screenId}: ${p.width}x${p.height}, așteptat 3840x2160`);
+      if (!((p.width === 3840 && p.height === 2160)||(p.width === 2560 && p.height === 1440))) {
+        issues.push(`${p.screenId}: ${p.width}x${p.height}, așteptat 3840x2160 sau 2560x1440`);
       }
     }
     // Durate diferite = panourile nu au fost tiate in aceeasi trecere; playbackul ar diverge.

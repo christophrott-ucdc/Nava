@@ -1,0 +1,45 @@
+{
+  "cueId": "v3-cap-0750",
+  "lang": "en",
+  "speaker": "CAPITANUL",
+  "text": "Earth.",
+  "file": "v3-cap-0750.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Earth"
+  ],
+  "wtimes": [
+    0
+  ],
+  "wdurations": [
+    400
+  ],
+  "durationMs": 1520,
+  "visemes": [
+    "E",
+    "TH"
+  ],
+  "vtimes": [
+    0,
+    189
+  ],
+  "vdurations": [
+    189,
+    211
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "58457335df649b8caf6f59bb15959d17ac4ef9d3e23d4648de787b385564cf0c",
+  "sha256": "af1b2a82a82655d4e6a92600cf7312f0506d3e77598d2301689bac03f5ce6164",
+  "generatedAt": "2026-09-13T13:29:07.972Z",
+  "requestId": "JDdAE3QX1YdjswvRDqZM",
+  "historyItemId": "qTLjBqprxpc404b43w8E",
+  "characterCost": "6",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

@@ -8,7 +8,7 @@
  *   light     warm shimmering pad (gold), soft high sparkle       home   warm major pad
  *   nature    wet drone + rain texture + occasional low "breath"  white  soft airy pad
  *
- * Graph:  bed layers -> bedGain (crossfade) -> duck -> master (sfxVolume x ambient.volume) -> destination
+ * Graph:  bed layers -> bedGain (crossfade) -> duck -> master (musicVolume x ambient.volume) -> destination
  *   - crossfade 4 s on theme change (`crossfade` / `start`), stop fades out;
  *   - ducking to `duck` (0..1) while a voice plays (Timeline hooks setDucked);
  *   - `followTheme` auto-follows `theme` cues unless the show scripts an explicit ambient cue for that theme;
@@ -16,7 +16,7 @@
  */
 
 import type { AmbientCue, Phase, SceneTheme } from "../../shared/types";
-import { musicSilenceGain } from "../../shared/music";
+import { musicSilenceGain, type MusicMix } from "../../shared/music";
 import { createMusicFiles } from "./music-files";
 import { createWaitingScore } from "./waiting-score";
 import type { Logger } from "../log";
@@ -27,12 +27,12 @@ export interface AmbientOptions {
   /** false on screens with playAudio=false: no audio graph is built. */
   audible: boolean;
   enabled: boolean;
-  /** 0..1 relative to sfxVolume (config.ambient.volume). */
+  /** 0..1 relative to musicVolume (config.ambient.volume). */
   volume: number;
   /** Gain while a voice plays (config.ambient.duck, 0.25 = about -12 dB). */
   duck: number;
-  /** config.audio.sfxVolume (updated by the setVolume command). */
-  sfxVolume: number;
+  /** config.audio.musicVolume (updated by the setVolume command). */
+  musicVolume: number;
   log?: Logger;
   fileBaseUrl?: string;
 }
@@ -61,6 +61,7 @@ export interface AmbientEngine {
   /** Voice playing -> duck. */
   setDucked(on: boolean, owner?: 'voice'|'narrator'): void;
   setFileCues(cues: readonly AmbientCue[]): void;
+  setMusicMix?(mix:MusicMix):void;
   syncFiles(phase:Phase|null,time:number,rate:number):void;
   /** Reception only; paused reception retains its position, a new run restarts it. */
   syncWaiting(runId:string,eligible:boolean,paused:boolean):void;
@@ -68,8 +69,8 @@ export interface AmbientEngine {
   musicStatus():{loaded:string[];failed:string[];active:string[];silenceGain:number;duckGain:number};
   /** config.ambient.volume (0..1). */
   setVolume(v: number): void;
-  /** config.audio.sfxVolume (0..1.5). */
-  setSfxVolume(v: number): void;
+  /** config.audio.musicVolume (0..1.5). */
+  setMusicVolume(v: number): void;
   currentBed(): SceneTheme | null;
   dispose(): void;
 }
@@ -415,8 +416,10 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
   const audible = opts.audible;
   let enabled = opts.enabled;
   let volume = clamp01(opts.volume);
-  let sfxVolume = Math.max(0, Math.min(1.5, opts.sfxVolume));
+  let musicVolume = Math.max(0, Math.min(1.5, opts.musicVolume));
   let duckLevel = 10 ** (-9 / 20);
+  let duckAttack=.3,duckRelease=.8;
+  let scoreSilence:MusicMix['silence']={phase:'play',startSec:232,endSec:246};
   let ducked = false;
   const speakers=new Set<string>();
   let fileCues:readonly AmbientCue[]=[];
@@ -436,7 +439,7 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
   let duck: GainNode | null = null;
   let silence: GainNode | null = null;
 
-  const masterTarget = () => sfxVolume * volume;
+  const masterTarget = () => musicVolume * volume;
 
   const graph = (): { ctx: AudioContext; duck: GainNode } | null => {
     if (!audible || disposed) return null;
@@ -556,11 +559,12 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
       explicitBeds = beds;
     },
     setFileCues(cues){fileCues=cues;const g=audible&&enabled?graph():null;if(g)files?.preload(cues);},
+    setMusicMix(mix){duckLevel=10**(mix.duckDb/20);duckAttack=mix.duckAttackSec;duckRelease=mix.duckReleaseSec;scoreSilence=mix.silence;if(ctx&&duck)duck.gain.setTargetAtTime(ducked?duckLevel:1,ctx.currentTime,.08);},
     syncFiles(phase,time,rate){
       showPhase=phase;
       // Stop reception before the first show source can start, including local launch commands.
       waiting?.sync(waitingRun,enabled&&waitingEligible&&!waitingPaused&&phase===null);
-      silenceGain=musicSilenceGain(phase,time);if(silence)silence.gain.setTargetAtTime(silenceGain,ctx!.currentTime,.025);
+      silenceGain=musicSilenceGain(phase,time,scoreSilence);if(silence)silence.gain.setTargetAtTime(silenceGain,ctx!.currentTime,.025);
       if(audible&&enabled&&fileCues.length&&!files)graph();
       files?.sync(fileCues,phase,time,rate,enabled);
     },
@@ -581,14 +585,14 @@ export function createAmbient(opts: AmbientOptions): AmbientEngine {
       const t = ctx.currentTime;
       duck.gain.cancelScheduledValues(t);
       duck.gain.setValueAtTime(duck.gain.value,t);
-      duck.gain.linearRampToValueAtTime(on ? duckLevel : 1,t+(on?.3:.8));
+      duck.gain.linearRampToValueAtTime(on ? duckLevel : 1,t+(on?duckAttack:duckRelease));
     },
     setVolume(v) {
       volume = clamp01(v);
       applyMaster();
     },
-    setSfxVolume(v) {
-      sfxVolume = Math.max(0, Math.min(1.5, Number.isFinite(v) ? v : 0));
+    setMusicVolume(v) {
+      musicVolume = Math.max(0, Math.min(1.5, Number.isFinite(v) ? v : 0));
       applyMaster();
     },
     currentBed: () => current?.theme ?? null,

@@ -1,0 +1,81 @@
+{
+  "cueId": "s1518-37",
+  "lang": "en",
+  "speaker": "AVATAR_AI",
+  "text": "Lab closed, crew.",
+  "file": "s1518-37.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Lab",
+    "closed",
+    "crew"
+  ],
+  "wtimes": [
+    0,
+    331,
+    1120
+  ],
+  "wdurations": [
+    240,
+    549,
+    320
+  ],
+  "durationMs": 1600,
+  "visemes": [
+    "nn",
+    "aa",
+    "PP",
+    "kk",
+    "nn",
+    "O",
+    "SS",
+    "DD",
+    "sil",
+    "kk",
+    "RR",
+    "U"
+  ],
+  "vtimes": [
+    0,
+    73,
+    151,
+    331,
+    456,
+    546,
+    645,
+    772,
+    880,
+    1120,
+    1247,
+    1340
+  ],
+  "vdurations": [
+    73,
+    78,
+    89,
+    125,
+    90,
+    99,
+    127,
+    108,
+    240,
+    127,
+    93,
+    100
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Q8ZbQAANLFvLw8uPBR8d",
+  "generationKey": "b85aa2f2314d06dbf82f3c25e358957ee815385d48b7bdea8e95247a667dfbae",
+  "sha256": "8aee8730ab97ca78ce80bc893e70ba20fc51ede9b45408abf554cc5b00c5a3dd",
+  "generatedAt": "2026-09-13T13:24:44.036Z",
+  "requestId": "IZ6rZ8zjaxgy0riz8KJR",
+  "historyItemId": "w2OPfpNUkRi4WyOi9LGG",
+  "characterCost": "17",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

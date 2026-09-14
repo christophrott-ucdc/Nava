@@ -1,0 +1,80 @@
+{
+  "lang": "fr",
+  "voiceId": "bgVGH727uJ1Qj9P9egUj",
+  "voiceName": "Mihai - Voice That Inspires Confidence",
+  "clips": {
+    "intro": {
+      "file": "intro.mp3",
+      "text": "Bienvenue à bord ! Le vaisseau ne demande pas de mot de passe. Il demande quelque chose de bien plus rare : un peu de lumière. Voyons si vous en avez.",
+      "durationSec": 10.64,
+      "sha256": "450edf1f2ff785d1273674e56149d9db6d7eb20e67b3d14f9ebeb362aec8c86d"
+    },
+    "touch": {
+      "file": "touch.mp3",
+      "text": "À chacun sa moitié d'écran, sa moitié de ciel. Touchez la lumière devant vous. Vous voyez ? Elle vous a répondu. Vous pouvez aussi simplement regarder : les étoiles ne font rien d'autre.",
+      "durationSec": 13.12,
+      "sha256": "fe04d7d693312020f8e75944db659c973dc1ee369acede2db28da5742ffd63f7"
+    },
+    "age-5-10-practice": {
+      "file": "age-5-10-practice.mp3",
+      "text": "Le vaisseau a perdu une pièce. Ça arrive quand les vaisseaux sont impatients de partir. Trouvez la bonne forme à l'écran et touchez-la. Un vaisseau se répare avec patience.",
+      "durationSec": 10.72,
+      "sha256": "9ab794c38ccb2e038f1f0c4a23a19fa5514150b022719c9c8bf8dd70d3bc3f50"
+    },
+    "age-10-15-practice": {
+      "file": "age-10-15-practice.mp3",
+      "text": "Un signal se répète. Que nous dit-il ? Regardez les pauses entre les signaux. Choisissez la réponse qui correspond à ce que vous voyez, puis confirmez.",
+      "durationSec": 10.24,
+      "sha256": "0633428196992530cfb2f275154293582a585eb070dcfd242695de066ca105a8"
+    },
+    "age-15-18-practice": {
+      "file": "age-15-18-practice.mp3",
+      "text": "Toute décision commence par une proposition. Lisez la situation à l'écran, choisissez ce qui vous semble juste, puis confirmez. Ensuite, nous verrons comment travailler ensemble.",
+      "durationSec": 11.52,
+      "sha256": "7546da21e80c559c967de040d7093125b1977b32b4bfb0d0b7e9cfa01e578cdd"
+    },
+    "adults-practice": {
+      "file": "adults-practice.mp3",
+      "text": "Un bon choix commence par une question. Regardez les informations et le coût affiché. Choisissez, puis confirmez. Ce n'est qu'un exercice : la mission ne perd rien.",
+      "durationSec": 11.12,
+      "sha256": "98c93d792edbaf4f0212880b8a176b4a8ab0db70f44df434263853150b7fb6a5"
+    },
+    "legacy-v3-practice": {
+      "file": "legacy-v3-practice.mp3",
+      "text": "Regardez l'indice à l'écran. Trouvez l'étoile, puis confirmez. Ce n'est qu'un essai pour nous échauffer.",
+      "durationSec": 8.4,
+      "sha256": "b338fb00c3ccd7af53704c25938a5e25539ffaafa85df86a143c7ef0be7c9b16"
+    },
+    "cooperate": {
+      "file": "cooperate.mp3",
+      "text": "À vous tous : touchez le signal sur votre moitié d'écran. Regardez devant vous. Chaque geste allume une partie du vaisseau. Un équipage naît ainsi : des lumières qui se répondent.",
+      "durationSec": 11.84,
+      "sha256": "29ed6780f5151f36b2c12e0947857170f3bfb7ca0eee127c43c5b6884f046a8e"
+    },
+    "ready": {
+      "file": "ready.mp3",
+      "text": "Les commandes répondent. Prenez une grande inspiration. Loin d'ici, trois mondes nous attendent, et une question plus ancienne que tous les navires.",
+      "durationSec": 10.32,
+      "sha256": "8bc23f89bbd8a7191d3aeef7c13723c13898ccd7a50647f52bad4943e55a3664"
+    },
+    "handoff": {
+      "file": "handoff.mp3",
+      "text": "L'équipage est prêt, Commandant. Nous pouvons partir.",
+      "durationSec": 2.96,
+      "sha256": "6ab1a12f109820c63fe2045727b62c90ab382769d0d82d5f666084b3ea2ed71e"
+    },
+    "hint": {
+      "file": "hint.mp3",
+      "text": "Cherchez l'endroit qui brille sur votre moitié d'écran. Chacun à son rythme : les étoiles ne se pressent pas. Et si besoin, l'opérateur est là.",
+      "durationSec": 9.6,
+      "sha256": "c93fa7af1a51b073781d2bb8e1927ccb1f706c44c2bd45e9cbf396d3beedb3ef"
+    },
+    "finale": {
+      "file": "finale.mp3",
+      "text": "Le voyage continue dans votre choix. Trois cadeaux vous attendent : une lumière, l'attention aux autres, le courage d'explorer. Choisissez et envoyez le vôtre. Il allumera un rayon de l'Étoile de l'Humanité. Votre rayon. Vous cherchiez d'autres mondes. Vous avez retrouvé le vôtre, comme pour la première fois.",
+      "durationSec": 21.76,
+      "sha256": "6e27b9a14cc75f9047c7dfa95f1504974fda85e03d08a83e15d6fe244dd8d25d"
+    }
+  },
+  "generatedAt": "2026-09-13T13:30:31.360Z"
+}

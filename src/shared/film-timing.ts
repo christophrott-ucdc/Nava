@@ -1,4 +1,13 @@
 import type { ShowFile } from './types';
+import type {ScenarioId} from './scenario-engine';
+import {STAR_SCORE} from './star-score';
+
+/** Phase limits for the selected package; film timing stays anchored to its source show. */
+export function scenarioPhaseEnd(id:ScenarioId,phase:'preshow'|'play'|'epilogue',show:Pick<ShowFile,'scenes'|'videoDurationSec'>):number {
+  if(phase==='play')return show.videoDurationSec;
+  if(id==='age-5-10')return phase==='preshow'?STAR_SCORE.preshowDurationSec:STAR_SCORE.epilogueDurationSec;
+  return Math.max(0,...show.scenes.filter(s=>s.phase===phase).map(s=>s.end));
+}
 
 /** Editorial anchors measured from center.mp4, not a guessed SpaceEngine offset.
  * The first three scenes retain their departure/dialogue windows. Mann includes
@@ -13,9 +22,9 @@ export function remapFilmTime(at: number): number {
   if (at >= 246) return Math.round((246+(at-246)*142/110)*2)/2;
   return Math.round(at*2)/2;
 }
-export function publicDurationSec(show: Pick<ShowFile,'scenes'|'launchLeadInSec'|'videoDurationSec'>): number {
+export function publicDurationSec(show: Pick<ShowFile,'scenes'|'launchLeadInSec'|'videoDurationSec'|'planetStops'>): number {
   const end = (phase: string) => Math.max(0,...show.scenes.filter(s=>s.phase===phase).map(s=>s.end));
-  return end('preshow')+(show.launchLeadInSec??0)+show.videoDurationSec+end('epilogue');
+  return end('preshow')+(show.launchLeadInSec??0)+show.videoDurationSec+end('epilogue')+(show.planetStops??[]).reduce((sum,stop)=>sum+stop.durationSec,0);
 }
 export interface DriftSettings { deadbandSec?: number; seekThresholdSec?: number; rateNudge?: number }
 export function videoCorrection(actual: number, target: number, rate: number, settings: DriftSettings = {}) {

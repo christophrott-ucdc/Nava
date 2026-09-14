@@ -71,3 +71,12 @@ body[data-mission-motion=true] .crew-trigger:active,body[data-mission-quiet=true
 .experience-finale-surface .mission-finale-actions button{font-size:20px;padding:10px 14px}
 .experience-finale-surface .mission-upload-status:empty{display:none}
 .experience-finale-surface .mission-upload-status:not(:empty){position:absolute;right:0;top:100%;background:#fffdf4;border:1px solid #bdd1d6;border-radius:12px;padding:6px 12px;max-width:100%;font-size:20px}
+
+/* Keep confirmed finales within each landscape seat, including 130% text. */
+@media(min-width:1200px){
+ .experience-zone[data-kind=experience-finale][data-complete=true] .experience-options{grid-template-columns:1fr 1.3fr;grid-template-rows:minmax(116px,auto);align-items:stretch}
+ .experience-zone[data-kind=experience-finale][data-complete=true] .crew-choice{grid-column:1;grid-row:1}
+ .experience-zone[data-kind=experience-finale][data-complete=true] .crew-trigger{grid-column:2;grid-row:1;min-height:116px;grid-template-columns:25% 1fr}
+ .experience-zone[data-kind=experience-finale][data-complete=true] .crew-trigger-art{min-height:80px}
+ .experience-zone[data-kind=experience-finale][data-complete=true] .mission-observe{grid-column:1/-1;grid-row:1}
+}

@@ -88,7 +88,7 @@ export function playView(p: ScenarioProgress, stage: number, post: Post, zone: Z
   if (p.profile === 'age-5-10') {
     const shape = ownShape(post, zone), target: [number, number] = [1, 3];
     const turns = s?.wireTurns ?? (z.choices['3'] === 'linked' ? target : [0, 2]);
-    return { ...base, kind: 'light', title: ['Prinde lumina!', 'Atelierul felinarului', 'Aprinde felinarul'][stage - 1], instruction: ['Atinge bucata care se potrivește cu forma de sus.', 'Rotește piesa și trage-o în contur.', 'Rotește cele două coturi ca să aprinzi felinarul.'][stage - 1], lesson: ['Recunoști o formă chiar dacă are altă mărime.', 'O piesă rotită își păstrează forma.', 'Becul se aprinde când circuitul este închis: bateria și becul sunt legate printr-un drum dus și întors.'][stage - 1], shape, candidates: [shape, ownShape(post === 5 ? 1 : (post + 1) as Post, zone), ownShape(post === 1 ? 5 : (post - 1) as Post, zone)].sort((a, b) => a.localeCompare(b, 'ro')), rotation: s?.rotation ?? z.game?.rotation ?? (stage === 2 ? 1 + post % 3 : 0), socketRotation: 0, wireTurns: [...turns] as [number, number], wireTargets: target, wireConnected: turns[0] === target[0] && turns[1] === target[1] };
+    return { ...base, kind: 'light', title: ['Prinde lumina!', 'Atelierul stelei', 'Aprinde steaua'][stage - 1], instruction: ['Atinge bucata care se potrivește cu forma de sus.', 'Rotește piesa și trage-o în contur.', 'Rotește cele două coturi ca să aprinzi steaua.'][stage - 1], lesson: ['Recunoști o formă chiar dacă are altă mărime.', 'O piesă rotită își păstrează forma.', 'Becul se aprinde când circuitul este închis: bateria și becul sunt legate printr-un drum dus și întors.'][stage - 1], shape, candidates: [shape, ownShape(post === 5 ? 1 : (post + 1) as Post, zone), ownShape(post === 1 ? 5 : (post - 1) as Post, zone)].sort((a, b) => a.localeCompare(b, 'ro')), rotation: s?.rotation ?? z.game?.rotation ?? (stage === 2 ? 1 + post % 3 : 0), socketRotation: 0, wireTurns: [...turns] as [number, number], wireTargets: target, wireConnected: turns[0] === target[0] && turns[1] === target[1] };
   }
   if (p.profile === 'age-10-15') {
     const angle = s?.angle ?? stageState(p, post, zone, 2)?.angle ?? stageState(p, post, zone, 1)?.angle ?? 0, targetAngle = (post - 3) * 20;
@@ -129,7 +129,7 @@ export function applyPlayAction(progress: ScenarioProgress, action: ScenarioActi
     } else if (verb === 'rotate' && action.stage === 2 && integer(arg, 0, 3) && extra === undefined) { s.rotation = Number(arg); s.feedback = 'Acum încearcă piesa în contur.'; }
     else if (verb === 'fit' && action.stage === 2 && integer(arg, 0, 3) && extra === undefined) {
       trial = true; s.rotation = Number(arg);
-      if (current.shape === 'Cerc' || s.rotation === current.socketRotation) { z.choices['2'] = 'fitted'; z.game = { ...z.game, rotation: s.rotation }; s.feedback = 'Se potrivește! Piesa ta rămâne în felinar.'; }
+      if (current.shape === 'Cerc' || s.rotation === current.socketRotation) { z.choices['2'] = 'fitted'; z.game = { ...z.game, rotation: s.rotation }; s.feedback = 'Se potrivește! Piesa ta rămâne în stea.'; }
       else s.feedback = 'Încă nu intră. Rotește-o și încearcă din nou.';
     } else if (verb === 'wire' && action.stage === 3 && integer(arg, 0, 1) && integer(extra, 0, 3)) {
       trial = true; s.wireTurns = [...current.wireTurns]; s.wireTurns[Number(arg)] = Number(extra);

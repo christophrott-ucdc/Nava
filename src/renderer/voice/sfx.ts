@@ -7,7 +7,7 @@
 import { getAudioContext, getSfxBus, unlockAudio } from "./context";
 import { makeImpulseResponse } from "./fx";
 
-export type SfxName = "liftoff-rumble" | "low-swell" | "wormhole-whoosh" | "arrival-chime" | "rain" | "white-fade";
+export type SfxName = "rocket-departure" | "liftoff-rumble" | "low-swell" | "wormhole-whoosh" | "arrival-chime" | "rain" | "white-fade";
 
 export interface SfxHandle {
   done: Promise<void>;
@@ -518,7 +518,17 @@ function whiteFade(v: Voice, dur: number): void {
   v.stoppables.push(ns);
 }
 
+function rocketDeparture(v:Voice,dur:number):void {
+  const {ctx,master,t0}=v;
+  const envelope=envGain(ctx,master,.7,{attack:.65,decay:.5,sustain:.45,release:1.4},dur,t0);
+  const low=ctx.createBiquadFilter();low.type="lowpass";low.frequency.setValueAtTime(180,t0);low.frequency.exponentialRampToValueAtTime(700,t0+1.2);low.frequency.exponentialRampToValueAtTime(100,t0+dur);low.Q.value=.6;low.connect(envelope);
+  const source=ctx.createBufferSource();source.buffer=noiseBuffer(ctx,4,"brown");source.loop=true;source.connect(low);source.start(t0);source.stop(t0+dur);v.stoppables.push(source);
+  const hum=envGain(ctx,master,.09,{attack:.7,decay:.4,sustain:.5,release:1.5},dur,t0);
+  const engine=tone(ctx,hum,48,"sine",t0,dur);engine.frequency.exponentialRampToValueAtTime(78,t0+1.5);engine.frequency.exponentialRampToValueAtTime(42,t0+dur);v.stoppables.push(engine);
+}
+
 const DEFAULT_DURATION: Record<SfxName, number> = {
+  "rocket-departure":3.5,
   "liftoff-rumble": 6,
   "low-swell": 4,
   "wormhole-whoosh": 8,
@@ -528,6 +538,7 @@ const DEFAULT_DURATION: Record<SfxName, number> = {
 };
 
 const DEFAULT_GAIN: Record<SfxName, number> = {
+  "rocket-departure":.14,
   "liftoff-rumble": 0.9,
   "low-swell": 0.7,
   "wormhole-whoosh": 0.8,
@@ -540,6 +551,7 @@ export function playSfx(name: SfxName, opts: SfxOptions = {}): SfxHandle {
   const dur = Math.max(0.3, opts.durationSec ?? DEFAULT_DURATION[name]);
   const v = beginVoice(opts.gain ?? DEFAULT_GAIN[name]);
   switch (name) {
+    case "rocket-departure": rocketDeparture(v,dur);break;
     case "liftoff-rumble":
       liftoffRumble(v, dur);
       break;

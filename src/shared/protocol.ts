@@ -73,6 +73,7 @@ export interface ReportMsg {
   serverEpoch?:string;
   timelineEpoch?:number;
   type: "report";
+  presentedFilmTime?:number;
   state: PlaybackState;
   phaseTime: number;
   rate: number;
@@ -92,7 +93,7 @@ export type Command =
   | { action: "epilogue" } // intra manual in epilog
   | { action: "fireCue"; cueId: string } // declanseaza un cue acum (indiferent de `at`)
   | { action: "stopVoice" }
-  | { action: "setVolume"; voice?: number; sfx?: number }
+  | { action: "setVolume"; voice?: number; sfx?: number; music?: number }
   | { action: "setLang"; lang: Lang }
   | { action: "reloadShow" } // reincarca assets/show/show.json fara restart
   | { action: "testAvatar" } // avatarul spune o replica de test
@@ -130,7 +131,7 @@ export interface TabletEventMsg {
     | { kind: "ping" };
 }
 
-export type ClientMessage = HelloMsg | ReportMsg | CmdMsg | TabletEventMsg | PerfMsg | PhotoCapturedMsg | import('./mission').MissionEvent | {type:'packageReady';contentHash:string;ok:boolean} | {type:'experienceAudio';instance:string;status:'ended'|'error'};
+export type ClientMessage = {type:'wallPlayback';status:'stalled'|'recovered';detail:string;filmTime:number;stalledForMs:number;runId:string;serverEpoch:string;timelineEpoch:number} | {type:'launchReady';id:string;screens:string[]} | HelloMsg | ReportMsg | CmdMsg | TabletEventMsg | PerfMsg | PhotoCapturedMsg | import('./mission').MissionEvent | {type:'packageReady';contentHash:string;ok:boolean} | {type:'experienceAudio';instance:string;status:'ended'|'error'};
 
 // ---------------------------------------------------------------------------
 // server -> client
@@ -138,6 +139,8 @@ export type ClientMessage = HelloMsg | ReportMsg | CmdMsg | TabletEventMsg | Per
 
 /** Confirmare hello + snapshot complet. */
 export interface WelcomeMsg {
+  /** Exact localized package whose offline voices the renderer must preload. */
+  contentHash?:string;
   type: "welcome";
   protocolVersion?:number;
   serverTimeMs: number;
@@ -161,6 +164,7 @@ export interface ClockMsg {
 
 /** Comanda retransmisa tuturor ecranelor (serverul este autoritatea). */
 export interface ApplyCmdMsg {
+  launchId?:string;
   type: "applyCmd";
   cmd: Command;
   serverTimeMs: number;
@@ -260,6 +264,10 @@ export interface PerfSummaryMsg {
 }
 
 export type ServerMessage =
+    | {type:'preparationStatus';message:string|null}
+    | {type:'launchPrepare';id:string}
+    | {type:'launchCommit';id:string;startAtMs:number}
+    | {type:'launchCancel';id:string}
   | {type:'mission'; snapshot:import('./mission').MissionSnapshot}
   | {type:'missionAck';eventId:string;ok:boolean;status:string;reason?:string}
   | WelcomeMsg

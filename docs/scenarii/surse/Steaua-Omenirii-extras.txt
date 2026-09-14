@@ -1,0 +1,761 @@
+UCDC  •  HUB AI
+
+A PATRA LUME
+
+Steaua Omenirii  ·  O expediție pe nava EXODUS-7
+
+Scenariu unificat, versiune teatrală · Public: copii 5–10 ani · Universitatea Creștină „Dimitrie Cantemir”
+
+1. Log line
+
+Se spune că, demult, oamenii aveau o stea numai a lor — până când, într-o noapte, s-a risipit în bucăți prin trei lumi. Un echipaj de copii pornește pe nava EXODUS-7 s-o adune — bucată cu bucată, prin lumea Luminii, a Naturii și a Cristalului. Când întunericul le taie drumul, steaua aprinsă de mâinile lor deschide tunelul spre casă. Iar acasă, privind luminile orașelor aprinzându-se una câte una, copiii înțeleg că steaua lor nu s-a pierdut niciodată: ea nu stă pe cer. Ea stă în oameni.
+
+2. Mitologia și conceptul narativ
+
+Mitologia experienței, în trei propoziții: se spune că, demult, oamenii aveau o stea numai a lor, care le semăna. Într-o noapte s-a risipit în bucăți prin trei lumi — cea de aur, cea verde, cea de cristal — și nimeni n-a mai văzut-o de atunci. Echipajul o adună și descoperă la întoarcere că steaua nu s-a pierdut niciodată: s-a împărțit — trăiește în oameni, lumină cu lumină, și de aceea partea de noapte a Pământului sclipește.
+
+Fiecare lume dăruiește stelei exact ceea ce este ea: Siwarha dă bucățile de lumină (simțirea), Natura le așază împreună (legătura — „nimeni nu e singur”), Atelierul Mann o aprinde (meșteșugul). Steaua întregită este un portret al omenirii: singura ființă care le are pe toate trei — și încă un dar, cel mai rar, mirarea. Întrebarea lumii de cristal — „dacă nimic nu te mai miră, ce mai rămâne viu în tine?” — își primește răspunsul abia acasă.
+
+Tema rămâne privirea, nu spațiul. Copiii pleacă să caute inteligență dincolo de Pământ și se întorc văzându-și lumea pentru prima dată. Filozofia veche — omul este măsura tuturor lucrurilor — nu se rostește; se aprinde, literal, pe partea de noapte a planetei.
+
+Registrul textului este teatral: fiecare personaj are o voce proprie și replici cu ritm, imagine și subtext, scrise să fie rostite, nu citite. Instrucțiunile de joc rămân limpezi, dar demne — copiii sunt tratați ca un echipaj, nu ca un public de grădiniță. Aforismele sunt simple la cinci ani și adevărate la patruzeci.
+
+3. Structura și arcul emoțional
+
+Reperele folosesc montajul actual: 50 s primire, 10 s numărătoare, 678 s film, 75 s epilog, plus tutorialul și încheierea interactivă. Capsula VR este modul de extensie.
+
+SECVENȚĂ
+
+REPER
+
+ESENȚA DRAMATICĂ · TON
+
+Îmbarcarea și tutorialul
+
+înainte de film
+
+Tăcere calculată, culoar albastru, primele comenzi. Curiozitate.
+
+Primirea și legenda
+
+Primire 0–50 s
+
+Întrebarea veche și steaua risipită. Atenție crescută.
+
+Decolarea
+
+Film 0–60 s
+
+Pământul rămâne în urmă; „nimeni de-acasă n-a văzut cerul așa.” Entuziasm.
+
+Lumea Luminii — Siwarha
+
+Film 60–144 s
+
+Cei care vorbesc în lumină. Activitate: găsirea bucăților. Uimire. Sala: auriu cald.
+
+Lumea Naturii
+
+Film 144–246 s
+
+Planeta-organism; nimic nu luminează singur. Activitate: piesele își găsesc locul. Emoție. Sala: verde-umed, ploaie.
+
+Lumea Cristalului — Atelierul Mann
+
+Film 246–388 s
+
+Perfecțiune fără mirare; întuneric la fereastră. Activitate: circuitul aprinde steaua. Tensiune → triumf. Sala: albastru-oțel.
+
+Tunelul de stele
+
+Film 388–504 s
+
+Cometa copiilor deschide drumul. Răsplata punctului culminant.
+
+Saturn
+
+Film 504–610 s
+
+„Multe bucăți, o singură lumină.” Respiro.
+
+Revelația — a patra lume
+
+Film 610–678 s
+
+Luminile orașelor se aprind una câte una. Steaua nu stă pe cer — stă în oameni.
+
+Steaua adusă acasă
+
+Epilog 0–75 s
+
+Contribuțiile echipajului pe ecran. Mândrie liniștită.
+
+Ultima rază
+
+după epilog
+
+Fiecare copil își trimite darul — raza lui din stea. Interiorizare.
+
+Capsula VR — Re-entry
+
+extensie, ~2 min
+
+Coborârea printre lumini; „v-ați întors cu lumea voastră, văzută pentru prima dată.”
+
+4. Cum lucrezi în acest document
+
+Textele dintre paranteze drepte sunt indicații de interpretare și regie; nu se rostesc. Numele personajelor și numerele R identifică replicile; nici ele nu se citesc cu voce tare. Replicile marcate NOU sunt adăugate la unificare și au propuneri de plasare în anexă, în golurile montajului actual. Prin rescrierea integrală și redenumirea stelei, întregul pachet audio k510 se reînregistrează; numerele R și sloturile de timp rămân valabile. Editarea documentului nu schimbă automat filmul, vocile sau programul.
+
+DEMO TV omite tutorialul, primirea și Scena 11; începe la numărătoarea inversă și folosește variantele fără contribuții (C). Capsula VR (Scena 12) este modul opțional de extensie.
+
+5. Personajele și spațiul de joc
+
+COMANDANTUL — vocea gravă a expediției. Vorbește scurt, ca un om al mării ajuns între stele: declarativ, demn, cu un umor uscat. Personaj 3D pe televizorul central; în versiunea extinsă, robotul umanoid Unitree.
+
+AVATARUL AI — vocea de bord: precisă, luminoasă, cu o undă de uimire pe care n-o ascunde. Cea care ține minte. Siluetă de lumină desprinsă din ecranul central.
+
+NARATORUL — maestrul de ceremonii: cald, ceremonios fără scrobeală, complice cu publicul.
+
+LUMINA — vocea Siwarhei — incantatorie, ca un cor foarte îndepărtat; vorbește în cadențe, aproape în versete. O flacără care gândește.
+
+NATURA — vocea planetei-organism — înceată, veche, cu înțelepciune de proverb. Siluetă din ramuri și ape, cu ochi ca două frunze noi.
+
+TEHNOLOGICUL — vocea lumii de cristal — simetrică, șlefuită, fără urcușuri; în Atelierul Mann i se adaugă hazul unui meșter care-și știe prețul. Ochi ca două oglinzi.
+
+ECHIPAJUL — participanții. Acțiunile lor sunt libere; scenariul nu le impune replici rostite.
+
+GHIDUL — persoana din sală care conduce îmbarcarea și ieșirea. Text propus la finalul Scenei 11.
+
+[Cinci televizoare alcătuiesc panorama; Comandantul apare pe cel central. Cele cinci tablete au două locuri: A în stânga, B în dreapta. Participă între una și zece persoane; locurile neocupate nu sunt personaje absente. Valiza și steaua sunt elemente ale poveștii, nu recuzită obligatorie. Lumina sălii urmează lumile: albastru-adânc la bord, auriu pe Siwarha, verde-umed la Natura, albastru-oțel la Mann, alb cald la final.]
+
+6. Scenariul
+
+Prolog · Îmbarcarea și primele comenzi
+
+[Înainte de intrare: tăcere calculată, lumini aproape stinse, fum subtil la sol, o singură stea respirând pe ecrane. Ușa se deschide; culoarul albastru conduce copiii înăuntru. Ecran de așteptare EXODUS-7; participanții își aleg personajele și confirmă. Ghidul pornește tutorialul.]
+
+NARATORUL    R01
+
+[Întâmpinare cu un zâmbet în glas; „puțină lumină” — sămânța întregii povești.]
+
+Bine ați venit la bord! Nava nu cere parole. Nava cere altceva, mult mai rar: puțină lumină. Să vedem dacă aveți.
+
+NARATORUL    R02
+
+[Instrucțiune limpede; finalul reabilitează privitul.]
+
+Fiecare are jumătatea lui de ecran — jumătatea lui de cer. Atingeți lumina din fața voastră. Vedeți? V-a răspuns. Cine vrea poate doar să privească — stelele altceva nici nu fac.
+
+NARATORUL    R03
+
+[Complice; nava capătă caracter.]
+
+Nava a pierdut o piesă. Așa fac navele când abia așteaptă să plece. Găsiți pe ecran forma care se potrivește și apăsați. Navele se repară cu răbdare, nu cu grabă.
+
+NARATORUL    R04
+
+[Primul gest de echipaj; ultima frază — definiția lui.]
+
+Acum, toți odată: atingeți semnalul de pe jumătatea voastră. Și priviți în față — fiecare atingere aprinde o bucată din navă. Așa se naște un echipaj: din lumini care își răspund una alteia.
+
+NARATORUL    R05
+
+[Pregătire de plecare; misterul se deschide.]
+
+Comenzile ascultă. Trageți aer în piept. Undeva, departe, trei lumi ne așteaptă — și o întrebare mai veche decât toate corăbiile.
+
+NARATORUL    R06
+
+[Predare scurtă, cu respect.]
+
+Echipajul e gata, Comandante. De-acum, suntem gata de plecare.
+
+Scena 1 · Primirea la bord
+
+[Primirea durează 50 de secunde, înaintea filmului. Comandantul lasă tăcerea să se așeze, apoi întoarce privirea către grup. Aici se așază legenda: steaua risipită.]
+
+COMANDANTUL    R07
+
+[Voce gravă, fără grabă; întrebarea, cu greutatea vechimii ei.]
+
+Bun venit la bord, exploratori. Eu sunt Comandantul. Plecăm să aflăm ce se întreabă oamenii de când privesc cerul: suntem singuri?
+
+AVATARUL AI    R08
+
+[Legenda, rostită ca un adevăr păstrat; pauză înainte de „trei lumi”.]
+
+Se spune că, demult, oamenii aveau o stea numai a lor. Într-o noapte, s-a risipit în bucăți prin trei lumi. Nimeni n-a mai văzut-o de atunci.
+
+COMANDANTUL    R09
+
+[Hotărât, apoi liniștitor; „lumina de dimineață” cu blândețe.]
+
+Noi o aducem acasă. Și nu vă temeți: bucățile de stea nu ard, nu taie. Sunt moi, ca lumina de dimineață.
+
+AVATARUL AI    R10
+
+[Instrucțiune curată, înnobilată de imagine.]
+
+A lucrează în stânga tabletei, B în dreapta. Fiecare cu partea lui de cer.
+
+COMANDANTUL    R11
+
+[Cald, ferm; libertatea de a privi, ridicată la rang de cinste.]
+
+Cine vrea atinge, cine vrea privește. Eu rămân cu voi oricum. Așa încep lucrurile mari: cu toată lumea la bord.
+
+Scena 2 · Decolarea
+
+[Numărătoare inversă de zece secunde; la zero, un val sonor jos trece prin sală. Pământul se îndepărtează — întâi încet, apoi brusc. Stelele nu mai sunt puncte: sunt un oraș infinit. Film: 0–60 s.]
+
+COMANDANTUL    R12
+
+[Pornire; „țineți-vă bine de el” cu un zâmbet în colțul gurii.]
+
+Steaua noastră e undeva în față. Priviți cerul — și țineți-vă bine. Pornim!
+
+AVATARUL AI    R13
+
+[Siguranță blândă; împărțirea meseriilor, ca un legământ.]
+
+Pământul rămâne în urmă. Eu țin minte drumul înapoi — asta e meseria mea. A voastră e să țineți minte albastrul.
+
+COMANDANTUL    R13a    NOU
+
+[Aproape șoptit; momentul de tăcere al decolării.]
+
+Priviți Pământul. Acolo jos e toată lumea pe care o știți .
+
+COMANDANTUL    R14
+
+[Mirare jucăușă; ultima propoziție întoarce gluma în misiune.]
+
+Câte lumini! Dacă aș avea buzunare cât nava, tot n-ar încăpea toate. Dar noi nu căutăm toate stelele. Căutăm una singură.
+
+Scena 3 · Lumea Luminii — Siwarha
+
+[Nava iese dintr-un nor de praf stelar. O planetă fără contur ferm, ca un glob de aur lichid: razele ei nu iluminează — vorbesc. Sala devine treptat aurie. Activitate: recunoașterea formei, fereastra 96–120 s. Film: 60–144 s.]
+
+AVATARUL AI    R14a    NOU
+
+[Prezentarea civilizației; uimire reținută, profesională.]
+
+Prima lume. Locuitorii ei n-au trup ca al nostru — sunt făcuți din lumină și vorbesc prin ea. Aici cuvintele nu se traduc: se simt.
+
+LUMINA    R14b    NOU
+
+[Incantatoriu, ca un cor îndepărtat; cadență de verset.]
+
+La noi, cine iubește — strălucește. Cine înțelege — se face far pentru alții. Vă vedem de departe, călători: pâlpâiți frumos.
+
+LUMINA    R15
+
+[Gazdă luminoasă; ultima propoziție, aproape o lege.]
+
+Bine ați venit pe Siwarha. Aici au căzut, demult, bucățile stelei voastre. Le-am păstrat printre ale noastre — lumina nu se aruncă.
+
+AVATARUL AI    R16
+
+[Instrucțiune clară; finalul, cu răbdare de mileniu.]
+
+Privește forma mare de sus. Atinge bucata care îi seamănă. Nu te grăbi: lumina așteaptă de o mie de ani — mai poate un minut.
+
+COMANDANTUL — R17 [Calm de punte; constatare, nu explicație.] Bucățile găsite nu se pun nicăieri. Vin singure lângă navă — și zboară cu noi. Priviți-le.
+
+Varianta A — LUMINA — R18 Toate bucățile zboară acum lângă voi — și s-au și găsit între ele. Mii de ani despărțite, și tot se țin minte.
+
+Varianta B — LUMINA — R19 Bucățile găsite de voi zboară lângă navă. Celelalte rămân să lumineze Siwarha. Nicio lumină nu e pierdută — doar împrumutată.
+
+Varianta C — LUMINA — R20 N-ați luat nimic? Atunci primiți un cerc de lumină de la noi, să zboare cu voi. Pe Siwarha, oaspetele nu pleacă pe întuneric.
+
+COMANDANTUL — R21 [Mândrie reținută, de ofițer.] Mulțumim, Siwarha. Nava n-a mai avut niciodată escortă de lumini. Urmează atelierul unde bucățile își găsesc locul.
+
+Efectele în lanț, toate în plus față de valiză, nu cârpeli:
+
+R27 (Natura, C): „Trimit o frunză din grădina mea, să zboare cu voi. Frunza ține minte soarele."
+
+R35 (Mann): cometa capătă sens fizic — steaua aprinsă plus escorta de lumini sunt coada; nu mai e botez, e descriere.
+
+R41 (revelația): „De aici am plecat pe întuneric — și uite cu ce alai ne întoarcem."
+
+Ghid: „Raza voastră nu rămâne aici — pleacă în voi."
+
+Scena 4 · Lumea Naturii
+
+[O lume care pare Pământul — dar aici nu sunt orașe, nu sunt drumuri: pădurile se mișcă. Sala se răcorește; verde-umed, respirația unei planete, ploaie fină pe ecranele laterale și în sunetul sălii. Activitate: așezarea pieselor în contur, fereastra 204–224 s. Film: 144–246 s.]
+
+AVATARUL AI    R21a    NOU
+
+[Ton coborât, aproape de șoaptă; anatomia lumii, ca o poezie de știință.]
+
+A doua lume seamănă cu a noastră — dar nu e. Aici planeta gândește. Rădăcinile sunt nervii ei, râurile — sângele. Când bate vântul, pădurea vorbește cu ea însăși.
+
+NATURA    R21b    NOU
+
+[Grav, blând, foarte vechi; fiecare frază, un inel de copac.]
+
+La noi, nimeni nu e singur. Nu se poate. Când suferă un copac, știe toată pădurea. Când râde un râu, râde și marea.
+
+NATURA    R22
+
+[Gazdă de demult; finalul, cu haz de bunic.]
+
+Poftiți în atelier. Aici fiecare piesă își găsește locul, ca sămânța în pământ. Și cui îi lipsește vreuna, îi dau din grădina mea. Grădinile de-aia sunt.
+
+AVATARUL AI    R23
+
+[Doi pași limpezi; finalul dă gestului un rost.]
+
+Așază piesa în conturul ei. Poți s-o tragi — sau o atingi, apoi îi atingi locul. Fiecare formă știe unde îi e casa. Ajut-o doar să ajungă.
+
+NATURA    R24
+
+[Explicație simplă; ultima propoziție — legea acestei lumi.]
+
+Fiecare fereastră are două locuri. Piesele stau întregi, una lângă alta. Ca voi. Nimic nu luminează singur.
+
+[Următoarele trei replici sunt alternative. Se rostește una singură, potrivit contribuțiilor participanților.]
+
+Varianta A — Toți participanții activi au încheiat activitatea
+
+NATURA    R25
+
+[Mândrie caldă; „prinde chip” cu uimire mică.]
+
+Ferestrele sunt gata. Fiecare piesă la locul ei — și locul, bucuros de piesa lui. Steaua voastră prinde chip.
+
+Varianta B — Există contribuții, dar activitatea nu este completă pentru toți
+
+NATURA    R26
+
+[Împăcare de grădinar; golul, reabilitat.]
+
+Ce ați așezat voi rămâne așezat. Printre piese rămân și locuri goale — pe-acolo trece lumina. Și golul e bun la ceva.
+
+Varianta C — Nu există contribuții la această activitate
+
+NATURA    R27
+
+[Fără reproș; darul, cu o taină în el.]
+
+Piesele au rămas pe masă — se întâmplă și în cele mai bune grădini. Puneți în valiză o frunză de la mine. Frunza ține minte soarele: o să-i prindă bine stelei.
+
+COMANDANTUL    R28
+
+[Reflexiv; aforismul final deschide drumul — și tensiunea.]
+
+Steaua are trup și ferestre. Îi lipsește lumina dinăuntru. Iar lumina nu se găsește și nu se așază — lumina se aprinde. Mergem mai departe.
+
+Scena 5 · Lumea Cristalului — apropierea
+
+[O planetă fără nimic natural: geometrie pură, orașe suspendate, turnuri cât lunile, lumină trecând prin ele ca printr-un diamant. Sala devine o catedrală rece, albastru-oțel — frumoasă într-un fel aproape insuportabil. Film: 246–295 s.]
+
+AVATARUL AI    R28a    NOU
+
+[Admirație măsurată, fără căldură; ultima frază cade ca o piatră.]
+
+A treia lume e din cristal. Locuitorii ei au învins boala, au învins depărtarea. Știu tot. Socotesc tot. De un milion de ani, nu i-a mai mirat nimic.
+
+TEHNOLOGICUL    R28b    NOU
+
+[Clar, șlefuit, aproape muzical; finalul, cu o eleganță de negustor de lucruri rare.]
+
+Bine ați venit. Nimic nu ne mai surprinde, nimic nu ne mai doare. De aceea ne plac musafirii: voi încă vă mirați. La noi, acest lucru se intampla rar.
+
+Scena 6 · Atelierul Mann și întunericul
+
+[Activitate: participantul rotește două legături, închide circuitul și aprinde becul. Fereastra jocului: 323,5–355,5 s. Film: 246–388 s. Gaura neagră apare în acest segment — textul o numește „întunericul”; nu se descrie științific, nu sperie: e o prezență la fereastră. Punct culminant: gestul copiilor aprinde steaua exact când întunericul e mai aproape.]
+
+TEHNOLOGICUL    R29
+
+[Anunț de meșter cu firmă veche; pauza hazlie înainte de „umbre”, ton serios pe final.]
+
+Atelierul Mann, la dispoziția dumneavoastră! Reparăm stele, umbrele... câteodată și umbre. Ați picat la timp: afară se lasă un întuneric cum n-am mai calculat.
+
+AVATARUL AI    R30
+
+[Instrucțiune limpede; ultima frază leagă gestul de poveste.]
+
+Pe tabletă ai o baterie, un bec și două legături. Rotește legăturile până se întâlnesc firele. Când drumul e întreg, becul se aprinde.
+
+TEHNOLOGICUL    R31
+
+[Meșter care încurajează; ritm de lucru, cu un ochi la fereastră.]
+
+Urmărește firul: de la baterie, prin bec, și înapoi. S-a rupt drumul? Mai rotește o dată. Firul are răbdare. Întunericul — ceva mai puțină. La lucru!
+
+[Următoarele trei replici sunt alternative. Se rostește una singură, potrivit contribuțiilor participanților.]
+
+Varianta A — Toți participanții activi au încheiat activitatea
+
+TEHNOLOGICUL    R32
+
+[Triumf; sfidarea, aruncată spre fereastră; ultima frază — mărturisirea meșterului.]
+
+Circuite închise — steaua s-a aprins! Poftim, întuneric, uită-te bine: lumina asta n-am făcut-o noi, care știm tot. Au făcut-o ei, care se miră.
+
+Varianta B — Există contribuții, dar activitatea nu este completă pentru toți
+
+TEHNOLOGICUL    R33
+
+[Practic, cald; promisiunea, cu onoare de breaslă.]
+
+Ce ați legat voi rămâne legat. Restul îl lipesc eu — de-aia sunt meșter. Steaua luminează și vine cu voi.
+
+Varianta C — Nu există contribuții la această activitate
+
+TEHNOLOGICUL    R34
+
+[Fără dramă; orgoliul de firmă, cu haz.]
+
+Firele au rămas pe masă? Le leg eu, cu o scânteie din atelier. Dar să se știe la voi acasă: scânteia e de la noi!
+
+TEHNOLOGICUL    R34a    NOU
+
+[Întrebarea lumii de cristal; calm perfect, fără apăsare. Rămâne suspendată, ca un ac de cristal în aer.]
+
+O întrebare de drum, călători. Dacă nimic nu te mai miră și nimic nu te mai doare — ce mai rămâne viu în tine? Nu-mi răspundeți mie. Duceți-o acasă.
+
+COMANDANTUL    R35
+
+[După o pauză lungă; satisfacție liniștită, „ea vede prima” cu încredere deplină.]
+
+O stea aprinsă, cu coadă de drum. De-acum nu mai e stea — e cometă. Și e a noastră. O țin lângă mine: pe întuneric, ea vede prima.
+
+Scena 7 · Tunelul de stele
+
+[Se privește panorama; nu există activitate pe tablete. Film: 388–504 s. Tunelul e element de ficțiune; nu se prezintă ca mijloc de călătorie demonstrat științific. Aici se plătește punctul culminant.]
+
+COMANDANTUL    R36
+
+[Autoritate blândă, apoi recunoștință.]
+
+Intrăm în tunelul de stele. Tabletele se odihnesc — și-au făcut treaba. De-acum ne duce cometa: ați aprins-o exact la timp.
+
+AVATARUL AI    R37
+
+[Voce joasă, de tunel; ofertă, nu comandă.]
+
+Stelele curg pe lângă noi ca un râu. Puteți urmări cometa noastră sau cerul întreg. De aici, toate drumurile duc acasă.
+
+Scena 8 · Saturn și drumul spre casă
+
+[Saturn vizibil în film. Observație, apoi revenire spre Pământ. Film: 504–610 s.]
+
+COMANDANTUL    R38
+
+[Cald, uimit fără strigăte; „cu ochii închiși” cu mândrie de navigator.]
+
+Inelele! E Saturn. Suntem din nou în Sistemul Solar, aproape de casă. De aici, drumul îl știu și cu ochii închiși.
+
+AVATARUL AI    R39
+
+[Observația care închide tema; ultima frază, rostită rar, ca o descoperire.]
+
+De departe, inelele par întregi. De aproape — nenumărate bucăți de gheață și piatră. Ca steaua noastră. Ca orice lucru care ține: multe bucăți, o singură lumină.
+
+COMANDANTUL    R40
+
+[Rămas-bun scurt; „la fereastră” cu drag.]
+
+Rămâi cu bine, Saturn. Urmează o lume cu oceane, cu nori — și cu oameni care ne așteaptă la fereastră.
+
+Scena 9 · Revelația — a patra lume
+
+[Pe ecranul central, un punct: mic, albastru, viu. Pământul crește; pe partea de noapte, luminile orașelor se aprind una câte una. Sala își reia lumina albastră-adâncă de la început — dar acum e lumina casei. Călătoria filmată se încheie la 678,05 s. Aceasta este scena pentru care există tot restul.]
+
+AVATARUL AI    R40a    NOU
+
+[Bilanțul celor trei lumi, rostit rar; „a patra”, cu o pauză înainte, ca o ușă care se deschide.]
+
+Am văzut trei lumi. Una de lumină. Una vie, ca un singur suflet. Una de cristal. Priviți-o acum pe a patra.
+
+COMANDANTUL    R41
+
+[Uimire adevărată pe „Pământul!”; apoi glas domol.]
+
+Pământul! Uite ce albastru e. De aici am plecat cu o valiză goală — și uite cu ce ne întoarcem.
+
+AVATARUL AI    R42
+
+[Aproape șoptit; enumerarea luminilor, fără grabă, ca o ninsoare.]
+
+Priviți partea de noapte. Se aprind luminile orașelor — una câte una. Milioane de lumini mici.
+
+AVATARUL AI    R42a    NOU
+
+[Revelația; fiecare cuvânt așezat. Răspunsul la întrebarea lumii de cristal.]
+
+Steaua oamenilor nu s-a pierdut niciodată. Doar că nu stă pe cer. Stă în oameni — lumină cu lumină.
+
+COMANDANTUL    R43
+
+[Emoție reținută; gestul de la fereastră, mic și mare deodată.]
+
+Iar bucata noastră s-a întors acasă. O așez la fereastră: poate chiar acum cineva de jos o vede. Și se miră.
+
+LUMINA    R44
+
+[Ca o binecuvântare de rămas-bun; ultimele patru cuvinte, foarte încet.]
+
+Când o să priviți cerul, călători, nu vă căutați steaua sus. Căutați-o unii în alții. Acolo am pus-o.
+
+Scena 10 · Steaua adusă acasă
+
+[Epilogul începe după film și durează 75 de secunde. Pe ecran, contribuțiile echipajului. La variante se alege o singură replică, potrivit întregii călătorii.]
+
+AVATARUL AI    R45
+
+[Închidere lină; ultima propoziție dă fiecărei lumini un stăpân.]
+
+Călătoria s-a încheiat. Pe ecran rămân steaua și drumul prin cele trei lumi. Fiecare lumină de acolo are o mână care a atins-o.
+
+[Următoarele trei replici sunt alternative. Se alege una singură, luând în calcul împreună toate cele trei activități ale călătoriei.]
+
+Varianta A — Toți participanții activi au încheiat activitățile
+
+COMANDANTUL    R46
+
+[Mândria echipajului; „partea voastră din ea” apăsat, cu onoare.]
+
+Aici sunt bucățile găsite, ferestrele așezate, firele legate — toate de voi. Aceasta e Steaua Omenirii. Partea voastră din ea.
+
+Varianta B — Există contribuții, dar nu complete pentru toți
+
+COMANDANTUL    R47
+
+[Accent pe „atingerile voastre”; final împăcat.]
+
+Aici se văd atingerile voastre — și ce au dăruit lumile pe deasupra. O stea făcută împreună. Ca toate stelele care țin.
+
+Varianta C — Nu există contribuții
+
+COMANDANTUL    R48
+
+[Senin; ultimul gând, spus rar, cu tandrețe.]
+
+Aceasta e steaua primită pe drum: un cerc, o frunză, o scânteie și o coadă de cometă. O păstrăm ca amintire. Amintirile, la urma urmei, tot lumină sunt.
+
+AVATARUL AI    R49
+
+[Respiro blând; anunțul darului, ca un cadou păstrat la urmă.]
+
+Tabletele se odihnesc. Puteți privi steaua sau puteți vorbi în șoaptă cu vecinul. Mai avem de ales un singur dar — cel mai important.
+
+COMANDANTUL    R50
+
+[Mulțumire sinceră; adevărul călătoriilor, apoi „Bun venit acasă!” deschis, luminos.]
+
+Închid valiza. Steaua rămâne la vedere — locul ei e printre oameni. Vă întoarceți acasă, dar nu cum ați plecat. Bun venit acasă, echipaj!
+
+COMANDANTUL    R51
+
+[Ordin practic, prietenos; ritm rar, ca la final de zbor.]
+
+Rămâneți la posturi. Ghidul vă spune când și pe unde. Steaua rămâne de veghe.
+
+Scena 11 · Ultima rază
+
+[Alegerea finală devine disponibilă spre sfârșitul epilogului; replica naratorului se declanșează după încheierea lui. DEMO TV omite această scenă.]
+
+NARATORUL    R52
+
+[Invitație la ultima contribuție; nu se grăbește publicul. Ultima frază — semnătura întregii experiențe.]
+
+Călătoria rămâne în ce alegeți acum. Pe ecran vă așteaptă trei daruri: o lumină, grija pentru ceilalți, curajul de explorator. Alegeți-l pe al vostru și trimiteți-l — fiecare dar aprinde o rază în Steaua Omenirii. Raza voastră. Ați plecat să găsiți alte lumi. V-ați întors cu a voastră — văzută pentru prima dată.
+
+[Pe tablete: „Ce dar duci acasă?” — „O lumină”, „Grijă pentru ceilalți”, „Curaj de explorator”. Participantul alege, apoi apasă „Trimite raza mea”. Poate și doar să privească. Texte afișate, nu replici înregistrate. Contribuțiile ajung pe ecranul central, ca raze noi în stea; ghidul încheie și conduce ieșirea.]
+
+GHIDUL — text propus (rostit liber, nu înregistrat):
+
+„Steaua rămâne aici, de veghe, până la echipajul următor. Raza voastră pleacă însă cu voi — ea nu încape în nicio valiză. Ridicați-vă ușor și veniți după mine: vă arăt drumul înapoi, printre oameni.”
+
+Scena 12 · Capsula VR — Re-entry (modul de extensie)
+
+[Modul opțional, în afara fluxului înregistrat; ~2 minute, în grupuri mici. Căști VR; prin vizieră, negrul spațiului, apoi curbura Pământului cu luminile orașelor pe partea de noapte. Sala coordonează vibrațiile și sunetul. Pachet audio separat, netemporizat pe film.]
+
+AVATARUL AI    RV1    NOU
+
+[În cască, apropiat, ca o voce de lângă tâmplă.]
+
+Coborâm. Respirați. Simțiți.
+
+AVATARUL AI    RV2    NOU
+
+[După furtuna de plasmă; câmpuri, mare, oraș, de aproape. Răspunsul, în sfârșit rostit.]
+
+Aici sunteți voi. Aici e casa — singura lume unde cineva privește cerul și întreabă: sunt singur? Priviți în jos: câte lumini! Nu sunteți.
+
+AVATARUL AI    RV3    NOU
+
+[Șoptit, aproape un cânt; un val moale de lumină albă peste vizieră.]
+
+Ați plecat ca să găsiți alte lumi. V-ați întors cu a voastră — văzută pentru prima dată.
+
+[Tăcere. Căștile se ridică. Lumina sălii revine la un alb cald, de început de zi. Comandantul stă din nou în centru, imobil, ca la început. Dar acum copiii știu cine este. FADE TO WHITE.]
+
+7. Integrarea AI în experiență
+
+AI-ul nu este o temă a spectacolului; este aparatul care îl construiește. Vizibil ca personaj: Avatarul navei, cele trei avatare ale civilizațiilor și vocile lor (avatar generation, lip-sync, TTS neural în română cu nuanțe emoționale distincte) — copiii știu că vorbesc cu un AI, iar asta întărește iluzia, pentru că iluzia e ea însăși parte din temă. Invizibil ca regie: un orchestrator dirijează în timp real cele cinci ecrane, lumina, sunetul, tabletele și — în versiunea extinsă — roboții Unitree și capsula VR. Conținutul vizual al lumilor este generat prin modele de imagine și video, compus ca un singur tablou cinematic.
+
+AI ca memorie: fiecare rulare poate fi înregistrată și analizată — timing, ritm, reacții — alimentând un tuning continuu. AI ca personalizare: pentru grupuri diferite, Avatarul navei poate adapta tonul și lungimea intervențiilor fără a modifica structura narativă.
+
+8. Notă de regie · Impact
+
+Tot ce este construit aici servește un singur obiectiv: să ofere unui copil, timp de câteva minute, un lucru pe care școala nu i-l poate da singură. Nu o lecție. O amintire.
+
+Amintirile care rămân ating două lucruri deodată: o idee mare și o emoție personală. Ideea mare: steaua omenirii nu stă pe cer — stă în oameni, iar luminile orașelor sunt bucățile ei. Emoția personală: una dintre razele acelei stele e a ta, ai trimis-o tu, cu mâna ta. După săptămâni, când copilul va privi noaptea orașul de la fereastră, ceva i se va aprinde în minte: fiecare lumină de acolo e o bucată de stea. Și una e a lui.
+
+Aceasta este măsura reușitei: nu uimirea de la sfârșit, ci gândul care se întoarce, nechemat, luni mai târziu.
+
+9. Observații de producție
+
+Redenumirea felinarului în Steaua Omenirii nu costă nimic în plus: rescrierea teatrală schimbă oricum textul tuturor replicilor, deci întregul pachet audio k510 se reînregistrează. Numerele R și sloturile de timp rămân valabile. „Mânerul de drum” devine „coada de drum”: steaua terminată devine cometă — obiectul care călătorește.
+
+Scena 9 depinde de un cadru de film: partea de noapte a Pământului cu luminile orașelor aprinzându-se una câte una (prezent ca intenție în documentul de viziune). Dacă montajul actual nu îl are, se adaugă în intervalul 620–660 s; fără el, R42 și R42a își pierd obiectul. Aceasta e singura dependență nouă de film.
+
+Replicile marcate NOU (R13a, R14a, R14b, R21a, R21b, R28a, R28b, R34a, R40a, R42a, RV1–RV3) sunt plasate în goluri ale montajului existent. Interval strâns: R34a intră între 358,5 și 372,5 s; dacă nu încape, R35 se decalează cu câteva secunde sau R34a se scurtează la întrebarea propriu-zisă. Perechea R34a (întrebarea) + R42a (răspunsul) se taie doar împreună, niciodată una singură.
+
+Variantele A/B/C se raportează la participanții activi și funcționează la orice mărime de grup (fără numere fixe). Variantele C au funcție narativă: cerc + frunză + scânteie construiesc aceeași stea pe altă cale — nimeni nu iese din poveste. Gaura neagră rămâne „întunericul”: prezență la fereastră, niciodată descrisă științific, niciodată înspăimântătoare. Găsirea, potrivirea și circuitul rămân activitățile reale ale aplicației, neschimbate. Textul de pe tablete se actualizează: „Trimite raza mea” în loc de „Trimite simbolul meu”.
+
+Robotul Comandant (Unitree), roboții mici și capsula VR aparțin versiunii extinse; versiunea de bază rulează integral pe ecrane, tablete și voci. Programul actual: 50 s primire, 10 s numărătoare, 678,05 s film, 75 s epilog, plus tutorialul și încheierea interactivă.
+
+Anexă · Repere pentru reintegrarea textului
+
+[Nu se citește la spectacol. Numerele R leagă textul editabil de replica înregistrată. Secundele filmului sunt măsurate de la primul cadru; primirea și epilogul au fiecare propriul început. Reperele replicilor existente sunt neschimbate; replicile NOU au secunde propuse, marcate cu ~. Întregul pachet k510 se reînregistrează pe textul din acest document.]
+
+R01 · narator / intro · La comandă sau la progresul tutorialului
+
+R02 · narator / touch · La comandă sau la progresul tutorialului
+
+R03 · narator / age-5-10-practice · La comandă sau la progresul tutorialului
+
+R04 · narator / cooperate · La comandă sau la progresul tutorialului
+
+R05 · narator / ready · La comandă sau la progresul tutorialului
+
+R06 · narator / handoff · La comandă sau la progresul tutorialului
+
+R07 · k510-001 · Primire · 1 s
+
+R08 · k510-002 · Primire · 11 s
+
+R09 · k510-003 · Primire · 20 s
+
+R10 · k510-004 · Primire · 29 s
+
+R11 · k510-005 · Primire · 39 s
+
+R12 · k510-006 · Film · −9 s
+
+R13 · k510-007 · Film · 5 s
+
+R13a · NOU · Film · ~16 s (propus)
+
+R14 · k510-008 · Film · 28 s
+
+R14a · NOU · Film · ~40 s (propus)
+
+R14b · NOU · Film · ~54 s (propus)
+
+R15 · k510-009 · Film · 76 s
+
+R16 · k510-010 · Film · 87 s
+
+R17 · k510-011 · Film · 110 s
+
+R18 · k510-012-C · Film · 122 s
+
+R19 · k510-012-P · Film · 122 s
+
+R20 · k510-012-Z · Film · 122 s
+
+R21 · k510-013 · Film · 133 s
+
+R21a · NOU · Film · ~148 s (propus)
+
+R21b · NOU · Film · ~164 s (propus)
+
+R22 · k510-014 · Film · 183 s
+
+R23 · k510-015 · Film · 194 s
+
+R24 · k510-016 · Film · 216 s
+
+R25 · k510-017-C · Film · 226 s
+
+R26 · k510-017-P · Film · 226 s
+
+R27 · k510-017-Z · Film · 226 s
+
+R28 · k510-018 · Film · 236 s
+
+R28a · NOU · Film · ~254 s (propus)
+
+R28b · NOU · Film · ~270 s (propus)
+
+R29 · k510-019 · Film · 295 s
+
+R30 · k510-020 · Film · 309,5 s
+
+R31 · k510-021 · Film · 337,5 s
+
+R32 · k510-022-C · Film · 358,5 s
+
+R33 · k510-022-P · Film · 358,5 s
+
+R34 · k510-022-Z · Film · 358,5 s
+
+R34a · NOU · Film · ~364 s (propus; interval strâns — vezi Observații)
+
+R35 · k510-023 · Film · 372,5 s
+
+R36 · k510-024 · Film · 398 s
+
+R37 · k510-025 · Film · 453,5 s
+
+R38 · v4-saturn-01 · Film · 510 s
+
+R39 · v4-saturn-02 · Film · 527 s
+
+R40 · v4-saturn-03 · Film · 557 s
+
+R40a · NOU · Film · ~580 s (propus)
+
+R41 · k510-026 · Film · 613 s
+
+R42 · k510-027 · Film · 628,5 s
+
+R42a · NOU · Film · ~637 s (propus)
+
+R43 · k510-028 · Film · 645,5 s
+
+R44 · k510-029 · Film · 663 s
+
+R45 · k510-030 · Epilog · 5 s
+
+R46 · k510-031-C · Epilog · 19 s
+
+R47 · k510-031-P · Epilog · 19 s
+
+R48 · k510-031-Z · Epilog · 19 s
+
+R49 · k510-032 · Epilog · 34 s
+
+R50 · k510-033 · Epilog · 48 s
+
+R51 · k510-034 · Epilog · 60 s
+
+R52 · narator / finale · La comandă sau la progresul tutorialului
+
+R53 · narator / hint · La comandă sau la progresul tutorialului (moment de redare de stabilit)
+
+RV1–RV3 · NOU · Capsula VR · pachet separat, netemporizat pe film
+
+NARATORUL    R53
+
+[Replică suplimentară de ajutor; sprijin opțional, fără presiune. Recomandare: la inactivitate prelungită în oricare activitate.]
+
+Căutați locul care luminează pe jumătatea voastră de ecran. Fiecare în ritmul lui — stelele nu se grăbesc. Iar dacă e nevoie, operatorul e acolo.
+
+Surse: A_Patra_Lume_Scenariu.docx (viziune cinematică); SCENARIU-TEATRU-COPII-DE-EDITAT.rtf (versiune de lucru); assets/scenarios/age-5-10/dialogue.ro.draft.json; assets/experience/voice/ro/manifest.json; docs/scenarii/05-10-BUCATILE-DE-ACASA.md.

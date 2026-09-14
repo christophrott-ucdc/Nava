@@ -1,3 +1,6 @@
+import {createWallFlightStations} from './ui/wall-flight-stations';
+import {createDiplomaQr} from '../web/shared/diploma-qr';
+import {createFlightNavigation} from './ui/flight-navigation';
 /**
  * Renderer boot (Agent B). Loaded via file://dist/renderer/index.html?screen=<id>.
  *   1. window.nava.getBoot()  -> config, this screen, wsUrl, videoUrl, avatarUrl, voiceBaseUrl, showUrl
@@ -14,6 +17,7 @@ import { createVoiceEngine, setTtsAuthToken } from "./voice/index";
 import {createMissionOverlay} from "./ui/mission";
 import {createExperienceOverlay} from "./ui/experience";
 import {createWaitingScreen} from "./ui/waiting";
+import {createStarWorlds} from "./ui/star-worlds";
 import type {RateAwareVoiceEngine} from "./voice/index";
 import { createAmbient } from "./voice/ambient";
 import type {MusicManifest} from '../shared/music';
@@ -176,6 +180,7 @@ async function main(): Promise<void> {
   const subtitles = createSubtitles($("subtitles"), { enabled: screen.showSubtitles });
   const countdown = createCountdown($("countdown"), { enabled: !wallMode || screen.showAvatar || screen.showSubtitles });
   const launchControls = $("launch-controls");
+  const preparationNotice=document.createElement('p');preparationNotice.className='preparation-notice';preparationNotice.hidden=true;preparationNotice.setAttribute('role','status');$('stage').append(preparationNotice);
   const demoControls=$("demo-controls"),demoButton=$("demo-tv") as HTMLButtonElement,demoStatus=$("demo-status");
   const updateDemo=(state:string,suspended=false)=>{demoControls.hidden=!isClockSource||(!suspended&&state!=='idle'&&state!=='ended');};
   let crewWelcomeActive=false;
@@ -215,7 +220,7 @@ async function main(): Promise<void> {
     enabled: ambientCfg.enabled,
     volume: ambientCfg.volume,
     duck: ambientCfg.duck,
-    sfxVolume: config.audio.sfxVolume,
+    musicVolume: config.audio.musicVolume ?? config.audio.sfxVolume,
     fileBaseUrl:new URL('/assets/music/',boot.serverHttpUrl??boot.wsUrl.replace(/^ws/,'http')).href,
     log,
   });
@@ -318,10 +323,13 @@ async function main(): Promise<void> {
   });
   player.attach(boot.panelVideoUrls?.[screen.id]??boot.videoUrl);
   const panelPlayback=boot.panelVideoUrls ? createPanelVideos(
-    spanMode?boot.panelVideoUrls:{[screen.id]:boot.panelVideoUrls[screen.id]},screen.id,video,
-    ()=>player.panelTarget(),config.video.panelSync,id=>log('error',`Panoul ${id}: decodare/redare indisponibilă`)) : null;
+    boot.panelVideoUrls,screen.id,video,
+    ()=>player.panelTarget(),config.video.panelSync,id=>log('error',`Panoul ${id}: decodare/redare indisponibilă`),event=>{
+      log(event.status==='stalled'?'error':'info',event.detail,event);
+      sync.reportWallHealth(event);
+    }) : null;
   window.addEventListener('pagehide',()=>panelPlayback?.dispose(),{once:true});
-  if(panelPlayback)player.setPanelReadiness(panelPlayback.ready);
+  if(panelPlayback){player.setPanelReadiness(panelPlayback.ready);player.setPanelRecovery(panelPlayback.recovering);}
   if(screen.playAudio)void fetch(new URL('/api/music',boot.serverHttpUrl??boot.wsUrl.replace(/^ws/,'http'))).then(async r=>{
     if(!r.ok)throw Error(`HTTP${r.status}`);player.setMusicManifest(await r.json() as MusicManifest);
   }).catch(e=>log('warn',`Music pack unavailable: ${String(e)}`));
@@ -329,6 +337,23 @@ async function main(): Promise<void> {
   updateDemo(player.getPlaybackState());
 
   const missionOverlay=createMissionOverlay($("stage"));
+  const diplomaQr=createDiplomaQr($("stage"),serverHttpUrl!);
+  diplomaQr.element.classList.add("diploma-tv");
+  let lastPresentedFilmTime=0;
+  const presentedFilmTime=()=>{
+    if(!['playing','paused'].includes(player.getPlaybackState())||player.phaseTime()<0){lastPresentedFilmTime=0;return player.phaseTime();}
+    const decoded=panelPlayback?.frames.time();
+    if(decoded!==null&&decoded!==undefined)lastPresentedFilmTime=decoded;
+    else if((!panelPlayback||!spanMode&&!wallMode)&&video.readyState>=2&&!video.seeking)lastPresentedFilmTime=video.currentTime;
+    return lastPresentedFilmTime;
+  };
+  const flightOrder=config.videoWall?.panels?.length ? [...config.videoWall.panels].sort((a,b)=>a.x-b.x).map(p=>p.screenId) : [...config.screens].sort((a,b)=>a.displayIndex-b.displayIndex).map(s=>s.id);
+  const wallFlight=createWallFlightStations($("stage"),wallViewports,config.screens,flightOrder,presentedFilmTime);
+  window.addEventListener('pagehide',()=>wallFlight.dispose(),{once:true});
+  const flightNavigation=createFlightNavigation($("stage"),screen.showAvatar,presentedFilmTime);
+  window.addEventListener("pagehide",()=>flightNavigation.dispose(),{once:true});
+  const starWorlds=createStarWorlds($("stage"),()=>({state:player.getPlaybackState(),time:player.phaseTime()}),screen.showAvatar);
+  window.addEventListener('pagehide',()=>starWorlds.dispose(),{once:true});
   const experienceOverlay=createExperienceOverlay($("stage"),{audio:screen.playAudio,visual:screen.showAvatar,baseUrl:boot.serverHttpUrl??boot.wsUrl.replace(/^ws/, 'http'),volume:config.audio.voiceVolume,outputDeviceId:config.audio.outputDeviceId,clockOffset:()=>syncStatus.offsetMs,onNarration:(instance,status)=>sync.sendRaw({type:'experienceAudio',instance,status}),onAudioActive:active=>ambient.setDucked(active,'narrator')});
   let missionRun="";let missionSuspended=false;
   // ---- R4 / B-07 — span mode: one <video>, one canvas per viewport, overlays in the focus viewport
@@ -344,7 +369,7 @@ async function main(): Promise<void> {
         screens: config.screens,
         fit: config.video.fit,
         centerScreenId: screen.id,
-        overlays: [waitingScreen.element,missionOverlay.element,experienceOverlay.element,$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl, $("osd"), $("rehearse"), $("identify"), $("spinner"), $("error-banner"), launchControls, demoControls, veil, ...Array.from(document.querySelectorAll<HTMLElement>("#photo"))],
+        overlays: [preparationNotice,diplomaQr.element,flightNavigation.element,waitingScreen.element,missionOverlay.element,starWorlds.element,experienceOverlay.element,$("vignette"), $("white-fade"), $("entities"), $("countdown"), $("subtitles"), avatarEl, $("osd"), $("rehearse"), $("identify"), $("spinner"), $("error-banner"), launchControls, demoControls, veil, ...Array.from(document.querySelectorAll<HTMLElement>("#photo"))],
         wall: config.videoWall,
         getTime: () => player.phaseTime(),
         log,
@@ -359,6 +384,26 @@ async function main(): Promise<void> {
   // ---- Sync (WS)
   let syncStatus: SyncStatus = { connected: false, reconnecting: true, driftSec: null, offsetMs: 0, attempts: 0 };
   const sync: SyncClient = new SyncClient({
+    onPreparationStatus:message=>{preparationNotice.textContent=message??'';preparationNotice.hidden=!message||!screen.showAvatar;},
+    prepareLaunch:async()=>{
+      const videos=panelPlayback?.videos??new Map([[screen.id,video]]);
+      for(const v of videos.values()){v.pause();if(Math.abs(v.currentTime)>.015)v.currentTime=0;}
+      const deadline=performance.now()+14000;
+      while(performance.now()<deadline){
+        if([...videos.values()].every(v=>!v.error&&!v.seeking&&v.readyState>=3&&Math.abs(v.currentTime)<.035)&&player.isVideoReady()){
+          let decoded=true;
+          for(const v of videos.values()){
+            let frame:VideoFrame|undefined;
+            try{frame=new VideoFrame(v);if(Math.abs(frame.timestamp/1e6)>.035)decoded=false;}catch{decoded=false;}finally{frame?.close();}
+          }
+          // Confirm the decoded frame, not just a requested currentTime or canplay flag.
+          if(decoded)return spanMode?config.screens.map(s=>s.id):[screen.id];
+        }
+        await new Promise(resolve=>setTimeout(resolve,50));
+      }
+      throw Error('Decodarea cadrului inițial nu s-a încheiat.');
+    },
+    presentedFilmTime,
     wsUrl: boot.wsUrl,
     screenId: screen.id,
     screenName: screen.roleLabel,
@@ -374,11 +419,14 @@ async function main(): Promise<void> {
       syncStatus = s;
     },
     onWelcome: (msg) => {
+      if(msg.state?.volumes){player.apply({action:"setVolume",...msg.state.volumes});experienceOverlay.setVolume(msg.state.volumes.voice);}
+      setUiLanguage(msg.config.lang);
       if (isShowFile(msg.show)) {
         const base=msg.show.scenario ? new URL(`../scenarios/${msg.show.scenario.id}/voice/`,new URL(boot.voiceBaseUrl,location.href)).href : boot.voiceBaseUrl;
         const engine=voice as Partial<RateAwareVoiceEngine>;
-        void engine.setVoiceBaseUrl?.(base).then(()=>{
-          if(msg.show.scenario)sync.sendRaw({type:'packageReady',contentHash:msg.show.scenario.contentHash,ok:engine.isPrepared?.('ro')===true});
+        void engine.setVoiceBaseUrl?.(base,msg.config.lang).then(()=>{
+          const contentHash=msg.contentHash??msg.show.scenario?.contentHash;
+          if(contentHash)sync.sendRaw({type:'packageReady',contentHash,ok:engine.isPrepared?.(msg.config.lang)===true});
         });
         player.setShow(msg.show);
         osdReal.setError(null);
@@ -391,10 +439,17 @@ async function main(): Promise<void> {
       if (typeof msg.state?.ambientEnabled === "boolean") ambient.setEnabled(msg.state.ambientEnabled);
     },
     onMission: s=>{
+      if(s.state.volumes){player.apply({action:"setVolume",...s.state.volumes});experienceOverlay.setVolume(s.state.volumes.voice);}
+      if(s.state.state!=='preshow')preparationNotice.hidden=true;
+      setUiLanguage(s.state.lang);
       ambient.syncWaiting(s.runId,s.state.state==='idle'&&!s.experience?.active,s.suspended||!!s.experience?.paused);
       waitingActive=s.state.state==='idle'&&!s.suspended&&!s.experience?.active&&(!s.experience?.participants.length||!s.experience?.crew);
       waitingScreen.update(waitingActive,s.accessibility.reducedMotion||s.accessibility.reducedStimuli,!!s.experience?.crew?.open);
       experienceOverlay.update(s);
+      starWorlds.update(s);
+      flightNavigation.update(s);
+      wallFlight.update(s);
+      diplomaQr.update(screen.showAvatar?s:null);
       if(waitingActive)experienceOverlay.element.hidden=true;
       crewWelcomeActive=!!s.experience?.active||!!s.experience?.crew?.open;
       launchControls.hidden=waitingActive||crewWelcomeActive||!isClockSource||s.state.state!=='idle';
@@ -590,3 +645,5 @@ main().catch((err) => {
     if (d) d.textContent = describeError(err);
   }
 });
+import {startUiLocalization,setUiLanguage} from '../web/shared/localization';
+startUiLocalization(false);

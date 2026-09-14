@@ -56,10 +56,10 @@ export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boole
   if(!included) {
     title.textContent='Urmărește călătoria';panel.dataset.empty='true';panel.append(art('orbit'));detail.textContent=finale?'Privește amintirile echipajului pe ecranul central.':'Acest loc este liber. Povestea continuă pe ecrane.';status='Nu este nevoie să apeși nimic aici.';
   } else if(finale) {
-    const config=FINALE_CHOICES[snapshot.scenarioId], chosen=exp.finale[key];title.textContent=chosen==='observe'?'Momentul tău de liniște':chosen?'Alegerea ta este la bord':`Simbolul tău · ${key}`;
+    const config=FINALE_CHOICES[snapshot.scenarioId], chosen=exp.finale[key], child=snapshot.scenarioId==='age-5-10';title.textContent=chosen==='observe'?'Momentul tău de liniște':chosen?child?'Raza ta însoțește steaua':'Alegerea ta este la bord':child?'Ce duce raza ta mai departe?':`Simbolul tău · ${key}`;
     const contribution=snapshot.summary.posts.find(p=>p.post===snapshot.post)?.lines[zone==='A'?0:1];
-    if(contribution){const journal=el('section','experience-memory');journal.setAttribute('aria-label','Contribuția ta la expediție');journal.append(el('strong','','Din călătoria ta'),el('p','experience-contribution',contribution.replace(/^[AB]: /,'')));panel.append(journal);}
-    detail.textContent=chosen==='observe'?'Poți urmări nava și alegerile echipajului.':chosen?`Caută ${personalTarget} și simbolul tău pe ecranul central.`:'Alege un simbol. Apoi trimite-l pe ecran.';
+    if(contribution){const journal=el('details','experience-memory experience-memory-fold');journal.setAttribute('aria-label','Contribuția ta la expediție');journal.append(el('summary','','Din călătoria ta'),el('p','experience-contribution',contribution.replace(/^[AB]: /,'')));panel.append(journal);}
+    detail.textContent=chosen==='observe'?'Poți urmări nava și alegerile echipajului.':chosen?`Caută ${personalTarget} și ${child?'raza ta':'simbolul tău'} pe ecranul central.`:child?'Alege ce vrei să dăruiești. Apoi trimite raza ta către Steaua Omenirii.':'Alege un simbol. Apoi trimite-l pe ecran.';
     for(const choice of config.options.filter(choice=>!chosen||choice.value===chosen)){
       const selected=chosen===choice.value||(!chosen&&draft===choice.value);
       const b=el('button',`mission-option crew-choice ${selected?'experience-selected':''}`);b.type='button';b.dataset.value=`draft:${choice.value}`;b.disabled=blocked||!!chosen;b.setAttribute('aria-pressed',String(selected));b.append(el('span','',choice.label));
@@ -69,10 +69,10 @@ export function experienceZone(snapshot:MissionSnapshot, zone:Zone, online:boole
         b.classList.add('experience-keepsake-option');b.prepend(illustration(keepsake,'experience-keepsake-image'));
       }
     }
-    if(chosen!=='observe')beacon(chosen?'Simbolul tău este la bord':pending?'Trimitem simbolul…':'Trimite simbolul meu',`finale:${chosen||draft||''}`,!!chosen,!!chosen||!draft);
+    if(chosen!=='observe')beacon(chosen?child?'Raza ta a ajuns':'Simbolul tău este la bord':pending?child?'Trimitem raza…':'Trimitem simbolul…':child?'Trimite raza mea':'Trimite simbolul meu',`finale:${chosen||draft||''}`,!!chosen,!!chosen||!draft);
     if(chosen==='observe')button('Doar privesc','finale:observe','mission-observe',true);
     if(!chosen)button('Doar privesc','finale:observe','mission-observe');
-    status=chosen==='observe'?'Poți păstra momentul pentru tine.':chosen?`Primit la bord · ${key}. Alegerea este păstrată în jurnal.`:draft?'Poți schimba simbolul înainte să-l trimiți.':'Alege ce contează pentru tine.';
+    status=chosen==='observe'?'Poți păstra momentul pentru tine.':chosen?`Primit la bord · ${key}. Alegerea este păstrată în jurnal.`:draft?child?'Poți schimba alegerea înainte să trimiți raza.':'Poți schimba simbolul înainte să-l trimiți.':'Alege ce contează pentru tine.';
     panel.dataset.complete=String(!!chosen);
   } else if(observer) {
     title.textContent='Urmărește călătoria';panel.append(art('orbit'));detail.textContent=exp.step==='ready'?'Proba s-a încheiat. Privește începutul călătoriei.':'Poți privi sau poți încerca împreună cu noi.';if(exp.step!=='ready')button('Vreau să particip','tutorial:touch','experience-primary');status=exp.step==='ready'?'Pornim împreună.':'Te poți alătura când ești gata.';

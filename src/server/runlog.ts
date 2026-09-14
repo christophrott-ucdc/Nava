@@ -1,3 +1,4 @@
+import {redactLog,eventLevel} from '../shared/log-sanitize';
 /**
  * Run log: one JSONL file per show run in `runsDir/show-<YYYYMMDD-HHmmss>.jsonl`.
  * Every command, state transition, fired cue and tablet event is appended as one line:
@@ -13,6 +14,7 @@ export type LogFn = (level: "info" | "warn" | "error", msg: string, data?: unkno
 export interface RunLogEvent {
   t: string;
   kind: string;
+  level?: 'INFO'|'WARNING'|'ERROR'|'DEBUG';
   data?: unknown;
 }
 
@@ -69,7 +71,7 @@ export class RunLog {
 
   /** Append one event (also kept in the in-memory tail). */
   write(kind: string, data?: unknown): void {
-    const ev: RunLogEvent = { t: new Date().toISOString(), kind, data };
+    const ev: RunLogEvent = { t: new Date().toISOString(), kind, level:eventLevel(kind,data), data:redactLog(data) };
     this.tailBuf.push(ev);
     if (this.tailBuf.length > this.tailMax) this.tailBuf.splice(0, this.tailBuf.length - this.tailMax);
     if (!this.stream) return;

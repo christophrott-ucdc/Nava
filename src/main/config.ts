@@ -415,6 +415,11 @@ export function loadConfig(opts: { cli: CliArgs; appRoot: string; dataRoot?: str
     const raw = (config.video as { panelsDir?: unknown }).panelsDir;
     if (typeof raw === "string" && raw.trim()) config.video.panelsDir = path.resolve(appRoot, raw.trim());
     else delete config.video.panelsDir;
+    if(config.video.panelsByCount!==undefined){
+      const sets=config.video.panelsByCount;
+      if(!isObj(sets)||Object.entries(sets).some(([count,dir])=>!['1','2','3','4','5'].includes(count)||typeof dir!=='string'||!dir.trim()))throw new Error('video.panelsByCount cere directoare pentru 1–5 ecrane.');
+      config.video.panelsByCount=Object.fromEntries(Object.entries(sets).map(([count,dir])=>[count,path.resolve(appRoot,dir.trim())]));
+    }
     const sync=config.video.panelSync;
     const deadbandSec=finiteNumber(sync?.deadbandSec,.025,.001,.1);
     config.video.panelSync={deadbandSec,seekThresholdSec:finiteNumber(sync?.seekThresholdSec,.12,deadbandSec+.001,2),rateNudge:finiteNumber(sync?.rateNudge,.05,0,.25)};
@@ -426,6 +431,7 @@ export function loadConfig(opts: { cli: CliArgs; appRoot: string; dataRoot?: str
   normalizeAvatarR4(config.avatar, log);
   config.audio.voiceVolume = finiteNumber(config.audio.voiceVolume, DEFAULT_CONFIG.audio.voiceVolume, 0, 1);
   config.audio.sfxVolume = finiteNumber(config.audio.sfxVolume, DEFAULT_CONFIG.audio.sfxVolume, 0, 1);
+  config.audio.musicVolume = finiteNumber(config.audio.musicVolume, config.audio.sfxVolume, 0, 1);
   config.audio.outputDeviceId = nonEmptyString(config.audio.outputDeviceId, DEFAULT_CONFIG.audio.outputDeviceId);
   config.sync.clockHz = finiteNumber(config.sync.clockHz, DEFAULT_CONFIG.sync.clockHz, 1, 30);
   config.sync.seekThresholdSec = finiteNumber(config.sync.seekThresholdSec, DEFAULT_CONFIG.sync.seekThresholdSec, 0.01, 10);

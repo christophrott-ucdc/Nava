@@ -1,3 +1,5 @@
+import {createTechnicalStatus} from './technical-status';
+import '../shared/client-errors';
 import {PROTOCOL_VERSION} from '@shared/protocol';
 import {publicDurationSec} from '@shared/film-timing';
 import { ROLE_LABELS, PLAYBACK_LABELS, THEME_LABELS, OPTIONAL_TABLETS_LABEL } from "@shared/ui-labels";
@@ -56,6 +58,8 @@ const dom = {
   sceneSelect: byId<HTMLSelectElement>("scene-select"),
   sceneGo: byId<HTMLButtonElement>("scene-go"),
   language: byId<HTMLSelectElement>("language"),
+  musicVolume: byId<HTMLInputElement>("music-volume"),
+  musicOutput: byId<HTMLOutputElement>("music-output"),
   voiceVolume: byId<HTMLInputElement>("voice-volume"),
   voiceOutput: byId<HTMLOutputElement>("voice-output"),
   sfxVolume: byId<HTMLInputElement>("sfx-volume"),
@@ -174,6 +178,7 @@ function applyRole(): void {
 
   const viewer = sessionUser?.role === "viewer";
   document.body.classList.toggle("is-viewer", viewer);
+  for(const input of [dom.musicVolume,dom.sfxVolume,dom.voiceVolume])input.disabled=viewer;
 }
 
 function connect(): void {
@@ -222,6 +227,7 @@ function attachSocketHandlers(ws: WebSocket): void {
 function onMessage(message: ServerMessage): void {
   switch (message.type) {
     case "welcome":
+      setUiLanguage(message.state.lang);
       show = message.show;
       {const button=document.getElementById('mission-rehearsal-start');const duration=Math.round(publicDurationSec(show));if(button)button.textContent=`Repetiție completă · ${Math.floor(duration/60)}:${String(duration%60).padStart(2,'0')}`;}
       state = message.state;
@@ -233,6 +239,7 @@ function onMessage(message: ServerMessage): void {
       void refreshCueStatuses();
       break;
     case "state":
+      setUiLanguage(message.state.lang);
       if (clock && clock.state !== message.state.state) clock = null;
       state = message.state;
       renderState();
@@ -278,11 +285,12 @@ function onMessage(message: ServerMessage): void {
 }
 
 let commandInFlight = false;
+let pendingLaunch = false;
 async function dispatch(cmd: Command): Promise<void> {
+  if (cmd.action === "start" && pendingLaunch) { setCommandNote("Verificarea TV-urilor este deja în curs."); return; }
   if (commandInFlight) { setCommandNote("Așteaptă confirmarea comenzii în curs."); return; }
   if (!sessionUser || sessionUser.role === "viewer") { notify("Ai nevoie de rolul Operator pentru această acțiune.", true); return; }
   if (cmd.action === "restart" && !window.confirm("Resetezi show-ul la început? Rolurile tabletelor vor fi eliberate.")) return;
-  if (cmd.action === "start" && state?.readiness && !state.readiness.ready && !window.confirm(`Nava nu este pregătită:\n${state.readiness.reasons.join("\n")}\n\nPornești oricum?`)) return;
   commandInFlight = true;
   const label = commandLabel(cmd.action);
   setCommandNote(`${label} trimis…`);
@@ -297,13 +305,14 @@ async function dispatch(cmd: Command): Promise<void> {
       goToLogin();
       return;
     }
-    const result = (await response.json()) as { ok?: boolean; reason?: string; state?: ShowState };
+    const result = (await response.json()) as { ok?: boolean; pending?: boolean; message?: string; reason?: string; state?: ShowState };
     if (!response.ok || !result.ok) throw new Error(result.reason ?? "Comanda a fost respinsă.");
     if (result.state) {
       state = result.state;
       renderState();
     }
-    setCommandNote(`${label} · confirmat`);
+    pendingLaunch = result.pending === true || (pendingLaunch && !["restart", "pause"].includes(cmd.action));
+    setCommandNote(result.message ?? (result.pending ? "Se verifică TV-urile înainte de pornire…" : `${label} · confirmat`));
     if (["seek", "skipToScene", "restart"].includes(cmd.action)) void refreshCueStatuses();
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
@@ -318,7 +327,7 @@ async function focusPlayer(): Promise<void> {
     const response = await fetch("/api/player/focus", { method: "POST", credentials: "same-origin" });
     const result = (await response.json()) as { ok?: boolean; reason?: string };
     if (!response.ok || !result.ok) throw new Error(result.reason ?? "Playerul nu a putut fi adus în față.");
-    setCommandNote("Playerul a fost adus în față");
+    // Focusing the player must not overwrite pending/error transport feedback.
   } catch (error) {
     notify(error instanceof Error ? error.message : String(error), true);
   } finally {
@@ -328,7 +337,7 @@ async function focusPlayer(): Promise<void> {
 
 function commandLabel(action: Command["action"]): string {
   const labels: Record<Command["action"], string> = {
-    preshow: "Pre-show", start: "Start", play: "Redare", pause: "Pauză", seek: "Salt pe timeline",
+    preshow: "Primește echipajul", start: "Start", play: "Redare", pause: "Pauză", seek: "Salt pe timeline",
     skipToScene: "Salt la scenă", restart: "Restart", epilogue: "Epilog", fireCue: "Cue manual",
     stopVoice: "Voce oprită", setVolume: "Volum", setLang: "Limbă", reloadShow: "Scenariu reîncărcat",
     testAvatar: "Test avatar", identifyScreens: "Identificare ecrane",
@@ -467,10 +476,15 @@ function renderReadiness(readiness: Readiness | undefined, idle: boolean): void 
   dom.readinessBadge.innerHTML = icon(readiness.ready ? "check" : "warning") + (readiness.ready ? " Nava este pregătită" : " Nava nu este pregătită");
   dom.readinessSummary.textContent = readiness.ready
     ? "Toate ecranele cerute sunt conectate, filmul este încărcat și vocile au trecut verificarea."
-    : `${readiness.reasons.length} ${readiness.reasons.length === 1 ? "problemă" : "probleme"} · pornirea manuală rămâne permisă.`;
+    : `${readiness.reasons.length} ${readiness.reasons.length === 1 ? "problemă" : "probleme"} · rezolvă problemele înainte de pornire.`;
+  if(readiness.displayPreview){
+    dom.readinessBadge.innerHTML=icon('warning')+' Previzualizare Electron';
+    dom.readinessSummary.textContent='Filmul poate rula în fereastra panoramică. Această verificare privește instalația fizică; preview-ul nu confirmă cele cinci televizoare.';
+  }
   dom.readinessScreens.textContent = readiness.screensConnected.length ? readiness.screensConnected.join(", ") : "—";
   dom.readinessMissing.textContent = readiness.screensMissing.length ? readiness.screensMissing.join(", ") : "niciunul";
-  dom.readinessMissing.className = readiness.screensMissing.length ? "bad" : "ok";
+  dom.readinessMissing.className = readiness.displayPreview ? 'warn' : readiness.screensMissing.length ? 'bad' : 'ok';
+  if(readiness.displayPreview)dom.readinessMissing.textContent='TV-uri fizice nevalidate în preview';
   dom.readinessTablets.textContent = `${readiness.tabletsConnected}${readiness.tabletsRequired ? ` / ${readiness.tabletsRequired}` : ""}`;
   dom.readinessTablets.title = readiness.tabletsRequired ? `${readiness.tabletsRequired} tablete obligatorii` : OPTIONAL_TABLETS_LABEL;
   dom.readinessTablets.className = readiness.tabletsConnected < readiness.tabletsRequired ? "bad" : "ok";
@@ -521,7 +535,9 @@ function renderR4Header(): void {
 }
 
 function renderState(): void {
+  if(state?.volumes&&volumeTimer===null){for(const [channel,input] of [["voice",dom.voiceVolume],["sfx",dom.sfxVolume],["music",dom.musicVolume]] as const)if(document.activeElement!==input)input.value=String(state.volumes[channel]);updateVolumeOutputs();}
   if (!state) return;
+  dom.language.value=state.lang;
   applyTheme(state.theme);
   dom.tabletSfxToggle.innerHTML = icon("speaker") + ` Sunete tablete · ${state.tabletSfx !== false ? "pornite" : "oprite"}`;
   dom.tabletSfxToggle.setAttribute("aria-pressed", String(state.tabletSfx !== false));
@@ -529,7 +545,7 @@ function renderState(): void {
   dom.playbackState.textContent = stateLabels[state.state];
   dom.playbackState.dataset.state = state.state;
   const currentScene = show?.scenes.find((scene) => scene.id === state?.sceneId);
-  dom.sceneLabel.textContent = currentScene?.label ?? (state.state === "idle" ? "În așteptare" : "Fără scenă activă");
+  dom.sceneLabel.textContent = state.planetHold ? "Prim-plan · pauză automată de 10 secunde" : currentScene?.label ?? (state.state === "idle" ? "În așteptare" : "Fără scenă activă");
   dom.screensCount.textContent = String(state.screensConnected);
   dom.tabletsCount.textContent = String(state.tabletsConnected);
   dom.themeLabel.textContent = THEME_LABELS[state.theme] ?? state.theme;
@@ -544,7 +560,7 @@ function renderState(): void {
   dom.durationLabel.textContent = `/ ${formatTime(range.max)}`;
   dom.timeline.disabled = phase === null || state.state === "ended";
   dom.playButton.disabled = state.state !== "paused";
-  dom.pauseButton.disabled = state.state !== "playing";
+  dom.pauseButton.disabled = state.state !== "playing" && !state.planetHold;
   dom.startExperience.disabled = state.state !== "idle" && state.state !== "preshow";
   const restart = document.querySelector<HTMLButtonElement>('[data-command="restart"]');
   if (restart) restart.disabled = state.state === "idle";
@@ -774,9 +790,10 @@ async function loadAuxiliaryData(): Promise<void> {
       }
     }
     if (configResponse.ok) {
-      const config = (await configResponse.json()) as { audio?: { voiceVolume?: number; sfxVolume?: number }; lang?: string };
+      const config = (await configResponse.json()) as { audio?: { voiceVolume?: number; sfxVolume?: number; musicVolume?:number }; lang?: string };
       if (typeof config.audio?.voiceVolume === "number") dom.voiceVolume.value = String(config.audio.voiceVolume);
       if (typeof config.audio?.sfxVolume === "number") dom.sfxVolume.value = String(config.audio.sfxVolume);
+      if (typeof config.audio?.musicVolume === "number") dom.musicVolume.value = String(config.audio.musicVolume);
       if (config.lang) dom.language.value = config.lang;
       updateVolumeOutputs();
     }
@@ -805,6 +822,7 @@ dom.logout.addEventListener("click", async () => {
 // Volume / transport wiring
 
 function updateVolumeOutputs(): void {
+  dom.musicOutput.value = `${Math.round(Number(dom.musicVolume.value) * 100)}%`;
   dom.voiceOutput.value = `${Math.round(Number(dom.voiceVolume.value) * 100)}%`;
   dom.sfxOutput.value = `${Math.round(Number(dom.sfxVolume.value) * 100)}%`;
 }
@@ -813,7 +831,8 @@ function scheduleVolume(): void {
   updateVolumeOutputs();
   if (volumeTimer !== null) window.clearTimeout(volumeTimer);
   volumeTimer = window.setTimeout(() => {
-    void dispatch({ action: "setVolume", voice: Number(dom.voiceVolume.value), sfx: Number(dom.sfxVolume.value) });
+    volumeTimer=null;
+    void dispatch({ action: "setVolume", voice: Number(dom.voiceVolume.value), sfx: Number(dom.sfxVolume.value), music:Number(dom.musicVolume.value) });
   }, 180);
 }
 
@@ -845,9 +864,10 @@ dom.timeline.addEventListener("pointerup", () => (timelineDragging = false));
 dom.sceneGo.addEventListener("click", () => {
   if (dom.sceneSelect.value) void dispatch({ action: "skipToScene", sceneId: dom.sceneSelect.value });
 });
-dom.language.addEventListener("change", () => void dispatch({ action: "setLang", lang: dom.language.value as "ro" | "en" | "fr" }));
+dom.language.addEventListener("change", async () => {await dispatch({ action: "setLang", lang: dom.language.value as "ro" | "en" | "fr" });if(state)dom.language.value=state.lang;});
 dom.voiceVolume.addEventListener("input", scheduleVolume);
 dom.sfxVolume.addEventListener("input", scheduleVolume);
+dom.musicVolume.addEventListener("input", scheduleVolume);
 dom.cueSearch.addEventListener("input", renderCues);
 dom.cuePhase.addEventListener("change", renderCues);
 
@@ -939,6 +959,13 @@ const presentation = createPresentation({
   snapshot: () => ({ state, show, tablets, statuses: cueStatuses, time: phaseTime(), role: sessionUser?.role ?? null }),
   dispatch, focusPlayer, openExperience: () => experienceControl?.open(), describe: cueDescription, formatTime,
 });
+createTechnicalStatus(()=>sessionUser?.role??null, launch=>{
+  if(!pendingLaunch)return;
+  const failed=launch.state==='error';
+  setCommandNote(launch.message,failed);
+  if(failed){notify(launch.message,true);pendingLaunch=false;}
+  else if(launch.state==='ready'||launch.state==='idle')pendingLaunch=false;
+});
 createMissionControl({snapshot:()=>({state,role:sessionUser?.role??null}),dispatch});
 experienceControl = createExperienceControl({snapshot:()=>({state,role:sessionUser?.role??null}),onUpdate:presentation.updateExperience});
 
@@ -950,3 +977,5 @@ connect();
 
 // Shared visual symbols stay separate from labels updated by the live state.
 document.querySelectorAll<HTMLElement>("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon!); });
+import {startUiLocalization,setUiLanguage} from '../shared/localization';
+startUiLocalization(false);

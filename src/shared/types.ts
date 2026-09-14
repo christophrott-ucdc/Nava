@@ -107,11 +107,11 @@ export interface DynamicVoiceCue extends CueBase {
   /** De unde vine textul: mesajele trimise de pe tablete, rezumatul alegerilor, sau dialogul live. */
   source: "tablet-messages" | "tablet-choices-summary" | "live-dialog";
   /** Sablon cu {{items}} / {{count}} / {{posts}}; ex. "Am primit mesajele voastre pentru Pamant: {{items}}." */
-  template?: { ro: string };
+  template?: { ro: string; en?: string; fr?: string };
   /** Cate elemente maxim intra in text (mesaje). */
   maxItems?: number;
   /** Textul rostit daca nu exista date (ex. nimeni nu a scris). */
-  fallbackText?: { ro: string };
+  fallbackText?: { ro: string; en?: string; fr?: string };
 }
 
 /** R4 — pat sonor procedural (Web Audio) legat de tema scenei. */
@@ -164,7 +164,7 @@ export interface CountdownCue extends CueBase {
 
 export interface SfxCue extends CueBase {
   kind: "sfx";
-  sfx: "liftoff-rumble" | "low-swell" | "wormhole-whoosh" | "arrival-chime" | "rain" | "white-fade";
+  sfx: "rocket-departure" | "liftoff-rumble" | "low-swell" | "wormhole-whoosh" | "arrival-chime" | "rain" | "white-fade";
   durationSec?: number;
   gain?: number;
 }
@@ -270,6 +270,7 @@ export interface Scene {
 }
 
 export interface ShowFile {
+  planetStops?: Array<{id:string;at:number;durationSec:number}>;
   /** Complete, immutable scenario package; legacy has no scenario metadata. */
   scenario?: { id: string; revision: string; voiceRoot: string; contentHash: string };
   $schema?: string;
@@ -370,7 +371,7 @@ export interface AutoRunConfig {
 }
 
 export interface AppConfig {
-  autoDisplays?: { enabled: boolean; installationId?: string; expectedAudienceCount?: number; operatorDisplayIds?: number[]; audienceDisplayIds?: number[]; centerDisplayId?: number; layout?: "generic" | "samsung-5"; allowEstimatedGeometry?: boolean };
+  autoDisplays?: { enabled: boolean; countMode?: "adaptive" | "fixed"; panelGapMm?: number; installationId?: string; expectedAudienceCount?: number; operatorDisplayIds?: number[]; audienceDisplayIds?: number[]; centerDisplayId?: number; layout?: "generic" | "samsung-5"; allowEstimatedGeometry?: boolean };
   role: "master" | "follower";
   /** Folosit doar de follower: ws://<ip-master>:<port>/ws */
   masterUrl?: string;
@@ -388,6 +389,8 @@ export interface AppConfig {
      * opreste la 8192, SVT-AV1 la 16384), de aceea zidul se livreaza ca cinci fisiere.
      */
     panelsDir?: string;
+    /** Complete, count-specific panoramic exports; slices must never be mixed. */
+    panelsByCount?: Record<string,string>;
     panelSync?: { deadbandSec?: number; seekThresholdSec?: number; rateNudge?: number };
   };
   avatar: {
@@ -400,7 +403,7 @@ export interface AppConfig {
     /** R4 — GLB diferit per vorbitor (ex. Capitan barbat); cheia lipsa cade pe `glb`. */
     glbBySpeaker?: Partial<Record<Speaker, string>>;
   };
-  audio: { voiceVolume: number; sfxVolume: number; outputDeviceId: string };
+  audio: { voiceVolume: number; sfxVolume: number; musicVolume?: number; outputDeviceId: string };
   screens: ScreenConfig[];
   sync: { clockHz: number; seekThresholdSec: number; rateNudge: number };
   dev: { openDevTools: boolean; windowed: boolean };
@@ -537,6 +540,8 @@ export interface EntityParams {
 
 /** R4 — poarta de pregatire inainte de pornirea automata. */
 export interface Readiness {
+  /** Local Electron preview, not evidence of physical TV connectivity. */
+  displayPreview?: boolean;
   ready: boolean;
   screensConnected: string[];
   screensMissing: string[];
@@ -555,6 +560,11 @@ export interface Readiness {
 export type PlaybackState = "idle" | "preshow" | "playing" | "paused" | "epilogue" | "ended";
 
 export interface ShowState {
+  volumes?: { voice: number; sfx: number; music: number };
+  planetHold?: { id: string; remainingMs: number };
+  completedPlanetHolds?: string[];
+  /** Persisted nominal rate, including while paused/suspended. */
+  playbackRate?:number;
   runId?: string;
   serverEpoch?: string;
   timelineEpoch?: number;

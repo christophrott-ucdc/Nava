@@ -31,7 +31,7 @@ export const CUE_KINDS: readonly Cue["kind"][] = [
   "lights",
   "photo",
 ];
-export const SFX_NAMES: readonly string[] = ["liftoff-rumble", "low-swell", "wormhole-whoosh", "arrival-chime", "rain", "white-fade"];
+export const SFX_NAMES: readonly string[] = ["rocket-departure", "liftoff-rumble", "low-swell", "wormhole-whoosh", "arrival-chime", "rain", "white-fade"];
 export const ENTITIES: readonly string[] = ["LUMINA", "NATURA", "TEHNOLOGIC"];
 export const DYNAMIC_SOURCES: readonly string[] = ["tablet-messages", "tablet-choices-summary", "live-dialog"];
 export const AMBIENT_ACTIONS: readonly string[] = ["start", "stop", "crossfade"];

@@ -13,7 +13,7 @@ import type { LogFn } from "./runlog";
 
 export interface PreflightIssue {
   cueId: string;
-  problem: "missing-clip" | "missing-file" | "empty-file" | "no-duration" | "no-words" | "variant-missing";
+  problem: "missing-clip" | "missing-file" | "empty-file" | "no-duration" | "no-words" | "variant-missing" | "text-mismatch" | "metadata-mismatch";
   detail?: string;
 }
 
@@ -25,7 +25,7 @@ export interface PreflightResult {
   durationMs: number;
   assetsDir: string | null;
   voice: { total: number; ok: number; withVisemes: number; issues: PreflightIssue[]; manifestPath: string | null };
-  video: { path: string; exists: boolean; bytes: number };
+  video: { path: string; exists: boolean; bytes: number; durationSec?:number|null; expectedDurationSec?:number };
   panels?:Array<{id:string;path:string;exists:boolean;bytes:number}>;
   avatar: { path: string; exists: boolean; bytes: number };
   reasons: string[];
@@ -65,6 +65,34 @@ async function statSize(p: string | null): Promise<{ exists: boolean; bytes: num
   }
 }
 
+/** Read ISO-BMFF movie duration without decoding media or requiring ffprobe.
+ * Atom boundaries are bounded by the actual file; mdat is skipped, never loaded. */
+export async function mp4Duration(file:string):Promise<number|null>{
+  const handle=await fs.open(file,'r');
+  try{
+    const size=(await handle.stat()).size;
+    async function atoms(start:number,end:number,nested=false):Promise<number|null>{
+      let cursor=start,count=0;const header=Buffer.alloc(32);
+      while(cursor+8<=end&&++count<10000){
+        const read=await handle.read(header,0,Math.min(32,end-cursor),cursor);if(read.bytesRead<8)return null;
+        let length=header.readUInt32BE(0),head=8;const type=header.toString('ascii',4,8);
+        if(length===1){if(read.bytesRead<16)return null;length=Number(header.readBigUInt64BE(8));head=16;}
+        if(length===0)length=end-cursor;
+        if(!Number.isSafeInteger(length)||length<head||cursor+length>end)return null;
+        if(type==='moov'&&!nested){const found=await atoms(cursor+head,cursor+length,true);if(found!==null)return found;}
+        if(type==='mvhd'&&nested){
+          const data=Buffer.alloc(32),n=await handle.read(data,0,Math.min(32,length-head),cursor+head);
+          const version=data[0],offset=version===1?20:12;if((version!==0&&version!==1)||n.bytesRead<offset+(version===1?12:8))return null;
+          const scale=data.readUInt32BE(offset),duration=version===1?Number(data.readBigUInt64BE(offset+4)):data.readUInt32BE(offset+4);
+          return scale>0&&duration>0&&Number.isFinite(duration/scale)?duration/scale:null;
+        }
+        cursor+=length;
+      }return null;
+    }
+    return await atoms(0,size);
+  }finally{await handle.close();}
+}
+
 export async function runPreflight(show: ShowFile, lang: Lang, variant: string | null, deps: PreflightDeps): Promise<PreflightResult> {
   const t0 = Date.now();
   const reasons: string[] = [];
@@ -90,7 +118,9 @@ export async function runPreflight(show: ShowFile, lang: Lang, variant: string |
   if (manifest) {
     const dir = path.dirname(manifestPath as string);
     for (const cue of voiceCues) {
-      const keys = variant ? [`${cue.id}.${variant}`, cue.id] : [cue.id];
+      const variantText=variant?(cue.variants?.[variant]?.[lang]??cue.variants?.[variant]?.ro):undefined;
+      const expectedText=variantText||(cue.text[lang]??cue.text.ro);
+      const keys = variant&&variantText ? [`${cue.id}.${variant}`, cue.id] : [cue.id];
       let clip = null as VoiceManifest["clips"][string] | null;
       for (const k of keys) {
         if (manifest.clips[k]) {
@@ -105,6 +135,10 @@ export async function runPreflight(show: ShowFile, lang: Lang, variant: string |
         issues.push({ cueId: cue.id, problem: "missing-clip" });
         continue;
       }
+      if(typeof clip.text!=='string'||clip.text.trim()!==expectedText.trim()){
+        issues.push({cueId:cue.id,problem:'text-mismatch',detail:'Textul înregistrării diferă de replica activă. Regenerează vocea înainte de pornire.'});continue;
+      }
+      if(clip.lang!==lang||clip.speaker!==cue.speaker){issues.push({cueId:cue.id,problem:'metadata-mismatch',detail:'Limba sau personajul înregistrării diferă de scenariu.'});continue;}
       const filePath = path.join(dir, clip.file);
       const st = await statSize(filePath);
       if (!st.exists) {
@@ -132,6 +166,7 @@ export async function runPreflight(show: ShowFile, lang: Lang, variant: string |
 
   const videoPath = (await firstExisting(candidatesFor(deps.appRoot, deps.config.video.path))) ?? path.resolve(deps.appRoot, deps.config.video.path);
   const video = await statSize(videoPath);
+  let durationSec:number|null|undefined;
   const panels:NonNullable<PreflightResult['panels']>=[];
   if(deps.config.video.panelsDir&&deps.config.videoWall?.mode!=='cinema'&&deps.config.screens.length){
     for(const screen of deps.config.screens){
@@ -142,6 +177,11 @@ export async function runPreflight(show: ShowFile, lang: Lang, variant: string |
       if(!st.exists||st.bytes<1024)reasons.push(`Filmul panoramic pentru ${id} lipsește sau este gol. Verifică video.panelsDir; filmul vechi de rezervă nu validează panorama.`);
     }
   }else if (!video.exists || video.bytes === 0) reasons.push(`filmul lipsește: ${deps.config.video.path}`);
+  else {
+    durationSec=await mp4Duration(videoPath).catch(()=>null);
+    if(durationSec===null)reasons.push('Durata filmului unic nu poate fi verificată. Selectează exportul MP4 al montajului curent.');
+    else if(!(show.videoDurationSec>0)||Math.abs(durationSec-show.videoDurationSec)>.25)reasons.push(`Durata filmului unic (${durationSec.toFixed(2)} s) diferă de scenariu (${show.videoDurationSec.toFixed(2)} s). Selectează montajul curent; filmul vechi nu poate porni public.`);
+  }
 
   const avatarPath = (await firstExisting(candidatesFor(deps.appRoot, deps.config.avatar.glb))) ?? path.resolve(deps.appRoot, deps.config.avatar.glb);
   const avatar = await statSize(avatarPath);
@@ -155,7 +195,7 @@ export async function runPreflight(show: ShowFile, lang: Lang, variant: string |
     durationMs: Date.now() - t0,
     assetsDir,
     voice: { total: voiceCues.length, ok: okCount, withVisemes, issues, manifestPath },
-    video: { path: videoPath, ...video },
+    video: { path: videoPath, ...video,...(durationSec!==undefined?{durationSec,expectedDurationSec:show.videoDurationSec}:{}) },
     ...(panels.length?{panels}:{}),
     avatar: { path: avatarPath, ...avatar },
     reasons,

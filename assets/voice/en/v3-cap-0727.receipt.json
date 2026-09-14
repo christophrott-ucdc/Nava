@@ -1,0 +1,54 @@
+{
+  "cueId": "v3-cap-0727",
+  "lang": "en",
+  "speaker": "CAPITANUL",
+  "text": "Repeat.",
+  "file": "v3-cap-0727.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Repeat"
+  ],
+  "wtimes": [
+    0
+  ],
+  "wdurations": [
+    560
+  ],
+  "durationMs": 640,
+  "visemes": [
+    "RR",
+    "I",
+    "PP",
+    "I",
+    "DD"
+  ],
+  "vtimes": [
+    0,
+    102,
+    208,
+    333,
+    439
+  ],
+  "vdurations": [
+    102,
+    106,
+    125,
+    106,
+    121
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "8aec627d6da9fd87c97b4463c00f21d29e963111683aa1e2d03ad7210903d0ed",
+  "sha256": "b8f0003a810cc884b3ba2949a35e533ac82ef18100ca2154f9cc216e8b440b2c",
+  "generatedAt": "2026-09-13T13:28:46.614Z",
+  "requestId": "7Q5PlJkkfBOfWjQpbun4",
+  "historyItemId": "FLfgel9wIW8bXiwHnyc5",
+  "characterCost": "7",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

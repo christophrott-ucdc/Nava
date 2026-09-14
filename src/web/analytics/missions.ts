@@ -22,10 +22,10 @@ export function createMissionAnalytics(api:<T>(url:string)=>Promise<T>):()=>Prom
   async function detail(record:MissionRow):Promise<void>{
     const request=++detailRequest;el('mission-history-detail').hidden=false;el('mission-history-detail-title').textContent=SCENARIO_LABELS[record.scenarioId]??record.scenarioId;el('mission-history-detail-id').textContent=`${record.runId} · ${states[record.status]??record.status}`;el('mission-history-summary').textContent='Se încarcă…';
     try{
-      const data=await api<{progress:ScenarioProgress}>(`/api/runs/${encodeURIComponent(record.runId)}/summary`);if(request!==detailRequest)return;
+      const data=await api<{progress:ScenarioProgress;status:string}>(`/api/runs/${encodeURIComponent(record.runId)}/summary`);if(request!==detailRequest)return;
       const box=el('mission-history-summary');box.replaceChildren();
       if(record.scenarioId==='legacy-v3'){box.textContent='Această rulare folosește scenariul original. Detaliile cue-urilor și alegerilor sunt în jurnalele anterioare de mai jos.';return;}
-      const summary=summarizeScenario(data.progress);
+      const summary=summarizeScenario(data.progress,data.status==='completed');
       for(const text of summary.lines){const p=document.createElement('p');p.textContent=text;box.append(p);}
       const grid=document.createElement('div');grid.className='mission-summary-posts';
       for(const post of summary.posts){const article=document.createElement('article'),title=document.createElement('h4');title.textContent=`Postul ${post.post}`;article.append(title);for(const text of post.lines){const p=document.createElement('p');p.textContent=text;article.append(p);}grid.append(article);}box.append(grid);

@@ -1,0 +1,87 @@
+{
+  "cueId": "v3-cap-0738",
+  "lang": "en",
+  "speaker": "CAPITANUL",
+  "text": "Then... we'll send it.",
+  "file": "v3-cap-0738.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Then",
+    "we'll",
+    "send",
+    "it"
+  ],
+  "wtimes": [
+    0,
+    533,
+    928,
+    1200
+  ],
+  "wdurations": [
+    320,
+    347,
+    192,
+    160
+  ],
+  "durationMs": 1520,
+  "visemes": [
+    "TH",
+    "E",
+    "nn",
+    "sil",
+    "FF",
+    "I",
+    "nn",
+    "SS",
+    "E",
+    "nn",
+    "DD",
+    "I",
+    "DD"
+  ],
+  "vtimes": [
+    0,
+    115,
+    219,
+    320,
+    533,
+    657,
+    771,
+    928,
+    986,
+    1029,
+    1070,
+    1200,
+    1275
+  ],
+  "vdurations": [
+    115,
+    104,
+    101,
+    213,
+    124,
+    114,
+    109,
+    58,
+    43,
+    41,
+    50,
+    75,
+    85
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "9fcdd4361d7dc7316a2d674bc3c9d3779c6e19e2754cae23d16dfdf1a3c63de8",
+  "sha256": "fb14882f38b13e06d4e029f1393fd85fddf9a0c808b0db0e0275fc490dc6d3fb",
+  "generatedAt": "2026-09-13T13:28:52.669Z",
+  "requestId": "lMJcINp4MniAal0GoTiv",
+  "historyItemId": "QvUzfp4py3khnrGRcFc8",
+  "characterCost": "22",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

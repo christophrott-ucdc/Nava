@@ -1,0 +1,81 @@
+{
+  "cueId": "v3-echo-nature-0824",
+  "lang": "en",
+  "speaker": "NATURA",
+  "text": "We knew your rhythm.",
+  "file": "v3-echo-nature-0824.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "We",
+    "knew",
+    "your",
+    "rhythm"
+  ],
+  "wtimes": [
+    0,
+    208,
+    448,
+    709
+  ],
+  "wdurations": [
+    160,
+    192,
+    192,
+    411
+  ],
+  "durationMs": 1200,
+  "visemes": [
+    "FF",
+    "I",
+    "nn",
+    "U",
+    "I",
+    "U",
+    "RR",
+    "RR",
+    "I",
+    "TH",
+    "PP"
+  ],
+  "vtimes": [
+    0,
+    83,
+    208,
+    300,
+    448,
+    512,
+    579,
+    709,
+    789,
+    931,
+    1022
+  ],
+  "vdurations": [
+    83,
+    77,
+    92,
+    100,
+    64,
+    67,
+    61,
+    80,
+    142,
+    91,
+    98
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "9nKRcmsd1bEJbszIZ2HO",
+  "generationKey": "0c72744aa50a06763a596001950b13914222f055bb456d5065b40eacb6e750d8",
+  "sha256": "ff89f4d22d225c89809228a893371749112fdddca2279970135a662daa90405a",
+  "generatedAt": "2026-09-13T13:29:21.683Z",
+  "requestId": "pQcWugwOcTHSguZDd2Rl",
+  "historyItemId": "nNOgByL32VuP0fMwhzEC",
+  "characterCost": "20",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}
