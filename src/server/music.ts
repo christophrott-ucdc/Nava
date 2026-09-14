@@ -20,8 +20,13 @@ export async function loadMusic(appRoot:string):Promise<{manifest:MusicManifest;
   try{await fs.access(directory);}catch{if(typeof process.resourcesPath==='string')directory=path.join(process.resourcesPath,'assets/music');}
   try{
     const manifest=JSON.parse(await fs.readFile(path.join(directory,'manifest.json'),'utf8')) as MusicManifest;
-    if(manifest.version!==1||manifest.tracks.length!==10||new Set(manifest.tracks.map(t=>t.id)).size!==10)throw Error('Incomplete music pack');
-    for(const t of manifest.tracks){
+    const scores=[manifest,...Object.values(manifest.scenarios??{})];
+    if(manifest.version!==1)throw Error('Invalid music version');
+    for(const score of scores){
+      if(!Array.isArray(score.tracks)||score.tracks.length<1||score.tracks.length>32||new Set(score.tracks.map(t=>t.id)).size!==score.tracks.length)throw Error('Incomplete music pack');
+      if(![score.duckDb,score.duckAttackSec,score.duckReleaseSec,score.silence?.startSec,score.silence?.endSec].every(Number.isFinite)||score.duckDb>0||score.duckDb< -40||score.duckAttackSec<=0||score.duckReleaseSec<=0||!['preshow','play','epilogue'].includes(score.silence.phase)||score.silence.endSec<=score.silence.startSec)throw Error('Invalid music mix');
+    }
+    for(const t of scores.flatMap(s=>s.tracks)){
       if(!/^M\d{2}-[a-z-]+\.mp3$/.test(t.file)||!['preshow','play','epilogue'].includes(t.phase)||![t.startSec,t.durationSec,t.windowSec,t.fadeInSec,t.fadeOutSec,t.gainDb].every(Number.isFinite)||t.durationSec<=0||t.windowSec<=0)throw Error('Invalid music entry');
       if(createHash('sha256').update(await fs.readFile(path.join(directory,t.file))).digest('hex')!==t.sha256)throw Error('Music hash mismatch');
     }

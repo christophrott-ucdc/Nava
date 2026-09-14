@@ -28,3 +28,15 @@ body[data-operator-mode=before] main>section:not(.hero):not(.presentation-deck),
 .package-editor-selectors{display:grid;grid-template-columns:1fr 1.4fr;gap:16px}.package-editor-selectors label,#package-edit-form>label{display:grid;gap:8px;font-size:14px;margin-bottom:16px}.package-editor-selectors select{width:100%;min-width:0}.package-editor-selectors>label{min-width:0}#package-edit-text{width:100%;min-height:160px;resize:vertical;background:#fff;border:1px solid #aebbd0;border-radius:16px;padding:16px;font:16px/1.6 var(--font);color:var(--ink)}.package-edit-time{max-width:280px}.package-edit-time input{min-height:48px;border:1px solid #aebbd0;border-radius:12px;padding:12px;font-size:16px;background:#fff;color:var(--ink)}#package-edit-status{font-size:14px;line-height:1.5;color:var(--ink-soft)}@media(max-width:700px){.package-editor-selectors{grid-template-columns:1fr}}
 
 .eyebrow{font-size:16px}.button,.text-button,.nav-link{min-height:48px}
+
+/* Compact technical state; details expand only when requested. */
+.technical-status{margin:12px 0;padding:12px 18px;border-radius:18px;border:1px solid #a9c3d0;background:rgba(240,249,253,.94);color:#16384c;max-width:100%;overflow-wrap:anywhere}
+.technical-status>strong{font-size:16px}.technical-status p{margin:5px 0;font-size:14px;line-height:1.4}
+.technical-status[data-state="attention"]{border-color:#ba6820;background:#fff4e5;color:#683407}
+.technical-status[data-state="ready"]{border-color:#498a70;background:#edf9f2;color:#1d533e}
+.technical-status summary{cursor:pointer;min-height:36px;padding-top:8px;font-weight:650}
+.technical-status button{min-height:48px;padding:8px 16px;border-radius:12px;border:1px solid #7095a9;background:#fff;color:#16384c;font:inherit}
+.technical-status :is(summary,button):focus-visible{outline:3px solid #075ec0;outline-offset:3px}
+
+/* Independent show mixer stays visible in every operator mode. */
+.audio-mixer{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;border-top:1px solid #a4a1bb35;padding-top:12px}.audio-mixer label{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 12px;font-size:14px;font-weight:650}.audio-mixer output{font-variant-numeric:tabular-nums;color:var(--ink-soft)}.audio-mixer input[type=range]{grid-column:1/-1;width:100%;height:44px;min-height:44px;margin:0;accent-color:#7955bd}.audio-mixer input:focus-visible{outline:3px solid #7955bd;outline-offset:3px;border-radius:12px}@media(max-width:600px){.audio-mixer{grid-template-columns:1fr;gap:8px}}

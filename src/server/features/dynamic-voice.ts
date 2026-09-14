@@ -17,6 +17,7 @@
 
 import type { Cue, DynamicVoiceCue, Lang, ShowFile, TabletOption, TabletPost, TabletZone } from "../../shared/types";
 import { TABLET_OBSERVE_VALUE } from "../../shared/types";
+import {translateText} from '../../shared/localization';
 import type { DynamicVoiceMsg, TabletsMsg } from "../../shared/protocol";
 import { shortHash } from "../state";
 
@@ -60,6 +61,10 @@ export function sanitizeMessage(text: unknown, max = MAX_MESSAGE_CHARS): string 
 export function joinRo(items: readonly string[]): string {
   if (items.length <= 1) return items[0] ?? "";
   return `${items.slice(0, -1).join(", ")} și ${items[items.length - 1]}`;
+}
+function joinLanguage(items:readonly string[],lang:Lang):string{
+  if(lang==='ro')return joinRo(items);if(items.length<=1)return items[0]??'';
+  return `${items.slice(0,-1).join(', ')} ${lang==='fr'?'et':'and'} ${items[items.length-1]}`;
 }
 
 function render(template: string, vars: Record<string, string>): string {
@@ -128,8 +133,8 @@ export function summarizeChoices(cueId: string, ctx: DynamicVoiceContext, option
     const values = [...byPost.get(post)!.values()];
     const expressed = [...new Set(values.filter((v) => v !== TABLET_OBSERVE_VALUE))];
     const who = postLabel(post, ctx.postLabels);
-    if (!expressed.length) return `${who} a privit`;
-    return `${who} a ales ${joinRo(expressed.map((v) => humanizeChoice(v, options)))}`;
+    if (!expressed.length) return translateText(`${who} a privit`,ctx.lang);
+    return translateText(`${who} a ales ${joinLanguage(expressed.map((v) => translateText(humanizeChoice(v, options),ctx.lang)),ctx.lang)}`,ctx.lang);
   });
   return { items, posts };
 }
@@ -137,7 +142,8 @@ export function summarizeChoices(cueId: string, ctx: DynamicVoiceContext, option
 /** Construieste mesajul rostit pentru un cue `dynamic-voice`. Pur; nu arunca. */
 export function buildDynamicVoice(cue: DynamicVoiceCue, ctx: DynamicVoiceContext): DynamicVoiceMsg {
   const maxItems = Math.max(1, Math.min(20, cue.maxItems ?? DEFAULT_MAX_ITEMS));
-  const fallback = sanitizeMessage(cue.fallbackText?.ro ?? DEFAULT_FALLBACK, 400);
+  const local=(text:string)=>translateText(text,ctx.lang);
+  const fallback = sanitizeMessage(cue.fallbackText?.[ctx.lang] ?? local(cue.fallbackText?.ro ?? DEFAULT_FALLBACK), 400);
   let text = "";
 
   switch (cue.source) {
@@ -153,7 +159,7 @@ export function buildDynamicVoice(cue: DynamicVoiceCue, ctx: DynamicVoiceContext
         : ctx.answers
             .filter((a) => a.kind === "choice" && a.text !== "Doar privesc")
             .sort((a, b) => a.atMs - b.atMs)
-            .map((a) => sanitizeMessage(humanizeChoice(a.text)))
+            .map((a) => sanitizeMessage(local(humanizeChoice(a.text))))
             .filter(Boolean);
       const unique = [...new Set(pool)].slice(-maxItems);
       if (!unique.length) {
@@ -161,10 +167,10 @@ export function buildDynamicVoice(cue: DynamicVoiceCue, ctx: DynamicVoiceContext
         break;
       }
       const posts = [...new Set(ctx.answers.map((a) => a.post).filter((p): p is TabletPost => !!p))].sort((x, y) => x - y);
-      text = render(cue.template?.ro ?? DEFAULT_MESSAGES_TEMPLATE, {
+      text = render(cue.template?.[ctx.lang] ?? local(cue.template?.ro ?? DEFAULT_MESSAGES_TEMPLATE), {
         items: unique.join("; "),
         count: String(unique.length),
-        posts: joinRo(posts.map((p) => postLabel(p, ctx.postLabels))),
+        posts: joinLanguage(posts.map((p) => local(postLabel(p, ctx.postLabels))),ctx.lang),
       });
       break;
     }
@@ -176,10 +182,10 @@ export function buildDynamicVoice(cue: DynamicVoiceCue, ctx: DynamicVoiceContext
         text = fallback;
         break;
       }
-      text = render(cue.template?.ro ?? DEFAULT_SUMMARY_TEMPLATE, {
+      text = render(cue.template?.[ctx.lang] ?? local(cue.template?.ro ?? DEFAULT_SUMMARY_TEMPLATE), {
         items: items.slice(0, maxItems).join("; "),
         count: String(items.length),
-        posts: joinRo(posts.map((p) => postLabel(p, ctx.postLabels))),
+        posts: joinLanguage(posts.map((p) => local(postLabel(p, ctx.postLabels))),ctx.lang),
       });
       break;
     }

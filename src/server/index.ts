@@ -1,3 +1,13 @@
+import {sendWsJson} from './ws-send';
+import {ContentUpdates,activeContent} from './content-updates';
+import {RobotNarrator} from './robot-narrator';
+import {integrationSettings,DEFAULT_INTEGRATIONS,type IntegrationSettings,type AppUpdatePort} from '../shared/integrations';
+import {MissionBackups} from './mission-backups';
+import {LaunchBarrier} from './launch-barrier';
+import {redactLog} from '../shared/log-sanitize';
+import {createLogsRouter} from './features/logs';
+import {publicDiplomaUrl} from '../shared/public-diploma';
+import {createCrewDiplomas} from './features/crew-diploma';
 import {parseClientMessage,isPerfSample} from './client-message';
 import {PROTOCOL_VERSION} from '../shared/protocol';
 import {guardedCommand,guardedCheckpoint} from './guarded-work';
@@ -71,6 +81,7 @@ const MAX_PHOTO_BYTES = 1_500_000;
 
 export interface ServerHandle {
   onDisplayTopologyChanged?(reason:string):void;
+  applyDetectedTopology?():Promise<boolean>;
   port: number;
   urls: { control: string; tablet: string; ws: string; lanIp: string };
   stop(): Promise<void>;
@@ -80,6 +91,11 @@ export interface ServerHandle {
 }
 
 export interface StartServerOptions {
+  updates?:AppUpdatePort;
+  restartApplication?:()=>void;
+  applicationVersion?:string;
+  contentManaged?:boolean;
+  renderPdf?:(html:string)=>Promise<Buffer>;
   displayAutomation?: {inventory():Promise<unknown>;detect():Promise<unknown>;apply(optical?:unknown):Promise<unknown>};
   config: AppConfig;
   /** Folder with assets/ and media/ (dev: repo root; packaged: dirname(exe) or resourcesPath). */
@@ -138,7 +154,7 @@ const WS_SHUTDOWN_GRACE_MS = 500;
 const PLAYBACK_STATES = new Set(["idle", "preshow", "playing", "paused", "epilogue", "ended"]);
 const PHASES = new Set(["preshow", "play", "epilogue"]);
 const THEMES = new Set(["prologue", "launch", "light", "nature", "tech", "void", "home", "white"]);
-const SFX = new Set(["liftoff-rumble", "low-swell", "wormhole-whoosh", "arrival-chime", "rain", "white-fade"]);
+const SFX = new Set(["rocket-departure", "liftoff-rumble", "low-swell", "wormhole-whoosh", "arrival-chime", "rain", "white-fade"]);
 const ENTITIES = new Set(["LUMINA", "NATURA", "TEHNOLOGIC"]);
 
 // ---------------------------------------------------------------------------
@@ -201,8 +217,15 @@ async function readAppVersion(appRoot: string): Promise<string> {
 export async function startServer(opts: StartServerOptions): Promise<ServerHandle> {
   const { config, log } = opts;
   const startedAt = Date.now();
-  const version = await readAppVersion(opts.appRoot);
+  const version = opts.applicationVersion??await readAppVersion(opts.appRoot);
   let stopped = false;
+  let integrationBusy=false;let updateInstallPending=false;
+  const integrationsPath=path.join(path.dirname(opts.runsDir),'data','integrations.json');
+  let integrations:IntegrationSettings=structuredClone(DEFAULT_INTEGRATIONS);
+  try{integrations=integrationSettings(JSON.parse(await fs.readFile(integrationsPath,'utf8')));}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')log('warn','Integrarea salvată este invalidă; folosim modul ecran și update-uri dezactivate.');}
+  const contentUpdates=new ContentUpdates(path.join(path.dirname(opts.runsDir),'data','content'),opts.applicationVersion??version,()=>config.screens.map(s=>s.id));contentUpdates.configure(integrations.contentUrl);
+  const robot=new RobotNarrator();robot.configure(integrations.robotMode);let robotSequence=0;
+  await opts.updates?.configure(integrations.updates).catch(error=>log('warn','Updater configuration failed',{error:String(error)}));
 
   // --- show ------------------------------------------------------------------
   let show: ShowFile;
@@ -219,37 +242,55 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const artifactSecret=randomBytes(32);
   const artifactToken=(run:string,post:number,revision:number)=>createHmac("sha256",artifactSecret).update(`${run}:${post}:${revision}`).digest("hex");
   const mission=new MissionSession(new MissionStore(path.join(path.dirname(opts.runsDir),'data','nava.sqlite')));
+  const crewDiplomas=await createCrewDiplomas({directory:path.join(opts.runsDir,'crew-diplomas'),appRoot:opts.appRoot,renderPdf:opts.renderPdf,getRecord:run=>run===mission.record.runId?{...mission.record,checkpoint:director.getState()}:mission.store.get(run)});
+  if(!publicDiplomaUrl(process.env.DIPLOMA_PUBLIC_URL,mission.record))log('warn','Diplome: configurați DIPLOMA_PUBLIC_URL cu adresa HTTPS a portalului public. QR-ul LAN nu mai este afișat.');
   let narrator:NarratorManifest|null=null;
   const musicPack=await loadMusic(opts.appRoot);
   const waitingMusic=await loadWaitingMusic(opts.appRoot);
   if(!musicPack)log('warn','Music: complete verified pack unavailable; procedural ambience remains available.');
-  let narratorDirectory='';
+  const narrators=new Map<string,{manifest:NarratorManifest;directory:string}>();
   let narratorEnded='';
   mission.narrationReady=e=>narrationFinished(e,narrator,Date.now())&&(!e.narration||narratorEnded===e.narration.instance);
-  try{
-    let root=path.join(opts.appRoot,'assets','experience','voice','ro');
-    try{await fs.access(root);}catch{if(typeof process.resourcesPath==='string')root=path.join(process.resourcesPath,'assets','experience','voice','ro');}
+  for(const lang of ['ro','en','fr'] as const)try{
+    let root=path.join(opts.appRoot,'assets','experience','voice',lang);
+    try{await fs.access(root);}catch{if(typeof process.resourcesPath==='string')root=path.join(process.resourcesPath,'assets','experience','voice',lang);}
     const manifest=JSON.parse(await fs.readFile(path.join(root,'manifest.json'),'utf8')) as NarratorManifest;
     for(const id of new Set([...Object.keys(manifest.clips),'intro','touch','age-5-10-practice','age-10-15-practice','age-15-18-practice','adults-practice','legacy-v3-practice','cooperate','ready','handoff','finale'])){
       const clip=manifest.clips[id];
       if(!clip||!/^[-\w]+\.mp3$/.test(clip.file)||!Number.isFinite(clip.durationSec)||clip.durationSec<=0||clip.durationSec>45||typeof clip.text!=='string')throw Error('Narator incomplet');
       if(createHash('sha256').update(await fs.readFile(path.join(root,clip.file))).digest('hex')!==clip.sha256)throw Error('Narator modificat');
     }
-    narrator=manifest;
-    narratorDirectory=root;
-  }catch{log('warn','Tutorial: pachetul naratorului nu este disponibil sau valid. Tutorialul vocal este blocat.');}
-  let activePackage=await loadScenario(opts.appRoot,'legacy-v3',legacyShow);
+    if((manifest.lang??'ro')!==lang)throw Error('Limba naratorului nu corespunde.');
+    narrators.set(lang,{manifest:{...manifest,lang},directory:root});
+  }catch{log('warn',`Tutorial ${lang}: pachetul naratorului nu este disponibil sau valid. Tutorialul vocal este blocat.`);}
+  narrator=narrators.get(mission.recovery?.checkpoint?.lang??config.lang)?.manifest??null;
+  // Start from the supplied show. Explicit scenario selection (including DEMO TV)
+  // prepares the age package; optional assets must not prevent server startup.
+  let activePackage:Awaited<ReturnType<typeof loadScenario>>;
+  try{activePackage=await loadScenario(opts.appRoot,'legacy-v3',legacyShow,config.lang);}
+  catch(error){
+    const reason=`Pachetul ${config.lang} nu poate fi încărcat: ${error instanceof Error?error.message:String(error)}`;
+    log('error','Language package unavailable; console remains available',{reason});
+    activePackage={...await loadScenario(opts.appRoot,'legacy-v3',legacyShow,'ro'),issues:[reason]};
+  }
+  show=activePackage.show;
+  mission.record.scenarioId=activePackage.id;
+  mission.record.contentHash=activePackage.hash;
   let preparingPackage=false;
+  let demoPreparing=false,demoEpoch=0;
+  let playbackIssue:string|null=null;
+  const stalledScreens=new Set<string>();
   let rehearsal:TechnicalRehearsal|undefined;
   let topologyApplying=false;
   let recoveryIssue:string|null=null;
+  let checkpointError:string|null=null;
   type PhotoRequest = { runId: string; photoRequestId: string; expiresAt: number };
   /** Outstanding capture request (20 s window) and the photo currently displayed on screens. */
   let photoRequest: PhotoRequest | null = null;
   let photoDisplay: PhotoRequest | null = null;
   if(mission.recovery){
     try {
-      const recovered=await loadScenario(opts.appRoot,mission.recovery.scenarioId,legacyShow);
+      const recovered=await loadScenario(opts.appRoot,mission.recovery.scenarioId,legacyShow,mission.recovery.checkpoint?.lang??'ro');
       if(recovered.hash!==mission.recovery.contentHash||recovered.issues.length)throw new Error('Pachetul salvat diferă sau vocile nu sunt disponibile.');
       activePackage=recovered;show=recovered.show;mission.record=mission.recovery;
     }catch(error){recoveryIssue=String(error);}
@@ -299,7 +340,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const send = (client: Client, msg: ServerMessage): void => {
     if (client.ws.readyState !== WebSocket.OPEN) return;
     try {
-      client.ws.send(JSON.stringify(msg));
+      sendWsJson(client.ws,JSON.stringify(msg),reason=>log('warn','ws delivery failed',{id:client.id,reason}));
     } catch (err) {
       log("warn", "ws send failed", { id: client.id, err: String(err) });
     }
@@ -309,7 +350,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     for (const c of clients) {
       if (c.kind && kinds.includes(c.kind) && c.ws.readyState === WebSocket.OPEN) {
         try {
-          c.ws.send(json);
+          sendWsJson(c.ws,json,reason=>log('warn','ws delivery failed',{id:c.id,reason}));
         } catch {
           /* ignore */
         }
@@ -349,11 +390,15 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     const missing=posts.filter(post=>!connected.has(post));
     return {required:posts.length,connected:posts.filter(post=>connected.has(post)).length,reasons:!posts.length?['Așteptăm cel puțin un personaj confirmat pe tabletă.']:missing.length?[`Posturi cu participanți de reconectat: ${missing.join(', ')}`]:[]};
   };
+  let launchDispatchId:string|undefined;
   // --- director --------------------------------------------------------------
-  const director = new ShowDirector(show, config, {
+  const director:ShowDirector = new ShowDirector(show, config, {
     beforeCommand:(cmd,source)=>{
+      if(['preshow','start','play','rehearse'].includes(cmd.action)&&(showError||activePackage.issues.length))return {ok:false,reason:showError??activePackage.issues.join('; ')};
+      if(integrationBusy)return {ok:false,reason:'Operația de administrare este în curs. Așteaptă înainte de pornire.'};
       if(source==='diagnostic')return;
-      if(preparingPackage&&source!=='tv-demo')return {ok:false,reason:'Pregătirea scenariului este în curs.'};
+      if(cmd.action==='play'&&director.playbackState==='idle')return director.dispatchCommand({action:'start'},source);
+      if(preparingPackage&&source!=='tv-demo'&&source!=='launch-barrier'&&!(source==='language-package'&&cmd.action==='setLang'))return {ok:false,reason:'Pregătirea scenariului este în curs.'};
       const e=mission.record.experience;
       if(['preshow','start'].includes(cmd.action)&&director.getState().state==='idle'){
         if(e?.crew?.open&&source.startsWith('autoRun'))return {ok:false,reason:'Operatorul confirmă încheierea îmbarcării înainte de plecare.'};
@@ -368,16 +413,26 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       if(['preshow','start'].includes(cmd.action)&&director.getState().state==='idle'&&e?.status==='pending'&&activePackage.id!=='legacy-v3'){
         if(!narrator)return {ok:false,reason:'Vocile tutorialului lipsesc. Verifică pachetul sau omite explicit tutorialul din consolă.'};
         e.status='tutorial';e.step='touch';e.epoch++;narrate(e,'intro',Date.now());mission.record.status='active';mission.record.revision++;mission.store.save(mission.record);
-        queueMicrotask(()=>pushMission());return {ok:true};
+        queueMicrotask(()=>pushMission());return {ok:true,message:'Tutorialul echipajului a început.'};
+      }
+      if(launchBarrier.busy&&!['start','restart','setVolume','tabletSfx','ambient','lights','preflight'].includes(cmd.action))return {ok:false,reason:'TV-urile pregătesc pornirea. Așteaptă sau resetează sesiunea.'};
+      if(cmd.action==='restart')launchBarrier.cancel();
+      if(cmd.action==='start'&&!launchDispatchId){
+        if((source.startsWith('autoRun')||source==='preshowAutoStart')&&!launchBarrier.canRetryAutomatically())return {ok:false,reason:launchBarrier.status.message};
+        if(!['idle','preshow','ended'].includes(director.playbackState))return {ok:false,reason:'Filmul este deja pornit.'};
+        if(!launchBarrier.busy)void launchBarrier.start();
+        return {ok:true,pending:true,message:'Pregătim pornirea comună a TV-urilor. Așteaptă confirmarea redării.'};
       }
     },
-    onApplyCmd: (cmd) => {
+    onApplyCmd: (cmd,context) => {
+      // Let an already spoken line finish during an editorial close-up, as on the TV.
+      if(context!=='planet-hold'&&['pause','stopVoice','restart','seek','skipToScene'].includes(cmd.action))robot.stop(cmd.action);
       if(cmd.action==='restart'){
         photoRequest=null;broadcast(['screen','tablet'],{type:'photo',action:'hide'});
         mission.reset(activePackage.id,activePackage.hash);
         director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:mission.record.timelineEpoch});
       }
-      broadcast(["screen"], { type: "applyCmd", cmd, serverTimeMs: Date.now() });
+      broadcast(["screen"], { type: "applyCmd", cmd, serverTimeMs: Date.now(),...(cmd.action==='start'&&launchDispatchId?{launchId:launchDispatchId}:{}) });
     },
     onDynamicVoice: (msg) => {
       runlog.write("dynamicVoice", { cueId: msg.cueId, speaker: msg.speaker, chars: msg.text.length });
@@ -398,6 +453,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       pushTabletView();
     },
     onCueFired: (cue, manual) => {
+      if(cue.kind==='voice'&&cue.speaker==='AVATAR_AI'){
+        const r=mission.record,lang=director.language;
+        robot.prepareShow(director.getShow(),activePackage.hash,lang);
+        robot.speak({instanceId:`${r.runId}:${r.timelineEpoch}:${cue.id}:${manual?++robotSequence:'auto'}`,runId:r.runId,timelineEpoch:r.timelineEpoch,contentHash:activePackage.hash,cueId:cue.id,speaker:'AVATAR_AI',phase:cue.phase,at:director.now(),text:cue.text[lang]??cue.text.ro,language:lang,durationMs:cue.audioDurationMs??null,asset:{cueId:cue.id,contentHash:activePackage.hash,language:lang}});
+      }
       runlog.write("cue", { id: cue.id, kind: cue.kind, phase: cue.phase, at: cue.at, manual });
       broadcast(["control"], { type: "cueFired", cue, serverTimeMs: Date.now() });
       pushTabletView();
@@ -424,16 +484,45 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     },
   });
 
+  const launchConnected=()=>{
+    const live=[...clients].filter(c=>c.kind==='screen'&&c.ws.readyState===WebSocket.OPEN).map(c=>c.id);
+    return config.displayMode==='span'&&live.includes(spanPrimaryId()??'')?config.screens.map(s=>s.id):live;
+  };
+  const launchBarrier=new LaunchBarrier({
+    identity:()=>mission.record.runId+':'+mission.record.timelineEpoch+':'+activePackage.hash+':'+JSON.stringify(config.screens.map(s=>s.id)),
+    validate:()=>showError??(activePackage.issues.length?activePackage.issues.join('; '):null)??(director.getState().suspended?'Sesiunea este suspendată.':!preflight?.ok?'Fișierele experienței nu sunt validate.':!voicesPrepared()?'Vocile nu sunt încă pregătite.':(!(opts.wallRuntime?.().preview??false)&&opts.wallRuntime?.().issues.length)?opts.wallRuntime!().issues.join('; '):null),
+    required:()=>config.screens.map(s=>s.id),connected:launchConnected,preview:()=>opts.wallRuntime?.().preview??false,
+    prepare:id=>broadcast(['screen'],{type:'launchPrepare',id}),
+    commit:(id,startAtMs)=>broadcast(['screen'],{type:'launchCommit',id,startAtMs}),
+    cancel:id=>broadcast(['screen'],{type:'launchCancel',id}),
+    start:id=>{
+      launchDispatchId=id;
+      try{
+        const result=director.dispatchCommand({action:'start'},'launch-barrier');
+        if(result.ok)mission.checkpoint(director.getState());
+        pushMission();return result;
+      }catch(error){director.suspend();pushMission();throw error;}finally{launchDispatchId=undefined;}
+    },
+  });
   director.setCrewReadinessProvider(crewReadiness);
+  director.setDisplayPreviewProvider(()=>opts.wallRuntime?.().preview??false);
   director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:mission.record.timelineEpoch});
-  if(mission.recovery&&!recoveryIssue&&mission.record.checkpoint)director.restoreCheckpoint(mission.record.checkpoint);
+  if(mission.recovery&&!recoveryIssue&&mission.record.checkpoint){
+    try{director.restoreCheckpoint(mission.record.checkpoint);}
+    catch{recoveryIssue='Checkpoint invalid sau incompatibil. Datele au fost păstrate; pregătește un grup nou.';}
+  }
+  let presentedFrame:{run:string;epoch:number;time:number}|undefined;
   const pushMission=():void=>{
+    robot.prepareShow(director.getShow(),activePackage.hash,director.language);
+    robot.tick(director.getState());
     director.notifyPreflight();
     const state=director.getState();
     for(const client of clients){
       if(!client.kind)continue;
       const post=client.kind==='tablet'?tablets.tablets.get(client.id)?.post??undefined:undefined;
       const snapshot=mission.snapshot(state,post);
+      if(presentedFrame?.run===snapshot.runId&&presentedFrame.epoch===mission.record.timelineEpoch)snapshot.presentedFilmTime=presentedFrame.time;
+      if(state.state==='ended')snapshot.crewDiplomaUrl=publicDiplomaUrl(process.env.DIPLOMA_PUBLIC_URL,mission.record);
       if(post)snapshot.certificateToken=artifactToken(snapshot.runId,post,snapshot.revision);
       if(post)snapshot.journalRetry=mission.record.journalRetries?.[String(post)]??0;
       send(client,{type:'mission',snapshot});
@@ -458,7 +547,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const updateCounts = (): void => director.setCounts(countScreens(), tablets.connectedCount(), connectedScreenIds());
 
   // R4 wiring: readiness gets the preflight verdict; dynamic-voice cues read the tablets' answers.
-  const voicesPrepared=()=>activePackage.id==='legacy-v3'||[...clients].filter(c=>c.kind==='screen').every(c=>packageReady.get(c)===activePackage.hash);
+  const voicesPrepared=()=>activePackage.id==='legacy-v3'&&director.language==='ro'||[...clients].filter(c=>c.kind==='screen').every(c=>packageReady.get(c)===activePackage.hash);
   director.setPreflightProvider(() => (preflight ? preflight.ok&&voicesPrepared()&&!recoveryIssue&&!(config.autoDisplays?.enabled&&opts.wallRuntime?.().issues.length) : null));
   director.setDynamicVoiceBuilder(
     createDynamicVoiceBuilder({
@@ -470,6 +559,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
 
   const makeWelcome = (): WelcomeMsg => ({
     type: "welcome",
+    contentHash:activePackage.hash,
       protocolVersion:PROTOCOL_VERSION,
     serverTimeMs: Date.now(),
     state: director.getState(),
@@ -480,6 +570,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   // Preflight: verifies voice clips / film / avatar; feeds Readiness.assetsOk when the director supports it (D-01).
   const runPreflightNow = async (): Promise<PreflightResult> => {
     preflight = await runPreflight(director.getShow(), director.language, director.currentVariant, { appRoot: opts.appRoot, config, log });
+    if(showError||activePackage.issues.length){preflight.ok=false;preflight.reasons.push(...(showError?[showError]:[]),...activePackage.issues);}
     if (config.videoWall?.calibration) {
       preflight.ok = false;
       preflight.reasons.push("Calibrarea TV este activă: grila înlocuiește filmul. Dezactivează videoWall.calibration și repornește înainte de public.");
@@ -493,8 +584,11 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   const reloadShow = async (): Promise<DispatchResult> => {
     try {
       const next = await loadShowFile(opts.showPath);
-      legacyShow=next;activePackage=await loadScenario(opts.appRoot,'legacy-v3',next);mission.record.contentHash=activePackage.hash;
-      director.setShow(next);
+      const nextPackage=await loadScenario(opts.appRoot,'legacy-v3',next,director.language);
+      if(nextPackage.issues.length)throw new Error(nextPackage.issues.join('; '));
+      legacyShow=next;show=nextPackage.show;activePackage=nextPackage;mission.record.contentHash=activePackage.hash;
+      director.setShow(nextPackage.show);
+      for(const client of clients)packageReady.delete(client);
       showError = null;
       runlog.write("show.reload", { version: next.version, cues: next.cues.length });
       log("info", "show reloaded", { version: next.version, cues: next.cues.length });
@@ -514,19 +608,41 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   /** Single entry point for commands from console / keyboard / HTTP. */
   const executeCommand = async (cmd: Command, source: string): Promise<DispatchResult> => {
     if (stopped) return { ok: false, reason: "Serverul se oprește." };
+    if(cmd.action==='restart'&&demoPreparing){demoEpoch++;demoPreparing=false;preparingPackage=false;}
     if(rehearsal?.running)return {ok:false,reason:'Repetiția tehnică este în curs. Folosește Anulează repetiția.'};
     if(config.autoDisplays?.enabled&&['start','preshow','play','rehearse'].includes(cmd.action)){
       const issues=opts.wallRuntime?.().issues??[];if(issues.length)return {ok:false,reason:issues.join('; ')};
     }
-    if(preparingPackage||topologyApplying)return {ok:false,reason:'Pregătirea este în curs.'};
+    if(preparingPackage||topologyApplying||integrationBusy||recoveryResuming)return {ok:false,reason:'Pregătirea este în curs.'};
     if(recoveryIssue&&cmd.action!=='restart'&&cmd.action!=='preflight')return {ok:false,reason:'Recuperarea necesită pregătirea unui grup nou: '+recoveryIssue};
     if(director.getState().suspended&&cmd.action!=='restart'&&cmd.action!=='preflight')return {ok:false,reason:'Reluați sau încheiați recuperarea din consolă.'};
+    if(['start','preshow','play','rehearse'].includes(cmd.action)&&activePackage.issues.length)return {ok:false,reason:activePackage.issues.join('; ')};
     if(activePackage.id!=='legacy-v3'){
       if(['start','preshow','play','rehearse'].includes(cmd.action)&&!voicesPrepared())return {ok:false,reason:'Ecranele încă pregătesc vocile scenariului.'};
-      if(['reloadShow','setVariant','setLang'].includes(cmd.action))return {ok:false,reason:'Profilul complet este fixat; editați pachetul pentru următoarea rulare.'};
+      if(['reloadShow','setVariant'].includes(cmd.action))return {ok:false,reason:'Profilul complet este fixat; editați pachetul pentru următoarea rulare.'};
       if(['start','preshow'].includes(cmd.action)&&activePackage.issues.length)return {ok:false,reason:activePackage.issues.join('; ')};
     }
+    if(cmd.action==='setLang'){
+      if(director.playbackState!=='idle'||mission.snapshot(director.getState()).experience?.active)return {ok:false,reason:'Limba se alege înainte de tutorial și de pornirea experienței.'};
+      if(cmd.lang===director.language)return {ok:true};
+      preparingPackage=true;
+      try{
+        const next=await loadScenario(opts.appRoot,activePackage.id,legacyShow,cmd.lang);
+        if(next.issues.length)return {ok:false,reason:next.issues.join('; ')};
+        const voice=narrators.get(cmd.lang);if(!voice)return {ok:false,reason:`Pachetul naratorului ${cmd.lang} este incomplet.`};
+        const checked=await runPreflight(next.show,cmd.lang,null,{appRoot:opts.appRoot,config,log});
+        if(!checked.ok)return {ok:false,reason:checked.reasons.join('; ')};
+        const result=director.dispatchCommand(cmd,'language-package');if(!result.ok)return result;
+        activePackage=next;narrator=voice.manifest;narratorEnded='';
+        director.setShow(next.show);mission.record.contentHash=next.hash;for(const client of clients)packageReady.delete(client);preflight=checked;
+        guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Language checkpoint failed; active language retained',{lang:cmd.lang,error:String(error)}));
+        for(const client of clients)if(client.kind)send(client,makeWelcome());
+        pushMission();return {ok:true};
+      }catch(error){log('warn','Language package rejected',{lang:cmd.lang,error:String(error)});return {ok:false,reason:`Pachetul ${cmd.lang} nu este complet. Limba precedentă este păstrată.`};}
+      finally{preparingPackage=false;}
+    }
     if(cmd.action==='restart'){
+      playbackIssue=null;stalledScreens.clear();
       if(mission.recovery&&mission.recovery.runId!==mission.record.runId){mission.store.save({...mission.recovery,status:'interrupted'});}
       director.resumeSuspended();mission.recovery=null;recoveryIssue=null;
     }
@@ -561,13 +677,19 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   // Start at the launch countdown so missing tablet/display readiness cannot strand a TV demo in preshow.
   const startTvDemo=async():Promise<DispatchResult>=>{
     const state=director.getState();
-    if(stopped||preparingPackage||topologyApplying||rehearsal?.running)return {ok:false,reason:'Pregătirea este în curs. Încearcă din nou în câteva secunde.'};
+    if(stopped||preparingPackage||topologyApplying||integrationBusy||recoveryResuming||rehearsal?.running)return {ok:false,reason:'Pregătirea este în curs. Încearcă din nou în câteva secunde.'};
     if(!state.suspended&&!['idle','ended'].includes(state.state))return {ok:false,reason:'Experiența rulează deja.'};
-    preparingPackage=true;
+    preparingPackage=true;demoPreparing=true;const epoch=++demoEpoch;
     try{
-      const next=await loadScenario(opts.appRoot,'age-5-10',legacyShow);
+      if(config.autoDisplays?.countMode==='adaptive'&&opts.displayAutomation){
+        const topology=await opts.displayAutomation.inventory() as {state?:string;issues?:string[]};
+        if(topology.state!=='applied'||topology.issues?.length)return {ok:false,reason:topology.issues?.join('; ')||'TV-urile se reconfigurează. Reîncearcă după pregătirea ecranelor.'};
+      }
+      const next=await loadScenario(opts.appRoot,'age-5-10',legacyShow,director.language);
+      if(epoch!==demoEpoch)return {ok:false,reason:'Pregătirea demo a fost anulată.'};
       if(next.issues.length)return {ok:false,reason:next.issues.join('; ')};
-      const checked=await runPreflight(next.show,'ro',null,{appRoot:opts.appRoot,config,log});
+      const checked=await runPreflight(next.show,director.language,null,{appRoot:opts.appRoot,config,log});
+      if(epoch!==demoEpoch)return {ok:false,reason:'Pregătirea demo a fost anulată.'};
       if(!checked.ok)return {ok:false,reason:checked.reasons.join('; ')};
       if(config.videoWall?.calibration)return {ok:false,reason:'Dezactivează grila de calibrare TV înainte de demo.'};
       if(!clockSource)return {ok:false,reason:'Ecranul principal se conectează. Reîncearcă în câteva secunde.'};
@@ -587,9 +709,10 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       for(const client of clients)if(client.kind)send(client,makeWelcome());
       pushMission();
       const deadline=Date.now()+45000;
-      while(!stopped&&Date.now()<deadline&&(!clockSource||!voicesPrepared()||!director.readiness(false).videoReady)){
+      while(!stopped&&epoch===demoEpoch&&Date.now()<deadline&&(!clockSource||!voicesPrepared()||!director.readiness(false).videoReady)){
         await new Promise(resolve=>setTimeout(resolve,100));
       }
+      if(epoch!==demoEpoch)return {ok:false,reason:'Pregătirea demo a fost anulată.'};
       if(stopped||!clockSource||!voicesPrepared()||!director.readiness(false).videoReady)return {ok:false,reason:'Filmul sau vocile nu sunt încă pregătite. Apasă din nou DEMO TV.'};
       director.dispatchCommand({action:'setRate',rate:1},'tv-demo');
       const result=director.dispatchCommand({action:'start'},'tv-demo');
@@ -597,7 +720,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       pushMission();log('info','Demo TV: scenariu copii, fără tablete',{ok:result.ok});
       return result;
     }catch(error){log('error','Demo TV failed',{error:String(error)});return {ok:false,reason:'Demo TV nu a putut porni. Verifică fișierele filmului și vocilor.'};}
-    finally{preparingPackage=false;}
+    finally{if(epoch===demoEpoch){preparingPackage=false;demoPreparing=false;}}
   };
 
   // --- HTTP -------------------------------------------------------------------
@@ -613,7 +736,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     const t0 = Date.now();
     await next();
     const p = c.req.path;
-    if (p !== "/api/health" && p !== "/api/state") {
+    if (p !== "/api/health" && p !== "/api/state" && !(p === "/api/technical" && c.req.method === "GET") && !p.startsWith("/api/logs")) {
       log("info", `${c.req.method} ${p} -> ${c.res.status} ${Date.now() - t0}ms`);
     }
   });
@@ -633,19 +756,20 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   };
 
   app.get("/", (c) => c.redirect("/control/"));
+  app.get('/api/locale',c=>c.json({lang:director.language}));
   app.get('/api/music/waiting',c=>waitingMusic?c.json(waitingMusic.metadata):c.json({ok:false},404));
   app.get('/api/music',c=>musicPack?c.json(musicPack.manifest):c.json({ok:false,reason:'Music pack unavailable'},503));
   app.get('/assets/music/:file',async c=>{
     if(waitingMusic&&c.req.param('file')===waitingMusic.metadata.file)return createStaticHandler({prefix:'/assets/music',dir:waitingMusic.directory})(c);
-    if(!musicPack||!musicPack.manifest.tracks.some(t=>t.file===c.req.param('file')))return c.notFound();
+    if(!musicPack||![...musicPack.manifest.tracks,...Object.values(musicPack.manifest.scenarios??{}).flatMap(s=>s.tracks)].some(t=>t.file===c.req.param('file')))return c.notFound();
     return createStaticHandler({prefix:'/assets/music',dir:musicPack.directory})(c);
   });
-  app.get('/assets/experience/voice/ro/:file',async c=>{
-    const file=c.req.param('file');
-    if(!narrator||!Object.values(narrator.clips).some(clip=>clip.file===file))return c.notFound();
-    return createStaticHandler({prefix:'/assets/experience/voice/ro',dir:narratorDirectory})(c);
+  app.get('/assets/experience/voice/:lang/:file',async c=>{
+    const file=c.req.param('file'),lang=c.req.param('lang'),pack=narrators.get(lang);
+    if(!pack||!Object.values(pack.manifest.clips).some(clip=>clip.file===file))return c.notFound();
+    return createStaticHandler({prefix:`/assets/experience/voice/${lang}`,dir:pack.directory})(c);
   });
-  for (const name of ["control", "tablet", "login", "debug", "analytics", "admin", "shared", "wall"] as const) {
+  for (const name of ["control", "tablet", "login", "debug", "analytics", "admin", "shared", "wall", "logs", "clips"] as const) {
     app.get(`/${name}`, (c) => c.redirect(`/${name}/`));
     app.get(`/${name}/*`, createStaticHandler({ prefix: `/${name}`, dir: path.join(opts.webDir, name) }));
   }
@@ -654,11 +778,32 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   // public: /api/health, /api/urls, /api/qr, /api/auth/login|me, tablet WS, (/api/state when security.publicState)
   const viewer = auth.requireRole("viewer");
   const operator = auth.requireRole("operator");
+  app.use("/api/logs",viewer);app.use("/api/logs/*",viewer);
+  app.route("/api/logs",createLogsRouter(opts.runsDir,auditLog.path));
+  let clientErrorWindow=Date.now(),clientErrorCount=0;
+  const clientErrorPeers=new Map<string,number>();
+  app.post('/api/client-errors',async c=>{
+    if(Date.now()-clientErrorWindow>60000){clientErrorWindow=Date.now();clientErrorCount=0;clientErrorPeers.clear();}
+    if(++clientErrorCount>100)return c.json({ok:false},429);
+    const peer=auth.clientIp(c),peerCount=(clientErrorPeers.get(peer)??0)+1;
+    clientErrorPeers.set(peer,peerCount);
+    if(peerCount>20)return c.json({ok:false},429);
+    if(Number(c.req.header('content-length'))>16000)return c.json({ok:false},413);
+    const reader=c.req.raw.body?.getReader();if(!reader)return c.json({ok:false},400);
+    const chunks:Uint8Array[]=[];let bytes=0;try{while(true){const part=await reader.read();if(part.done)break;bytes+=part.value.length;if(bytes>16000){await reader.cancel();return c.json({ok:false},413);}chunks.push(part.value);}}finally{reader.releaseLock();}
+    const text=Buffer.concat(chunks).toString('utf8');if(text.length>12000)return c.json({ok:false},413);
+    let body;try{body=JSON.parse(text);}catch{return c.json({ok:false},400);}
+    if(!body||!['tablet','control','debug','analytics','admin','login','wall','logs'].includes(body.page)||!['javascript.error','promise.unhandled'].includes(body.kind)||typeof body.detail!=='string'||body.detail.length>6000)return c.json({ok:false},400);
+    log('warn',`Browser report: ${body.page} / ${body.kind}`,{untrustedClientReport:true,detail:redactLog(body.detail)});
+    return c.json({ok:true});
+  });
+
   app.get('/api/scenarios/:id/draft',viewer,async c=>{
     try{return c.json(await readScenarioDraft(opts.appRoot,c.req.param('id') as ScenarioId));}catch{return c.json({ok:false,reason:'Pachet indisponibil'},404);}
   });
   app.patch('/api/scenarios/:id/draft',operator,async c=>{
-    if(director.playbackState!=='idle'||director.getState().suspended||preparingPackage)return c.json({ok:false,reason:'Editarea cere o misiune în pregătire.'},409);
+    if(opts.contentManaged)return c.json({ok:false,reason:'Pachet semnat fixat. Publică o versiune nouă pentru modificarea replicilor.'},409);
+    if(director.playbackState!=='idle'||director.getState().suspended||preparingPackage||integrationBusy)return c.json({ok:false,reason:'Editarea cere o misiune în pregătire.'},409);
     preparingPackage=true;
     try{return c.json(await editScenarioDraft(opts.appRoot,c.req.param('id') as ScenarioId,await c.req.json()));}
     catch(error){return c.json({ok:false,reason:error instanceof Error?error.message:'Salvare nereușită'},409);}
@@ -681,7 +826,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     try{return c.json(JSON.parse(await fs.readFile(path.join(diagnosticDir,'latest.json'),'utf8')));}catch{return c.json(null);}
   });
   app.post('/api/diagnostics/start',operator,async c=>{
-    if(director.playbackState!=='idle'||preparingPackage||topologyApplying)return c.json({ok:false,reason:'Verificarea cere o misiune în pregătire.'},409);
+    if(director.playbackState!=='idle'||preparingPackage||topologyApplying||integrationBusy)return c.json({ok:false,reason:'Verificarea cere o misiune în pregătire.'},409);
     preparingPackage=true;
     try{
       const assets=await runPreflightNow(),readiness=director.readiness(),samples=perf.snapshot();
@@ -701,7 +846,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   });
   app.get('/api/scenarios',viewer,async(c)=>{
     const catalog=await Promise.all((Object.keys(SCENARIO_LABELS) as ScenarioId[]).map(async id=>{
-      try{const pack=await loadScenario(opts.appRoot,id,legacyShow);return {id,label:pack.label,ready:pack.issues.length===0,issues:pack.issues,revision:pack.hash.slice(0,12)};}
+      try{const pack=await loadScenario(opts.appRoot,id,legacyShow,director.language);return {id,label:pack.label,ready:pack.issues.length===0,issues:pack.issues,revision:pack.hash.slice(0,12)};}
       catch{return {id,label:SCENARIO_LABELS[id],ready:false,issues:['Pachet indisponibil']};}
     }));
     return c.json({selected:activePackage.id,catalog});
@@ -709,12 +854,12 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   app.post('/api/scenarios/select',operator,async(c)=>{
     const body=await c.req.json().catch(()=>null);
     if(!body||!(body.id in SCENARIO_LABELS))return c.json({ok:false,reason:'Scenariu invalid'},400);
-    if(preparingPackage||topologyApplying||director.playbackState!=='idle'||director.getState().suspended)return c.json({ok:false,reason:'Selectarea se face înainte de show.'},409);
+    if(preparingPackage||topologyApplying||integrationBusy||director.playbackState!=='idle'||director.getState().suspended)return c.json({ok:false,reason:'Selectarea se face înainte de show.'},409);
     preparingPackage=true;
     try{
-      const next=await loadScenario(opts.appRoot,body.id,legacyShow);
+      const next=await loadScenario(opts.appRoot,body.id,legacyShow,director.language);
       if(next.issues.length)return c.json({ok:false,reason:next.issues.join('; ')},409);
-      const checked=await runPreflight(next.show,'ro',null,{appRoot:opts.appRoot,config,log});
+      const checked=await runPreflight(next.show,director.language,null,{appRoot:opts.appRoot,config,log});
       if(!checked.ok)return c.json({ok:false,reason:checked.reasons.join('; ')},409);
       activePackage=next;mission.reset(next.id,next.hash);director.setShow(next.show);
       director.bindMission({runId:mission.record.runId,serverEpoch:mission.serverEpoch,timelineEpoch:0});
@@ -724,20 +869,20 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     }catch{return c.json({ok:false,reason:'Pachetul nu a putut fi încărcat; selecția precedentă este păstrată.'},409);}
     finally{preparingPackage=false;}
   });
-  app.get('/api/mission',viewer,c=>c.json(mission.snapshot(director.getState())));
+  app.get('/api/mission',viewer,c=>c.json({...mission.snapshot(director.getState()),crewDiplomaAvailable:!!publicDiplomaUrl(process.env.DIPLOMA_PUBLIC_URL,mission.record)}));
   app.post('/api/mission/journal/retry',operator,async c=>{
     const body=await c.req.json().catch(()=>null),state=director.getState();
     if(!body||typeof body.runId!=='string'||!Number.isInteger(body.post)||body.post<1||body.post>5)return c.json({ok:false,reason:'Grup sau post invalid.'},400);
     if(body.runId!==mission.record.runId)return c.json({ok:false,reason:'Grupul s-a schimbat. Actualizează lista.'},409);
-    if(preparingPackage||topologyApplying||recoveryIssue||rehearsal?.running||state.suspended||!['epilogue','ended'].includes(state.state))return c.json({ok:false,reason:'Jurnalul poate fi retrimis numai la finalul unei expediții nesuspendate.'},409);
+    if(preparingPackage||topologyApplying||integrationBusy||recoveryIssue||rehearsal?.running||state.suspended||!['epilogue','ended'].includes(state.state))return c.json({ok:false,reason:'Jurnalul poate fi retrimis numai la finalul unei expediții nesuspendate.'},409);
     if(!mission.record.experience?.participants.some(seat=>Number(seat[0])===body.post))return c.json({ok:false,reason:'Acest post nu are participanți în expediție.'},409);
     const next=structuredClone(mission.record);next.journalRetries??={};next.journalRetries[String(body.post)]=(next.journalRetries[String(body.post)]??0)+1;next.revision++;
     try{mission.store.save(next);}catch{return c.json({ok:false,reason:'Cererea nu a putut fi păstrată. Încearcă din nou.'},503);}
     mission.record=next;pushMission();return c.json({ok:true});
   });
-  app.get('/api/experience/voices',c=>narrator?c.json(narrator):c.json({ok:false,reason:'Pachetul naratorului lipsește.'},503));
+  app.get('/api/experience/voices',c=>{const pack=narrators.get(c.req.query('lang')??director.language);return pack?c.json(pack.manifest):c.json({ok:false,reason:'Pachetul naratorului lipsește.'},503);});
   app.post('/api/experience/control',operator,async c=>{
-    if(preparingPackage||topologyApplying||rehearsal?.running||recoveryIssue)return c.json({ok:false,reason:'Pregătirea sau verificarea instalației este în curs.'},409);
+    if(preparingPackage||topologyApplying||integrationBusy||rehearsal?.running||recoveryIssue)return c.json({ok:false,reason:'Pregătirea sau verificarea instalației este în curs.'},409);
     const body=await c.req.json().catch(()=>null);
     if(!body||typeof body.action!=='string')return c.json({ok:false,reason:'Comandă invalidă.'},400);
     const state=director.getState();
@@ -801,26 +946,114 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     if(!body||![1,2,3,4,5].includes(body.post))return c.json({ok:false},400);
     try{mission.setAccessibility(body.post,body.settings);pushMission();return c.json({ok:true});}catch{return c.json({ok:false,reason:'Setări invalide'},400);}
   });
-  app.get('/api/recovery',viewer,c=>c.json({pending:!!mission.recovery||!!director.getState().suspended,issue:recoveryIssue,mission:mission.snapshot(director.getState())}));
+  let recoveryResuming=false;
+  const missionBackups=new MissionBackups(mission.store,path.join(path.dirname(opts.runsDir),'data','backups'),()=>!integrationBusy&&!launchBarrier.busy&&(['idle','ended'].includes(director.playbackState)||!!director.getState().suspended),message=>log('warn','SQLite backup failed',{message}));
+  const integrationIdle=()=>{if(updateInstallPending&&opts.updates?.status().state==='error'){updateInstallPending=false;integrationBusy=false;}return !stopped&&!integrationBusy&&!preparingPackage&&!topologyApplying&&!recoveryResuming&&!launchBarrier.busy&&!rehearsal?.running&&!mission.recovery&&!director.getState().suspended&&['idle','ended'].includes(director.playbackState)&&mission.record.experience?.status!=='tutorial'&&(director.playbackState==='ended'||(!mission.record.experience?.participants.length&&!Object.keys(mission.record.experience?.crew?.characters??{}).length));};
+  app.get('/api/integrations',auth.requireRole('admin'),c=>c.json({settings:integrations,robot:robot.status,updates:opts.updates?.status()??null,content:contentUpdates.status,canChange:integrationIdle(),physicalRobotAvailable:false,robotHardware:{manufacturer:"Unitree",model:"H2 EDU",firmware:null,audioCompatibility:"unverified"}}));
+  app.post('/api/integrations/settings',auth.requireRole('admin'),async c=>{
+    if(!integrationIdle())return c.json({ok:false,reason:'Configurarea se face între sesiuni, fără recuperare în așteptare.'},409);
+    integrationBusy=true;
+    try{
+      const next=integrationSettings(await c.req.json());
+      await opts.updates?.configure(next.updates);
+      await fs.mkdir(path.dirname(integrationsPath),{recursive:true});
+      await fs.writeFile(integrationsPath+'.tmp',JSON.stringify(next,null,2));await fs.rename(integrationsPath+'.tmp',integrationsPath);
+      integrations=next;robot.configure(next.robotMode);contentUpdates.configure(next.contentUrl);log('info','Integration settings changed',{robotMode:next.robotMode,updateProvider:next.updates.provider});return c.json({ok:true});
+    }catch(error){await opts.updates?.configure(integrations.updates).catch(()=>{});return c.json({ok:false,reason:String(error)},400);}finally{integrationBusy=false;}
+  });
+  app.post('/api/integrations/updates/:action',auth.requireRole('admin'),async c=>{
+    const action=c.req.param('action');if(!['check','download','install'].includes(action))return c.json({ok:false},404);
+    if(!integrationIdle())return c.json({ok:false,reason:'Actualizarea se face numai între sesiuni, fără recuperare în așteptare.'},409);
+    if(!opts.updates)return c.json({ok:false,reason:'Actualizarea aplicației cere Electron.'},503);
+    integrationBusy=true;let installing=false;
+    try{
+      if(action==='check')await opts.updates.check();
+      if(action==='download')await opts.updates.download();
+      if(action==='install'){
+        const body=await c.req.json().catch(()=>null);
+        if(body?.version!==opts.updates.status().availableVersion||!body?.version)throw Error('Confirmă versiunea exactă afișată.');
+        await activeContent(path.join(path.dirname(opts.runsDir),'data','content'),body.version);
+        mission.checkpoint(director.getState());await missionBackups.run();
+        if(missionBackups.status.state!=='ok')throw Error('Instalarea cere un backup SQLite reușit.');
+        opts.updates.install();installing=true;updateInstallPending=true;
+      }
+      log('info','Application update action',{action});return c.json({ok:true,status:opts.updates.status()});
+    }catch(error){return c.json({ok:false,reason:String(error)},400);}finally{if(!installing)integrationBusy=false;}
+  });
+  app.post('/api/integrations/content/:action',auth.requireRole('admin'),async c=>{
+    const action=c.req.param('action');if(!['check','download','activate'].includes(action))return c.json({ok:false},404);
+    if(!integrationIdle())return c.json({ok:false,reason:'Pachetele multimedia se actualizează între sesiuni.'},409);
+    integrationBusy=true;let restarting=false;
+    try{
+      if(action==='check')await contentUpdates.check();
+      if(action==='download')await contentUpdates.download();
+      if(action==='activate'){
+        if(!opts.restartApplication)throw Error('Activarea cere Electron.');
+        const body=await c.req.json().catch(()=>null);if(!body?.id||body.id!==contentUpdates.status.id)throw Error('Confirmă ID-ul pachetului.');
+        mission.checkpoint(director.getState());await missionBackups.run();if(missionBackups.status.state!=='ok')throw Error('Activarea cere backup SQLite reușit.');
+        await contentUpdates.activate();opts.restartApplication();restarting=true;
+      }
+      log('info','Content update action',{action,id:contentUpdates.status.id});return c.json({ok:true,status:contentUpdates.status});
+    }catch(error){return c.json({ok:false,reason:String(error)},400);}finally{if(!restarting)integrationBusy=false;}
+  });
+  app.get('/api/technical',viewer,c=>{
+    const readiness=director.readiness(),launch=launchBarrier.status;
+    const missing=config.screens.map(s=>s.id).filter(id=>!launchConnected().includes(id));
+    const problem=checkpointError??recoveryIssue??showError??playbackIssue??(activePackage.issues.length?activePackage.issues.join('; '):null)??(launch.state==='error'?launch.message:null)??(director.playbackState==='playing'&&missing.length?'TV-uri deconectate: '+missing.join(', '):null)??missionBackups.status.error;
+    return c.json({state:problem?'attention':launchBarrier.busy?'preparing':readiness.ready?'ready':'waiting',message:problem??(launchBarrier.busy?launch.message:readiness.ready?'Instalația este pregătită.':readiness.reasons.join('; ')),launch,backup:missionBackups.status,checkpointSavedAt:mission.record.checkpointSavedAt??null});
+  });
+  app.post('/api/technical/backup',operator,async c=>{
+    if(launchBarrier.busy||!(['idle','ended'].includes(director.playbackState)||director.getState().suspended))return c.json({ok:false,reason:'Backupul manual se face în așteptare sau cu experiența suspendată.'},409);
+    await missionBackups.run();return c.json({ok:missionBackups.status.state==='ok',backup:missionBackups.status},missionBackups.status.state==='ok'?200:503);
+  });
+  app.get('/api/recovery',viewer,c=>c.json({pending:!!mission.recovery||!!director.getState().suspended,issue:recoveryIssue,storageWarning:checkpointError,savedAt:mission.record.checkpointSavedAt??null,intervalMs:250,mission:mission.snapshot(director.getState())}));
   app.post('/api/recovery/resume',operator,async c=>{
+    const body=await c.req.json().catch(()=>null);
+    if(body?.runId!==undefined&&body.runId!==mission.record.runId)return c.json({ok:false,reason:'Sesiunea s-a schimbat. Actualizează consola.'},409);
+    if(recoveryResuming||preparingPackage||topologyApplying||integrationBusy||rehearsal?.running)return c.json({ok:false,reason:'Pregătirea este în curs.'},409);
     if(recoveryIssue)return c.json({ok:false,reason:recoveryIssue},409);
-    await runPreflightNow();if(!director.readiness().ready)return c.json({ok:false,reason:director.readiness().reasons.join('; ')},409);
-    director.resumeSuspended();mission.recovery=null;
-    if(mission.record.experience?.status==='tutorial'){
-      const next=structuredClone(mission.record);delete next.experience!.pausedAt;
-      narrate(next.experience!,stepVoice(next.experience!,next.scenarioId),Date.now());next.experience!.launchRequested=false;next.revision++;mission.store.save(next);mission.record=next;
-    }
-    pushMission();return c.json({ok:true});
+    if(stalledScreens.size)return c.json({ok:false,reason:'Așteptăm recuperarea decodoarelor: '+[...stalledScreens].join(', ')},409);
+    if(!mission.recovery&&!director.getState().suspended)return c.json({ok:true,alreadyResumed:true});
+    recoveryResuming=true;
+    try{
+      const runId=mission.record.runId;
+      await runPreflightNow();
+      if(runId!==mission.record.runId)return c.json({ok:false,reason:'Sesiunea s-a schimbat în timpul verificării.'},409);
+      const readiness=director.readiness();
+      if(!readiness.ready)return c.json({ok:false,reason:readiness.reasons.join('; ')},409);
+      const next=structuredClone(mission.record);
+      if(next.experience?.status==='tutorial'){
+        delete next.experience.pausedAt;
+        narrate(next.experience,stepVoice(next.experience,next.scenarioId),Date.now());next.experience.launchRequested=false;
+      }
+      next.revision++;next.checkpoint=director.getState();next.checkpointSavedAt=new Date().toISOString();
+      // Durable commit BEFORE allowing any timeline to advance. A second crash stays recoverable.
+      mission.store.save(next);mission.record=next;checkpointError=null;
+      director.resumeSuspended();mission.recovery=null;playbackIssue=null;
+      pushMission();log('info','Recovery resumed',{runId,time:next.checkpoint.phaseTime});return c.json({ok:true});
+    }catch(error){
+      director.suspend();checkpointError='Reluarea nu a putut fi salvată. Verifică spațiul și accesul la discul cu SQLite, apoi reîncearcă.';
+      log('error','Recovery failed; mission remains suspended',{error:String(error)});
+      return c.json({ok:false,reason:checkpointError},503);
+    }finally{recoveryResuming=false;}
   });
   app.get('/api/wall/inventory',viewer,async c=>c.json(await opts.displayAutomation?.inventory()??{available:false,reason:'Inventarul nativ cere Electron.'}));
   app.post('/api/wall/detect',operator,async c=>c.json(await opts.displayAutomation?.detect()??{available:false}));
-  app.post('/api/wall/apply',auth.requireRole('admin'),async c=>{
-    if(director.playbackState!=='idle'||topologyApplying||preparingPackage||!opts.displayAutomation)return c.json({ok:false,reason:'Aplicarea cere Electron și pregătire fără show activ.'},409);
+  const applyTopology=async(optical?:unknown):Promise<unknown>=>{
+    if(stopped||director.playbackState!=='idle'||director.getState().suspended||topologyApplying||preparingPackage||integrationBusy||recoveryResuming||launchBarrier.busy||rehearsal?.running||mission.recovery||mission.record.experience?.status==='tutorial'||!opts.displayAutomation)throw new Error('Aplicarea cere pregătire fără show activ.');
     topologyApplying=true;
-    try{const body=await c.req.json().catch(()=>({}));const result=await opts.displayAutomation.apply(body?.optical);director.updateRequiredScreens(config.screens.map(s=>s.id));updateCounts();return c.json({ok:true,result});}
-    catch{return c.json({ok:false,reason:'Topologia nu a putut fi aplicată.'},409);}finally{topologyApplying=false;}
+    try{
+      const result=await opts.displayAutomation.apply(optical);
+      director.updateRequiredScreens(config.screens.map(s=>s.id));updateCounts();pushMission();
+      return result;
+    }finally{topologyApplying=false;}
+  };
+  app.post('/api/wall/apply',auth.requireRole('admin'),async c=>{
+    try{const body=await c.req.json().catch(()=>({}));return c.json({ok:true,result:await applyTopology(body?.optical)});}
+    catch{return c.json({ok:false,reason:'Topologia nu a putut fi aplicată; este necesară pregătirea fără show activ și un set complet de filme.'},409);}
   });
   const protectLegacyEditor:import('hono').MiddlewareHandler<AuthEnv>=async(c,next)=>{
+    if(opts.contentManaged&&c.req.method!=='GET')return c.json({ok:false,reason:'Pachetul activ este semnat și nu se editează pe loc.'},409);
     if(activePackage.id!=='legacy-v3'&&c.req.method!=='GET')return c.json({ok:false,reason:'Show-ul activ este un pachet fixat. Selectați originalul pentru editorul legacy.'},409);
     await next();
   };
@@ -881,7 +1114,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     c.json({
       lang: director.language,
       sync: config.sync,
-      audio: { voiceVolume: director.volumes.voice, sfxVolume: director.volumes.sfx },
+      audio: { voiceVolume: director.volumes.voice, sfxVolume: director.volumes.sfx, musicVolume: director.volumes.music },
       screens: config.screens.map((s) => ({ id: s.id, roleLabel: s.roleLabel ?? null })),
       videoPath: config.video.path,
       showPath: opts.showPath,
@@ -907,6 +1140,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     const r = await handleCommand(cmd, source);
     return c.json({ ...r, state: director.getState() }, r.ok ? 200 : 409);
   });
+  app.route("/souvenir",crewDiplomas.router);
   app.get("/api/urls", (c) => c.json(urls));
   app.get("/api/qr", async (c) => {
     const url = c.req.query("url") ?? urls.tablet;
@@ -915,7 +1149,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     const png = await QRCode.toBuffer(url, {
       type: "png",
       width: size,
-      margin: 1,
+      margin: 4,
       errorCorrectionLevel: "M",
       color: { dark: "#0b1220ff", light: "#e6fbffff" },
     });
@@ -1126,6 +1360,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     log("info", `ws hello ${client.kind} ${client.id}${client.isClockSource ? " (clock source)" : ""}`);
     updateCounts();
     send(client, makeWelcome());
+    send(client,{type:'preparationStatus',message:preparationMessage});
     pushMission();
     if (client.kind === "control") send(client, tablets.toMsg());
     if (client.kind === "tablet") {
@@ -1231,6 +1466,12 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
             else if(msg.status==='error')log('warn','Narator: redare nereușită; repetă explicația după verificarea sunetului.');
           }break;
         }
+        case 'launchReady':{
+          if(client.kind==='screen'){
+            const allowed=config.displayMode==='span'&&client.id===spanPrimaryId()?config.screens.map(s=>s.id):[client.id];
+            launchBarrier.acknowledge(msg.id,msg.screens.filter(id=>allowed.includes(id)));
+          }break;
+        }
         case 'packageReady':
           if(client.kind==='screen'&&msg.ok===true&&msg.contentHash===activePackage.hash){packageReady.set(client,msg.contentHash);director.notifyPreflight();}
           break;
@@ -1239,6 +1480,9 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
           break;
         case "report": {
           if(activePackage.id!=='legacy-v3'&&(msg.runId!==mission.record.runId||msg.serverEpoch!==mission.serverEpoch||msg.timelineEpoch!==mission.record.timelineEpoch))break;
+          if(client.kind==='screen'&&msg.videoReady&&msg.runId===mission.record.runId&&msg.serverEpoch===mission.serverEpoch&&msg.timelineEpoch===mission.record.timelineEpoch&&stalledScreens.delete(client.id)){
+            playbackIssue=stalledScreens.size?'Așteptăm recuperarea decodoarelor: '+[...stalledScreens].join(', '):'Panorama este pregătită din nou. Reia experiența din Recuperare.';
+          }
           if (
             client.kind === "screen" &&
             client === clockSource &&
@@ -1250,7 +1494,8 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
             msg.rate >= 0 &&
             msg.rate <= 8 // rehearse mode runs up to 8x
           ) {
-            director.onReport(msg, !(config.video.panelsDir && config.videoWall?.mode !== 'cinema'));
+            if(typeof msg.presentedFilmTime==='number'&&Number.isFinite(msg.presentedFilmTime)&&msg.presentedFilmTime>=0&&msg.presentedFilmTime<=director.getShow().videoDurationSec)presentedFrame={run:mission.record.runId,epoch:mission.record.timelineEpoch,time:msg.presentedFilmTime};
+            director.onReport(msg, !launchBarrier.busy && !(config.video.panelsDir && config.videoWall?.mode !== 'cinema'));
           }
           break;
         }
@@ -1282,6 +1527,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
           break;
         }
         case "missionAction": {
+          if(integrationBusy){send(client,{type:'missionAck',eventId:msg.eventId,ok:false,status:'maintenance',reason:'Operație de administrare în curs.'});break;}
           if(client.kind!=='tablet')break;
           const post=tablets.tablets.get(client.id)?.post;
           if(!post)break;
@@ -1291,6 +1537,20 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
         case "tablet":
           onTabletEvent(client, msg);
           break;
+        case 'wallPlayback': {
+          if(msg.runId!==mission.record.runId||msg.serverEpoch!==mission.serverEpoch||msg.timelineEpoch!==mission.record.timelineEpoch)break;
+          if(client.kind!=='screen'||!config.screens.some(s=>s.id===client.id)||!['stalled','recovered'].includes(msg.status)||typeof msg.detail!=='string'||msg.detail.length>500||!Number.isFinite(msg.filmTime)||msg.filmTime<0||msg.filmTime>director.getShow().videoDurationSec||!Number.isFinite(msg.stalledForMs)||msg.stalledForMs<0)break;
+          if(msg.status==='stalled'&&director.playbackState==='playing'){
+            stalledScreens.add(client.id);
+            playbackIssue='Redarea panoramei s-a blocat. Experiența a fost suspendată. Verifică TV-urile și folosește Recuperare pentru reluare.';
+            if(!director.getState().suspended)director.suspend();robot.stop('Redare suspendată');
+            guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Playback suspension checkpoint failed',{error:String(error)}));
+            log('error','Wall playback suspended',{detail:msg.detail,filmTime:msg.filmTime,stalledForMs:msg.stalledForMs});pushMission();
+          }else if(msg.status==='recovered'&&stalledScreens.delete(client.id)){
+            playbackIssue=stalledScreens.size?'Așteptăm recuperarea decodoarelor: '+[...stalledScreens].join(', '):'Panorama este pregătită din nou. Reia experiența din Recuperare.';log('info','Wall playback prepared after stall',{screenId:client.id});
+          }
+          break;
+        }
         case "perf": {
           if (client.kind !== "screen") break;
           const s = (msg as { sample?: unknown }).sample;
@@ -1325,6 +1585,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
     ws.on("close", () => {
       clearTimeout(helloTimer);
       clients.delete(client);
+      if(client.kind==='screen')launchBarrier.disconnected(config.displayMode==='span'&&client.id===spanPrimaryId()?config.screens.map(s=>s.id):[client.id]);
       if (client.kind === "tablet") {
         tablets.disconnect(client.id, ws);
         broadcastTablets();
@@ -1342,6 +1603,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
 
   // --- timers --------------------------------------------------------------------
   const clockHz = Math.min(30, Math.max(1, config.sync.clockHz || 4));
+  let preparationMessage:string|null=null,launchStatusKey='';
   const clockTimer = setInterval(() => {
     if(director.getState().state==='ended'&&mission.record.experience&&!mission.record.experience.tvOnly&&!mission.record.experience.finaleNarrated&&narrator?.clips.finale){
       const record=structuredClone(mission.record);record.experience!.finaleNarrated=true;narrate(record.experience!,'finale',Date.now());record.revision++;
@@ -1364,12 +1626,25 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       }
     }
     director.tick();
+    const preshowEnd=Math.max(0,...director.getShow().scenes.filter(s=>s.phase==='preshow').map(s=>s.end));
+    const waiting=director.playbackState==='preshow'&&director.now()>=preshowEnd;
+    const message=waiting?({ro:'Pregătim nava pentru plecare. Rămâneți la posturi!',en:'We are preparing the ship for departure. Stay at your stations!',fr:'Nous préparons le vaisseau au départ. Restez à vos postes !'}[director.language]):null;
+    if(message!==preparationMessage){preparationMessage=message;broadcast(['screen','tablet'],{type:'preparationStatus',message});}
+    const key=launchBarrier.status.state+':'+launchBarrier.status.message;
+    if(key!==launchStatusKey){launchStatusKey=key;log(launchBarrier.status.state==='error'?'warn':'info','Launch preparation',{...launchBarrier.status});}
     pushMission();
     broadcast(["screen", "control"], director.getClock());
     pushTabletView();
   }, Math.round(1000 / clockHz));
+  const checkpointTimer=setInterval(()=>{
+    if(stopped||recoveryIssue||recoveryResuming||director.getState().suspended)return;
+    try{mission.checkpoint(director.getState());checkpointError=null;}
+    catch(error){
+      checkpointError='Salvarea SQLite a eșuat. Experiența este suspendată; verifică discul și reia din Recuperare.';
+      director.suspend();log('error','Checkpoint failed; timeline suspended',{error:String(error)});pushMission();
+    }
+  },250);
   const stateTimer = setInterval(() => {
-    if(!recoveryIssue)guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Mission checkpoint failed; show retained',{error:String(error)}));
     if (config.displayMode === "span") updateCounts();
     broadcast(["control", "tablet"], { type: "state", state: director.getState() });
     const samples = perf.snapshot();
@@ -1412,6 +1687,9 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
         if (!r.ok) log("warn", `command rejected: ${r.reason}`, { cmd });
       });
     },
+    async applyDetectedTopology():Promise<boolean>{
+      try{await applyTopology();return true;}catch{return false;}
+    },
     onDisplayTopologyChanged(reason:string):void {
       if(director.playbackState!=='idle'&&director.playbackState!=='ended')director.suspend();
       director.updateRequiredScreens(config.screens.map(s=>s.id));updateCounts();
@@ -1421,10 +1699,13 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
       await rehearsal?.cancel('Serverul se oprește.');
       if (stopped) return;
       stopped = true;
+      launchBarrier.cancel();robot.stop('Serverul se oprește');
       if(!recoveryIssue)guardedCheckpoint(()=>mission.checkpoint(director.getState()),error=>log('error','Mission checkpoint failed; show retained',{error:String(error)}));
+      await missionBackups.close();
       mission.store.close();
       clearInterval(clockTimer);
       clearInterval(stateTimer);
+      clearInterval(checkpointTimer);
       clearInterval(heartbeatTimer);
       if (tabletsTimer) clearTimeout(tabletsTimer);
 

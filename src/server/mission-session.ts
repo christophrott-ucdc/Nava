@@ -20,12 +20,18 @@ export class MissionSession {
     this.store.save(old);
     this.record=this.fresh(id,hash);this.record.accessibility=structuredClone(old.accessibility);this.store.save(this.record);
   }
+  private checkpointKey='';
   checkpoint(state:ShowState):void {
-    this.record.checkpoint=state;
-    if(state.state==='ended')this.record.status='completed';
-    else if(state.state!=='idle')this.record.status='active';
-    if(state.rate>1)this.record.mode='rehearsal';
-    this.store.save(this.record);
+    const next={...this.record,checkpoint:state};
+    if(state.state==='ended')next.status='completed';
+    else if(state.state!=='idle'||next.experience?.status==='tutorial')next.status='active';
+    if(state.rate>1)next.mode='rehearsal';
+    // Freeze timestamps and volatile connection diagnostics for duplicate detection only.
+    const key=JSON.stringify({...next,checkpointSavedAt:undefined,checkpoint:{...state,serverTimeMs:0,readiness:undefined,screensConnected:0,tabletsConnected:0,videoReady:false}});
+    if(key===this.checkpointKey)return;
+    next.checkpointSavedAt=new Date().toISOString();
+    this.store.save(next);
+    this.record=next;this.checkpointKey=key;
   }
   /** Experience owns a registered roster. Missing experience retains legacy open-seat semantics. */
   private progress(){return this.record.experience?{...this.record.progress,participants:[...this.record.experience.participants]}:this.record.progress;}
@@ -56,7 +62,7 @@ export class MissionSession {
       lantern:r.scenarioId==='age-5-10'?Object.entries(r.progress.zones).filter(([seat])=>!progress.participants||progress.participants.includes(seat)).map(([seat,z])=>({seat,found:z.choices['1']==='found',mounted:z.choices['2']==='fitted',linked:z.choices['3']==='linked'})):undefined,
       cueInstanceId:this.instance(state),stage,endsAt:stage?STAGE_WINDOWS[r.scenarioId][stage-1][1]:null,
       suspended:!!state.suspended,state,post,view,
-      summary:summarizeScenario(progress),accessibility:r.accessibility[String(post)]??DEFAULT_ACCESSIBILITY};
+      summary:summarizeScenario(progress,this.finaleActive(state)),accessibility:r.accessibility[String(post)]??DEFAULT_ACCESSIBILITY};
   }
   accept(event:MissionEvent,post:TabletPost,state:ShowState):{ok:boolean;status:string;eventId:string;reason?:string} {
     const result=(status:string)=>({ok:status==='accepted'||status==='duplicate',status,eventId:event.eventId});

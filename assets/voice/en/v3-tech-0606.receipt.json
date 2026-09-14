@@ -1,0 +1,54 @@
+{
+  "cueId": "v3-tech-0606",
+  "lang": "en",
+  "speaker": "TEHNOLOGIC",
+  "text": "We knew.",
+  "file": "v3-tech-0606.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "We",
+    "knew"
+  ],
+  "wtimes": [
+    0,
+    160
+  ],
+  "wdurations": [
+    80,
+    320
+  ],
+  "durationMs": 1520,
+  "visemes": [
+    "FF",
+    "I",
+    "nn",
+    "U"
+  ],
+  "vtimes": [
+    0,
+    42,
+    160,
+    314
+  ],
+  "vdurations": [
+    42,
+    38,
+    154,
+    166
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "3z9q8Y7plHbvhDZehEII",
+  "generationKey": "dfe4c4cdfe2c8916682b532a90c954ce81f3a7b823af2110ae1f6520e0fd715c",
+  "sha256": "f14dfc2ae6c3e4c002d0b2532b18fb0173abb947d4188d1d56decc4c470bd198",
+  "generatedAt": "2026-09-13T13:28:26.145Z",
+  "requestId": "GpYa8NTve9n7baW5OAg6",
+  "historyItemId": "0y9mGDzt9of5afHu69nA",
+  "characterCost": "8",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

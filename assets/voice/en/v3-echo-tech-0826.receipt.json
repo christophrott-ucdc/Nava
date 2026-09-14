@@ -1,0 +1,84 @@
+{
+  "cueId": "v3-echo-tech-0826",
+  "lang": "en",
+  "speaker": "TEHNOLOGIC",
+  "text": "We knew your choices.",
+  "file": "v3-echo-tech-0826.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "We",
+    "knew",
+    "your",
+    "choices"
+  ],
+  "wtimes": [
+    0,
+    128,
+    352,
+    570
+  ],
+  "wdurations": [
+    80,
+    192,
+    128,
+    630
+  ],
+  "durationMs": 1360,
+  "visemes": [
+    "FF",
+    "I",
+    "nn",
+    "U",
+    "I",
+    "U",
+    "RR",
+    "CH",
+    "O",
+    "SS",
+    "I",
+    "SS"
+  ],
+  "vtimes": [
+    0,
+    42,
+    128,
+    220,
+    352,
+    395,
+    439,
+    570,
+    688,
+    801,
+    946,
+    1055
+  ],
+  "vdurations": [
+    42,
+    38,
+    92,
+    100,
+    43,
+    44,
+    41,
+    118,
+    113,
+    145,
+    109,
+    145
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "3z9q8Y7plHbvhDZehEII",
+  "generationKey": "ef2867381a3546b701041dcd08b7ca64fa1b4ba258b61a61e34f289eed7fb4ad",
+  "sha256": "98dbaf20755542355a5cddd2031014313f1bdc83554307758b1c3fa5998311b5",
+  "generatedAt": "2026-09-13T13:29:23.016Z",
+  "requestId": "x5Kp49raDnpbFajobYqn",
+  "historyItemId": "HHvnAzRjGqTrv0nwdOHW",
+  "characterCost": "21",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

@@ -3,6 +3,9 @@ import { samsungWallPreset, validateVideoWall, validateWallScreens, type WallRec
 
 export interface AutoDisplaysConfig {
   enabled:boolean;
+  /** Adaptive selects connected TVs; fixed preserves a commissioned wall. */
+  countMode?:'adaptive'|'fixed';
+  panelGapMm?:number;
   installationId?:string;
   expectedAudienceCount?:number;
   operatorDisplayIds?:number[];
@@ -58,9 +61,11 @@ export function validateAutoDisplays(raw:unknown):AutoDisplaysConfig {
   if(o.centerDisplayId!==undefined&&!Number.isSafeInteger(o.centerDisplayId))throw new Error('centerDisplayId invalid.');
   if(o.layout!==undefined&&o.layout!=='generic'&&o.layout!=='samsung-5')throw new Error('autoDisplays.layout invalid.');
   if(o.allowEstimatedGeometry!==undefined&&typeof o.allowEstimatedGeometry!=='boolean')throw new Error('allowEstimatedGeometry trebuie să fie boolean.');
+  if(o.countMode!==undefined&&o.countMode!=='adaptive'&&o.countMode!=='fixed')throw new Error('autoDisplays.countMode invalid.');
+  if(o.panelGapMm!==undefined&&(typeof o.panelGapMm!=='number'||!Number.isFinite(o.panelGapMm)||o.panelGapMm<0||o.panelGapMm>10000))throw new Error('autoDisplays.panelGapMm invalid.');
   const operators=(o.operatorDisplayIds??[]) as number[],audience=(o.audienceDisplayIds??[]) as number[];
   if(operators.some(id=>audience.includes(id)))throw new Error('Un display nu poate fi operator și public simultan.');
-  return {enabled:o.enabled,installationId:o.installationId as string|undefined,expectedAudienceCount:o.expectedAudienceCount as number|undefined,operatorDisplayIds:operators,audienceDisplayIds:o.audienceDisplayIds===undefined?undefined:audience,centerDisplayId:o.centerDisplayId as number|undefined,layout:o.layout as AutoDisplaysConfig['layout'],allowEstimatedGeometry:o.allowEstimatedGeometry as boolean|undefined};
+  return {enabled:o.enabled,countMode:o.countMode as AutoDisplaysConfig['countMode'],panelGapMm:o.panelGapMm as number|undefined,installationId:o.installationId as string|undefined,expectedAudienceCount:o.expectedAudienceCount as number|undefined,operatorDisplayIds:operators,audienceDisplayIds:o.audienceDisplayIds===undefined?undefined:audience,centerDisplayId:o.centerDisplayId as number|undefined,layout:o.layout as AutoDisplaysConfig['layout'],allowEstimatedGeometry:o.allowEstimatedGeometry as boolean|undefined};
 }
 
 export function validatePersistentWallProfile(raw:unknown,installationId:string):PersistentWallProfile {
@@ -81,14 +86,30 @@ export function validatePersistentWallProfile(raw:unknown,installationId:string)
   return {...o,videoWall:wall.value,screens:screens.screens};
 }
 
+/** File IDs in centered exports, left to right. Even walls put the presenter on the right inner TV. */
+export function audiencePanelIds(count:number):string[]|undefined {
+  return ({1:['center'],2:['port-inner','starboard-inner'],3:['port-inner','center','starboard-inner'],4:['port-outer','port-inner','starboard-inner','starboard-outer'],5:['port-outer','port-inner','center','starboard-inner','starboard-outer']} as Record<number,string[]>)[count]?.slice();
+}
+
 /** Deterministic physical-coordinate candidate; an OS desktop is never labelled optically measured. */
 export function buildDisplayTopology(displays:readonly InventoryDisplay[],options:AutoDisplaysConfig,saved?:PersistentWallProfile):DisplayTopologyCandidate {
   const issues:string[]=[],warnings:string[]=[];
   const match=(a:DisplayAssignment)=>displays.find(d=>d.hardwareKey===a.hardwareKey);
   const operators=new Set(displays.filter(d=>options.operatorDisplayIds?.includes(d.runtimeId)).map(d=>d.hardwareKey));
   for(const a of saved?.assignments??[])if(a.role==='operator')operators.add(a.hardwareKey);
+  const adaptive=options.countMode==='adaptive';
+  const eligible=displays.filter(d=>!operators.has(d.hardwareKey)&&!d.internal&&!d.virtual&&(options.audienceDisplayIds===undefined||options.audienceDisplayIds.includes(d.runtimeId)));
+  // Reuse calibration only for the same ordered hardware and canonical media IDs.
+  const oldAssignments=saved?.assignments.filter(a=>a.role==='audience')??[];
+  const ordered=[...eligible].sort((a,b)=>a.boundsDip.x-b.boundsDip.x||a.boundsDip.y-b.boundsDip.y);
+  const canonical=audiencePanelIds(ordered.length);
+  const savedOperators=saved?.assignments.filter(a=>a.role==='operator')??[];
+  if(adaptive&&saved&&(oldAssignments.length!==ordered.length||ordered.some((d,i)=>oldAssignments[i]?.hardwareKey!==d.hardwareKey||(canonical&&oldAssignments[i]?.screenId!==canonical[i])))){
+    warnings.push('Numărul sau ordinea TV-urilor s-a schimbat; configurația panoramică este recalculată pentru ecranele conectate.');
+    saved=undefined;
+  }
   let audience:InventoryDisplay[];
-  if(saved){
+  if(saved&&!adaptive){
     const assignments=saved.assignments.filter(a=>a.role==='audience');
     audience=assignments.map(match).filter((d):d is InventoryDisplay=>!!d);
     if(audience.length!==assignments.length)issues.push('Lipsesc display-uri din instalația salvată; numărul așteptat nu a fost redus.');
@@ -96,12 +117,12 @@ export function buildDisplayTopology(displays:readonly InventoryDisplay[],option
     const known=new Set(saved.assignments.map(a=>a.hardwareKey));
     if(displays.some(d=>!known.has(d.hardwareKey)))warnings.push('Display nou neatribuit; nu este adăugat automat instalației salvate.');
   }else{
-    audience=displays.filter(d=>!operators.has(d.hardwareKey)&&!d.internal&&!d.virtual&&(options.audienceDisplayIds===undefined||options.audienceDisplayIds.includes(d.runtimeId)));
+    audience=eligible;
     if(options.audienceDisplayIds?.some(id=>!audience.some(d=>d.runtimeId===id)))issues.push('O ieșire de public selectată lipsește sau nu este eligibilă.');
     if(!audience.length)issues.push('Nu există ieșiri de public eligibile; atribuie explicit display-urile externe.');
   }
   audience.sort((a,b)=>a.boundsDip.x-b.boundsDip.x||a.boundsDip.y-b.boundsDip.y||a.hardwareKey.localeCompare(b.hardwareKey));
-  const expected=saved?.expectedAudienceCount??options.expectedAudienceCount??(options.layout==='samsung-5'?5:audience.length);
+  const expected=adaptive?audience.length:saved?.expectedAudienceCount??options.expectedAudienceCount??(options.layout==='samsung-5'?5:audience.length);
   if(audience.length!==expected)issues.push(`Instalația așteaptă ${expected} display-uri de public; sunt disponibile ${audience.length}.`);
   if(audience.length>16||expected<1||expected>16)issues.push('Sunt acceptate între 1 și 16 display-uri de public.');
   if(new Set(audience.map(d=>d.hardwareKey)).size!==audience.length)issues.push('Identități de display duplicate; asocierea automată nu este sigură.');
@@ -114,7 +135,7 @@ export function buildDisplayTopology(displays:readonly InventoryDisplay[],option
   let center=audience.find(d=>saved?.assignments.some(a=>a.hardwareKey===d.hardwareKey&&a.screenId===oldCenter))??audience.find(d=>d.runtimeId===options.centerDisplayId);
   if(options.centerDisplayId!==undefined&&!audience.some(d=>d.runtimeId===options.centerDisplayId))issues.push('Display-ul central selectat nu este disponibil.');
   if(!center&&audience.length){
-    if(options.layout==='samsung-5'){
+    if(options.layout==='samsung-5'||adaptive){
       const sizes=audience.filter(d=>d.physicalSizeMm).sort((a,b)=>b.physicalSizeMm!.width-a.physicalSizeMm!.width);
       center=sizes.length===5&&sizes[0].physicalSizeMm!.width>sizes[1].physicalSizeMm!.width*1.08?sizes[0]:audience[Math.floor(audience.length/2)];
     }else{
@@ -125,7 +146,7 @@ export function buildDisplayTopology(displays:readonly InventoryDisplay[],option
   if(options.layout==='samsung-5'&&audience.length===5&&audience.indexOf(center!)!==2)issues.push('TV-ul central de 115″ nu este în centrul ordinii Windows; este necesară verificarea ordinii instalației.');
   const names=['port-outer','port-inner','center','starboard-inner','starboard-outer'];
   const screens=audience.map((d,i):ScreenConfig=>{
-    const id=saved?.assignments.find(a=>a.hardwareKey===d.hardwareKey)?.screenId??(options.layout==='samsung-5'&&audience.length===5?names[i]:d===center?'center':`audience-${i+1}`);
+    const id=(adaptive?audiencePanelIds(audience.length)?.[i]:undefined)??saved?.assignments.find(a=>a.hardwareKey===d.hardwareKey)?.screenId??(options.layout==='samsung-5'&&audience.length===5?names[i]:d===center?'center':`audience-${i+1}`);
     return {id,displayIndex:d.index,roleLabel:d===center?'CENTRU':`TV ${i+1}`,showAvatar:d===center,showSubtitles:d===center,showEntities:d===center,playAudio:d===center,kiosk:true,yawOffsetDeg:0};
   });
   let videoWall:VideoWallConfig;
@@ -134,7 +155,7 @@ export function buildDisplayTopology(displays:readonly InventoryDisplay[],option
   else{
     const dims=audience.map(d=>d.physicalSizeMm??{width:Math.round(d.pixelSize.width/d.pixelSize.height*1000),height:1000});
     const height=Math.max(1,...dims.map(d=>d.height));let x=0;
-    videoWall={mode:'cinema',fit:'cover',focusX:.5,focusY:.5,calibration:false,panels:dims.map((size,i)=>{const panel={screenId:screens[i].id,x,y:(height-size.height)/2,width:size.width,height:size.height};x+=size.width;return panel;})};
+    videoWall={mode:'cinema',fit:'cover',focusX:.5,focusY:.5,calibration:false,panels:dims.map((size,i)=>{const panel={screenId:screens[i].id,x,y:(height-size.height)/2,width:size.width,height:size.height};x+=size.width+(options.panelGapMm??0);return panel;})};
   }
   if(!saved)videoWall.mode='panorama';
   const geometryStatus=saved?.geometryStatus??'estimated';
@@ -146,7 +167,7 @@ export function buildDisplayTopology(displays:readonly InventoryDisplay[],option
   const mixedDpi=new Set(audience.map(d=>d.scaleFactor)).size>1;
   if(mixedDpi)warnings.push('Scalări DPI diferite: se folosesc ferestre separate, cu verificare de sincronizare necesară.');
   const operatorAssignments:DisplayAssignment[]=displays.filter(d=>operators.has(d.hardwareKey)).map(d=>({hardwareKey:d.hardwareKey,runtimeId:d.runtimeId,role:'operator' as const}));
-  for(const a of saved?.assignments??[])if(a.role==='operator'&&!operatorAssignments.some(o=>o.hardwareKey===a.hardwareKey))operatorAssignments.push({...a});
+  for(const a of savedOperators)if(a.role==='operator'&&!operatorAssignments.some(o=>o.hardwareKey===a.hardwareKey))operatorAssignments.push({...a});
   const assignments:DisplayAssignment[]=[...audience.map((d,i)=>({hardwareKey:d.hardwareKey,runtimeId:d.runtimeId,role:'audience' as const,screenId:screens[i].id})),...operatorAssignments];
   if(!issues.length){const v=validateVideoWall(videoWall,screens.map(s=>s.id));if(!v.ok)issues.push(v.reason);else{const sc=validateWallScreens(screens,v.value);if(!sc.ok)issues.push(sc.reason);}}
   return {screens,videoWall,displayMode:mixedDpi?'windows':'span',assignments,expectedAudienceCount:expected,geometryStatus,measurementSource:saved?.measurementSource,issues,warnings,canApply:issues.length===0};

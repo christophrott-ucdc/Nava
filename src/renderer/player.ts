@@ -22,7 +22,8 @@ import type { Osd } from "./ui/osd";
 import type { Subtitles } from "./ui/subtitles";
 import type { ThemeController } from "./ui/theme";
 import type { AmbientEngine } from "./voice/ambient";
-import {musicCues,type MusicManifest} from '../shared/music';
+import {musicCues,musicMix,type MusicManifest} from '../shared/music';
+import {setSfxVolume} from "./voice/context";
 import { setVoicePlaybackRate } from "./voice/index";
 
 /** R4 / B-06 — rehearse rate bounds (the server accepts `report.rate` up to 8). */
@@ -129,6 +130,8 @@ export class Player {
   private avatarVisible = false;
   private videoReady = false;
   private panelsReady: (()=>boolean)|null=null;
+  private panelRecovery:()=>boolean=()=>false;
+  setPanelRecovery(check:()=>boolean):void {this.panelRecovery=check;}
   setPanelReadiness(check:()=>boolean):void {this.panelsReady=check;}
   private videoError: string | null = null;
   private buffering = false;
@@ -160,6 +163,7 @@ export class Player {
     if (typeof this.video.requestVideoFrameCallback === "function") this.videoFrame = this.video.requestVideoFrameCallback(this.onVideoFrame);
     this.lang = deps.config.lang;
     this.sfxVolume = deps.config.audio.sfxVolume;
+    setSfxVolume(this.sfxVolume);
     this.videoUrlLabel = deps.config.video.path;
     this.timeline = new Timeline(
       {
@@ -172,7 +176,7 @@ export class Player {
         ambient: deps.ambient,
         log: deps.log,
         getLang: () => this.lang,
-        getSfxGain: () => this.sfxVolume,
+        getSfxGain: () => 1,
         getRate: () => this.nominal,
         now: () => this.phaseTime(),
         ensureAvatarVisible: () => this.ensureAvatarVisible(),
@@ -240,6 +244,7 @@ export class Player {
   setMusicManifest(manifest:MusicManifest):void {this.musicManifest=manifest;this.refreshMusic();}
   private refreshMusic():void {
     const show=this.timeline.getShow();
+    if(this.musicManifest)this.deps.ambient?.setMusicMix?.(musicMix(this.musicManifest,show));
     this.deps.ambient?.setFileCues([...(this.musicManifest?musicCues(this.musicManifest,show):[]),...show.cues.filter((c):c is import('../shared/types').AmbientCue=>c.kind==='ambient'&&c.source?.type==='file')]);
   }
   getShow(): ShowFile {
@@ -364,10 +369,12 @@ export class Player {
           this.timeline.stopVoice({ all: true });
           break;
         case "setVolume":
+          if (typeof cmd.music === "number") this.deps.ambient?.setMusicVolume(clamp01(cmd.music));
           if (typeof cmd.voice === "number") this.deps.voice.setVolume(clamp01(cmd.voice));
           if (typeof cmd.sfx === "number") {
             this.sfxVolume = clamp01(cmd.sfx);
-            this.deps.ambient?.setSfxVolume(this.sfxVolume);
+            setSfxVolume(this.sfxVolume);
+
           }
           break;
         case "setLang":
@@ -781,6 +788,9 @@ export class Player {
   /** Detect a resolved play() promise that still produces neither timeline nor rendered-frame progress. */
   private verifyPlaybackProgress(generation: number, startedAt: number, startedFrames: number | null): void {
     if (generation !== this.playProbeGeneration || this.state !== "playing" || this.phaseMode !== "play" || this.playLeadIn) return;
+    // The wall watchdog owns decoder barriers; a deliberately paused primary
+    // decoder during an atomic group seek is not a separate autoplay failure.
+    if(this.deps.panelPlayback&&this.panelRecovery())return;
     const currentTime = this.video.currentTime;
     const currentFrames = this.presentedFrames();
     const timeAdvanced = currentTime - startedAt;

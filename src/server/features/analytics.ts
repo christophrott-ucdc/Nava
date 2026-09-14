@@ -13,7 +13,7 @@
  *   GET /summary        → { generatedAt, aggregate, runs: RunSummary[] (fara `states`/`timeline`) }
  *   GET /runs           → { runs: RunSummary[] } (la fel, cel mai nou primul)
  *   GET /run/:id        → RunSummary complet + `timeline` (primele 2000 evenimente relevante)
- * Vezi INTEGRATION.md pentru garduri (viewer) si cache.
+ * Accesul viewer este verificat la montarea routerului în server/index.ts.
  */
 
 import { promises as fs } from "node:fs";

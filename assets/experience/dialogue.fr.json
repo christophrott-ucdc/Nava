@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "lang": "fr",
+  "sourceSha256": "cdf0789202cb44ce2f182ecda9d10e7eb49660286f8fef4192e7058109728aa3",
+  "cues": {
+    "intro": "Bienvenue à bord ! Le vaisseau ne demande pas de mot de passe. Il demande quelque chose de bien plus rare : un peu de lumière. Voyons si vous en avez.",
+    "touch": "À chacun sa moitié d'écran, sa moitié de ciel. Touchez la lumière devant vous. Vous voyez ? Elle vous a répondu. Vous pouvez aussi simplement regarder : les étoiles ne font rien d'autre.",
+    "age-5-10-practice": "Le vaisseau a perdu une pièce. Ça arrive quand les vaisseaux sont impatients de partir. Trouvez la bonne forme à l'écran et touchez-la. Un vaisseau se répare avec patience.",
+    "age-10-15-practice": "Un signal se répète. Que nous dit-il ? Regardez les pauses entre les signaux. Choisissez la réponse qui correspond à ce que vous voyez, puis confirmez.",
+    "age-15-18-practice": "Toute décision commence par une proposition. Lisez la situation à l'écran, choisissez ce qui vous semble juste, puis confirmez. Ensuite, nous verrons comment travailler ensemble.",
+    "adults-practice": "Un bon choix commence par une question. Regardez les informations et le coût affiché. Choisissez, puis confirmez. Ce n'est qu'un exercice : la mission ne perd rien.",
+    "legacy-v3-practice": "Regardez l'indice à l'écran. Trouvez l'étoile, puis confirmez. Ce n'est qu'un essai pour nous échauffer.",
+    "cooperate": "À vous tous : touchez le signal sur votre moitié d'écran. Regardez devant vous. Chaque geste allume une partie du vaisseau. Un équipage naît ainsi : des lumières qui se répondent.",
+    "ready": "Les commandes répondent. Prenez une grande inspiration. Loin d'ici, trois mondes nous attendent, et une question plus ancienne que tous les navires.",
+    "handoff": "L'équipage est prêt, Commandant. Nous pouvons partir.",
+    "hint": "Cherchez l'endroit qui brille sur votre moitié d'écran. Chacun à son rythme : les étoiles ne se pressent pas. Et si besoin, l'opérateur est là.",
+    "finale": "Le voyage continue dans votre choix. Trois cadeaux vous attendent : une lumière, l'attention aux autres, le courage d'explorer. Choisissez et envoyez le vôtre. Il allumera un rayon de l'Étoile de l'Humanité. Votre rayon. Vous cherchiez d'autres mondes. Vous avez retrouvé le vôtre, comme pour la première fois."
+  }
+}

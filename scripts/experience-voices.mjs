@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /** Offline, resumable narrator production. Never called by the show runtime. */
+import {isDeepStrictEqual} from 'node:util';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -35,12 +36,15 @@ const texts = {
   hint: 'Căutați locul care luminează pe jumătatea voastră de ecran. Nu vă grăbiți, încercați în ritmul vostru. Dacă e nevoie, operatorul vă ajută cu plăcere.',
   finale: 'Călătoria rămâne în ce ați ales voi. Priviți ce ați construit împreună. Alegeți pe ecran ce luați cu voi acasă, apoi trimiteți ultima lumină.',
 };
+let starSource;
+try{starSource=await read(path.join(root,'assets/scenarios/age-5-10/steaua-authoring.json'));for(const [id,cue] of Object.entries(starSource.narrator))texts[id]=cue.text;}catch(e){if(e.code!=='ENOENT')throw e;}
 
 async function synth(id, text, voice, folder) {
   await fs.mkdir(folder, { recursive: true });
   const file = `${id}.mp3`, receiptPath = path.join(folder, `${id}.receipt.json`);
-  const request = { text, model_id: 'eleven_v3', language_code: 'ro', voice_settings: { stability: 0.5, similarity_boost: 0.75, speed: 1 }, seed: parseInt(hash(id).slice(0, 8), 16) };
-  const generationKey = hash(JSON.stringify({ voiceId: voice.voiceId, request, format: 'mp3_44100_192' }));
+  const star=!!starSource&&!id.startsWith('narrator-');
+  const request = { text:star?'[warmly] '+text:text, model_id: 'eleven_v3', language_code: 'ro', voice_settings: { stability: 0.5, similarity_boost: star?0.8:0.75, speed: 1 }, seed: parseInt(hash(star?'steaua:'+id:id).slice(0, 8), 16) };
+  const generationKey = hash(JSON.stringify({ voiceId: voice.voiceId, request, format: 'mp3_44100_192',...(star?{edition:starSource.sourceSha256}:{}) }));
   let receipt, audio;
   try { receipt = await read(receiptPath); audio = await fs.readFile(path.join(folder, file)); } catch {}
   const reused = receipt?.generationKey === generationKey && audio?.length && hash(audio) === receipt.sha256;
@@ -68,7 +72,7 @@ async function synth(id, text, voice, folder) {
   const { stdout } = await run('ffprobe', ['-v', 'error', '-show_entries', 'format=duration:stream=codec_name,sample_rate', '-of', 'json', path.join(folder, file)], { windowsHide: true });
   const probe = JSON.parse(stdout);
   const durationSec = Number(probe.format.duration);
-  if (!(durationSec > 0 && durationSec <= 20) || probe.streams[0]?.codec_name !== 'mp3' || Number(probe.streams[0]?.sample_rate) !== 44100) throw new Error(`Invalid clip ${id}: ${durationSec}s`);
+  if (!(durationSec > 0 && durationSec <= 45) || probe.streams[0]?.codec_name !== 'mp3' || Number(probe.streams[0]?.sample_rate) !== 44100) throw new Error(`Invalid clip ${id}: ${durationSec}s`);
   await run('ffmpeg', ['-v', 'error', '-xerror', '-i', path.join(folder, file), '-f', 'null', '-'], { windowsHide: true });
   receipt.durationSec = durationSec;
   if (!args.has('--check')) await json(receiptPath, receipt);
@@ -94,7 +98,7 @@ async function main() {
   }
   if (args.has('--check')) {
     const saved = await read(path.join(out, 'manifest.json'));
-    if (JSON.stringify(saved) !== JSON.stringify(manifest)) throw new Error('Runtime manifest differs from verified receipts');
+    if (!isDeepStrictEqual(saved, manifest)) throw new Error('Runtime manifest differs from verified receipts');
   }
   if (args.has('--transcribe')) {
     const list = path.join(out, 'preview.ffconcat');

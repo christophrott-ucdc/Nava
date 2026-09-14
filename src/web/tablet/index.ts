@@ -1,3 +1,5 @@
+import '../shared/client-errors';
+import {createDiplomaQr} from '../shared/diploma-qr';
 import {PROTOCOL_VERSION} from '@shared/protocol';
 import {
   TABLET_OBSERVE_VALUE,
@@ -17,6 +19,7 @@ import type { MissionSnapshot } from "@shared/mission";
 import { createMissionUI } from "./mission-ui";
 import { hasChildIllustrations, illustrationPath } from "../shared/illustrations";
 import { tabletEventId } from './event-id';
+import { countdownProgress } from './countdown';
 
 const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
 if (memory !== undefined && memory <= 4) document.documentElement.dataset.glassQuality = "low";
@@ -29,7 +32,18 @@ document.getElementById("rotate-icon")!.innerHTML = icon("tablet");
 const STORAGE = {
   id: "nava.tablet.id.v3",
   post: "nava.tablet.post.v3",
+  lang: "nava.tablet.lang.v1",
 } as const;
+
+/** Preserve each A/B activity; navigation takes the free space only between tasks. */
+function updateFlightLayout():void {
+ const m=missionSnapshot, t=phaseTimeNow();
+ const running=selectedPost!==null && !!state && ['playing','paused'].includes(state.state) && t>=0 && !m?.experience?.active && !m?.experience?.crew?.open && !m?.experience?.finaleActive;
+ const task=m && m.scenarioId!=='legacy-v3' ? !!m.view && m.stage>0 : !!view?.interaction && !['waiting','post-assign'].includes(view.interaction.type);
+ const layout=running ? task?'compact':'expanded' : '';
+ if(layout) document.body.dataset.flight=layout; else delete document.body.dataset.flight;
+ telemetry.setVisible(running);
+}
 
 /** D-09 — pseudo-cue trimis de tableta postului 1 pentru pornirea misiunii în modul operator absent. */
 const START_REQUEST_CUE_ID = "__start__";
@@ -66,6 +80,7 @@ let socket: WebSocket | null = null;
 let reconnectTimer: number | null = null;
 let reconnectAttempt = 0;
 let state: ShowState | null = null;
+let launchLeadInSec = 10;
 /** Diferența ceas server − ceas local (ms), estimată la fiecare `state`. */
 let clockOffsetMs = 0;
 let view: TabletViewMsg | null = null;
@@ -112,6 +127,7 @@ function setText(node: HTMLElement, text: string): void {
 }
 
 const telemetry = createTelemetry(dom.telemetry);
+const diplomaQr=createDiplomaQr(document.querySelector<HTMLElement>(".mission-footer")!,location.origin);
 
 const tabletId = (() => {
   const existing = storageGet(STORAGE.id);
@@ -235,13 +251,16 @@ function resetRun(): void {
   certificateFor = null;
   startRequestPending = false;
   telemetry.clearMemory();
+  diplomaQr.update(null);
   view = null;
 }
 
 function onMessage(message: ServerMessage): void {
   switch (message.type) {
     case "mission":
+      setUiLanguage(message.snapshot.state.lang);storageSet(STORAGE.lang,message.snapshot.state.lang);
       missionSnapshot = message.snapshot;
+      diplomaQr.update(missionSnapshot);
       if (message.snapshot.scenarioId === 'legacy-v3'&&!message.snapshot.experience?.crew?.open&&!message.snapshot.experience?.active&&!message.snapshot.experience?.finaleActive) { missionUI.hide(); lastInteractionKey = ''; }
       else if (message.snapshot.post) {
         selectedPost = message.snapshot.post;
@@ -256,12 +275,15 @@ function onMessage(message: ServerMessage): void {
       missionUI.ack(message.eventId, message.ok, message.reason || message.status);
       break;
     case "welcome":
+      setUiLanguage(message.state.lang);storageSet(STORAGE.lang,message.state.lang);
+      launchLeadInSec = Number.isFinite(message.show.launchLeadInSec) && message.show.launchLeadInSec >= 0 ? message.show.launchLeadInSec : 10;
       if (message.state.state === "idle") resetRun();
       state = message.state;
       clockOffsetMs = message.serverTimeMs - Date.now();
       renderMission();
       break;
     case "state":
+      setUiLanguage(message.state.lang);storageSet(STORAGE.lang,message.state.lang);
       if (message.state.state === "idle" && state?.state !== "idle") resetRun();
       if (message.state.state !== "idle") startRequestPending = false;
       state = message.state;
@@ -335,7 +357,7 @@ function onMessage(message: ServerMessage): void {
 function phaseTimeNow(): number {
   if (!state) return 0;
   const advancing = state.state === "playing" || state.state === "preshow" || state.state === "epilogue";
-  if (!advancing) return state.phaseTime;
+  if (!advancing || state.suspended || missionSnapshot?.suspended || connectionStatus !== "online") return state.phaseTime;
   const serverNow = Date.now() + clockOffsetMs;
   return state.phaseTime + ((serverNow - state.serverTimeMs) / 1000) * state.rate;
 }
@@ -413,6 +435,7 @@ function currentTheme(): SceneTheme {
 }
 
 function renderMission(): void {
+  audio.setVolume(state?.volumes?.sfx ?? 1);
   audio.setEnabled((state?.tabletSfx ?? true) && (missionSnapshot?.accessibility.sfxEnabled ?? true) && !missionSnapshot?.accessibility.reducedStimuli);
   applyTheme(currentTheme());
   if (selectedPost === null) return;
@@ -486,7 +509,7 @@ function canOfferStart(): boolean {
 
 function renderInteraction(): void {
   if (missionSnapshot && (missionSnapshot.scenarioId !== 'legacy-v3'||missionSnapshot.experience?.crew?.open||missionSnapshot.experience?.active||missionSnapshot.experience?.finaleActive) && selectedPost !== null) {
-    telemetry.setVisible(false);
+    updateFlightLayout();
     dom.signal.classList.add("hidden");
     missionUI.update(missionSnapshot, connectionStatus === "online");
     return;
@@ -520,7 +543,8 @@ function renderInteraction(): void {
     dom.interaction.dataset.view = "countdown";
     const countdown = document.createElement("div");
     countdown.className = "countdown";
-    countdown.innerHTML = `<p>Pregătiți de decolare</p><div class="countdown-ring" style="--countdown-progress:${Math.max(0,Math.min(100,(10+phaseTimeNow())*10))}%"><strong>${Math.ceil(-phaseTimeNow())}</strong></div><p>Aventura începe împreună</p>`;
+    const progress = countdownProgress(phaseTimeNow(), launchLeadInSec);
+    countdown.innerHTML = `<p>Pregătiți de decolare</p><div class="countdown-ring" style="--countdown-progress:${progress}%"><strong>${Math.ceil(-phaseTimeNow())}</strong></div><p>Aventura începe împreună</p>`;
     dom.interaction.append(countdown);
     return;
   }
@@ -934,14 +958,19 @@ window.setInterval(() => {
 window.setInterval(() => {
   updateChoiceTimer();
   if (dom.interaction.dataset.view === "countdown") renderInteraction();
-  if (selectedPost === null || dom.telemetry.classList.contains("hidden")) return;
-  telemetry.update({ state, phaseTime: phaseTimeNow(), theme: currentTheme(), post: selectedPost, sceneLabel: view?.sceneLabel ?? "" });
+  updateFlightLayout();
+  if (document.hidden || selectedPost === null || dom.telemetry.classList.contains("hidden")) return;
+  updateFlightLayout();
+  telemetry.update({ state, phaseTime: missionSnapshot?.presentedFilmTime ?? phaseTimeNow(), theme: currentTheme(), post: selectedPost, sceneLabel: view?.sceneLabel ?? "", compact: document.body.dataset.flight === "compact", quiet: !!missionSnapshot?.accessibility.reducedMotion || !!missionSnapshot?.accessibility.reducedStimuli });
 }, 100);
 
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible" && (!socket || socket.readyState === WebSocket.CLOSED)) connect();
 });
 
+setUiLanguage(storageGet(STORAGE.lang));
+startUiLocalization(false);
 renderShell();
 renderMission();
 connect();
+import {startUiLocalization,setUiLanguage} from '../shared/localization';

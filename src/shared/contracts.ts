@@ -47,7 +47,7 @@ export interface VoiceEngine {
   /** Amplitudine 0..1 a vocii curente (pentru animarea entitatilor). */
   getAmplitude(): number;
   /** SFX sintetizate (fara fisiere). */
-  playSfx(name: "liftoff-rumble" | "low-swell" | "wormhole-whoosh" | "arrival-chime" | "rain" | "white-fade", opts?: { durationSec?: number; gain?: number }): PlaybackHandle;
+  playSfx(name: "rocket-departure" | "liftoff-rumble" | "low-swell" | "wormhole-whoosh" | "arrival-chime" | "rain" | "white-fade", opts?: { durationSec?: number; gain?: number }): PlaybackHandle;
   /** Trebuie apelat la primul gest al utilizatorului sau la boot in kiosk (autoplay policy dezactivata in Electron). */
   unlock(): Promise<void>;
 }

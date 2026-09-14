@@ -156,7 +156,8 @@ test('cinema preflight requires its legacy film instead of accepting the panoram
   assert.equal(missing.panels, undefined);
   assert(missing.reasons.some(reason => reason.includes(fixture.config.video.path)));
 
-  await fs.writeFile(fixture.legacyPath, Buffer.alloc(2048, 1));
+  const film=Buffer.alloc(2048);film.writeUInt32BE(2048,0);film.write('moov',4);film.writeUInt32BE(2040,8);film.write('mvhd',12);film.writeUInt32BE(1000,28);film.writeUInt32BE(678050,32);
+  await fs.writeFile(fixture.legacyPath, film);
   await fs.unlink(fixture.panelPath('center'));
   const valid = await fixture.run();
   assert.equal(valid.ok, true, valid.reasons.join('; '));

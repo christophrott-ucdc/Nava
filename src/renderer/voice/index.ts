@@ -22,7 +22,7 @@ export { setTtsAuthToken } from "./manifest";
  * Proposed contract addition: `setPlaybackRate?(rate: number): void`.
  */
 export interface RateAwareVoiceEngine extends VoiceEngine {
-  setVoiceBaseUrl(url:string):Promise<void>;
+  setVoiceBaseUrl(url:string,lang?:Lang):Promise<void>;
   isPrepared(lang:Lang):boolean;
   /** Voices play at min(rate, MAX_VOICE_RATE) with pitch preserved (HTMLAudioElement path when rate != 1). */
   setPlaybackRate(rate: number): void;
@@ -65,12 +65,12 @@ function validClipMeta(meta: VoiceManifest["clips"][string], cueId: string, spea
 
 class VoiceEngineImpl implements RateAwareVoiceEngine {
   private sourceEpoch=0;
-  async setVoiceBaseUrl(url:string):Promise<void> {
-    if(this.opts.voiceBaseUrl===url){await this.prepare('ro');return;}
+  async setVoiceBaseUrl(url:string,lang:Lang='ro'):Promise<void> {
+    if(this.opts.voiceBaseUrl===url){await this.prepare(lang);return;}
     this.sourceEpoch++;this.opts.voiceBaseUrl=url;
     this.player.clearDecoded();this.pinnedClips.clear();
     this.manifests.clear();this.preparing.clear();this.clips.clear();this.inflight.clear();this.preloadFailures.clear();
-    await this.prepare('ro');
+    await this.prepare(lang);
   }
   private readonly player: VoicePlayer;
   isPrepared(lang:Lang):boolean{return !!this.manifests.get(lang)&&!this.preparing.has(lang)&&this.preloadFailures.size===0;}

@@ -31,9 +31,11 @@ export function getSfxBus(): GainNode {
 function applySfxGain(): void {
   if (!sfxBus) return;
   const c = getAudioContext();
+  // A closed context replaces the graph and clears the old bus.
+  const bus = getSfxBus();
   const target = sfxAudible ? sfxVolume : 0;
-  sfxBus.gain.cancelScheduledValues(c.currentTime);
-  sfxBus.gain.setTargetAtTime(target, c.currentTime, 0.03);
+  bus.gain.cancelScheduledValues(c.currentTime);
+  bus.gain.setTargetAtTime(target, c.currentTime, 0.03);
 }
 
 export function setSfxVolume(v: number): void {

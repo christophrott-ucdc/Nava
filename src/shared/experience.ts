@@ -18,7 +18,7 @@ export interface ExperienceSnapshot extends ExperienceState {
   narrationComplete?:boolean;
 }
 export interface NarratorClip {file:string;durationSec:number;text:string;sha256:string}
-export interface NarratorManifest {voiceId:string;voiceName:string;clips:Record<string,NarratorClip>}
+export interface NarratorManifest {lang?:'ro'|'en'|'fr';voiceId:string;voiceName:string;clips:Record<string,NarratorClip>}
 export const EXPERIENCE_PRACTICE:Record<ScenarioId,{title:string;instruction:string;options:{value:string;label:string}[];correct:string;detail:string}>={
   'legacy-v3':{title:'Prima comandă',instruction:'Alege steaua, apoi confirmă.',options:[{value:'star',label:'Stea'},{value:'circle',label:'Cerc'}],correct:'star',detail:'Poți schimba alegerea înainte de confirmare.'},
   'age-5-10':{title:'Găsește steaua',instruction:'Caută piesa în formă de stea. Atinge-o, apoi apasă Confirmă.',options:[{value:'star',label:'Stea'},{value:'circle',label:'Cerc'},{value:'drop',label:'Picătură'}],correct:'star',detail:'Te poți răzgândi înainte să confirmi.'},

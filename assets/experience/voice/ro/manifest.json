@@ -6,75 +6,75 @@
   "clips": {
     "intro": {
       "file": "intro.mp3",
-      "durationSec": 8.08,
-      "text": "Bine ați venit la bord! Înainte de plecare, nava vrea să vă cunoască puțin. Stați liniștiți, nu vă cere nicio parolă.",
-      "sha256": "d5d5b596e2d5054447574a732d63d244e74a8749438d8ec7c0e1985650ee64d6"
+      "text": "Bine ați venit la bord! Nava nu cere parole. Nava cere altceva, mult mai rar: puțină lumină. Să vedem dacă aveți.",
+      "durationSec": 10.24,
+      "sha256": "db46a713e0b9b501149f6dbb71caeb48d8d494858df7eab50f09a22742c59259"
     },
     "touch": {
       "file": "touch.mp3",
-      "durationSec": 8.24,
-      "text": "Fiecare are jumătatea lui de ecran. Atingeți lumina din fața voastră. Dacă vreți, puteți și doar să priviți.",
-      "sha256": "2f9717deccdac09d21d0a5d7e9dab65203231195dc6679473712a6c28f4786a2"
+      "text": "Fiecare are jumătatea lui de ecran — jumătatea lui de cer. Atingeți lumina din fața voastră. Vedeți? V-a răspuns. Cine vrea poate doar să privească — stelele altceva nici nu fac.",
+      "durationSec": 14.88,
+      "sha256": "c77baca86d53e8b9325b78bf734eefa7fb52d6a9ca59b43cafae96801d4b3ba9"
     },
     "age-5-10-practice": {
       "file": "age-5-10-practice.mp3",
-      "durationSec": 9.44,
-      "text": "Nava a pierdut o piesă. I se întâmplă mereu când vin musafiri. Căutați pe ecran forma care se potrivește, apoi apăsați ca să confirmați.",
-      "sha256": "d14c283f8cba3233448d610113441c38a3cac8061eb446f56918894016aab1c5"
+      "text": "Nava a pierdut o piesă. Așa fac navele când abia așteaptă să plece. Găsiți pe ecran forma care se potrivește și apăsați. Navele se repară cu răbdare, nu cu grabă.",
+      "durationSec": 12,
+      "sha256": "2140af1c9cef495165d082584abdf7727691f9913dede76843d454af2cc49a0f"
     },
     "age-10-15-practice": {
       "file": "age-10-15-practice.mp3",
-      "durationSec": 10.24,
       "text": "Un semnal se tot repetă. Ce vrea să ne spună? Uitați-vă la pauzele dintre semnale, alegeți răspunsul care se potrivește cu ce vedeți și confirmați.",
-      "sha256": "c5fd80ac86be48635508c506aebaad8adb4a7b8bb6f33b6c3281586ca2938f8f"
+      "durationSec": 10.24,
+      "sha256": "dbc23b07cfed54bab9ee42b8e5432e086a8f459521df33016a055d5442bb52ee"
     },
     "age-15-18-practice": {
       "file": "age-15-18-practice.mp3",
-      "durationSec": 9.92,
       "text": "Orice decizie începe cu o propunere. Citiți situația de pe ecran și alegeți ce vi se pare potrivit, apoi confirmați. Pe urmă vedem cum lucrăm împreună.",
-      "sha256": "1b614e0d2b5455e487c6e1840327061e6ff3239659e5731294a02466f3c2da4c"
+      "durationSec": 9.68,
+      "sha256": "c31c26b6fb72664540c1d2c7d68bd20e9f3622d17fcc8d70b7d137a8c4d073dd"
     },
     "adults-practice": {
       "file": "adults-practice.mp3",
-      "durationSec": 11.12,
       "text": "O alegere bună începe cu o întrebare. Uitați-vă la informații și la costul afișat. Alegeți, apoi confirmați. E doar un exercițiu, misiunea nu pierde nimic.",
-      "sha256": "cd3e05e33382bb7beb3cd703b40fa81bf495b1856ae481ea4977363079ec612a"
+      "durationSec": 10.88,
+      "sha256": "24a10161bad483f6f5cc27f751e414f691cca72422356d27c0aaee2ad0191e0b"
     },
     "legacy-v3-practice": {
       "file": "legacy-v3-practice.mp3",
-      "durationSec": 8.8,
       "text": "Uitați-vă la indiciul de pe ecran. Găsiți steaua, apoi confirmați. Este doar o probă, ca să ne încălzim.",
-      "sha256": "facaddb90e680b0d262bde3bc89bdf36becbd72e0aa2ff1742cd7217ac5065c9"
+      "durationSec": 7.92,
+      "sha256": "ccbecfb417826e29b451a582cf071087b81d3b7d2c98a5c248369383f49d900f"
     },
     "cooperate": {
       "file": "cooperate.mp3",
-      "durationSec": 9.76,
-      "text": "Acum, toți împreună. Atingeți semnalul de pe jumătatea voastră de ecran. Apoi priviți în față: fiecare atingere aprinde o bucată din navă.",
-      "sha256": "5084f82dc26d5d453f440fe2034507c33eabdc62bffc7e677aed7db71a1ebe2f"
+      "text": "Acum, toți odată: atingeți semnalul de pe jumătatea voastră. Și priviți în față — fiecare atingere aprinde o bucată din navă. Așa se naște un echipaj: din lumini care își răspund una alteia.",
+      "durationSec": 14.96,
+      "sha256": "b9f674002f5d45156558d6cd08b24e0d62879babd4809a58ed0ff2655eaca048"
     },
     "ready": {
       "file": "ready.mp3",
-      "durationSec": 8,
-      "text": "Comenzile răspund. Trageți aer în piept o clipă. Priviți în față. Călătoria noastră poate să înceapă.",
-      "sha256": "19b12016820b164fadfde45db24ca3314d3f471a7104485423a0a59e7267ad11"
+      "text": "Comenzile ascultă. Trageți aer în piept. Undeva, departe, trei lumi ne așteaptă — și o întrebare mai veche decât toate corăbiile.",
+      "durationSec": 11.36,
+      "sha256": "7f54fbf2a1df23d2e8a84a611327c5a845722e43167dd38f4b8db69d6dae92d7"
     },
     "handoff": {
       "file": "handoff.mp3",
-      "durationSec": 4.08,
-      "text": "Echipajul este pregătit. Căpitane, de aici sunt ai dumneavoastră.",
-      "sha256": "0e4dffb3c2ed1b9d7d742fd1240583965ffb51d6c89e0f6f052dedd6e6f05d83"
+      "text": "Echipajul e gata, Comandante. De-acum, suntem gata de plecare.",
+      "durationSec": 4.32,
+      "sha256": "9e6a2ae270bfd1d643e334c6de8dc101def57d26821b29ed816278ab8fdbd8e8"
     },
     "hint": {
       "file": "hint.mp3",
-      "durationSec": 10.72,
-      "text": "Căutați locul care luminează pe jumătatea voastră de ecran. Nu vă grăbiți, încercați în ritmul vostru. Dacă e nevoie, operatorul vă ajută cu plăcere.",
-      "sha256": "98f368fc58dd8b600a49c0ef6ff760acb189256382b80d57113eab7742a77b5d"
+      "text": "Căutați locul care luminează pe jumătatea voastră de ecran. Fiecare în ritmul lui — stelele nu se grăbesc. Iar dacă e nevoie, operatorul e acolo.",
+      "durationSec": 10.96,
+      "sha256": "743372f767c8457e768c947f188b9eb9ccd5e957aa9dc6ced8f66d6cff7f29ea"
     },
     "finale": {
       "file": "finale.mp3",
-      "durationSec": 11.2,
-      "text": "Călătoria rămâne în ce ați ales voi. Priviți ce ați construit împreună. Alegeți pe ecran ce luați cu voi acasă, apoi trimiteți ultima lumină.",
-      "sha256": "9918c7c2f0025151e26a3c134c9cd4f69be1fe2dcb80e123ea1ebc99736d4b80"
+      "text": "Călătoria rămâne în ce alegeți acum. Pe ecran vă așteaptă trei daruri: o lumină, grija pentru ceilalți, curajul de explorator. Alegeți-l pe al vostru și trimiteți-l — fiecare dar aprinde o rază în Steaua Omenirii. Raza voastră. Ați plecat să găsiți alte lumi. V-ați întors cu a voastră — văzută pentru prima dată.",
+      "durationSec": 24,
+      "sha256": "3546cef1f39adbeb483ce0dfdf828e6d9e08ca366dc7a29f9e177bea80b95d99"
     }
   }
 }

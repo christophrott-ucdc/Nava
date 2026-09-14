@@ -1,4 +1,4 @@
-import { DatabaseSync, type StatementSync } from 'node:sqlite';
+import { backup, DatabaseSync, type StatementSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import type { MissionRecord } from '../shared/mission';
@@ -72,8 +72,12 @@ export class MissionStore {
     return this.statement('SELECT body FROM missions ORDER BY updated_at DESC LIMIT ?').all(bounded).map(row => JSON.parse(String(row.body)) as MissionRecord);
   }
   recoverable(): MissionRecord | null {
-    const row = this.statement("SELECT body FROM missions WHERE status='active' ORDER BY updated_at DESC LIMIT 1").get();
-    return row ? JSON.parse(String(row.body)) as MissionRecord : null;
+    const row = this.statement("SELECT body FROM missions ORDER BY updated_at DESC, rowid DESC LIMIT 1").get();
+    if(!row)return null;
+    const record=JSON.parse(String(row.body)) as MissionRecord;
+    if(record.status==='active')return record;
+    if(record.status==='prepared'&&record.checkpoint&&(record.experience?.participants.length||Object.keys(record.experience?.crew?.characters??{}).length))return record;
+    return null;
   }
   event(run: string, id: string): { payload: string; response: unknown } | null {
     const row = this.statement('SELECT payload,response FROM mission_events WHERE run_id=? AND event_id=?').get(run, id);
@@ -93,5 +97,6 @@ export class MissionStore {
     this.statement('INSERT INTO mission_artifacts(run_id,artifact_id,hash,path) VALUES(?,?,?,?)').run(run, id, hash, file);
     return 'accepted';
   }
+  async backupTo(file:string):Promise<void>{await backup(this.db,file,{rate:100});}
   close(): void { this.statements.clear(); this.db.close(); }
 }

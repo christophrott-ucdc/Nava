@@ -125,12 +125,11 @@ export function createYoungToy(host: HTMLElement, send: (value: string) => void)
         set('target-shape', { fill: current.solved ? '#f6df9c' : '#eff5f5' });
       };
     } else if (v.stage === 2) {
-      text('Piesa ta', 160, 45, 'toy-heading'); text('Fereastra felinarului', 465, 45, 'toy-heading');
+      text('Piesa ta', 160, 45, 'toy-heading'); text('Inima stelei', 465, 45, 'toy-heading');
       const housing = add('g', { 'aria-hidden': true });
-      add('rect', { x: 375, y: 71, width: 181, height: 204, rx: 43, fill: '#edddaa', stroke: '#bd9b58', 'stroke-width': 5 }, undefined, housing);
-      add('path', { d: 'M389 104Q465 77 542 104M389 244Q465 265 542 244', fill: 'none', stroke: '#fff7d5', 'stroke-width': 8 }, undefined, housing);
-      const lantern = shell('lantern-shell-v1', { x: 347, y: 63, width: 236, height: 211 }, housing);
-      add('rect', { x: 391, y: 97, width: 148, height: 148, rx: 24, fill: '#fff8ec' }, undefined, lantern);
+      add('path', { d: 'M465 62L499 105L554 101L545 155L580 195L530 215L514 268L465 244L416 268L400 215L350 195L385 155L376 101L431 105Z', fill: '#daf0ca', stroke: '#629778', 'stroke-width': 5 }, undefined, housing);
+      add('path', { d: 'M383 124Q421 75 465 99Q509 75 547 124M397 225Q465 249 533 225', fill: 'none', stroke: '#f8ffe6', 'stroke-width': 8 }, undefined, housing);
+      add('rect', { x: 391, y: 97, width: 148, height: 148, rx: 24, fill: '#fffdf0' }, undefined, housing);
       const socket = add('g', { transform: 'translate(465 171)' }, 'socket'); shape(v.shape, socket, 135, 'toy-socket');
       action(socket, 'Așază piesa în fereastră', () => { const state = getLight(); if (state) commit(`play:fit:${state.rotation}`); }, 'play:fit');
       drag(socket, () => {}, () => { const state = getLight(); if (state) commit(`play:fit:${state.rotation}`); });
@@ -152,7 +151,7 @@ export function createYoungToy(host: HTMLElement, send: (value: string) => void)
         rotationButton.disabled = blocked || state.shape === 'Cerc';
       };
     } else {
-      text('Două legături. Un felinar aprins.', 320, 28, 'toy-heading');
+      text('Închide circuitul. Aprinde becul.', 320, 28, 'toy-heading');
       add('path', { d: 'M86 132H218M250 164V212H406M438 180V132H551V158M565 196V275H86V212', class: 'toy-wire' }, 'wire-base');
       add('rect', { x: 56, y: 132, width: 60, height: 80, rx: 15, fill: '#fcfded', stroke: '#8c9b65', 'stroke-width': 4 });
       text('+', 86, 160, 'toy-heading'); text('−', 86, 196, 'toy-heading'); text('Baterie', 86, 312);

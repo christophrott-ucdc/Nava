@@ -1,0 +1,74 @@
+{
+  "retrieved": "2026-09-11",
+  "repository": "https://github.com/unitreerobotics/unitree_sdk2",
+  "commit": "9754cd153af3da471b0fe5f3aa535e426fb11db3",
+  "purpose": "Read-only study references; G1 audio is not verified for H2 EDU. Do not run motion examples.",
+  "files": [
+    {
+      "path": "unitree_sdk2/README.md",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/README.md",
+      "bytes": 1417,
+      "sha256": "fac73c34a0340b17f9efd2e11ef709e8512f7090a0a00e430ca749d94d3e3c92"
+    },
+    {
+      "path": "unitree_sdk2/LICENSE",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/LICENSE",
+      "bytes": 1567,
+      "sha256": "3e83dbd580cc82cfb666b0d1db48e2511fc092b4e2666b8f1d1ad5bedad65dbf"
+    },
+    {
+      "path": "unitree_sdk2/include/unitree/robot/h2/loco/h2_loco_api.hpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/robot/h2/loco/h2_loco_api.hpp",
+      "bytes": 3210,
+      "sha256": "f55560982edfe39652642910fedda8bca2777c3bbd3a068b375ca1cf8163980e"
+    },
+    {
+      "path": "unitree_sdk2/include/unitree/robot/h2/loco/h2_loco_client.hpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/robot/h2/loco/h2_loco_client.hpp",
+      "bytes": 8559,
+      "sha256": "1102d1744af1a5364726dbd6c4f5bbefa681401dcd63972ddb98fda9b9d5f367"
+    },
+    {
+      "path": "unitree_sdk2/include/unitree/robot/h2/arm/h2_arm_action_api.hpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/robot/h2/arm/h2_arm_action_api.hpp",
+      "bytes": 1208,
+      "sha256": "7014d9f992b9a217b1daf9190e1080d1d722b0f633dfaf861f71ef6cbe0afbd3"
+    },
+    {
+      "path": "unitree_sdk2/include/unitree/robot/h2/arm/h2_arm_action_client.hpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/robot/h2/arm/h2_arm_action_client.hpp",
+      "bytes": 2453,
+      "sha256": "58b3c914f0c7ab0bddab6997fbf6c29c80374dfc99b222ed9296d5ec96c4645c"
+    },
+    {
+      "path": "unitree_sdk2/example/h2/high_level/h2_loco_client_example.cpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/example/h2/high_level/h2_loco_client_example.cpp",
+      "bytes": 4355,
+      "sha256": "a91791a2511e9c7927d321aaeb2c404c81a5e306701e6cc1d546e62421b3a0f5"
+    },
+    {
+      "path": "unitree_sdk2/example/h2/high_level/h2_arm_action_example.cpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/example/h2/high_level/h2_arm_action_example.cpp",
+      "bytes": 3813,
+      "sha256": "c2c0927b1a29a19444bf6193f7a83d8a013170b95e9da3e0fcfb837436c47017"
+    },
+    {
+      "path": "unitree_sdk2/include/unitree/robot/g1/audio/g1_audio_api.hpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/robot/g1/audio/g1_audio_api.hpp",
+      "bytes": 2206,
+      "sha256": "40d83bda7cf52a0bbffb8dc53f73c42efce9c91d23435eb4c55ab0fa14ffcae9"
+    },
+    {
+      "path": "unitree_sdk2/include/unitree/robot/g1/audio/g1_audio_client.hpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/include/unitree/robot/g1/audio/g1_audio_client.hpp",
+      "bytes": 2947,
+      "sha256": "01108471362e15c3dec01db77023da520b3450725fd72a52b934cec39492fd0c"
+    },
+    {
+      "path": "unitree_sdk2/example/g1/audio/g1_audio_client_example.cpp",
+      "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/9754cd153af3da471b0fe5f3aa535e426fb11db3/example/g1/audio/g1_audio_client_example.cpp",
+      "bytes": 5629,
+      "sha256": "0085b639c7617bab5cebaa1298e01c6df4da4b536b13a416871c26d5aceaee12"
+    }
+  ]
+}

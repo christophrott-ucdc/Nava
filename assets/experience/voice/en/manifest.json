@@ -1,0 +1,80 @@
+{
+  "lang": "en",
+  "voiceId": "bgVGH727uJ1Qj9P9egUj",
+  "voiceName": "Mihai - Voice That Inspires Confidence",
+  "clips": {
+    "intro": {
+      "file": "intro.mp3",
+      "text": "Welcome aboard! Our ship doesn't ask for passwords. It asks for something much rarer: a little light. Let's see if you have some.",
+      "durationSec": 10.48,
+      "sha256": "6c2ce1808f1ce6fe042b7997980f0ce124e0f8bec01aa94af45fe1a3f1e43b27"
+    },
+    "touch": {
+      "file": "touch.mp3",
+      "text": "Each of you has half a screen, half a sky. Touch the light in front of you. See? It answered. You can just watch if you like. That's all the stars ever do.",
+      "durationSec": 12.08,
+      "sha256": "97892da0f961726edfd05a97e61909a6085968b6d6a8cd1198383b1857949be2"
+    },
+    "age-5-10-practice": {
+      "file": "age-5-10-practice.mp3",
+      "text": "The ship has lost a piece. Ships do that when they can't wait to leave. Find the matching shape on your screen and tap it. Ships are repaired with patience, not hurry.",
+      "durationSec": 12.48,
+      "sha256": "a0337c9a7fac452928e223d01d5e98dc49c060d58bc2b4ef4ceac5af7e81649e"
+    },
+    "age-10-15-practice": {
+      "file": "age-10-15-practice.mp3",
+      "text": "A signal keeps repeating. What is it telling us? Look at the gaps between signals. Choose the answer that matches what you see, then confirm.",
+      "durationSec": 11.28,
+      "sha256": "dff78482c1bf60753791df918ba0e456b5980f3c6ff8af439db0c6ad0462118e"
+    },
+    "age-15-18-practice": {
+      "file": "age-15-18-practice.mp3",
+      "text": "Every decision starts with a proposal. Read the situation on your screen, choose what you think is appropriate, then confirm. Next, we'll see how we work together.",
+      "durationSec": 10.56,
+      "sha256": "2279319fa96d1ea38c8d04090f52579795ae96e7ae9ed12fb7ca60479d5b6724"
+    },
+    "adults-practice": {
+      "file": "adults-practice.mp3",
+      "text": "A good choice starts with a question. Look at the information and the displayed cost. Choose, then confirm. This is just practice. The mission loses nothing.",
+      "durationSec": 11.12,
+      "sha256": "642f0a11bf557f3294e08588f5ef368ec81b56a123d4d06430f51e05c362de9a"
+    },
+    "legacy-v3-practice": {
+      "file": "legacy-v3-practice.mp3",
+      "text": "Look at the clue on your screen. Find the star, then confirm. This is just a warm-up.",
+      "durationSec": 6.96,
+      "sha256": "42f0ded433951716997ee773e4be0d4c4136926e6f3820c069662a4717585341"
+    },
+    "cooperate": {
+      "file": "cooperate.mp3",
+      "text": "Now, everyone: touch the signal on your half of the screen. Look ahead. Every touch lights up a part of the ship. That's how a crew is born: lights answering one another.",
+      "durationSec": 12.56,
+      "sha256": "59806f7858cd8c7ebe4f89be5a215dd44a598d2eaabb5d7c98356db2735be0c5"
+    },
+    "ready": {
+      "file": "ready.mp3",
+      "text": "The controls are responding. Take a deep breath. Somewhere far away, three worlds await us, and a question older than every ship.",
+      "durationSec": 9.6,
+      "sha256": "4cbbc507f21e7670fc4dfdbde560c381391bc40e35bb77a5fdc2f1c6558d9cfb"
+    },
+    "handoff": {
+      "file": "handoff.mp3",
+      "text": "The crew is ready, Commander. We're ready to depart.",
+      "durationSec": 4.24,
+      "sha256": "ca3506ad6d0893ad539da468b33c4ccc154ada6606ed69480242b837cd3cca1a"
+    },
+    "hint": {
+      "file": "hint.mp3",
+      "text": "Look for the glowing spot on your half of the screen. Take your time. Stars don't hurry. And if you need help, the operator is here.",
+      "durationSec": 11.68,
+      "sha256": "28e743e8b0a20a4409188c8b2e621fdf91d8ad8b2b6993999c918462c6bdd8c2"
+    },
+    "finale": {
+      "file": "finale.mp3",
+      "text": "The journey lives on in what you choose now. Three gifts await you: a light, care for others, an explorer's courage. Choose yours and send it. Each gift lights a ray in Humanity's Star. Your ray. You set out to find other worlds. You returned with your own, seen for the first time.",
+      "durationSec": 23.12,
+      "sha256": "aeb28fc0dc9365ec98fe660ec0e78cb28576d22333efaafdbabd323ae53a3ac3"
+    }
+  },
+  "generatedAt": "2026-09-13T13:29:52.400Z"
+}

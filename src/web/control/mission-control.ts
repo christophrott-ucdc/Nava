@@ -7,7 +7,7 @@ import { icon } from '../shared/glass';
 import { createPackageEditor } from './package-editor';
 
 interface Catalog {selected:string;catalog:Array<{id:string;label:string;ready:boolean;issues:string[];revision?:string}>}
-interface Recovery {pending:boolean;issue:string|null;mission:MissionSnapshot}
+interface Recovery {pending:boolean;issue:string|null;storageWarning?:string|null;savedAt?:string|null;intervalMs?:number;mission:MissionSnapshot}
 type DiagnosticReport={kind:'preflight';at:string;softwareReady:boolean;assets:{ok:boolean;reasons:string[]};readiness:{ready:boolean;reasons:string[]};note:string}|{kind:'rehearsal';status:'running'|'passed'|'failed'|'cancelled';startedAt:string;elapsedSec:number;expectedDurationSec?:number;sampleCount:number;checks:Array<{name:string;status:'passed'|'failed'|'not-tested'|'not-observable';detail:string}>};
 const postLabels=['NAVIGAȚIE','PROPULSIE','COMUNICAȚII','BIOSEMNALE','MEMORIE'];
 
@@ -78,9 +78,9 @@ export function createMissionControl(deps:{snapshot():{state:ShowState|null;role
   }
   function renderRecovery():void{
     el('mission-identity').textContent=mission?`${mission.label} · ${mission.runId.slice(0,8)}`:'Identitatea misiunii nu este disponibilă.';
-    el('mission-recovery-status').textContent=recovery?.issue??(recovery?.pending?'Misiunea este suspendată. Starea păstrată așteaptă verificarea instalației.':'Nu există o recuperare în așteptare.');
+    el('mission-recovery-status').textContent=recovery?.issue??recovery?.storageWarning??(recovery?.pending?'Misiunea este suspendată. Starea păstrată așteaptă verificarea instalației.':'Nu există o recuperare în așteptare.');
     const details=el('mission-recovery-details');details.replaceChildren();
-    if(mission)for(const [label,value]of [['Experiență',mission.label],['Rulare',mission.runId],['Moment păstrat',`${mission.state.state} · ${Math.max(0,mission.state.phaseTime).toFixed(1)} s`]]){const row=document.createElement('p'),strong=document.createElement('strong');strong.textContent=label;row.append(strong,document.createTextNode(value));details.append(row);}
+    if(mission)for(const [label,value]of [['Ultima salvare SQLite',recovery?.savedAt?new Date(recovery.savedAt).toLocaleString('ro-RO'):'Nu există încă un checkpoint datat'],['Interval de salvare','250 ms în timpul experienței'],['Experiență',mission.label],['Rulare',mission.runId],['Moment păstrat',`${mission.state.state} · ${Math.max(0,mission.state.phaseTime).toFixed(1)} s`]]){const row=document.createElement('p'),strong=document.createElement('strong');strong.textContent=label;row.append(strong,document.createTextNode(value));details.append(row);}
   }
   function renderWall():void{
     el('mission-wall-status').textContent=wall?`${wall.inventory.length} ieșiri detectate · ${wall.candidate?.screens.length??0} pentru public · ${wall.provider==='windows-native'?'inventar Windows':'inventar Electron'}${wall.profileRevision?` · profil ${wall.profileRevision}`:''}`:'Inventarul nativ necesită aplicația Electron și automatizarea configurată.';
@@ -127,7 +127,7 @@ export function createMissionControl(deps:{snapshot():{state:ShowState|null;role
   el('mission-accessibility').addEventListener('submit',event=>{event.preventDefault();const form=el<HTMLFormElement>('mission-accessibility'),next={...DEFAULT_ACCESSIBILITY};for(const key of Object.keys(next)as Array<keyof PostAccessibility>){const field=form.elements.namedItem(key);if(key==='textScale'&&field instanceof HTMLSelectElement)next.textScale=Number(field.value);else if(key!=='textScale'&&field instanceof HTMLInputElement)next[key]=field.checked;}void action(async()=>{await api('/api/mission/accessibility',{post:Number(el<HTMLSelectElement>('mission-post').value),settings:next});accessDirty=false;},'Setările postului sunt salvate.');});
   el('mission-detect').addEventListener('click',()=>void action(async()=>{const result=await api<DisplayAutomationStatus|{available:false}>('/api/wall/detect',{});wall='inventory'in result?result:null;renderWall();},'Detectarea s-a încheiat. Verifică rezultatul înainte de aplicare.'));
   el('mission-apply-wall').addEventListener('click',()=>void action(()=>api('/api/wall/apply',{}),'Împărțirea display-urilor a fost aplicată.'));
-  el('mission-resume').addEventListener('click',()=>void action(()=>api('/api/recovery/resume',{}),'Misiunea a fost reluată.'));
+  el('mission-resume').addEventListener('click',()=>void action(()=>api('/api/recovery/resume',{runId:recovery?.mission.runId}),'Misiunea a fost reluată.'));
   el('mission-restart').addEventListener('click',()=>void action(()=>deps.dispatch({action:'restart'}),'Cererea pentru un grup nou a fost procesată.'));
   el('mission-diagnostics-start').addEventListener('click',()=>void action(()=>api('/api/diagnostics/start',{}),'Verificarea tehnică a fost cerută.'));
   el('mission-rehearsal-start').addEventListener('click',()=>void action(()=>api('/api/diagnostics/start',{mode:'rehearsal'}),'Repetiția completă a fost pornită. Urmărește progresul și instalația.'));

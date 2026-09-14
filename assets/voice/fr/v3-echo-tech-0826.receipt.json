@@ -1,0 +1,87 @@
+{
+  "cueId": "v3-echo-tech-0826",
+  "lang": "fr",
+  "speaker": "TEHNOLOGIC",
+  "text": "Reconnus à vos choix.",
+  "file": "v3-echo-tech-0826.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Reconnus",
+    "à",
+    "vos",
+    "choix"
+  ],
+  "wtimes": [
+    0,
+    720,
+    940,
+    1160
+  ],
+  "wdurations": [
+    560,
+    160,
+    180,
+    200
+  ],
+  "durationMs": 1520,
+  "visemes": [
+    "RR",
+    "E",
+    "kk",
+    "O",
+    "nn",
+    "I",
+    "U",
+    "aa",
+    "FF",
+    "O",
+    "SS",
+    "FF",
+    "aa"
+  ],
+  "vtimes": [
+    0,
+    91,
+    166,
+    261,
+    344,
+    414,
+    485,
+    720,
+    940,
+    1028,
+    1160,
+    1237,
+    1298
+  ],
+  "vdurations": [
+    91,
+    75,
+    95,
+    83,
+    70,
+    71,
+    75,
+    160,
+    88,
+    92,
+    77,
+    61,
+    62
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "3z9q8Y7plHbvhDZehEII",
+  "generationKey": "3f10b99f941205257934788b3478f44c785a63284a842e6e023e1481ec59a04c",
+  "sha256": "fd405655864f4edf18d5b6b8141f51ca0cc8bff8eb3314c4b996ebbc6517b4ce",
+  "generatedAt": "2026-09-13T13:30:03.390Z",
+  "requestId": "dFjQTpriiYo7fczCgXyD",
+  "historyItemId": "N1BF8GGCYMUdL0BqYIAs",
+  "characterCost": "21",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

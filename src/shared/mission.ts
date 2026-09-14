@@ -2,10 +2,11 @@ import type { ScenarioId, ScenarioProgress, scenarioView, summarizeScenario } fr
 import type { ShowState, TabletPost } from "./types";
 import type {ExperienceState,ExperienceSnapshot} from './experience';
 import {remapFilmTime} from './film-timing';
+import {STAR_SCORE} from './star-score';
 
 export const SCENARIO_LABELS: Record<ScenarioId, string> = {
   'legacy-v3': 'Protocolul Acasă · original',
-  'age-5-10': '5–10 ani · Bucățile de acasă',
+  'age-5-10': '5–10 ani · Steaua Omenirii',
   'age-10-15': '10–15 ani · Semnalul fără semnătură',
   'age-15-18': '15–18 ani · Dreptul de a schimba cursul',
   adults: 'Adulți · Ce lăsăm deschis',
@@ -18,6 +19,7 @@ export const STAGE_WINDOWS: Record<ScenarioId, readonly (readonly [number, numbe
 for (const id of Object.keys(STAGE_WINDOWS) as ScenarioId[]) {
   STAGE_WINDOWS[id] = STAGE_WINDOWS[id].map(([a,b])=>[remapFilmTime(a),remapFilmTime(b)] as const);
 }
+STAGE_WINDOWS['age-5-10']=STAR_SCORE.stageWindows;
 export interface PostAccessibility {
   textScale: number; contrastMode: boolean; reducedMotion: boolean; reducedStimuli: boolean;
   simplifiedChrome: boolean; showVisualGuidance: boolean; sfxEnabled: boolean;
@@ -28,6 +30,7 @@ export const DEFAULT_ACCESSIBILITY: PostAccessibility = {
 };
 export interface MissionRecord {
   experience?:ExperienceState;
+  checkpointSavedAt?:string;
   journalRetries?:Record<string,number>;
   runId: string; scenarioId: ScenarioId; contentHash: string; revision: number;
   timelineEpoch: number; createdAt: string; status: 'prepared'|'active'|'completed'|'interrupted';
@@ -36,9 +39,14 @@ export interface MissionRecord {
   mode: 'public'|'rehearsal'|'diagnostic';
 }
 export interface MissionSnapshot {
+  /** Last frame actually presented by the authorized clock-source renderer. */
+  presentedFilmTime?:number;
   experience?:ExperienceSnapshot;
   lantern?:Array<{seat?:string;found:boolean;mounted:boolean;linked:boolean}>;
   certificateToken?:string;
+  /** Persistent capability URL, emitted only after the show ends. */
+  crewDiplomaUrl?:string;
+  crewDiplomaAvailable?:boolean;
   /** Persistent operator retry generation for this physical post. */
   journalRetry?:number;
   runId: string; serverEpoch: string; scenarioId: ScenarioId; label: string; revision: number;

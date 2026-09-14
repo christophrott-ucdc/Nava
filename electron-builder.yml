@@ -47,6 +47,9 @@ extraResources:
       - "!**/preview-transcription.json"
       - "!**/*.receipt.json"
       - "!**/production-report.json"
+      - "!**/steaua-authoring.json"
+      - "!experience/vr/**"
+      - "!scenarios/**/backups/**"
   - from: config.example.json
     to: config.example.json
   # Shipped beside the executable so the venue always has them, even without the archive.

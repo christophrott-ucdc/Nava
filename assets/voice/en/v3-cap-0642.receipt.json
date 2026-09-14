@@ -1,0 +1,87 @@
+{
+  "cueId": "v3-cap-0642",
+  "lang": "en",
+  "speaker": "CAPITANUL",
+  "text": "Then leave nothing out.",
+  "file": "v3-cap-0642.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Then",
+    "leave",
+    "nothing",
+    "out"
+  ],
+  "wtimes": [
+    0,
+    400,
+    870,
+    1460
+  ],
+  "wdurations": [
+    320,
+    400,
+    490,
+    300
+  ],
+  "durationMs": 1840,
+  "visemes": [
+    "TH",
+    "E",
+    "nn",
+    "nn",
+    "I",
+    "FF",
+    "nn",
+    "aa",
+    "TH",
+    "I",
+    "nn",
+    "aa",
+    "DD"
+  ],
+  "vtimes": [
+    0,
+    115,
+    219,
+    400,
+    526,
+    657,
+    870,
+    963,
+    1064,
+    1170,
+    1267,
+    1460,
+    1603
+  ],
+  "vdurations": [
+    115,
+    104,
+    101,
+    126,
+    131,
+    143,
+    93,
+    101,
+    106,
+    97,
+    93,
+    143,
+    157
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "b0190eb1a87b346131d97e75ba4ee373c3bf4281379e4ab18e2185c8e7e8d12a",
+  "sha256": "891a451f492c8eac030949f44abd1527b0342946b38790d170a9d210a11be39f",
+  "generatedAt": "2026-09-13T13:28:37.575Z",
+  "requestId": "y6SG0jjEVE2CgwQpBKh4",
+  "historyItemId": "bSo2XuWA3SuOPzptR9rP",
+  "characterCost": "23",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

@@ -128,7 +128,7 @@ try {
   assert.equal(overlay.topInsideVeil, false, "veil must not win hit-testing while hidden");
 
   await command("start");
-  const leadIn = await fetch(`${serverBase}/api/state`).then((response) => response.json());
+  const leadIn = await waitFor(()=>fetch(`${serverBase}/api/state`).then(r=>r.json()),s=>s.state==='playing',20000,'confirmed scheduled START');
   assert.equal(leadIn.state, "playing");
   assert.ok(leadIn.phaseTime < 0, "START must begin in the intentional T-10 lead-in");
 

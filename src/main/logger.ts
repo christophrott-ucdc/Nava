@@ -1,3 +1,4 @@
+import {redactLog} from '../shared/log-sanitize';
 /**
  * JSONL logger for the main process: runs/app-<YYYYMMDD-HHmmss>.jsonl (under appRoot/runs) + console.
  * One line per entry: {"ts","level","src","msg","data"?}. Lines logged before initLogger() are buffered.
@@ -124,13 +125,13 @@ export function getLogFilePath(): string | null {
 }
 
 export function log(level: LogLevel, msg: string, data?: unknown, src = "main"): void {
-  const entry: LogEntry = { ts: new Date().toISOString(), level, src, msg };
-  if (data !== undefined) entry.data = serializeData(data);
+  const entry: LogEntry = { ts: new Date().toISOString(), level, src, msg:String(redactLog(msg)) };
+  if (data !== undefined) entry.data = redactLog(serializeData(data));
   const line = `${safeStringify(entry)}\n`;
   if (stream) stream.write(line);
   else if (pending.length < MAX_PENDING) pending.push(line);
 
-  const text = `[${entry.ts.slice(11, 19)}] ${level.toUpperCase().padEnd(5)} [${src}] ${msg}${
+  const text = `[${entry.ts.slice(11, 19)}] ${level.toUpperCase().padEnd(5)} [${src}] ${entry.msg}${
     data !== undefined ? ` ${safeStringify(entry.data)}` : ""
   }`;
   if (level === "error") console.error(text);

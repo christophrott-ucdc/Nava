@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {remapFilmTime,videoCorrection,publicDurationSec,FILM_DURATION} from './film-timing';
+import {remapFilmTime,videoCorrection,publicDurationSec,FILM_DURATION,scenarioPhaseEnd} from './film-timing';
 import fs from 'node:fs';
+import type {ScenarioId} from './scenario-engine';
 test('visual mapping inserts Saturn without stretching the whole film',()=>{
  assert.equal(remapFilmTime(144),144);assert.equal(remapFilmTime(356),388);assert.equal(remapFilmTime(402),610);
  assert(remapFilmTime(401.5)<504);assert.throws(()=>remapFilmTime(NaN));
@@ -21,7 +22,8 @@ test('all film cues and every age dialogue fit and preserve audible voice window
  const packages=[['assets/show/voice-script-v3.json','assets/voice/ro/manifest.json'],...['age-5-10','age-10-15','age-15-18','adults'].map(id=>[`assets/scenarios/${id}/dialogue.ro.draft.json`,`assets/scenarios/${id}/voice/ro/manifest.json`])];
  for(const [file,manifestFile] of packages){
   const {cues}=JSON.parse(fs.readFileSync(file,'utf8')),manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8'));
-  for(const c of cues){const end=c.phase==='play'?show.videoDurationSec:c.phase==='preshow'?50:75;
+  const id=(file.match(/scenarios\/([^/]+)\//)?.[1]??'legacy-v3') as ScenarioId;
+  for(const c of cues){const end=scenarioPhaseEnd(id,c.phase,show);
    assert(c.at<end,c.id);const next=Math.min(end,...cues.filter((n:{phase:string;at:number})=>n.phase===c.phase&&n.at>c.at).map((n:{at:number})=>n.at));
    assert(manifest.clips[c.id],`missing ${c.id}`);
    assert(manifest.clips[c.id].durationMs/1000<=next-c.at+.001,`overlap ${c.id}`);

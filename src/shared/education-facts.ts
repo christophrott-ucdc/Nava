@@ -23,7 +23,7 @@ const label: Record<string, string> = {
   'attach:repeated': 'Două ritmuri diferite, ambele repetate', 'attach:single': 'Un singur ritm testat', 'attach:none': 'Nu am trimis un ritm nou',
   'attach:identity': 'Nu știm cine trimite semnalul', wide: 'Trei zone cercetate', fine: 'O zonă cercetată în detaliu',
   protect: 'Raport verificat', passive: 'Raport nefiltrat',
-  linked: 'Drumul ajunge la felinar', found: 'Ai găsit piesa', fitted: 'Piesa este la locul ei', keep: 'Păstrezi regula',
+  linked: 'Drumul ajunge la stea', found: 'Ai găsit piesa', fitted: 'Piesa este la locul ei', keep: 'Păstrezi regula',
 };
 const selected = (value?: string): EducationObject['state'] => !value ? 'missing' : ['observe', 'abstain'].includes(value) ? 'observed' : 'confirmed';
 const participation = (value?: string) => !value ? 'Alege când ești gata.' : value === 'observe' ? 'Ai ales să privești.' : value === 'abstain' ? 'Ai ales să păstrezi ce ai.' : `${label[value] || value}.`;
@@ -36,15 +36,16 @@ export function educationFacts(p: ScenarioProgress, stage: number, post: Post, z
   const result: EducationVisual = { kind: 'pieces', title: '', caption: '', objects: [], links: [], facts: [] };
   if (p.profile === 'age-5-10') {
     const shape = c.shapes[zone === 'A' ? 0 : 1];
-    result.title = stage === 1 ? 'Piesa ta pentru felinar' : stage === 2 ? 'Așază piesa în felinar' : 'Aprindem felinarul';
-    result.caption = stage === 3 ? 'Două drumuri ajung la lumină: al tău și al colegului.' : stage === 2 ? 'Potrivește semnul auriu al piesei cu semnul de sus.' : 'Privește conturul și găsește aceeași formă.';
+    result.title = stage === 1 ? 'Piesa ta pentru stea' : stage === 2 ? 'Așază piesa în stea' : 'Aprindem steaua';
+    result.caption = stage === 3 ? 'Fiecare participant poate aprinde propria lumină.' : stage === 2 ? 'Potrivește semnul auriu al piesei cu semnul de sus.' : 'Privește conturul și găsește aceeași formă.';
     if (stage === 3) {
       for (const [n, side] of (['A', 'B'] as const).entries()) {
+        if(p.participants&&!p.participants.includes(`${post}${side}`))continue;
         const v = p.zones[`${post}${side}`].choices['3'];
-        result.objects.push(node(side, `${side} · ${v === 'linked' ? 'la felinar' : v === 'observe' ? 'privește' : 'liber'}`, c.shapes[n], selected(v), n ? 2 : -2));
+        result.objects.push(node(side, `${side} · ${v === 'linked' ? 'la stea' : v === 'observe' ? 'privește' : 'liber'}`, c.shapes[n], selected(v), n ? 2 : -2));
       }
-      if (result.objects.every(o => o.state === 'confirmed')) result.links.push(['A', 'B']);
-      result.facts = [participation(choice), 'Felinarul se aprinde când amândoi găsiți drumul.'];
+      if (result.objects.length===2&&result.objects.every(o => o.state === 'confirmed')) result.links.push(['A', 'B']);
+      result.facts = [participation(choice), 'Fiecare drum găsit adaugă lumină stelei.'];
     } else {
       result.objects.push(node('piece', shape, shape, choice ? selected(choice) : 'available', stage === 2 && choice !== 'fitted' ? -2 : 0));
       if (stage === 2) {
@@ -52,7 +53,7 @@ export function educationFacts(p: ScenarioProgress, stage: number, post: Post, z
         result.objects[0].quarterTurns = z.game?.rotation ?? 0;
         if (choice !== 'fitted') result.objects.push({ ...node('socket', 'Locul piesei', shape, 'missing', 2), keyMarker: true, quarterTurns: 0 });
       }
-      result.facts = stage === 1 ? [choice === 'found' ? `Ai găsit piesa: ${shape}.` : participation(choice)] : [z.choices['1'] === 'found' ? 'Ai găsit piesa pe Siwarha.' : 'Natura ți-a dăruit această piesă.', choice === 'fitted' ? 'Piesa este la locul ei.' : choice === 'observe' ? participation(choice) : z.builder.length ? (z.game?.rotation ? 'Ai luat piesa. Rotește-o până când semnul auriu ajunge sus.' : 'Semnul auriu este sus. Acum așază piesa.') : 'Ia piesa, rotește-o și așaz-o în felinar.'];
+      result.facts = stage === 1 ? [choice === 'found' ? `Ai găsit piesa: ${shape}.` : participation(choice)] : [z.choices['1'] === 'found' ? 'Ai găsit piesa pe Siwarha.' : 'Natura ți-a dăruit această piesă.', choice === 'fitted' ? 'Piesa este la locul ei.' : choice === 'observe' ? participation(choice) : z.builder.length ? (z.game?.rotation ? 'Ai luat piesa. Rotește-o până când semnul auriu ajunge sus.' : 'Semnul auriu este sus. Acum așază piesa.') : 'Ia piesa, rotește-o și așaz-o în stea.'];
     }
   } else if (p.profile === 'age-10-15') {
     result.kind = 'signals';

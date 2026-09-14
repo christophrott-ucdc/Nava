@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Real Hono/WS/SQLite scenario integration. Uses actual repository media and generated voices.
  * No mock voice manifests or readiness overrides. A missing production asset fails this test.
- * Screens are absent intentionally: this verifies server behavior, not film/audio playback.
+ * Default screen uses explicit synthetic package/frame ACKs for server logic only, not film/audio playback.
  */
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -15,7 +15,9 @@ import WebSocket from 'ws';
 export const ROOT = path.resolve(import.meta.dirname, '..');
 const require = createRequire(import.meta.url);
 export const PROFILES = ['age-5-10', 'age-10-15', 'age-15-18', 'adults'];
-export const WINDOWS = { 'age-5-10': [100, 208, 329], 'age-10-15': [100, 200, 330], 'age-15-18': [100, 196, 329], adults: [104, 201, 335] };
+const timingModule=await esbuild.build({entryPoints:[path.join(ROOT,'src/shared/mission.ts')],bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent'});
+const {STAGE_WINDOWS}=await import('data:text/javascript;base64,'+Buffer.from(timingModule.outputFiles[0].text).toString('base64'));
+export const WINDOWS=Object.fromEntries(PROFILES.map(id=>[id,STAGE_WINDOWS[id].map(([start,end])=>(start+end)/2)]));
 export async function waitFor(read, predicate, label, timeout = 8000) {
   const until = Date.now() + timeout; let value;
   while (Date.now() < until) { value = await read(); if (predicate(value)) return value; await new Promise(r => setTimeout(r, 30)); }
@@ -27,12 +29,19 @@ export function client(url, id, post) {
   const opened = new Promise((resolve, reject) => { ws.once('error', reject); ws.once('open', () => { ws.send(JSON.stringify({ type: 'hello', client: 'tablet', id })); ws.send(JSON.stringify({ type: 'tablet', tabletId: id, event: { kind: 'set-post', post } })); resolve(); }); });
   return { ws, opened, get snapshot() { return latest; }, send(m) { ws.send(JSON.stringify(m)); }, async next(predicate, label) { return waitFor(() => { const i = messages.findIndex(predicate); return i < 0 ? null : messages.splice(i, 1)[0]; }, Boolean, label); } };
 }
-export async function createHarness({ webDir = path.join(ROOT, 'dist/web'), connectTablets = true, screens = [], tutorial = false } = {}) {
+export async function createHarness({ webDir = path.join(ROOT, 'dist/web'), connectTablets = true, screens, tutorial = false, language, showText, ignoreLaunches=0 } = {}) {
+  const syntheticScreen = screens === undefined;
+  screens ??= [{id:'center',displayIndex:0,playAudio:true,showAvatar:true}];
+  let fixtureScreen,heldReport,fixtureHash;const fixtureTimer=setInterval(()=>{if(heldReport&&fixtureScreen?.readyState===WebSocket.OPEN)fixtureScreen.send(JSON.stringify(heldReport));},100);fixtureTimer.unref();
   const temp = await mkdtemp(path.join(os.tmpdir(), 'nava-scenarios-smoke-'));
   const bundle = path.join(temp, 'server.cjs');
   await esbuild.build({ entryPoints: [path.join(ROOT, 'src/server/index.ts')], outfile: bundle, bundle: true, platform: 'node', format: 'cjs', target: 'node24', logLevel: 'warning' });
   const config = JSON.parse(await readFile(path.join(ROOT, 'config.json'), 'utf8'));
   Object.assign(config, { screens, server: { port: 0, bindHost: '127.0.0.1' }, autoRun: { enabled: false, requireScreens: screens.map(s => s.id), requireTablets: 0, startTrigger: 'operator', resetAfterSec: 0 }, security: { operatorPin: '9384', screenToken: '', sessionTtlMin: 30, usersFile: path.join(temp, 'data/users.json'), publicState: true }, lights: { driver: 'none' } });
+  // This fixture represents one synthetic media clock, not the installed independent-panel wall.
+  if(syntheticScreen){config.video={...config.video,path:path.resolve(ROOT,'../Video/panels-playback-1440/center.mp4'),panelsDir:undefined};config.displayMode='windows';}
+  if(language)config.lang=language;
+  if(showText!==undefined){config.show=path.join(temp,'show.json');await writeFile(config.show,showText);}
   const logs = [];
   const serverOptions = { config, appRoot: ROOT, webDir, showPath: path.resolve(ROOT, config.show), cacheDir: path.join(temp, 'cache'), runsDir: path.join(temp, 'runs'), log: (level, message) => { if (level === 'error') logs.push(message); } };
   let handle = await require(bundle).startServer(serverOptions);
@@ -40,15 +49,30 @@ export async function createHarness({ webDir = path.join(ROOT, 'dist/web'), conn
   async function authenticate() { const login = await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: '9384' }) }); assert.equal(login.status, 200); token = /nava_session=([0-9a-f]+)/.exec(login.headers.get("set-cookie") ?? "")?.[1]; assert.ok(token, "session token from Set-Cookie"); }
   await authenticate();
   async function api(url, body) { const r = await fetch(base + url, { method: body === undefined ? 'GET' : 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: body === undefined ? undefined : JSON.stringify(body) }); return { status: r.status, body: await r.json() }; }
+  async function connectFixture(){
+    if(!syntheticScreen)return;
+    fixtureScreen=new WebSocket(base.replace('http:','ws:')+'/ws');
+    fixtureScreen.on('message',raw=>{const m=JSON.parse(String(raw));if(m.type==='welcome')fixtureHash=m.contentHash??m.show?.scenario?.contentHash;if(m.type==='launchPrepare'){if(ignoreLaunches>0)ignoreLaunches--;else fixtureScreen.send(JSON.stringify({type:'launchReady',id:m.id,screens:['center']}));}});
+    await new Promise((resolve,reject)=>{fixtureScreen.once('error',reject);fixtureScreen.once('open',()=>{fixtureScreen.send(JSON.stringify({type:'hello',client:'screen',id:'center',isClockSource:true}));resolve();});});
+  }
+  await connectFixture();
+  async function prepareFixture(){
+    if(!syntheticScreen)return;
+    const state=(await api('/api/state')).body,show=(await api('/api/show')).body;
+    const contentHash=show.scenario?.contentHash??fixtureHash;assert(contentHash,'fixture received current package hash');
+    fixtureScreen.send(JSON.stringify({type:'packageReady',contentHash,ok:true}));
+    fixtureScreen.send(JSON.stringify({type:'report',state:state.state,phaseTime:state.phaseTime,videoTime:Math.max(0,state.phaseTime),rate:1,videoReady:true,runId:state.runId,serverEpoch:state.serverEpoch,timelineEpoch:state.timelineEpoch}));
+  }
   const tablets = connectTablets ? Array.from({ length: 5 }, (_, n) => client(`ws://127.0.0.1:${handle.port}/ws`, `scenario-qa-${n + 1}`, n + 1)) : [];
   await Promise.all(tablets.map(t => t.opened));
   await Promise.all(tablets.map((t, n) => waitFor(() => t.snapshot, s => s?.post === n + 1, 'personalized tablet')));
-  async function command(action) { const r = await api('/api/cmd', action); assert.equal(r.status, 200, JSON.stringify(r.body)); assert.equal(r.body.ok, true, JSON.stringify(r.body)); }
+  async function command(action) { if(['start','restart','seek','preshow','epilogue','play'].includes(action.action))heldReport=undefined;if(action.action==='start')await prepareFixture(); const r = await api('/api/cmd', action); assert.equal(r.status, 200, JSON.stringify(r.body)); assert.equal(r.body.ok, true, JSON.stringify(r.body)); if(action.action==='start')await waitFor(async()=>(await api('/api/state')).body,s=>s.state==='playing','scheduled start',20000); }
   // Skipping the tutorial requires confirmed characters; the smoke seats all ten places (5 tablets × A/B).
   const CREW_IDS = ['nova','nia','luca','mira','leo','iris','arin','tara','radu','zori'];
-  async function lockCrew() {
+  async function lockCrew(limit=10) {
     let n = 0;
     for (const t of tablets) for (const zone of ['A', 'B']) {
+      if(n>=limit)return;
       const s = await waitFor(() => t.snapshot, s => s?.experience?.crew?.open === true, 'crew registration open');
       const event = { type: 'missionAction', runId: s.runId, cueInstanceId: s.cueInstanceId, eventId: randomUUID(), zone, value: `crew:lock:${CREW_IDS[n++]}` };
       t.send(event); const ack = await t.next(m => m.type === 'missionAck' && m.eventId === event.eventId, 'crew lock ACK');
@@ -56,15 +80,18 @@ export async function createHarness({ webDir = path.join(ROOT, 'dist/web'), conn
       await waitFor(() => t.snapshot, v => v.revision > s.revision, 'crew snapshot');
     }
   }
-  async function select(profile) { const r = await api('/api/scenarios/select', { id: profile }); assert.equal(r.status, 200, `${profile}: ${JSON.stringify(r.body)}`); if(!tutorial){await lockCrew();const skipped=await api('/api/experience/control',{action:'skip'});assert.equal(skipped.status,200,`skip: ${JSON.stringify(skipped.body)}`);} return r.body; }
-  return { temp, get base() { return base; }, get token() { return token; }, tablets, logs, api, command, select,
+  async function select(profile) { const r = await api('/api/scenarios/select', { id: profile }); assert.equal(r.status, 200, `${profile}: ${JSON.stringify(r.body)}`); if(!tutorial&&connectTablets){await lockCrew();const skipped=await api('/api/experience/control',{action:'skip'});assert.equal(skipped.status,200,`skip: ${JSON.stringify(skipped.body)}`);} return r.body; }
+  return { temp, get base() { return base; }, get token() { return token; }, tablets, logs, api, command, select, lockCrew, prepareFixture,
+    startTvDemo(){return handle.startTvDemo();},
+    async reportWall(message){const state=(await api('/api/state')).body;fixtureScreen.send(JSON.stringify({type:'wallPlayback',runId:state.runId,serverEpoch:state.serverEpoch,timelineEpoch:state.timelineEpoch,...message}));},
+    async holdFrame(){if(!syntheticScreen)throw Error('A real renderer must own its clock');const state=(await api('/api/state')).body;heldReport={type:'report',state:state.state,phaseTime:state.phaseTime,videoTime:Math.max(0,state.phaseTime),rate:0,videoReady:true,runId:state.runId,serverEpoch:state.serverEpoch,timelineEpoch:state.timelineEpoch};},
     async restartServer() {
-      for (const t of tablets) t.ws.close(); await handle.stop();
-      handle = await require(bundle).startServer(serverOptions); base = `http://127.0.0.1:${handle.port}`; await authenticate();
+      fixtureScreen?.close(); for (const t of tablets) t.ws.close(); await handle.stop();
+      handle = await require(bundle).startServer(serverOptions); base = `http://127.0.0.1:${handle.port}`; await authenticate(); await connectFixture();
       tablets.splice(0, tablets.length, ...(connectTablets ? Array.from({ length: 5 }, (_, n) => client(`ws://127.0.0.1:${handle.port}/ws`, `scenario-qa-${n + 1}`, n + 1)) : []));
       await Promise.all(tablets.map(t => t.opened)); await Promise.all(tablets.map((t, n) => waitFor(() => t.snapshot, s => s?.post === n + 1, 'restored tablet')));
     },
-    async close() { for (const t of tablets) t.ws.close(); await handle.stop(); await rm(temp, { recursive: true, force: true }); } };
+    async close() { clearInterval(fixtureTimer);fixtureScreen?.close(); for (const t of tablets) t.ws.close(); await handle.stop(); await rm(temp, { recursive: true, force: true }); } };
 }
 export async function act(tablet, zone, value, duplicate = false) {
   const s = tablet.snapshot; assert(s?.stage && s.view, 'active personalized mission required');
@@ -167,7 +194,7 @@ export async function runSmoke() {
       await h.command({ action: 'restart' });
     }
     // A cold server restart must restore the exact run suspended, never silently autoplay it.
-    await h.select('age-5-10'); await h.command({ action: 'start' }); await h.command({ action: 'seek', time: 100 });
+    await h.select('age-5-10'); await h.command({ action: 'start' }); await h.command({ action: 'seek', time: WINDOWS['age-5-10'][0] });
     await waitFor(() => h.tablets[0].snapshot, s => s?.stage === 1, 'recovery stage');
     const committed = await act(h.tablets[0], 'A', 'shape:Cerc');
     const beforeRestart = h.tablets[0].snapshot;
@@ -177,7 +204,9 @@ export async function runSmoke() {
     assert.equal(recovery.body.mission.suspended, true);
     assert.notEqual(recovery.body.mission.serverEpoch, beforeRestart.serverEpoch);
     assert.equal((await h.api('/api/cmd', { action: 'seek', time: 105 })).status, 409, 'suspended recovery blocks seek');
-    assert.equal((await h.api('/api/recovery/resume', {})).status, 200);
+    await h.prepareFixture();
+    await waitFor(async()=>(await h.api('/api/state')).body,s=>s.videoReady,'restored screen frame');
+    const resumed=await h.api('/api/recovery/resume', {});assert.equal(resumed.status,200,JSON.stringify(resumed.body));
     await waitFor(() => h.tablets[0].snapshot, s => !s.suspended && s.runId === beforeRestart.runId, 'explicit recovery resume');
     h.tablets[0].send(committed);
     const persistedDuplicate = await h.tablets[0].next(m => m.type === 'missionAck' && m.eventId === committed.eventId, 'persistent event dedup');

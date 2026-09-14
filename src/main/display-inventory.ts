@@ -13,6 +13,8 @@ interface InventoryOptions {
   /** Caller holds the server's idle-only transaction lock. Returns rollback for a failed disk commit. */
   apply(candidate:DisplayTopologyCandidate):Promise<()=>Promise<void>>;
   onTopologyChanged(reason:string):void;
+  validateCandidate?(candidate:DisplayTopologyCandidate):void;
+  onReady?():Promise<void>;
 }
 const topologyFingerprint=(displays:readonly InventoryDisplay[])=>JSON.stringify(displays.map(d=>({id:d.runtimeId,key:d.hardwareKey,bounds:d.boundsDip,dpi:d.scaleFactor,rotation:d.rotation,refresh:d.refreshHz})).sort((a,b)=>a.id-b.id));
 
@@ -59,8 +61,19 @@ export class DisplayInventoryManager {
     this.status.state='changed';
     this.opts.onTopologyChanged('Topologia display-urilor s-a schimbat. Verifică ieșirile înainte de reluare.');
     if(this.timer)clearTimeout(this.timer);
-    this.timer=setTimeout(()=>{if(!this.stopped)void this.detect().catch(err=>this.opts.log('warn','display re-detection failed',String(err)));},1000);
+    this.scheduleDetection(1000);
   };
+  private scheduleDetection(delay:number):void {
+    this.timer=setTimeout(()=>{void (async()=>{
+      if(this.stopped)return;
+      try{
+        await this.detect();
+        if(!this.stopped&&this.opts.config.countMode==='adaptive'&&this.status.candidate?.canApply)await this.opts.onReady?.();
+      }catch(err){this.opts.log('warn','display re-detection failed',String(err));}
+      // A busy show stays suspended. Apply automatically after returning to preparation.
+      if(!this.stopped&&this.topologyChanged&&this.opts.config.countMode==='adaptive')this.scheduleDetection(3000);
+    })();},delay);
+  }
   constructor(private readonly opts:InventoryOptions){
     this.profilePath=path.join(opts.dataRoot??opts.appRoot,'data','installations',opts.config.installationId??'default','wall-profile.json');
     this.status={enabled:opts.config.enabled,inventory:[],provider:'electron',candidate:null,profileRevision:null,state:opts.config.enabled?'detected':'disabled',issues:[],physicalCalibration:{status:'blocked-no-camera',reason:'Nu există provider optic/cameră calibrată; geometria fizică nu poate fi certificată automat.'}};
@@ -74,7 +87,7 @@ export class DisplayInventoryManager {
   }
   snapshot():DisplayAutomationStatus{return structuredClone(this.status);}
   /** Native status in the readiness path must be synchronous and must invalidate on any hotplug event. */
-  readinessIssues():string[]{return this.opts.config.enabled?[...(this.topologyChanged?['Topologia display-urilor s-a schimbat; aplică o configurație verificată în pregătire.']:[]),...this.status.issues]:[];}
+  readinessIssues():string[]{return this.opts.config.enabled?[...(this.topologyChanged?['Topologia display-urilor s-a schimbat; aplică o configurație verificată în pregătire.']:this.status.state!=='applied'?['Configurația TV-urilor nu a fost încă aplicată.']:[]),...this.status.issues]:[];}
   async inventory():Promise<DisplayAutomationStatus>{return this.detect();}
   async detect():Promise<DisplayAutomationStatus>{
     if(this.pending)return this.pending;
@@ -91,6 +104,7 @@ export class DisplayInventoryManager {
     const displays=screen.getAllDisplays().slice().sort((a,b)=>a.bounds.x-b.bounds.x||a.bounds.y-b.bounds.y);
     const rows=inventoryRows(displays,native),candidate=buildDisplayTopology(rows,this.opts.config,this.profile);
     if(native.length>displays.length){candidate.issues.push('Mai multe trasee native partajează același desktop: posibil mod duplicat.');candidate.canApply=false;}
+    if(candidate.canApply)try{this.opts.validateCandidate?.(candidate);}catch(err){candidate.issues.push(err instanceof Error?err.message:'Set panoramic indisponibil.');candidate.canApply=false;}
     if(this.profileError){candidate.issues.push(this.profileError);candidate.canApply=false;}
     const fingerprint=topologyFingerprint(rows);
     if(this.fingerprint&&fingerprint!==this.fingerprint)this.topologyChanged=true;
@@ -130,7 +144,7 @@ export class DisplayInventoryManager {
         rollback=await this.opts.apply(candidate);
         // Detect a display event racing window recreation before accepting the profile.
         const current=screen.getAllDisplays().map(d=>({id:d.id,bounds:d.bounds,scale:d.scaleFactor}));
-        if(status.inventory.some(d=>!current.some(c=>c.id===d.runtimeId&&JSON.stringify(c.bounds)===JSON.stringify(d.boundsDip)&&c.scale===d.scaleFactor)))throw new Error('Display-urile s-au schimbat în timpul aplicării.');
+        if(current.length!==status.inventory.length||status.inventory.some(d=>!current.some(c=>c.id===d.runtimeId&&JSON.stringify(c.bounds)===JSON.stringify(d.boundsDip)&&c.scale===d.scaleFactor)))throw new Error('Display-urile s-au schimbat în timpul aplicării.');
         await fs.rename(tmp,this.profilePath);
       }catch(err){if(rollback)await rollback();await fs.unlink(tmp).catch(()=>{});throw err;}
       this.profile=profile;this.fingerprint=topologyFingerprint(status.inventory);this.topologyChanged=false;

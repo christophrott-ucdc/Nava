@@ -291,3 +291,4 @@ body.is-viewer .button:not(#focus-player), body.is-viewer .experience-start, bod
 
 /* Shared Glass typography and tactile minimums also apply in dense operator views. */
 .eyebrow{font-size:16px}.button,.btn,.text-button,.nav-link{min-height:48px}.brand-mark{box-shadow:var(--glass-shadow)}
+.present-language{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:12px 0;font-weight:650}.present-language select{min-height:48px;min-width:180px;border:1px solid var(--glass-border,#cbdce5);border-radius:14px;padding:8px 14px;background:var(--surface,#fff);color:inherit;font:inherit}

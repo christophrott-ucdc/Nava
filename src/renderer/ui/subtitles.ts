@@ -41,7 +41,7 @@ export function createSubtitles(el: HTMLElement, opts: { enabled: boolean }): Su
       const profile = SPEAKERS[speaker];
       el.dataset.speaker = speaker;
       if (speakerEl) {
-        speakerEl.textContent = profile?.label ?? speaker;
+        speakerEl.textContent = speaker==='CAPITANUL'&&document.body.dataset.scenario==='age-5-10'?'COMANDANTUL':profile?.label ?? speaker;
       }
       el.style.setProperty("--subtitle-speaker", profile?.color ?? "var(--theme-accent)");
       if (textEl) textEl.textContent = text;

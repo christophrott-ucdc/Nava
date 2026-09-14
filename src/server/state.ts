@@ -49,7 +49,7 @@ import { SCENE_THEMES } from "./features/show-validate";
 export interface DirectorHooks {
   beforeCommand?(cmd:Command,source:string):DispatchResult|undefined;
   /** Broadcast `applyCmd` to all screens. */
-  onApplyCmd(cmd: Command): void;
+  onApplyCmd(cmd: Command, context?: 'planet-hold'): void;
   /** The ShowState changed (state / scene / theme / lang / counts / readiness ...) — broadcast `state`. */
   onStateChange(state: ShowState, reason: string): void;
   /** A cue fired (auto or manual). */
@@ -72,6 +72,8 @@ export interface DirectorHooks {
 export interface DispatchResult {
   ok: boolean;
   reason?: string;
+  pending?: boolean;
+  message?: string;
 }
 
 /** `() => boolean | null` — null = preflight not run yet. Supplied by the orchestrator (src/server/preflight.ts). */
@@ -178,10 +180,12 @@ export function validateCommand(x: unknown): Command | null {
     case "setVolume": {
       const voice = typeof o.voice === "number" && Number.isFinite(o.voice) ? Math.min(1, Math.max(0, o.voice)) : undefined;
       const sfx = typeof o.sfx === "number" && Number.isFinite(o.sfx) ? Math.min(1, Math.max(0, o.sfx)) : undefined;
-      if (voice === undefined && sfx === undefined) return null;
+      const music = typeof o.music === "number" && Number.isFinite(o.music) ? Math.min(1, Math.max(0, o.music)) : undefined;
+      if (voice === undefined && sfx === undefined && music === undefined) return null;
       const cmd: Command = { action: "setVolume" };
       if (voice !== undefined) cmd.voice = voice;
       if (sfx !== undefined) cmd.sfx = sfx;
+      if (music !== undefined) cmd.music = music;
       return cmd;
     }
     case "setLang":
@@ -220,19 +224,36 @@ export class ShowDirector {
   bindMission(identity: {runId:string;serverEpoch:string;timelineEpoch:number}): void { this.missionIdentity = identity; }
   updateRequiredScreens(ids: string[]): void { this.configuredScreenIds.splice(0,this.configuredScreenIds.length,...ids); this.autoRunCfg.requireScreens=ids; }
   suspend(): void {
+    if(this.planetHold){this.planetHold.remainingMs=this.holdRemaining();this.planetHold.sampledAt=this.clock();}
     const time=this.now(); this.suspended=true; this.anchor={phaseTime:time,serverTimeMs:this.clock(),rate:0};
     this.cues.clearVoice(); this.hooks.onApplyCmd({action:'stopVoice'}); this.emitStateIfChanged('suspend');
   }
   resumeSuspended(): void {
+    if(this.planetHold)this.planetHold.sampledAt=this.clock();
     this.suspended=false; this.anchor={...this.anchor,serverTimeMs:this.clock(),rate:this.nominalRate};
     this.emitStateIfChanged('resume');
   }
   restoreCheckpoint(saved: ShowState): void {
-    this.state=saved.state; this.phase=phaseOf(saved.state); this.nominalRate=saved.rate>0?saved.rate:1;
+    if(!['idle','preshow','playing','paused','epilogue','ended'].includes(saved.state)||!Number.isFinite(saved.phaseTime)||!LANGS.includes(saved.lang))throw new Error('Invalid recovery checkpoint');
+    const phase=phaseOf(saved.state),max=phase==='play'?this.show.videoDurationSec:phase?Math.max(0,...this.show.scenes.filter(s=>s.phase===phase).map(s=>s.end)):0;
+    if(saved.phaseTime<(phase==='play'?-this.leadInSec:0)||(phase==='play'&&saved.phaseTime>max+.1))throw new Error('Recovery time outside show');
+    if(saved.playbackRate!==undefined&&(!Number.isFinite(saved.playbackRate)||saved.playbackRate<MIN_RATE||saved.playbackRate>MAX_RATE))throw new Error('Invalid recovery rate');
+    this.completedPlanetHolds=new Set((saved.completedPlanetHolds??[]).filter(id=>this.show.planetStops?.some(s=>s.id===id)));
+    this.holdCursor=saved.phaseTime;
+    const stop=this.show.planetStops?.find(s=>s.id===saved.planetHold?.id);
+    this.planetHold=stop&&saved.state==="paused"&&Math.abs(stop.at-saved.phaseTime)<.1&&Number.isFinite(saved.planetHold?.remainingMs)?{id:stop.id,remainingMs:Math.max(0,Math.min(stop.durationSec*1000,saved.planetHold!.remainingMs)),sampledAt:this.clock()}:null;
+    if(this.planetHold)this.completedPlanetHolds.add(this.planetHold.id);
+    this.state=saved.state; this.phase=phaseOf(saved.state); this.nominalRate=saved.playbackRate??(saved.rate>0?saved.rate:1);
     this.anchor={phaseTime:saved.phaseTime,serverTimeMs:this.clock(),rate:0}; this.suspended=true;
     this.lang=saved.lang; this.tabletSfxEnabled=saved.tabletSfx ?? true;
+    this.variant=saved.variant??null;this.ambientEnabled=saved.ambientEnabled??this.ambientEnabled;
+    if(saved.volumes)for(const channel of ["voice","sfx","music"] as const){const value=saved.volumes[channel];if(Number.isFinite(value)&&value>=0&&value<=1)this.volumes[channel]=value;}
+    this.autoRunEnabled=false; // Recovery always requires an explicit operator decision.
     if(this.phase){this.cues.enterPhase(this.phase,saved.phaseTime+0.001);this.cues.clearVoice();}
   }
+  private planetHold: {id:string;remainingMs:number;sampledAt:number}|null=null;
+  private completedPlanetHolds=new Set<string>();
+  private holdCursor=0;
   private show: ShowFile;
   private state: PlaybackState = "idle";
   /** Phase we are in (kept through `paused` and `ended`); null in idle. */
@@ -264,6 +285,8 @@ export class ShowDirector {
   private readonly lightsDriver: LightsConfig["driver"];
   private preflight: PreflightProvider | null;
   private crewReadiness: (()=>{required:number;connected:number;reasons:string[]}|null)|null=null;
+  private displayPreviewProvider?:()=>boolean;
+  setDisplayPreviewProvider(provider:()=>boolean):void {this.displayPreviewProvider=provider;}
   setCrewReadinessProvider(provider:()=>{required:number;connected:number;reasons:string[]}|null):void {this.crewReadiness=provider;}
   private dynamicVoiceBuilder: DynamicVoiceBuilder | null;
   private pendingPhoto: { cueId: string | null; showSec: number } | null = null;
@@ -272,7 +295,7 @@ export class ShowDirector {
   lastPhoto: { cueId: string | null; dataUrl: string; atMs: number } | null = null;
   private readonly clock: () => number;
   private readonly schedule: (fn: () => void, ms: number) => void;
-  volumes: { voice: number; sfx: number };
+  volumes: { voice: number; sfx: number; music: number };
   readonly cues: CueTracker;
 
   constructor(
@@ -286,7 +309,7 @@ export class ShowDirector {
     this.show = show;
     this.lang = config.lang;
     this.videoPath = config.video.path;
-    this.volumes = { voice: config.audio.voiceVolume, sfx: config.audio.sfxVolume };
+    this.volumes = { voice: config.audio.voiceVolume, sfx: config.audio.sfxVolume, music: config.audio.musicVolume ?? config.audio.sfxVolume };
     this.anchor = { phaseTime: 0, serverTimeMs: this.clock(), rate: 1 };
     this.role = config.role;
     this.configuredScreenIds = (config.screens ?? []).map((s) => s.id);
@@ -428,8 +451,9 @@ export class ShowDirector {
         assetsOk = false;
       }
     }
+    const displayPreview=this.displayPreviewProvider?.()??false;
     const reasons: string[] = [];
-    if (screensMissing.length) reasons.push(`Ecrane lipsă: ${screensMissing.join(", ")}`);
+    if (screensMissing.length) reasons.push(displayPreview ? "Previzualizare într-o fereastră: TV-urile fizice nu sunt validate. Folosește DEMO TV pentru demonstrație." : `Ecrane lipsă: ${screensMissing.join(", ")}`);
     if(crew)reasons.push(...crew.reasons);
     else if (this.tablets < tabletsRequired) reasons.push(`Tablete conectate: ${this.tablets}/${tabletsRequired}`);
     if (videoRequired && !videoReady) reasons.push("Video neîncărcat pe ecranul de referință");
@@ -438,6 +462,7 @@ export class ShowDirector {
       ready: reasons.length === 0,
       screensConnected,
       screensMissing,
+      displayPreview,
       tabletsConnected: crew?.connected ?? this.tablets,
       tabletsRequired,
       videoReady,
@@ -451,10 +476,14 @@ export class ShowDirector {
     return {
       ...this.missionIdentity,
       suspended: this.suspended,
+      volumes: {...this.volumes},
+      planetHold:this.planetHold?{id:this.planetHold.id,remainingMs:this.holdRemaining(atMs)}:undefined,
+      completedPlanetHolds:[...this.completedPlanetHolds],
       state: this.state,
       phaseTime: t,
       serverTimeMs: atMs,
       rate: this.currentRate(),
+      playbackRate:this.nominalRate,
       sceneId: this.currentScene(t)?.id ?? null,
       theme: this.currentTheme(t),
       lang: this.lang,
@@ -569,7 +598,7 @@ export class ShowDirector {
     const nowMs = this.clock();
     const prevReady = this.videoReady;
     this.videoReady = !!r.videoReady;
-    if (!useMediaClock) { if(prevReady!==this.videoReady)this.emitStateIfChanged('videoReady'); return; }
+    if (!useMediaClock||this.suspended) { if(prevReady!==this.videoReady)this.emitStateIfChanged('videoReady'); return; }
     if (nowMs - this.lastCmdAtMs < REPORT_GRACE_MS) {
       // The screen has not applied the last command yet; do not let its stale time win.
       if (prevReady !== this.videoReady) this.emitStateIfChanged("videoReady");
@@ -591,12 +620,31 @@ export class ShowDirector {
   /** Periodic tick (clockHz): advance cues, auto transitions, autoRun, state change detection. */
   tick(nowMs = this.clock()): void {
     if(this.suspended)return;
+    if(this.planetHold){
+      if(this.holdRemaining(nowMs)>0)return;
+      const id=this.planetHold.id;this.planetHold=null;
+      this.reanchor(this.now(nowMs),this.nominalRate);this.setState("playing","planet hold complete");
+      this.hooks.onApplyCmd({action:"play"});this.hooks.onLog("planet.hold.complete",{id});
+    }
     if (!this.advancing()) {
       if (this.autoRunIdleOrEnded(nowMs)) return;
       this.emitStateIfChanged("tick");
       return;
     }
     const t = this.now(nowMs);
+    if(this.state==="playing"){
+      const stop=this.show.planetStops?.find(s=>s.at>=this.holdCursor&&s.at<=t&&!this.completedPlanetHolds.has(s.id));
+      this.holdCursor=t;
+      if(stop){
+        this.completedPlanetHolds.add(stop.id);
+        this.cues.advance(stop.at);
+        this.reanchor(stop.at,0);this.setState("paused","planet close-up");
+        this.planetHold={id:stop.id,remainingMs:stop.durationSec*1000,sampledAt:nowMs};
+        this.hooks.onApplyCmd({action:"pause"},'planet-hold');
+        this.hooks.onLog("planet.hold.start",{id:stop.id,at:stop.at,durationSec:stop.durationSec});
+        this.emitStateIfChanged("planet hold");return;
+      }
+    }
     this.cues.advance(t);
     if (this.state === "playing" && !this.clockSourceConnected && this.show.videoDurationSec > 0 && t >= this.show.videoDurationSec) {
       this.videoEnded(true);
@@ -632,8 +680,10 @@ export class ShowDirector {
 
   dispatchCommand(cmd: Command, source = "control"): DispatchResult {
     const intercepted=this.hooks.beforeCommand?.(cmd,source);if(intercepted)return intercepted;
+    const previousHold=this.planetHold;
     const res = this.apply(cmd, source);
     if (!res.ok) {
+      this.planetHold=previousHold;
       this.hooks.onLog("cmd.rejected", { cmd, source, reason: res.reason });
       return { ok: false, reason: res.reason };
     }
@@ -649,18 +699,27 @@ export class ShowDirector {
     return cmd.action === "say" ? { ...cmd, text: cmd.text.slice(0, 200) } : cmd;
   }
 
+  private holdRemaining(atMs=this.clock()):number {
+    if(!this.planetHold)return 0;
+    return Math.max(0,this.planetHold.remainingMs-(this.suspended?0:Math.max(0,atMs-this.planetHold.sampledAt)));
+  }
+
   private apply(cmd: Command, source: string): ApplyResult {
+    if(["play","seek","skipToScene","restart","start","preshow","epilogue"].includes(cmd.action))this.planetHold=null;
+    if(cmd.action==="pause"&&this.planetHold){this.planetHold=null;return {ok:true};}
     switch (cmd.action) {
       case "preshow":
         this.enter("preshow", "preshow", 0, "cmd preshow");
         return { ok: true };
       case "start":
+        this.completedPlanetHolds.clear();this.holdCursor=-this.leadInSec;
         this.logReadinessForManualStart(source);
         this.hooks.onRunStart();
         this.enter("playing", "play", -this.leadInSec, "cmd start");
         return { ok: true };
       case "play":
         if (this.state === "idle") {
+          this.completedPlanetHolds.clear();this.holdCursor=-this.leadInSec;
           this.logReadinessForManualStart(source);
           this.hooks.onRunStart();
           this.enter("playing", "play", -this.leadInSec, "cmd play from idle");
@@ -678,6 +737,7 @@ export class ShowDirector {
       case "seek": {
         if (!this.phase || this.state === "ended") return { ok: false, reason: "Nu se poate căuta în această stare." };
         const t = this.clampToPhase(this.phase, cmd.time);
+        this.holdCursor=t;
         this.reanchor(t, this.state === "paused" ? 0 : this.nominalRate);
         this.cues.seekTo(t);
         return { ok: true };
@@ -685,6 +745,7 @@ export class ShowDirector {
       case "skipToScene": {
         const scene = this.show.scenes.find((s) => s.id === cmd.sceneId);
         if (!scene) return { ok: false, reason: `Scenă necunoscută: ${cmd.sceneId}` };
+        this.holdCursor=scene.start;
         if (scene.phase === this.phase && this.state !== "ended") {
           // Same phase: a seek.
           this.reanchor(scene.start, this.state === "paused" ? 0 : this.nominalRate);
@@ -697,6 +758,7 @@ export class ShowDirector {
         return { ok: true };
       }
       case "restart":
+        this.completedPlanetHolds.clear();this.holdCursor=-this.leadInSec;
         this.photoEpoch++;this.suspended=false;
         this.lastCmdAtMs = this.clock();
         this.cues.reset();
@@ -720,6 +782,7 @@ export class ShowDirector {
       case "setVolume":
         if (cmd.voice !== undefined) this.volumes.voice = cmd.voice;
         if (cmd.sfx !== undefined) this.volumes.sfx = cmd.sfx;
+        if (cmd.music !== undefined) this.volumes.music = cmd.music;
         return { ok: true };
       case "setLang":
         this.lang = cmd.lang;
@@ -792,8 +855,7 @@ export class ShowDirector {
     const r = this.readiness();
     if (r.ready) {
       this.blockedReasonsKey = "";
-      this.dispatchCommand({ action: "start" }, source);
-      return true;
+      return this.dispatchCommand({ action: "start" }, source).ok;
     }
     const key = r.reasons.join("|");
     if (key !== this.blockedReasonsKey) {
@@ -959,6 +1021,8 @@ export class ShowDirector {
       s.variant,
       s.ambientEnabled,
       s.tabletSfx,
+      JSON.stringify(s.volumes),
+      s.planetHold?.id,
       r ? `${r.ready}:${r.assetsOk}:${r.screensMissing.join(",")}:${r.screensConnected.join(",")}:${r.reasons.join("|")}` : "",
     ].join("|");
     if (key === this.lastSnapshotKey) return;

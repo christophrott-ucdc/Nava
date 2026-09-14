@@ -1,3 +1,4 @@
+import '../shared/client-errors';
 import { latestSessionRead } from "../shared/session";
 import { ROLE_LABELS } from "@shared/ui-labels";
 import { sessionFetch as fetch } from "../shared/session";
@@ -266,3 +267,5 @@ $("logout").addEventListener("click", async (e) => {
 window.setInterval(() => {
   void api<{ theme?: string }>("/api/state").then(state => applyTheme(state.theme)).catch(() => undefined);
 }, 500);
+import {startUiLocalization} from '../shared/localization';
+startUiLocalization();

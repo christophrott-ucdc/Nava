@@ -1,0 +1,60 @@
+{
+  "cueId": "v3-cap-0843",
+  "lang": "en",
+  "speaker": "CAPITANUL",
+  "text": "Send it.",
+  "file": "v3-cap-0843.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Send",
+    "it"
+  ],
+  "wtimes": [
+    0,
+    293
+  ],
+  "wdurations": [
+    240,
+    107
+  ],
+  "durationMs": 560,
+  "visemes": [
+    "SS",
+    "E",
+    "nn",
+    "DD",
+    "I",
+    "DD"
+  ],
+  "vtimes": [
+    0,
+    73,
+    126,
+    178,
+    293,
+    343
+  ],
+  "vdurations": [
+    73,
+    53,
+    52,
+    62,
+    50,
+    57
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "f88102321b5be49189bb021d7e99cd0698bc04f7d5e48a5a50b916a8f147cd30",
+  "sha256": "970fb88cdd9c783cf021ae5b185796561d241c2927f0a1a3ef30c28b6bd6a0dd",
+  "generatedAt": "2026-09-13T13:29:28.658Z",
+  "requestId": "zdvqyFLUwzJacLtV5sBC",
+  "historyItemId": "hgMBcsXZf18eCGY9eUWl",
+  "characterCost": "8",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}

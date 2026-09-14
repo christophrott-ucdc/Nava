@@ -8,7 +8,7 @@
  */
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, rm, writeFile, readFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,6 +24,7 @@ function socketClient(url, hello) {
   const waiters = new Set();
   ws.on("message", (raw) => {
     const msg = JSON.parse(raw.toString());
+    if(msg.type === "launchPrepare" && hello.client === "screen") ws.send(JSON.stringify({type:"launchReady",id:msg.id,screens:[hello.id]}));
     if (process.env.SMOKE_LOG && msg.type === "error") console.error(`[ws error] ${hello.id}:`, msg.reason, msg.code ?? "");
     for (const waiter of waiters) {
       if (waiter.predicate(msg)) {
@@ -84,6 +85,12 @@ async function main() {
     await writeFile(path.join(webDir, "tablet", "index.html"), "<!doctype html><title>tablet smoke</title>");
 
     const showPath = path.join(temp, "show.json");
+    const productionVoices=JSON.parse(await readFile(path.join(ROOT,'assets/voice/ro/manifest.json'),'utf8')).clips;
+    // This is a protocol fixture (no decoder): its MP4 metadata must match the
+    // 0.2-second synthetic show instead of borrowing a full production film.
+    const videoPath=path.join(temp,'fixture.mp4'),movie=Buffer.alloc(48);
+    movie.writeUInt32BE(48,0);movie.write('moov',4);movie.writeUInt32BE(40,8);movie.write('mvhd',12);
+    movie.writeUInt32BE(1000,28);movie.writeUInt32BE(200,32);await writeFile(videoPath,movie);
     await writeFile(
       showPath,
       JSON.stringify({
@@ -127,7 +134,7 @@ async function main() {
             at: -0.5,
             kind: "voice",
             speaker: "TEHNOLOGIC",
-            text: { ro: "Diverse." },
+            text: { ro: productionVoices['v3-tech-0635-diverse'].text },
             manual: true,
             fallback: "silent",
           },
@@ -137,7 +144,7 @@ async function main() {
             at: -0.5,
             kind: "voice",
             speaker: "TEHNOLOGIC",
-            text: { ro: "La fel." },
+            text: { ro: productionVoices['v3-tech-0635-same'].text },
             manual: true,
             fallback: "silent",
           },
@@ -147,7 +154,7 @@ async function main() {
             at: -0.5,
             kind: "voice",
             speaker: "TEHNOLOGIC",
-            text: { ro: "Observă." },
+            text: { ro: productionVoices['v3-tech-0635-observe'].text },
             manual: true,
             fallback: "silent",
           },
@@ -158,13 +165,14 @@ async function main() {
     );
 
     const { startServer } = require(bundle);
+    const mediaConfig=JSON.parse(await readFile(path.join(ROOT,'config.json'),'utf8'));
     const config = {
       role: "master",
       server: { port: 0, bindHost: "127.0.0.1" },
       lang: "ro",
       show: showPath,
-      video: { path: "missing-smoke.mp4", fit: "cover", preloadPoster: false },
-      avatar: { glb: "missing-smoke.glb", corner: "bottom-left", widthPercent: 22, marginPx: 40 },
+      video: { path: videoPath, fit: "cover", preloadPoster: false },
+      avatar: { glb: path.resolve(ROOT,mediaConfig.avatar.glb), corner: "bottom-left", widthPercent: 22, marginPx: 40 },
       audio: { voiceVolume: 1, sfxVolume: 0.8, outputDeviceId: "default" },
       screens: [{ id: "center", displayIndex: 0, showAvatar: true, showSubtitles: true, showEntities: true, playAudio: true, kiosk: false }],
       sync: { clockHz: 10, seekThresholdSec: 0.25, rateNudge: 0.03 },

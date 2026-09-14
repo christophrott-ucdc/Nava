@@ -1,0 +1,81 @@
+{
+  "cueId": "v3-cap-0604",
+  "lang": "en",
+  "speaker": "CAPITANUL",
+  "text": "Scan the signal.",
+  "file": "v3-cap-0604.mp3",
+  "mime": "audio/mpeg",
+  "words": [
+    "Scan",
+    "the",
+    "signal"
+  ],
+  "wtimes": [
+    0,
+    280,
+    480
+  ],
+  "wdurations": [
+    240,
+    120,
+    480
+  ],
+  "durationMs": 1120,
+  "visemes": [
+    "SS",
+    "kk",
+    "aa",
+    "nn",
+    "TH",
+    "aa",
+    "SS",
+    "I",
+    "kk",
+    "nn",
+    "aa",
+    "nn"
+  ],
+  "vtimes": [
+    0,
+    69,
+    137,
+    191,
+    280,
+    342,
+    480,
+    577,
+    650,
+    746,
+    815,
+    890
+  ],
+  "vdurations": [
+    69,
+    68,
+    54,
+    49,
+    62,
+    58,
+    97,
+    73,
+    96,
+    69,
+    75,
+    70
+  ],
+  "provider": "elevenlabs",
+  "modelId": "eleven_v3",
+  "voiceId": "Z1I8XGyUmANP9h72LN2z",
+  "generationKey": "f51c189085586c6effdd2382efe5b5a7d64d1d3291c1ef2c5de8959cda03925c",
+  "sha256": "04d370ebca910216005ba0728d42faf442052955efe9ed63f97e9fbb253f6bab",
+  "generatedAt": "2026-09-13T13:28:24.901Z",
+  "requestId": "9nPybHPkq0P09raebU2S",
+  "historyItemId": "ILufwa3FQ9tiaNhxDSKk",
+  "characterCost": "16",
+  "postprocessTempo": 1,
+  "voiceSettings": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "speed": 1.05
+  }
+}
