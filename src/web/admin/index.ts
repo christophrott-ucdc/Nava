@@ -1,3 +1,5 @@
+import {mountIdentityDirectory} from './directory';
+import {mountAdminCenter} from './center';
 import {mountIntegrations} from './integrations';
 import '../shared/client-errors';
 /**
@@ -16,8 +18,18 @@ import { applyTheme, icon } from "../shared/glass";
 import { ROLE_HELP, ROLE_LABELS, type AdminAuditResponse, type AdminOverview, type AdminSession, type AdminUser, type AuditEntry } from "@shared/admin";
 import type { UserRole } from "@shared/types";
 
-type ViewId = "prezentare" | "utilizatori" | "sesiuni" | "audit" | "instalatie";
+type ViewId = "identity" | "dashboard" | "control" | "resurse" | "health" | "logs" | "analytics" | "wiki" | "links" | "security" | "prezentare" | "utilizatori" | "sesiuni" | "audit" | "instalatie";
 const VIEWS: Record<ViewId, { title: string; eyebrow: string; cta: boolean }> = {
+  identity:{title:"Identitate & dispozitive",eyebrow:"Director EXODUS7",cta:false},
+  dashboard: { title: "Centru de comandă", eyebrow: "EXODUS7 Admin Center", cta: false },
+  control: { title: "Control experiență", eyebrow: "EXODUS7 Admin Center", cta: false },
+  resurse: { title: "Resurse sistem", eyebrow: "EXODUS7 Admin Center", cta: false },
+  health: { title: "Stare și recuperare", eyebrow: "EXODUS7 Admin Center", cta: false },
+  logs: { title: "Loguri", eyebrow: "EXODUS7 Admin Center", cta: false },
+  analytics: { title: "Analitică", eyebrow: "EXODUS7 Admin Center", cta: false },
+  wiki: { title: "Wiki & proceduri", eyebrow: "EXODUS7 Admin Center", cta: false },
+  links: { title: "Toate instrumentele", eyebrow: "EXODUS7 Admin Center", cta: false },
+  security: { title: "Parolă & MFA", eyebrow: "EXODUS7 Admin Center", cta: false },
   prezentare: { title: "Prezentare", eyebrow: "Administrare", cta: false },
   utilizatori: { title: "Utilizatori", eyebrow: "Conturi și roluri", cta: true },
   sesiuni: { title: "Sesiuni", eyebrow: "Cine este conectat", cta: false },
@@ -260,7 +272,7 @@ async function load(): Promise<void> {
 
 function viewFromHash(): ViewId {
   const key = location.hash.replace(/^#\/?/, "").split("?")[0];
-  return (Object.keys(VIEWS) as ViewId[]).includes(key as ViewId) ? (key as ViewId) : "prezentare";
+  return (Object.keys(VIEWS) as ViewId[]).includes(key as ViewId) ? (key as ViewId) : "dashboard";
 }
 
 function route(): void {
@@ -348,7 +360,8 @@ function renderUsers(): void {
     const hr = document.createElement("hr");
     const items: HTMLElement[] = [
       menuButton("Schimbă numele sau rolul", () => openUserDialog("edit", user)),
-      menuButton("Resetează PIN-ul", () => openPinDialog(user)),
+      ...(user.provider==='google'?[]:[menuButton('Resetează parola / PIN-ul',()=>openPinDialog(user))]),
+      ...(user.lockedAt?[menuButton('Deblochează contul',()=>{void api('/api/users/'+encodeURIComponent(user.id)+'/unlock',{method:'POST'}).then(()=>{toast('Cont deblocat.');void load();}).catch(error=>toast(String(error)));})]:[]),
       menuButton(
         user.disabled ? "Reactivează contul" : "Dezactivează contul",
         () => void toggleDisabled(user),
@@ -521,12 +534,12 @@ let editing: AdminUser | null = null;
 
 function openUserDialog(mode: "create" | "edit", user?: AdminUser): void {
   editing = mode === "edit" && user ? user : null;
-  dom.formUser.reset();
+  dom.formUser.reset();configureCredentialInput("f");
   showFormError(dom.formUserError, null);
   dom.dlgUserTitle.textContent = editing ? `Modifică contul ${editing.name}` : "Adaugă utilizator";
   dom.dlgUserIntro.textContent = editing
     ? "Schimbările de rol se aplică imediat: consola acelui cont se reconectează cu noile drepturi."
-    : "Contul primește un PIN unic, cu care se autentifică pe consolă.";
+    : "Cont nominal. Credențiala temporară se schimbă la prima autentificare.";
   dom.fPinField.hidden = !!editing;
   dom.fPin.required = !editing;
   dom.fStateField.hidden = !editing;
@@ -551,8 +564,8 @@ dom.formUser.addEventListener("submit", async (e) => {
     dom.fName.focus();
     return;
   }
-  if (!editing && !/^\d{4,8}$/.test(dom.fPin.value)) {
-    showFormError(dom.formUserError, "PIN-ul trebuie să aibă între 4 și 8 cifre.");
+  if (!editing && !validNewCredential(dom.fPin.value,(document.getElementById('f-kind') as HTMLSelectElement).value)) {
+    showFormError(dom.formUserError, "Parolă de 15–128 caractere sau PIN de 6–8 cifre.");
     dom.fPin.focus();
     return;
   }
@@ -572,7 +585,7 @@ dom.formUser.addEventListener("submit", async (e) => {
       audited = res.audited !== false;
       toast(`Contul ${name} a fost actualizat.`);
     } else {
-      const res = await api<{ audited?: boolean }>("/api/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, role, pin: dom.fPin.value }) });
+      const res = await api<{ audited?: boolean }>("/api/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, role, ...((document.getElementById('f-kind') as HTMLSelectElement).value==='password'?{password:dom.fPin.value}:{pin:dom.fPin.value}) }) });
       audited = res.audited !== false;
       toast(`Contul ${name} a fost creat.`);
     }
@@ -597,7 +610,8 @@ function openPinDialog(user: AdminUser): void {
   pinTarget = user;
   dom.formPin.reset();
   showFormError(dom.formPinError, null);
-  dom.dlgPinIntro.textContent = `PIN nou pentru ${user.name}. Alege unul pe care nu îl mai folosește alt cont.`;
+  (document.getElementById('p-kind') as HTMLSelectElement).value=user.authentication??'password';configureCredentialInput('p');
+  dom.dlgPinIntro.textContent = `Credențială temporară pentru ${user.name}. La următoarea autentificare trebuie schimbată.`;
   openDialog(dom.dlgPin, dom.pPin);
 }
 
@@ -605,18 +619,18 @@ dom.formPin.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!pinTarget) return;
   showFormError(dom.formPinError, null);
-  if (!/^\d{4,8}$/.test(dom.pPin.value)) {
-    showFormError(dom.formPinError, "PIN-ul trebuie să aibă între 4 și 8 cifre.");
+  if (!validNewCredential(dom.pPin.value,(document.getElementById('p-kind') as HTMLSelectElement).value)) {
+    showFormError(dom.formPinError, "Parolă de 15–128 caractere sau PIN de 6–8 cifre.");
     dom.pPin.focus();
     return;
   }
   setBusy(dom.formPinSubmit, true, "Se schimbă…");
   const target = pinTarget;
   try {
-    const res = await api<{ audited?: boolean }>(`/api/users/${encodeURIComponent(target.id)}/pin`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: dom.pPin.value }) });
+    const res = await api<{ audited?: boolean }>(`/api/users/${encodeURIComponent(target.id)}/credential`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ credential: dom.pPin.value,kind:(document.getElementById('p-kind') as HTMLSelectElement).value }) });
     dom.pPin.value = "";
     closeDialog(dom.dlgPin);
-    toast(`PIN-ul lui ${target.name} a fost schimbat; sesiunile contului au fost închise.`);
+    toast(`Credențiala temporară a lui ${target.name} a fost salvată; sesiunile au fost închise.`);
     if (res.audited === false) toast("Modificarea s-a aplicat, dar nu a putut fi scrisă în jurnalul de audit.", true);
     await load();
   } catch (err) {
@@ -675,7 +689,7 @@ async function toggleDisabled(user: AdminUser): Promise<void> {
     title: disabling ? `Dezactivezi contul ${user.name}?` : `Reactivezi contul ${user.name}?`,
     text: disabling
       ? "Contul nu se va mai putea autentifica, iar consola lui, dacă este deschisă, se închide acum. Poți reactiva contul oricând."
-      : "Contul se va putea autentifica din nou cu PIN-ul lui actual.",
+      : "Contul se va putea autentifica din nou cu datele lui actuale.",
     confirmLabel: disabling ? "Dezactivează contul" : "Reactivează contul",
     destructive: disabling,
     action: async () => {
@@ -703,7 +717,7 @@ async function deleteUser(user: AdminUser): Promise<void> {
 async function revokeUserSessions(user: AdminUser): Promise<void> {
   confirmAction({
     title: `Închizi sesiunile lui ${user.name}?`,
-    text: "Toate consolele autentificate cu acest cont se deconectează și cer PIN-ul din nou. Sesiunea ta curentă nu este afectată.",
+    text: "Toate consolele autentificate cu acest cont se deconectează și cer autentificare din nou. Sesiunea ta curentă nu este afectată.",
     confirmLabel: "Închide sesiunile",
     action: async () => {
       const res = await api<{ count: number; audited?: boolean }>(`/api/admin/users/${encodeURIComponent(user.id)}/sessions/revoke`, { method: "POST" });
@@ -716,7 +730,7 @@ async function revokeUserSessions(user: AdminUser): Promise<void> {
 async function revokeSession(session: AdminSession): Promise<void> {
   confirmAction({
     title: `Închizi sesiunea lui ${session.name}?`,
-    text: `Consola autentificată cu acest cont (${ROLE_LABELS[session.role]}) se deconectează imediat și cere PIN-ul din nou.`,
+    text: `Consola autentificată cu acest cont (${ROLE_LABELS[session.role]}) se deconectează imediat și cere autentificare din nou.`,
     confirmLabel: "Închide sesiunea",
     action: async () => {
       const res = await api<{ audited?: boolean }>(`/api/admin/sessions/${encodeURIComponent(session.id)}/revoke`, { method: "POST" });
@@ -762,9 +776,15 @@ document.addEventListener("click", (e) => {
   });
 });
 
+mountAdminCenter();
+mountIdentityDirectory();
 route();
 void load();
 
 mountIntegrations();
 import {startUiLocalization} from '../shared/localization';
 startUiLocalization();
+
+function validNewCredential(value:string,kind:string){return kind==='pin'?/^\d{6,8}$/.test(value):value.length>=15&&value.length<=128;}
+function configureCredentialInput(prefix:string){const kind=(document.getElementById(prefix+'-kind') as HTMLSelectElement).value,input=document.getElementById(prefix+'-pin') as HTMLInputElement;input.maxLength=kind==='pin'?8:128;input.minLength=kind==='pin'?6:15;input.inputMode=kind==='pin'?'numeric':'text';input.removeAttribute('pattern');input.placeholder=kind==='pin'?'6–8 cifre':'Minimum 15 caractere';input.autocomplete='new-password';}
+for(const prefix of ['f','p'])document.getElementById(prefix+'-kind')!.addEventListener('change',()=>configureCredentialInput(prefix));

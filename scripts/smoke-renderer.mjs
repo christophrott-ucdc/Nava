@@ -18,7 +18,7 @@ const cdpBase = `http://127.0.0.1:${cdpPort}`;
 const serverBase = `http://127.0.0.1:${serverPort}`;
 // Use the normal login path; never weaken production authentication for a smoke test.
 const cfg=JSON.parse(await fs.readFile(path.join(root,process.env.NAVA_CONFIG??'config.json'),'utf8'));
-const authResponse=await fetch(`${serverBase}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:process.env.NAVA_TEST_PIN??cfg.security?.operatorPin??'4078'})});
+const authResponse=await fetch(`${serverBase}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:process.env.NAVA_TEST_USER??'admin',password:process.env.NAVA_TEST_PASSWORD,pin:process.env.NAVA_TEST_PIN??cfg.security?.operatorPin??''})});
 assert.equal(authResponse.status,200,'renderer smoke requires a valid operator login');
 const authToken=/nava_session=([0-9a-f]+)/.exec(authResponse.headers.get('set-cookie')??'')?.[1];assert.ok(authToken,'session token comes from Set-Cookie');
 const deadline = (ms) => Date.now() + ms;

@@ -1,3 +1,7 @@
+import {isIP} from 'node:net';
+import {secureRequest} from './identity-origin';
+import {googleRouter,type GoogleSettings} from './google-identity';
+import type {IdentityProtection} from './identity-db';
 /**
  * Authentication for the LAN show server.
  *
@@ -41,6 +45,8 @@ export interface RevocationInfo {
 }
 
 export interface AuthDeps {
+  identityProtection?:IdentityProtection;
+  bundledAdministrator?:boolean;
   config: AppConfig;
   appRoot: string;
   log: LogFn;
@@ -92,7 +98,7 @@ const LOGIN_WINDOW_MS = 5 * 60_000;
 const LOGIN_MAX_ATTEMPTS = 8;
 
 function securityOf(config: AppConfig): SecurityConfig {
-  return { ...CONFIG_DEFAULTS_R4.security, ...(config.security ?? {}) };
+  const merged={ ...CONFIG_DEFAULTS_R4.security, ...(config.security ?? {}) };merged.sessionTtlMin=Math.max(5,Math.min(1440,Number.isFinite(merged.sessionTtlMin)?merged.sessionTtlMin:720));return merged;
 }
 
 function tokenEquals(a: string, b: string): boolean {
@@ -102,9 +108,9 @@ function tokenEquals(a: string, b: string): boolean {
 }
 
 export function createAuth(deps: AuthDeps): Auth {
-  const { config, appRoot, log, audit: auditLog, onSessionsRevoked } = deps;
+  const { identityProtection,config, appRoot, log, audit: auditLog, onSessionsRevoked } = deps;
   const security = securityOf(config);
-  const users = new UsersStore(path.resolve(appRoot, security.usersFile), security.operatorPin, log);
+  const users = new UsersStore(path.resolve(appRoot, security.usersFile), security.operatorPin, log, identityProtection);
   const sessionsPath = path.resolve(appRoot, path.dirname(security.usersFile), "sessions.json");
   const sessions = new Map<string, SessionInfo>();
   const loginAttempts = new Map<string, { count: number; resetAt: number }>();
@@ -115,28 +121,11 @@ export function createAuth(deps: AuthDeps): Auth {
     const now = Date.now();
     for (const [token, s] of sessions) if (Date.parse(s.expiresAt) <= now) sessions.delete(token);
   };
-  let saving: Promise<void> = Promise.resolve();
-  const saveSessions = (): Promise<void> => {
-    pruneSessions();
-    const list = [...sessions.values()];
-    saving = saving.then(async () => {
-      await fs.mkdir(path.dirname(sessionsPath), { recursive: true });
-      await fs.writeFile(sessionsPath, JSON.stringify({ version: 1, sessions: list }), "utf8");
-    });
-    return saving;
+  const saveSessions=()=>{pruneSessions();users.database.write('sessions',[...sessions.values()]);return Promise.resolve();};
+  const loadSessions=async()=>{for(const s of users.database.read<SessionInfo[]>('sessions')??[])if(s&&/^[a-f0-9]{64}$/.test(s.token)&&Number.isFinite(Date.parse(s.expiresAt)))sessions.set(s.token,s);pruneSessions();
+    try{const legacy=await fs.readFile(sessionsPath,'utf8');users.database.write('legacy-sessions-backup',legacy);await fs.unlink(sessionsPath);}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
   };
-  const loadSessions = async (): Promise<void> => {
-    try {
-      const raw = JSON.parse(await fs.readFile(sessionsPath, "utf8")) as { sessions?: SessionInfo[] };
-      for (const s of raw.sessions ?? []) {
-        if (s && typeof s.token === "string" && typeof s.expiresAt === "string") sessions.set(s.token, s);
-      }
-      pruneSessions();
-    } catch {
-      /* no sessions yet */
-    }
-  };
-  const createSession = (userId: string, name: string, role: UserRole): SessionInfo => {
+  const createSession = (userId: string, name: string, role: UserRole,c?:Context<AuthEnv>,method="local"): SessionInfo => {
     const token = randomBytes(32).toString("hex");
     const now = Date.now();
     const s: SessionInfo = {
@@ -147,6 +136,11 @@ export function createAuth(deps: AuthDeps): Auth {
       createdAt: new Date(now).toISOString(),
       expiresAt: new Date(now + Math.max(5, security.sessionTtlMin) * 60_000).toISOString(),
     };
+    if(c){let browser=getCookie(c,'exodus_device');if(!browser||! /^[a-f0-9]{64}$/.test(browser)){browser=randomBytes(32).toString('hex');setCookie(c,'exodus_device',browser,{httpOnly:true,sameSite:'Lax',secure:secureRequest(c),path:'/',maxAge:31536000});}
+      s.deviceId=createHash('sha256').update(userId+browser).digest('hex').slice(0,24);s.userAgent=(c.req.header('user-agent')??'Necunoscut').slice(0,300);s.ip=clientIp(c);s.lastSeenAt=s.createdAt;s.authMethod=method;
+      const devices=users.database.read<Array<Record<string,unknown>>>('devices')??[];const previous=devices.find(d=>d.id===s.deviceId);users.database.write('devices',[...devices.filter(d=>d.id!==s.deviceId).slice(-499),{id:s.deviceId,userId,name,userAgent:s.userAgent,ip:s.ip,firstSeenAt:previous?.firstSeenAt??s.createdAt,lastSeenAt:s.createdAt,authMethod:method}]);
+    }
+    const evicted=[...sessions.values()].filter(x=>x.userId===userId).slice(0,-19).map(s=>s.token);for(const token of evicted)sessions.delete(token);if(evicted.length)onSessionsRevoked?.(evicted,{code:4401,reason:'Limita de sesiuni a contului a fost atinsă.'});
     sessions.set(token, s);
     void saveSessions();
     return s;
@@ -156,8 +150,8 @@ export function createAuth(deps: AuthDeps): Auth {
   const dropSessions = async (tokens: string[], info: RevocationInfo): Promise<number> => {
     let n = 0;
     for (const t of tokens) if (sessions.delete(t)) n += 1;
-    if (n > 0) await saveSessions();
     if (tokens.length > 0) onSessionsRevoked?.(tokens, info);
+    if (n > 0) await saveSessions();
     return n;
   };
   const tokensOfUser = (userId: string, keepToken?: string): string[] => {
@@ -172,6 +166,7 @@ export function createAuth(deps: AuthDeps): Auth {
   const actorOf = (p: Principal | null): AuditEntry["actor"] =>
     p?.kind === "user" ? { id: p.userId, name: p.name, role: p.role } : null;
 
+  let lastDeviceSave=0;
   const sessionByToken = (token: string | undefined | null): SessionInfo | null => {
     if (!token || !/^[0-9a-f]{64}$/.test(token)) return null;
     const s = sessions.get(token);
@@ -181,12 +176,15 @@ export function createAuth(deps: AuthDeps): Auth {
       return null;
     }
     const u = users.get(s.userId);
-    if (!u || u.disabled) {
+    if (!u || u.disabled || u.lockedAt || u.mustChangeCredential) {
       sessions.delete(token);
       return null;
     }
+    s.lastSeenAt=new Date().toISOString();
+    if(Date.now()-lastDeviceSave>60000){lastDeviceSave=Date.now();const devices=users.database.read<Array<Record<string,unknown>>>('devices')??[];for(const device of devices){const last=[...sessions.values()].filter(session=>session.deviceId===device.id).map(session=>session.lastSeenAt??session.createdAt).sort().at(-1);if(last)device.lastSeenAt=last;}users.database.write('devices',devices);}
     // keep role fresh if an admin changed it
     if (u.role !== s.role) s.role = u.role;
+    s.name=u.name;
     return s;
   };
 
@@ -266,8 +264,7 @@ export function createAuth(deps: AuthDeps): Auth {
     // Reserve before asynchronous hashing: concurrent bad PINs cannot bypass the limit.
     // Successful verification refunds only its own slot; earlier failures still count.
     return ()=>{bucket.count=Math.max(0,bucket.count-1);globalBucket.count=Math.max(0,globalBucket.count-1);};
-  };  const clientIp = (c: Context<AuthEnv>): string =>
-    (c.env as { incoming?: { socket?: { remoteAddress?: string } } })?.incoming?.socket?.remoteAddress || "unknown-peer";
+  };  const clientIp = (c:Context<AuthEnv>):string=>{const peer=(c.env as {incoming?:{socket?:{remoteAddress?:string}}})?.incoming?.socket?.remoteAddress??'unknown-peer';if(['127.0.0.1','::1','::ffff:127.0.0.1'].includes(peer)){const forwarded=c.req.header('x-forwarded-for')?.split(',').at(-1)?.trim();if(forwarded&&isIP(forwarded))return forwarded;}return peer;};
 
   // ---- same-origin guard for mutations ----------------------------------------
   const sameOrigin: MiddlewareHandler<AuthEnv> = async (c, next) => {
@@ -277,7 +274,7 @@ export function createAuth(deps: AuthDeps): Auth {
       return deny(c, 403, "Cererea vine din alt site");
     }
     const origin = c.req.header("origin");
-    const host = c.req.header("host");
+    const host = c.req.header("host") ?? new URL(c.req.url).host;
     if (origin && host) {
       let originHost: string | null = null;
       try {
@@ -292,10 +289,28 @@ export function createAuth(deps: AuthDeps): Auth {
 
   // ---- routers --------------------------------------------------------------
   const router = new Hono<AuthEnv>();
+  router.use("*", sameOrigin);
+  router.use('*',async(c,next)=>{await next();c.header('Cache-Control','no-store');});
+  router.get('/providers',c=>c.json({google:!!users.database.read<GoogleSettings>('google')?.enabled,domain:'ucdc.ro',usernameRequired:true}));
+  router.route('/google',googleRouter(users,async(c,user)=>{const session=createSession(user.id,user.name,user.role,c,'google');setCookie(c,SESSION_COOKIE,session.token,{path:'/',httpOnly:true,sameSite:'Lax',secure:secureRequest(c),maxAge:Math.max(5,security.sessionTtlMin)*60});await audit({actor:{id:user.id,name:user.name,role:user.role},action:'auth.login',ok:true,detail:'Google Workspace login',ip:clientIp(c)});}));
+  const setupFile=path.join(path.dirname(users.path),'identity-setup.json');
+  router.get('/setup',c=>c.json({required:users.needsSetup(),local:['127.0.0.1','::1','::ffff:127.0.0.1'].includes(clientIp(c))}));
+  let setupBusy=false;
+  router.post('/setup',async c=>{
+    if(setupBusy)return c.json({ok:false,reason:'Configurare în curs.'},409);setupBusy=true;try{
+    if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(clientIp(c)))return c.json({ok:false,reason:'Configurarea inițială se face de pe PC-ul navei.'},403);
+    if(!users.needsSetup())return c.json({ok:false,reason:'Identitatea este deja configurată.'},409);
+    const body=await c.req.json().catch(()=>null);if(!body||typeof body.token!=='string'||typeof body.username!=='string'||typeof body.password!=='string')return c.json({ok:false,reason:'Date invalide.'},400);
+    const setup=JSON.parse(await fs.readFile(setupFile,'utf8'));if(!tokenEquals(setup.token,body.token)||Date.now()>setup.expiresAt)return c.json({ok:false,reason:'Cod de configurare incorect sau expirat.'},403);
+    const result=await users.createPasswordAccount(body.username,body.password);if(!result.ok)return c.json(result,result.status as 400);
+    await fs.unlink(setupFile);await audit({actor:null,action:'user.create',target:{kind:'user',id:result.value.id},ok:true,detail:'Local first-run enrollment',ip:clientIp(c)});return c.json({ok:true});
+    }finally{setupBusy=false;}
+  });
   router.post("/login", async (c) => {
-    let body: { pin?: unknown };
+    let body: { pin?: unknown; username?:unknown; password?:unknown; code?:unknown;newCredential?:unknown };
     try {
-      body = (await c.req.json()) as { pin?: unknown };
+      body = await c.req.json();
+      if(!body||typeof body!=="object"||Array.isArray(body))throw Error("Invalid body");
     } catch {
       return c.json({ ok: false, reason: "Corp JSON invalid" }, 400);
     }
@@ -305,18 +320,22 @@ export function createAuth(deps: AuthDeps): Auth {
       log("warn", "auth: login rate limited", { ip });
       return c.json({ ok: false, reason: "Prea multe încercări. Așteaptă 5 minute." }, 429);
     }
-    const pin = typeof body.pin === "string" ? body.pin.trim() : typeof body.pin === "number" ? String(body.pin) : "";
-    const user = await users.verifyPin(pin);
-    if (!user) {
-      log("warn", "auth: bad PIN", { ip });
-      return c.json({ ok: false, reason: "PIN incorect" }, 401);
+    const name=typeof body.username==='string'?body.username.trim():'';
+    if(!name||name.length>128)return c.json({ok:false,reason:'Introdu numele de utilizator și parola sau PIN-ul.'},400);
+    const credential=typeof body.password==='string'?body.password:typeof body.pin==='string'?body.pin:'';
+    if(credential.length>128)return c.json({ok:false,reason:'Date de autentificare invalide.'},400);
+    const result=await users.authenticate(name,credential,typeof body.code==='string'?body.code.slice(0,64):'',typeof body.newCredential==='string'?body.newCredential:undefined);
+    if(!result.ok||!result.user){
+      const account=users.findByName(name);if(result.locked&&account)await dropSessions(tokensOfUser(account.id),{code:4401,reason:'Cont blocat după încercări nereușite.'});
+      await audit({actor:account?{id:account.id,name:account.name,role:account.role}:null,action:'auth.login',ok:false,detail:result.locked?'Account locked':result.factorRequired?'MFA required':result.changeRequired?'Credential change required':'Invalid credentials',ip});
+      return c.json({ok:false,factorRequired:result.factorRequired,changeRequired:result.changeRequired,reason:result.locked?'Cont blocat. Cere administratorului deblocarea.':result.changeRequired?'Schimbă parola/PIN-ul temporar înainte de a continua.':result.factorRequired?'Introdu codul Authenticator sau un cod de recuperare.':'Utilizator, parolă/PIN sau cod incorect.'},result.locked?423:401);
     }
-    successfulLogin();
-    const s = createSession(user.id, user.name, user.role);
-    await users.touchLogin(user.id);
+    successfulLogin();const user=result.user;
+    const s=createSession(user.id,user.name,user.role,c,user.passwordHash?'password':'pin');
     setCookie(c, SESSION_COOKIE, s.token, {
       path: "/",
       httpOnly: true,
+      secure: secureRequest(c),
       sameSite: "Lax",
       maxAge: Math.max(5, security.sessionTtlMin) * 60,
     });
@@ -365,15 +384,17 @@ export function createAuth(deps: AuthDeps): Auth {
 
   usersRouter.get("/", (c) => c.json({ users: users.list() }));
   usersRouter.post("/", async (c) => {
-    let body: { name?: unknown; role?: unknown; pin?: unknown };
+    let body: { name?: unknown; role?: unknown; pin?: unknown; password?:unknown };
     try {
       body = (await c.req.json()) as typeof body;
+      if(!body||typeof body!=="object"||Array.isArray(body))throw Error("Invalid body");
     } catch {
       return c.json({ ok: false, reason: "Corp JSON invalid" }, 400);
     }
     const name = String(body.name ?? "");
     const role = String(body.role ?? "operator") as UserRole;
-    const r = await users.create(name, role, String(body.pin ?? ""));
+    const r = typeof body.password==='string'?await users.createPasswordAccount(name,body.password,role):/^\d{6,8}$/.test(String(body.pin??''))?await users.create(name,role,String(body.pin)): {ok:false as const,reason:'PIN de 6–8 cifre necesar.',status:400};
+    if(r.ok)await users.requireCredentialChange(r.value.id);
     const audited = await auditUser(
       c,
       "user.create",
@@ -389,6 +410,7 @@ export function createAuth(deps: AuthDeps): Auth {
     let body: { name?: unknown; role?: unknown; disabled?: unknown };
     try {
       body = (await c.req.json()) as typeof body;
+      if(!body||typeof body!=="object"||Array.isArray(body))throw Error("Invalid body");
     } catch {
       return c.json({ ok: false, reason: "Corp JSON invalid" }, 400);
     }
@@ -396,7 +418,8 @@ export function createAuth(deps: AuthDeps): Auth {
     if (typeof body.name === "string") patch.name = body.name;
     if (typeof body.role === "string") patch.role = body.role as UserRole;
     if (typeof body.disabled === "boolean") patch.disabled = body.disabled;
-    const before = users.get(id);
+    const existing=users.get(id);
+    const before = existing?{...existing}:undefined;
     const r = await users.update(id, patch, me?.kind === "user" ? me.userId : "");
     if (r.ok && before) {
       // An OPEN WebSocket keeps the principal it had at `hello`; make the change effective now.
@@ -419,10 +442,11 @@ export function createAuth(deps: AuthDeps): Auth {
     let body: { pin?: unknown };
     try {
       body = (await c.req.json()) as typeof body;
+      if(!body||typeof body!=="object"||Array.isArray(body))throw Error("Invalid body");
     } catch {
       return c.json({ ok: false, reason: "Corp JSON invalid" }, 400);
     }
-    const r = await users.setPin(id, String(body.pin ?? ""));
+    const r = await users.resetCredential(id, String(body.pin ?? ""),"pin");
     if (r.ok) {
       // A PIN change signs that user out everywhere, including open consoles.
       await dropSessions(tokensOfUser(id), { code: 4401, reason: "PIN-ul a fost schimbat; autentifică-te din nou" });
@@ -430,6 +454,8 @@ export function createAuth(deps: AuthDeps): Auth {
     const audited = await auditUser(c, "user.pin", { kind: "user", id, name: targetName(id) }, r.ok, r.ok ? "PIN nou; sesiunile contului au fost închise" : r.reason);
     return r.ok ? c.json({ ok: true, user: r.value, audited }) : c.json({ ok: false, reason: r.reason }, r.status as 400);
   });
+  usersRouter.post('/:id/unlock',async c=>{const id=c.req.param('id'),r=await users.unlock(id);await auditUser(c,'user.update',{kind:'user',id},r.ok,'Account unlock');return r.ok?c.json({ok:true,user:r.value}):c.json(r,r.status as 400);});
+  usersRouter.post('/:id/credential',async c=>{const id=c.req.param('id'),body=await c.req.json().catch(()=>null);if(!body||!['pin','password'].includes(body.kind)||typeof body.credential!=='string')return c.json({ok:false,reason:'Date invalide.'},400);const r=await users.resetCredential(id,body.credential,body.kind);if(r.ok)await dropSessions(tokensOfUser(id),{code:4401,reason:'Credențiale resetate de administrator.'});await auditUser(c,'user.update',{kind:'user',id},r.ok,'Credential reset; next login change required');return r.ok?c.json({ok:true,user:r.value}):c.json(r,r.status as 400);});
   usersRouter.delete("/:id", async (c) => {
     const me = principalOf(c);
     const id = c.req.param("id");
@@ -490,7 +516,10 @@ export function createAuth(deps: AuthDeps): Auth {
     audit,
     async load() {
       await users.load();
+      const changedAdmin=deps.bundledAdministrator?await users.applyBundledAdministrator():null;
+      if(users.needsSetup())await fs.writeFile(setupFile,JSON.stringify({token:randomBytes(32).toString("base64url"),expiresAt:Date.now()+86400000}),{mode:0o600});
       await loadSessions();
+      if(changedAdmin)await dropSessions(tokensOfUser(changedAdmin),{code:4401,reason:'Credențialele administratorului au fost actualizate.'});
     },
   };
 }

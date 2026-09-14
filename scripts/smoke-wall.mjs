@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /** Isolated HTTP/WS integration: one decoder connection, native display evidence, calibration gating. */
+import {seedTestIdentity} from './identity-fixture.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -15,6 +16,7 @@ const {startServer}=await import(pathToFileURL(outfile).href);
 const config=JSON.parse(fs.readFileSync(path.join(root,'config.samsung-wall.example.json'),'utf8'));
 config.server={port:0,bindHost:'127.0.0.1'};config.security={...config.security,screenToken:'wall-test-screen-token'};config.videoWall.calibration=true;
 let evidence=[];
+config.security.operatorPin='9384';await seedTestIdentity(path.resolve(temp,config.security.usersFile??'data/users.json'));
 const server=await startServer({config,appRoot:temp,webDir:path.join(root,'dist/web'),showPath:path.join(root,'assets/show/show.json'),cacheDir:path.join(temp,'cache'),runsDir:path.join(temp,'runs'),log:()=>{},wallRuntime:()=>({preview:evidence.length===0,displays:[],issues:[],verifiedScreenIds:evidence})});
 const base=`http://127.0.0.1:${server.port}`,sockets=[];
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -25,7 +27,7 @@ async function screen(id,token='wall-test-screen-token'){
 }
 try{
  assert.equal((await fetch(base+'/api/wall')).status,401);
- const auth=await fetch(base+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:config.security.operatorPin})});assert.equal(auth.status,200);
+ const auth=await fetch(base+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:"admin",pin:config.security.operatorPin})});assert.equal(auth.status,200);
  const sessionToken=/nava_session=([0-9a-f]+)/.exec(auth.headers.get('set-cookie')??'')?.[1];assert.ok(sessionToken,'session token comes from Set-Cookie');
  const headers={Authorization:`Bearer ${sessionToken}`,'Content-Type':'application/json'};
  const wallText=await fetch(base+'/api/wall',{headers}).then(r=>r.text());assert.equal(wallText.includes(config.security.screenToken),false);assert.equal(wallText.includes('operatorPin'),false);

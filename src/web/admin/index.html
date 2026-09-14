@@ -157,9 +157,9 @@
         <p class="field-help" id="f-role-help"></p>
       </div>
       <div class="field" id="f-pin-field">
-        <label for="f-pin">PIN</label>
+        <label for="f-kind">Metodă de autentificare</label><select id="f-kind"><option value="password">Parolă</option><option value="pin">PIN</option></select><label for="f-pin">Credențială temporară</label>
         <input id="f-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" minlength="4" maxlength="8" autocomplete="off" placeholder="4 până la 8 cifre" />
-        <p class="field-help">Doar cifre. PIN-ul trebuie să fie diferit de al celorlalte conturi și nu se mai poate afișa după salvare.</p>
+        <p class="field-help">Parolă de minimum 15 caractere sau PIN de 6–8 cifre. Utilizatorul o schimbă obligatoriu la prima autentificare.</p>
       </div>
       <div class="field" id="f-state-field" hidden>
         <label class="check"><input id="f-disabled" name="disabled" type="checkbox" /> <span>Cont dezactivat (nu se poate autentifica)</span></label>
@@ -174,17 +174,17 @@
 
   <dialog id="dlg-pin" class="glass-modal admin-dialog" aria-labelledby="dlg-pin-title">
     <form id="form-pin" method="dialog" novalidate>
-      <h2 id="dlg-pin-title">Resetează PIN-ul</h2>
+      <h2 id="dlg-pin-title">Resetează credențialele</h2>
       <p class="muted" id="dlg-pin-intro"></p>
       <div class="field">
-        <label for="p-pin">PIN nou</label>
+        <label for="p-kind">Tip credențială</label><select id="p-kind"><option value="password">Parolă</option><option value="pin">PIN</option></select><label for="p-pin">Credențială temporară nouă</label>
         <input id="p-pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" minlength="4" maxlength="8" autocomplete="off" placeholder="4 până la 8 cifre" required />
         <p class="field-help">Toate sesiunile deschise ale acestui cont se închid imediat după schimbare.</p>
       </div>
       <p class="form-error" id="form-pin-error" role="alert" hidden></p>
       <div class="dialog-actions">
         <button type="button" class="button-quiet" data-close>Renunță</button>
-        <button type="submit" class="button-primary" id="form-pin-submit">Schimbă PIN-ul</button>
+        <button type="submit" class="button-primary" id="form-pin-submit">Salvează credențiala</button>
       </div>
     </form>
   </dialog>

@@ -12,6 +12,7 @@ const soakSeconds=Number(process.env.NAVA_QA_SOAK_SECONDS??0);if(!Number.isInteg
 const source=`
 import {app,BrowserWindow,ipcMain,screen} from 'electron';
 import assert from 'node:assert/strict';import fs from 'node:fs/promises';import path from 'node:path';import {pathToFileURL} from 'node:url';
+import {seedTestIdentity} from './scripts/identity-fixture.mjs';
 import {startServer} from './src/server/index';
 import {DisplayInventoryManager} from './src/main/display-inventory';
 import {adaptivePanelDirectory,panelSources} from './src/main/panel-sources';
@@ -45,6 +46,7 @@ app.whenReady().then(async()=>{let w,server,manager,boot;const records=[],errors
    // Windowed geometry probe instantiates one real TV renderer with the five
    // source films. It does not impersonate the other four physical outputs.
    const serverConfig=${process.env.NAVA_QA_WINDOWS==='1'}?{...config,displayMode:'windows',screens:[primary],autoRun:{...config.autoRun,requireScreens:[primary.id]}}:config;
+   await seedTestIdentity(config.security.usersFile);
    server=await startServer({config:serverConfig,appRoot:root,webDir:path.join(root,'dist/web'),showPath:path.resolve(root,config.show),cacheDir:path.join(temp,'cache-'+n),runsDir:path.join(temp,'run-'+n),log:(level,msg)=>{if(level==='error')errors.push(msg);},displayAutomation:{inventory:()=>manager.inventory(),detect:()=>manager.detect(),apply:()=>manager.apply()},wallRuntime:()=>({preview:false,displays:[],issues:[],verifiedScreenIds:config.screens.map(s=>s.id)})});
    const base='http://127.0.0.1:'+server.port;
    boot={config,screen:primary,wsUrl:base.replace('http:','ws:')+'/ws',serverHttpUrl:base,videoUrl:pathToFileURL(path.resolve(root,config.video.path)).href,panelVideoUrls:panelSources(config.video.panelsDir,config.screens.map(s=>s.id),'panorama'),avatarUrl:pathToFileURL(path.resolve(root,config.avatar.glb)).href,voiceBaseUrl:pathToFileURL(path.join(root,'assets/voice')+path.sep).href,showUrl:pathToFileURL(path.resolve(root,config.show)).href,isDev:false,appVersion:'qa',screenToken:config.security.screenToken,displayMode:'span',viewports:[...config.screens].sort((a,b)=>a.displayIndex-b.displayIndex).map((s,i)=>({screenId:s.id,x:i*3840,y:0,width:3840,height:2160,scaleFactor:1}))};
@@ -101,7 +103,7 @@ app.whenReady().then(async()=>{let w,server,manager,boot;const records=[],errors
      const suspended=await until(state,s=>s.suspended,'real wall watchdog suspension',15000);
      await delay(600);const heldState=await state();assert.equal(heldState.phaseTime,suspended.phaseTime,'suspended timeline stays fixed');
      await fs.writeFile(path.join(out,'5-tv-stalled.png'),(await w.webContents.capturePage()).toPNG());
-     const login=await fetch(base+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:'9384'})});
+     const login=await fetch(base+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'admin',pin:'9384'})});
      const token=/nava_session=([0-9a-f]+)/.exec(login.headers.get('set-cookie')??'')?.[1];assert(token);
      const resume=()=>fetch(base+'/api/recovery/resume',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:'{}'});
      assert.equal((await resume()).status,409,'cannot resume a still-stalled decoder');

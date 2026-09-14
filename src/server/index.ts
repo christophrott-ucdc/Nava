@@ -91,6 +91,8 @@ export interface ServerHandle {
 }
 
 export interface StartServerOptions {
+  bundledAdministrator?:boolean;
+  identityProtection?:import("./identity-db").IdentityProtection;
   updates?:AppUpdatePort;
   restartApplication?:()=>void;
   applicationVersion?:string;
@@ -112,6 +114,7 @@ export interface StartServerOptions {
   log: LogFn;
   /** Bring the local audience/player window to the foreground (master only). */
   focusPlayer?: () => boolean;
+  processMetrics?:()=>unknown;
   /** Local Electron evidence. Never trust a list of physical displays claimed by a WS client. */
   wallRuntime?: () => WallRuntimeInfo;
 }
@@ -307,7 +310,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   // Audit log lives next to users.json / sessions.json (data/ by default).
   const usersFile = config.security?.usersFile ?? "data/users.json";
   const auditLog = new AuditLog(path.resolve(opts.dataRoot ?? opts.appRoot, path.dirname(usersFile), "audit.jsonl"), log);
-  const auth = createAuth({
+  const auth = createAuth({identityProtection:opts.identityProtection,bundledAdministrator:opts.bundledAdministrator,
     config,
     appRoot: opts.dataRoot ?? opts.appRoot,
     log,
@@ -1075,7 +1078,7 @@ export async function startServer(opts: StartServerOptions): Promise<ServerHandl
   app.use("/api/dialog/*", auth.requireScreenOrRole("operator"));
   app.route("/api/auth", auth.router);
   app.route("/api/users", auth.usersRouter);
-  app.route("/api/admin", createAdminRouter(auth, auditLog));
+  app.route("/api/admin", createAdminRouter(auth, auditLog,{appRoot:opts.appRoot,processMetrics:opts.processMetrics}));
 
   app.get("/api/health", (c) =>
     c.json({

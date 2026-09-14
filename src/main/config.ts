@@ -258,7 +258,7 @@ function normalizeSecurity(raw: unknown, log: LogFn): SecurityConfig {
     operatorPin: operatorPin || d.operatorPin,
     // Validated (and generated/persisted) separately in loadConfig, because it depends on the role.
     screenToken,
-    sessionTtlMin: Math.round(finiteNumber(s.sessionTtlMin, d.sessionTtlMin, 1, 60 * 24 * 365)),
+    sessionTtlMin: Math.round(finiteNumber(s.sessionTtlMin, d.sessionTtlMin, 5, 60 * 24)),
     usersFile: nonEmptyString(s.usersFile, d.usersFile),
     publicState: bool(s.publicState, d.publicState),
   };

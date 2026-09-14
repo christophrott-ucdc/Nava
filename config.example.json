@@ -55,7 +55,7 @@
   },
   "security": {
     "$comment": "operatorPin = PIN-ul admin-ului implicit, folosit la crearea data/users.json. screenToken = tokenul comun pe care ecranele il trimit in `hello`; lasa \"\" pe master: se genereaza la prima pornire si se scrie inapoi AICI - copiaza apoi aceeasi valoare in config.json al fiecarui follower. sessionTtlMin = durata sesiunii consolei. publicState = false inchide /api/state pentru tablete.",
-    "operatorPin": "4078",
+    "operatorPin": "",
     "screenToken": "",
     "sessionTtlMin": 720,
     "usersFile": "data/users.json",

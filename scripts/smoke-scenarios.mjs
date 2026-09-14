@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {seedTestIdentity} from './identity-fixture.mjs';
 /** Real Hono/WS/SQLite scenario integration. Uses actual repository media and generated voices.
  * No mock voice manifests or readiness overrides. A missing production asset fails this test.
  * Default screen uses explicit synthetic package/frame ACKs for server logic only, not film/audio playback.
@@ -44,9 +45,10 @@ export async function createHarness({ webDir = path.join(ROOT, 'dist/web'), conn
   if(showText!==undefined){config.show=path.join(temp,'show.json');await writeFile(config.show,showText);}
   const logs = [];
   const serverOptions = { config, appRoot: ROOT, webDir, showPath: path.resolve(ROOT, config.show), cacheDir: path.join(temp, 'cache'), runsDir: path.join(temp, 'runs'), log: (level, message) => { if (level === 'error') logs.push(message); } };
+  await seedTestIdentity(config.security.usersFile);
   let handle = await require(bundle).startServer(serverOptions);
   let base = `http://127.0.0.1:${handle.port}`, token;
-  async function authenticate() { const login = await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: '9384' }) }); assert.equal(login.status, 200); token = /nava_session=([0-9a-f]+)/.exec(login.headers.get("set-cookie") ?? "")?.[1]; assert.ok(token, "session token from Set-Cookie"); }
+  async function authenticate() { const login = await fetch(`${base}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username:'admin',pin: '9384' }) }); assert.equal(login.status, 200); token = /nava_session=([0-9a-f]+)/.exec(login.headers.get("set-cookie") ?? "")?.[1]; assert.ok(token, "session token from Set-Cookie"); }
   await authenticate();
   async function api(url, body) { const r = await fetch(base + url, { method: body === undefined ? 'GET' : 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: body === undefined ? undefined : JSON.stringify(body) }); return { status: r.status, body: await r.json() }; }
   async function connectFixture(){

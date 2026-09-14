@@ -45,7 +45,7 @@ await esbuild.build({
   target: "node22",
   sourcemap: "inline",
   outExtension: { ".js": ".mjs" },
-  external: ["electron", "three", "@met4citizen/talkinghead"],
+  external: ["qrcode", "electron", "three", "@met4citizen/talkinghead"],
   logLevel: "warning",
   alias: { "@shared": path.join(root, "src/shared") },
 });

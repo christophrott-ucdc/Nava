@@ -23,7 +23,7 @@
 5. Lansați NavaPlayer. La prima pornire:
    - dacă lipsește `config.json`, se creează din `config.example.json` (`src/main/config.ts`);
    - pe **master**, dacă `security.screenToken` este gol, se generează un token de 32 caractere hex și se **scrie înapoi în `config.json`** (singura rescriere pe care o face aplicația); copiați-l în `config.json` al fiecărui follower (§7);
-   - dacă lipsește `data/users.json`, se creează utilizatorul `admin` cu PIN-ul din `security.operatorPin` (**implicit `4078`**) și se scrie un avertisment în log (`src/server/users.ts`).
+   - identitatea se migrează în SQLite criptat; fără administrator activ se cere configurarea locală cu un cod aleator. Nu se creează un cont implicit.
 6. Ecranul tehnic poate fi identificat cu `I` (fiecare ecran își afișează id-ul 3 s).
 
 Din checkout-ul de dezvoltare, varianta simplă este dublu-click pe `RUN.bat`: verifică mediul, construiește, pornește playerul **în fereastră**, serverul și deschide consola. Opțiuni: `RUN.bat --kiosk` (respectă modul kiosk din config), `RUN.bat --no-control`, `RUN.bat --check` (doar `npm run check`), `RUN.bat --help` (`RUN.bat`).
@@ -44,32 +44,17 @@ Argumente ale executabilului (`src/main/config.ts`): `--config <cale>`, `--dev`,
 
 Adresa LAN și QR-ul tabletelor sunt afișate în consolă (`/api/urls`, `/api/qr`).
 
-### 2.1 Login cu PIN
+### 2.1 Autentificare nominală
 
-- Deschideți `/login/` (sau orice pagină protejată — vă trimite acolo cu `?next=`), tastați PIN-ul, **OK**. Serverul pune cookie-ul `nava_session` (HttpOnly, `SameSite=Lax`); tokenul nu este întors în JSON și nu este stocat de interfață. WebSocket-ul browserului se autentifică prin cookie (`src/server/auth.ts`, `src/web/shared/session.ts`).
-- Sesiunea durează `security.sessionTtlMin` minute (**implicit 720 = 12 h**) și supraviețuiește repornirii serverului (`data/sessions.json`). **IEȘI** în `/debug/` sau `POST /api/auth/logout` o închide.
-- PIN-ul este singurul identificator (nu există nume de utilizator la login), deci **PIN-urile sunt unice între utilizatori** (4–8 cifre).
-- Limită: **8 încercări per IP la 5 minute**; a noua primește `429 Prea multe încercări. Așteaptă 5 minute.`
-- **Schimbați PIN-ul `4078` înainte de primul show public** (§2.3, `docs/SECURITATE.md`).
+Deschideți /login/ și alegeți utilizator + parolă sau utilizator + PIN. Conturile se creează de administrator în /admin/#/utilizatori. Credențialele temporare trebuie schimbate înainte de acces. După cinci încercări greșite contul se blochează până la deblocarea de către administrator. Nu există PIN implicit.
 
-### 2.2 Utilizatori și roluri (`data/users.json`, PIN-uri hash-uite scrypt)
+### 2.2 Roluri
 
-| Rol | Poate | Nu poate |
-|---|---|---|
-| `viewer` | să vadă consola, `/debug/`, `/api/state`, `/api/show`, `/api/cues`, `/api/tablets`, `/api/run`, perf/loguri | să trimită comenzi (WS `cmd` → `error 4403`; `POST /api/cmd` → 403), să editeze show-ul |
-| `operator` | tot ce poate viewer + comenzi (`/api/cmd`, WS), editorul de cue-uri (`PUT/POST/PATCH /api/show*`), `POST /api/tablets/clear`, `POST /api/player/focus`, preflight, rotația jurnalelor, deconectarea unui client, TTS live (`/api/tts`), `/api/dialog`, certificate | să administreze utilizatori |
-| `admin` | tot + `GET/POST/PATCH/DELETE /api/users*`, `POST /api/users/:id/pin`, `GET /api/auth/sessions`, `POST /api/debug/gc` | să își retragă propriul rol de admin, să se dezactiveze/șteargă singur; trebuie să rămână cel puțin un admin activ |
+Observatorul citește datele fără să trimită comenzi. Operatorul conduce experiența și folosește comenzile operaționale/editorul. Administratorul gestionează și identitățile, rolurile, resetările, sesiunile și configurația. Verificările sunt pe server, inclusiv WebSocket.
 
-Sursa: `src/server/index.ts` (gărzile), `src/server/auth.ts`, `src/server/users.ts`. Maxim 50 utilizatori; numele ≤ 32 caractere, unic.
+### 2.3 Configurare, MFA și recuperare
 
-### 2.3 Cum schimbați PIN-ul / adăugați operatori
-
-1. Intrați ca admin în `/debug/` → panoul **UTILIZATORI (doar admin)**: adăugați `nume`, `rol`, `PIN 4–8 cifre`; schimbați PIN-ul, dezactivați sau ștergeți (`src/web/debug/index.html`).
-2. Sau prin API, autentificat ca admin (cookie sau `Authorization: Bearer <token>`):
-   - `POST /api/users` `{ "name": "Ana", "role": "operator", "pin": "271828" }`
-   - `POST /api/users/<id>/pin` `{ "pin": "9081" }` — **invalidează toate sesiunile acelui utilizator**; el trebuie să se logheze din nou.
-   - `PATCH /api/users/<id>` `{ "role": "viewer" | "disabled": true }`, `DELETE /api/users/<id>`.
-3. Dacă ați uitat toate PIN-urile: opriți aplicația, ștergeți `data/users.json` (și `data/sessions.json`); la repornire se recreează `admin` cu `security.operatorPin`. Puteți pune alt `operatorPin` în `config.json` **înainte** de această repornire — el contează doar la crearea fișierului.
+Identitățile și sesiunile sunt stocate criptat în identity.sqlite; cheia este protejată de profilul Windows în Electron. Nu ștergeți fișiere pentru a recrea un administrator implicit. Configurarea locală, resetările, deblocarea, MFA și Google Workspace sunt descrise în [ghidul de identitate și RBAC](IDENTITATE-SI-RBAC.md). Sesiunea are implicit 720 minute, cu limită configurabilă de 5–1440 minute.
 
 ## 3. Pagina `/debug/` — ce arată
 
@@ -198,7 +183,7 @@ Dacă masterul are `screenToken` gol (config vechi, ne-rescris), acceptă ecrane
 
 ## 12. Înainte de public
 
-Repetiție completă pe hardware-ul real: readiness verde, preflight verde, citirea subtitrărilor de la 17 m, volumul tuturor personajelor/SFX/ambianței, ordinea celor cinci display-uri, scanarea QR și interacțiunile pe cinci tablete, trecerea continuă la epilog. **PIN-ul `4078` schimbat**, `screenToken` copiat pe follower-e, SSID separat pentru sală (`docs/SECURITATE.md`). Ascultați cele trei montaje V3.3 (`assets/voice/ro/preview-*.mp3`).
+Repetiție completă pe hardware-ul real: readiness verde, preflight verde, citirea subtitrărilor de la 17 m, volumul tuturor personajelor/SFX/ambianței, ordinea celor cinci display-uri, scanarea QR și interacțiunile pe cinci tablete, trecerea continuă la epilog. **Conturile nominale și rolurile verificate**, `screenToken` copiat pe follower-e, SSID separat pentru sală (`docs/SECURITATE.md`). Ascultați cele trei montaje V3.3 (`assets/voice/ro/preview-*.mp3`).
 
 ## 13. Nava Glass R5 — operare la 1920×1080 landscape
 

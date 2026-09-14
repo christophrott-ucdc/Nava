@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {seedTestIdentity} from './identity-fixture.mjs';
 /**
  * Smoke test for R4 authentication: bundles src/server/index.ts with esbuild into a temp dir, starts the
  * server on a random port with a throw-away appRoot, and exercises PIN login, roles, users CRUD, guards
@@ -46,6 +47,7 @@ const config = {
   security: { operatorPin: "4078", screenToken: "screen-secret-token", sessionTtlMin: 60, usersFile: "data/users.json", publicState: true },
 };
 
+await seedTestIdentity(path.join(appRoot,config.security.usersFile),'4078');
 const handle = await startServer({
   config,
   appRoot,
@@ -85,10 +87,10 @@ try {
   step(`POST /api/tts with screen token passes auth (status ${r.status})`);
 
   // --- login
-  r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "0000" }) });
+  r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({username:"admin", pin: "0000" }) });
   assert.equal(r.status, 401);
   step("login wrong PIN -> 401");
-  r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "4078" }) });
+  r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username:"admin",pin: "4078" }) });
   assert.equal(r.status, 200);
   const login = await r.json();
   assert.equal(login.ok, true);
@@ -109,7 +111,7 @@ try {
   step("GET /api/auth/me with bearer");
 
   // cookie path too
-  r = await fetch(`${base}/api/show`, { headers: { Cookie: cookie.split(";")[0] } });
+  r = await fetch(`${base}/api/show`, { headers: { Cookie: `nava_session=${adminTok}` } });
   assert.equal(r.status, 200);
   step("GET /api/show with cookie -> 200");
 
@@ -119,20 +121,20 @@ try {
   const list0 = await r.json();
   assert.equal(list0.users.length, 1);
   step("GET /api/users as admin (1 default admin)");
-  r = await fetch(`${base}/api/users`, { method: "POST", headers: asAdmin, body: JSON.stringify({ name: "Ana", role: "operator", pin: "1234" }) });
+  r = await fetch(`${base}/api/users`, { method: "POST", headers: asAdmin, body: JSON.stringify({ name: "Ana", role: "operator", pin: "123457" }) });
   const anaBody = await r.json();
   assert.equal(r.status, 201, JSON.stringify(anaBody));
   const ana = anaBody.user;
   step("POST /api/users create operator Ana / 1234");
-  r = await fetch(`${base}/api/users`, { method: "POST", headers: asAdmin, body: JSON.stringify({ name: "Dup", role: "viewer", pin: "1234" }) });
+  r = await fetch(`${base}/api/users`, { method: "POST", headers: asAdmin, body: JSON.stringify({ name: "Dup", role: "viewer", pin: "123457" }) });
   assert.equal(r.status, 409);
   step("duplicate PIN rejected 409");
-  r = await fetch(`${base}/api/users`, { method: "POST", headers: asAdmin, body: JSON.stringify({ name: "Vio", role: "viewer", pin: "5555" }) });
+  r = await fetch(`${base}/api/users`, { method: "POST", headers: asAdmin, body: JSON.stringify({ name: "Vio", role: "viewer", pin: "555579" }) });
   assert.equal(r.status, 201);
   step("create viewer Vio / 5555");
 
   // --- operator
-  r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "1234" }) });
+  r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({username:"Ana",pin:"123457",newCredential:"725961"}) });
   const opTok = tokenOf(r);
   const asOp = { Authorization: `Bearer ${opTok}`, "Content-Type": "application/json" };
   r = await fetch(`${base}/api/cmd`, {method:'POST',headers:asOp,body:JSON.stringify({cmd:{action:'tabletSfx',enabled:false}})});
@@ -157,7 +159,7 @@ try {
   step("operator GET /api/debug/summary -> 200, secrets redacted");
 
   // --- viewer
-  r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "5555" }) });
+  r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({username:"Vio",pin:"555579",newCredential:"815926"}) });
   const viewTok = tokenOf(r);
   const asView = { Authorization: `Bearer ${viewTok}`, "Content-Type": "application/json" };
   for(const headers of [asView,{'Content-Type':'application/json'}]){r=await fetch(`${base}/api/cmd`,{method:'POST',headers,body:JSON.stringify({cmd:{action:'tabletSfx',enabled:true}})});assert.equal(r.status,headers===asView?403:401)}
@@ -170,7 +172,7 @@ try {
   step("viewer GET /api/state -> 200");
 
   // --- PIN change invalidates sessions
-  r = await fetch(`${base}/api/users/${ana.id}/pin`, { method: "POST", headers: asAdmin, body: JSON.stringify({ pin: "2468" }) });
+  r = await fetch(`${base}/api/users/${ana.id}/pin`, { method: "POST", headers: asAdmin, body: JSON.stringify({ pin: "246897" }) });
   assert.equal(r.status, 200);
   r = await fetch(`${base}/api/auth/me`, { headers: asOp });
   assert.equal(r.status, 401);
@@ -185,16 +187,11 @@ try {
   step("delete Ana -> 200");
 
   // --- persistence
-  const usersFile = JSON.parse(fs.readFileSync(path.join(appRoot, "data/users.json"), "utf8"));
-  assert.equal(usersFile.users.length, 2);
-  // Random UUIDs, salts or hashes can legitimately contain these four digits.
-  // Check stored credential fields and whole values, not a random substring.
-  for (const stored of usersFile.users) {
-    assert.match(stored.pinHash, /^[a-f0-9]{64}$/);
-    assert.ok(!Object.hasOwn(stored, 'pin'), 'no clear-text PIN field');
-    assert.ok(!Object.values(stored).includes('4078'), 'PIN never stored as a clear-text value');
-  }
-  step("data/users.json persisted, no clear-text PIN");
+  const persisted=fs.readFileSync(path.join(appRoot,'data/identity.sqlite'));
+  assert(persisted.subarray(0,16).toString().startsWith('SQLite format 3'));
+  assert(!persisted.includes(Buffer.from('pinHash')),'identity records encrypted');
+  assert(!fs.existsSync(path.join(appRoot,'data/users.json')),'legacy plaintext store retired');
+  step('encrypted SQLite identity persisted');
 
   // --- WebSocket hello auth
   const wsHello = (hello) =>
@@ -237,7 +234,7 @@ try {
   // --- login rate limit
   let limited = false;
   for (let i = 0; i < 10; i++) {
-    r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin: "9999" }) });
+    r = await fetch(`${base}/api/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({username:"missing", pin: "9999" }) });
     if (r.status === 429) limited = true;
   }
   assert.ok(limited, "rate limit after 8 bad attempts");

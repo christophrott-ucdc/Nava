@@ -27,6 +27,12 @@ files:
   - "!node_modules/**"
 
 extraResources:
+  - from: README.md
+    to: README.md
+  - from: docs
+    to: docs
+    filter:
+      - "*.md"
   - from: scripts/display-inventory.ps1
     to: scripts/display-inventory.ps1
   - from: scripts/calibrate-wall.py

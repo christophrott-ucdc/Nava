@@ -31,4 +31,6 @@ Rotația existentă se păstrează: până la 20 jurnale app și politica existe
 
 ## Starea livrării
 
-Typecheck și build trecute. Nu s-au rulat teste sau verificări în browser, conform instrucțiunii utilizatorului. Electronul activ nu a fost oprit sau repornit. Fără commit, push sau deploy.
+Actualizare la 14 septembrie 2026: verificarea completă a repository-ului a trecut cu 256 de teste, inclusiv testele routerului de loguri, typecheck și build. Pagina a fost inclusă în verificările Chromium ale operatorului. Dovezile locale se găsesc în `runs/debug/planet-stops-2026-09-14/operator/` și `runs/debug/cleanup-2026-09-14/`.
+
+Documentarea paginii nu repornește aplicația și nu actualizează executabilele deja împachetate. Limitele de citire, retenție și instrumentare de mai sus se aplică în continuare. Pentru orientare în toate paginile, consultați [README](../README.md).
