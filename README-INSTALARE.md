@@ -82,7 +82,7 @@ Serverul ascultă pe toate interfețele de rețea ale calculatorului (`0.0.0.0`)
 
 Portul se poate schimba în `config.json`, la `server.port`, dacă 4321 e deja ocupat de alt program.
 
-**Nimic nu iese în internet.** Aplicația nu trimite date în afară și nu are nevoie de conexiune la internet ca să ruleze spectacolul.
+Spectacolul și conturile locale funcționează fără internet. Google Workspace și actualizările opționale folosesc internetul numai când sunt configurate/folosite.
 
 ---
 
@@ -98,7 +98,7 @@ După prima pornire, în fereastra neagră de jurnal (sau în consola operatorul
 
 Cifrele `192.168.1.25` sunt adresa calculatorului tău în rețea și **vor fi diferite la tine**.
 
-Ca să confirmi că merge, deschide pe calculator adresa consolei. Ți se cere un PIN. PIN-ul implicit este **4078**.
+Nu există PIN implicit. Configurarea inițială folosește codul aleator local din identity-setup.json; apoi intri cu utilizator și parolă/PIN. Vezi docs/IDENTITATE-SI-RBAC.md.
 
 > **Schimbă PIN-ul înainte de primul spectacol cu public.** Se face din pagina de administrare, capitolul 7 din manualul de utilizare.
 
@@ -122,6 +122,6 @@ Varianta cu instalator: Setări, Aplicații, NavaPlayer, Dezinstalare.
 | „Video neîncărcat” în consolă | filmul lipsește sau e în alt loc | verifică `media\cinema_4k_h264.mp4` lângă executabil |
 | Aplicația nu pornește deloc | `config.json` stricat sau lipsă | copiază-l din nou din arhivă |
 | Filmul merge sacadat | accelerare hardware inactivă | actualizează driverul plăcii video |
-| Pagina cere PIN și nu îl știi | PIN implicit | 4078, dacă nu a fost schimbat |
+| Nu cunoști credențialele | Cont nominal | Cere resetare/deblocare administratorului; vezi ghidul de identitate |
 
 Pentru orice altceva, manualul de utilizare are un capitol dedicat de depanare, cu pagina de diagnostic a aplicației.

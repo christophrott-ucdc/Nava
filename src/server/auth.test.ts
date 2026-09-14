@@ -9,8 +9,8 @@ import type {AppConfig} from '../shared/types';
 test('successful logins do not spend failure quota; concurrent failures stay bounded',async()=>{
  const root=await mkdtemp(path.join(os.tmpdir(),'nava-auth-quota-'));
  const auth=createAuth({config:{security:{operatorPin:'9384',screenToken:'',sessionTtlMin:30,usersFile:'users.json'}} as AppConfig,appRoot:root,log:()=>{}});
- await auth.load();
- const login=(pin:string)=>auth.router.request('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin})});
+ await auth.load();await auth.users.create("admin","admin","9384");
+ const login=(pin:string)=>auth.router.request('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:pin==='9384'?'admin':'unknown',pin})});
  try{
   for(let i=0;i<20;i++)assert.equal((await login('9384')).status,200,`successful login ${i+1}`);
   for(let i=0;i<3;i++)assert.equal((await login('1111')).status,401);

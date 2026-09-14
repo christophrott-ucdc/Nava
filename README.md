@@ -1,168 +1,197 @@
-> RO / EN / FR, 13 septembrie: toate profilurile au dialog și voci locale EN/FR (508 MP3 noi), tutorial, jocuri, TV și diplome localizate. Limba se alege în **Înainte de show → Limba experienței**. [Operare, contracte și verificări](docs/MULTILINGUAL-RO-EN-FR.md). Portalul QR public și împachetările necesită actualizare separată.
+# EXODUS7 · NavaPlayer
 
-> QA actualizat, 14 septembrie: 256 teste trecute și renderer smoke cu film/GLB reale. [Organizarea repository-ului, arhiva QA și limite](docs/STRUCTURA-REPOSITORY.md). Notele istorice „netestat” de mai jos descriu livrările respective; EXE-ul și instalația fizică necesită verificare separată.
+Aplicația Windows pentru experiența educativă „A Patra Lume”, UCDC HUB AI. Electron redă filmele panoramice, Căpitanul GLB și suprapunerile 3D; serverul local coordonează tabletele, consola operatorului, scenariile, vocile, muzica și recuperarea sesiunii.
 
-> Corecție QR: acces public independent de LAN, cu portal static pregătit și DIPLOMA_PUBLIC_URL încă de configurat după publicare. Nu există încă un domeniu public activ confirmat. [Stare curentă și telemetria pe laterale](docs/DIPLOME-PUBLICE-SI-TELEMETRIE-PERETE.md).
+Acest README descrie **starea surselor la 14 septembrie 2026**. Un EXE construit anterior nu preia automat modificările repository-ului.
 
-> Ediția curentă pentru copii: **Steaua Omenirii**, 10 septembrie 2026. Voci Eleven v3 și muzică remontată; reporniți Electron și resetați sesiunea veche. [Partitura și limitele verificării](docs/STEAUA-OMENIRII-INTEGRARE.md).
+## Pagini și acces
 
-> Actualizare film panoramic, 2026-09-09: cronologia curentă, sursele celor cinci panouri și vocile Saturn sunt descrise în [REINTEGRARE-FILM.md](docs/REINTEGRARE-FILM.md). Timpii istorici de 10 minute / 465 s nu mai sunt contractul filmului curent. Tutorialul adaugă timp variabil.
+Serverul master folosește implicit portul **4321**. Pe tableta operatorului sau pe alt dispozitiv, înlocuiește `localhost` cu IP-ul PC-ului navei.
 
-# NavaPlayer — „A Patra Lume · Protocolul Acasă"
+| Adresă | Utilizare | Acces la date și comenzi |
+| --- | --- | --- |
+| [Consolă operator](http://localhost:4321/control/) | Pregătire, scenariu, limbă, tutorial, transport, mixer, stare tehnică și recuperare | Viewer: citire; operator/admin: comenzi |
+| [Loguri](http://localhost:4321/logs/) | Evenimente, niveluri, căutare, actualizare live, istoric și export JSONL | Viewer, operator sau admin |
+| [Depanare](http://localhost:4321/debug/) | Readiness, preflight, clienți, performanță și configurație redactată | Citire autentificată; acțiuni după rol |
+| [Analitică](http://localhost:4321/analytics/) | Rulări, contribuții, grafice și detalii de misiune | Viewer, operator sau admin |
+| [Administrare](http://localhost:4321/admin/) | Dashboard, resurse CPU/GPU, control, loguri, wiki, parolă/MFA, conturi, audit, robot și actualizări | Admin |
+| [Calibrare perete](http://localhost:4321/wall/) | Inventar, geometrie, preview și profilul TV-urilor | Citire autentificată; aplicarea instalației cere admin |
+| [Clipuri](http://localhost:4321/clips/) | Verificarea surselor video și a setului panoramic | Autentificare pentru datele protejate |
+| [Autentificare](http://localhost:4321/login/) | Intrare cu PIN | Public |
+| `http://<ip-pc>:4321/tablet/?post=1` | Tableta postului 1; folosește 2, 3, 4 sau 5 pentru celelalte | Participanți, fără PIN de operator |
+| [Preview Nava Glass](http://localhost:4321/shared/preview.html) | Componente, mascote și cele opt teme | Galerie de dezvoltare |
+| [Health](http://localhost:4321/api/health) | Disponibilitatea serverului | Public |
 
-NavaPlayer este playerul și serverul local al experienței imersive „A Patra Lume" de la UCDC HUB AI: un singur executabil Windows (Electron + Node) redă filmul 4K sincronizat pe cinci ecrane, suprapune Căpitanul 3D cu lip-sync și subtitrările, rulează scenariul sincronizat după filmul panoramic (durată derivată din show.json; aproximativ 13:33, plus tutorialul interactiv) și servește consola operatorului, pagina de depanare și cele cinci tablete folosite de participanți.
+`/logs` redirecționează la `/logs/`; aceeași convenție se aplică paginilor principale. Adresa `/` deschide consola.
 
-**Prezentarea curentă:** [Ghidul din 10 septembrie](docs/PREZENTARE-2026-09-10.md) — experiența copiilor 5–10 ani, inclusiv cu un singur participant. `PREZENTARE.bat` verifică filmele și GLB-ul, construiește sursele curente și pornește preview-ul panoramei; `PREZENTARE.bat --live` folosește televizoarele configurate. Închide instanța veche înainte de relansare. Executabilele istorice din `dist-app/` nu includ automat modificările acestei runde.
+Rolurile sunt **Observator → Operator → Administrator**, verificate pe server. Nu există parolă/PIN implicit. Prima configurare folosește un cod aleator local; apoi administratorul creează utilizatorii cu nume și parolă/PIN. SQLite criptat, MFA, blocare după 5 încercări, resetare/deblocare, inventar de dispozitive și Google Workspace @ucdc.ro: [ghid identitate și RBAC](docs/IDENTITATE-SI-RBAC.md).
 
-Jurnalele și briefurile istorice se află local în `AI/`: [HANDOFF](AI/HANDOFF.md), [HANDOFF-LIVE](AI/HANDOFF-LIVE.md), [BRIEF](AI/docs/BRIEF.md). Folderul este ignorat de Git; documentația de operare curentă este în `docs/`.
+## Loguri: /logs
 
-## Pornire în dezvoltare
+Pagina **LOGURI** este accesibilă direct din bara consolei și la [localhost:4321/logs](http://localhost:4321/logs).
 
-Cerințe: Windows 11, Node.js 22+, npm și filmul H.264 4:2:0 la `media/cinema_4k_h264.mp4` (2,5 GB, nu este în Git și nu este în installer).
+- Niveluri: **DEBUG, INFO, WARNING, ERROR, FATAL**.
+- Surse: jurnalele aplicației Electron/server, evenimentele show-ului și diagnosticului, auditul administrativ.
+- Căutare, filtrare după nivel și fișier, detalii JSON, „Intrări mai vechi” și export JSONL filtrat.
+- Actualizare live la aproximativ 3 secunde; ascunderea paginii suspendă pollingul, nu înregistrarea.
+- Evenimentele se salvează chiar dacă pagina nu este deschisă. Datele sensibile sunt redactate din afișare și din noile înregistrări instrumentate.
+
+Fișierele principale sunt `runs/app-*.jsonl`, `runs/show-*.jsonl`, `runs/diagnostic-*.jsonl`; auditul se află lângă configurația utilizatorilor. Pagina citește ferestre limitate din fișiere, nu întreaga arhivă simultan. Exportul este limitat la rezultatele ferestrei consultate. Nu există ștergere de loguri din această interfață.
+
+API autentificat: `GET /api/logs/files`, `GET /api/logs?level=ERROR&q=...`, export prin `format=jsonl`. [Surse, retenție și limite](docs/LOGURI.md).
+
+## Pornire din repository
+
+Cerințe: Windows 11, Node.js 22+ cu suport `node:sqlite`, npm și fișierele video configurate local. Filmele mari nu sunt incluse în Git sau în installer.
 
 ```powershell
 npm install
-Copy-Item config.example.json config.json
-npm run check                  # tipuri + show + voci + build + teste + smoke (core, auth, platform, media)
+# Numai la prima instalare; păstrează configurația existentă:
+if (-not (Test-Path config.json)) { Copy-Item config.example.json config.json }
+npm run check
 npm run dev -- --windowed
 ```
 
-Sau dublu-click pe `RUN.bat` (`--kiosk`, `--no-control`, `--check`, `--help`).
+Înainte de pornire, setează în configurație căile reale pentru film și, dacă folosești panorama, seturile `video.panelsByCount`. Exemplul generic pornește de la `media/cinema_4k_h264.mp4`; instalația locală actuală folosește exporturile din `../Video/`. Copierea exemplului singură nu instalează filmele.
 
-După pornire în rolul `master`:
+Alternative:
 
-| Adresă | Ce este | Acces |
-|---|---|---|
-| `http://localhost:4321/control/` | consola operatorului | login cu PIN (implicit **4078** — schimbați-l înainte de public) |
-| `http://localhost:4321/debug/` | stare, readiness, preflight, perf, clienți, config redactat, utilizatori | login cu PIN |
-| `http://localhost:4321/analytics/` | rulări, grafice, răspunsuri și detalii de misiune | login cu PIN |
-| `http://localhost:4321/wall/` | calibrare Samsung 98–98–115–98–98, preview din film și export profil | login cu PIN |
-| `http://localhost:4321/shared/preview.html` | galeria Nava Glass, componente și opt teme | public, dezvoltare |
-| `http://<ip-lan>:4321/tablet/?post=1..5` | aplicația copiilor | public |
-| `http://localhost:4321/api/health` | stare scurtă | public |
+| Comandă | Rezultat |
+| --- | --- |
+| `RUN.bat` | Lansatorul local; opțiuni prin `RUN.bat --help` |
+| `PREZENTARE.bat` | Construiește sursele și deschide preview-ul prezentării |
+| `PREZENTARE.bat --live` | Prezentare pe TV-urile configurate |
+| `npm run wall:configure` | Creează configurația locală a peretelui |
+| `npm run wall:preview` | Preview panoramic într-o fereastră |
+| `npm run wall:start` | Pornește peretele în kiosk |
+| `npm run auto:configure` | Pregătește profilul local cu detectare automată |
+| `npm run auto:start` | Pornește folosind acel profil |
 
-Pe ecranul master: click / **PORNEȘTE EXPERIENȚA** / `Space` pornește fluxul complet; `S` sare direct la lansare; `Space` pauză/reluare în film; `E` epilog; `R` restart; `I` identifică ecranele. Consola din browser este doar regie; filmul și Căpitanul sunt în fereastra Electron **A Patra Lume — Nava** (**ARATĂ PLAYERUL** o readuce în față).
+Consola este interfața de regie. Filmul, Căpitanul și grafica TV apar în fereastra Electron; **ARATĂ PLAYERUL** o aduce în față. **DEMO TV** pornește demonstrația pentru copii fără tablete și fără a inventa participanți.
 
-## Configurare
+## Ecrane și instalație
 
-`config.json` este ignorat de Git; porniți de la `config.example.json` (un ecran), `config.5screens.example.json` (5 TV-uri pe un PC) sau `config.follower.example.json` (PC secundar; copiați `security.screenToken` din `config.json` al masterului, generat la prima pornire). Referința completă a câmpurilor, rutelor și rolurilor: [docs/SPEC-SHEET.md](docs/SPEC-SHEET.md). Procedura de show: [docs/OPERARE.md](docs/OPERARE.md). Securitate pe LAN: [docs/SECURITATE.md](docs/SECURITATE.md). Avatarul Căpitanului (GLB, viseme, casting): [docs/AVATAR.md](docs/AVATAR.md). Decizii: [docs/DECIZII.md](docs/DECIZII.md).
+Configurația fizică de referință:
 
-## Voci
+- Cinci Samsung în linie: **98″ – 98″ – 115″ – 98″ – 98″**, spații de 50 cm; toate conectate la același PC.
+- Cinci tablete pentru participanți și o tabletă separată pentru operator, toate **1920×1080 landscape**.
+- Fiecare tabletă are A în stânga și B în dreapta, fără text rotit. Experiența acceptă **1–10 participanți**, pe orice combinație de posturi ocupate.
+- Căpitanul apare ca GLB numai pe TV-ul desemnat; nu este un personaj fizic în sală.
 
+Cu `autoDisplays.enabled: true` și `countMode: "adaptive"`, aplicația detectează ieșirile eligibile la pornire și selectează împreună geometria, filmele și cerințele de readiness. Ieșirile atribuite operatorului sunt excluse. Seturile actuale acoperă **2, 3, 4 și 5 TV-uri**, cu fallback pentru unul singur; pentru alte numere sunt necesare exporturi compatibile.
 
-Pista V3.3 (51 clipuri ElevenLabs, 49 redate per rulare) este pre-generată în `assets/voice/ro/` cu manifest de cuvinte **și viseme precalculate**; toate cue-urile de producție au `fallback: "silent"` (niciodată voce Windows în show). Regenerare (cere `ELEVENLABS_API_KEY` în `.env`, niciodată în Git):
+Windows trebuie să folosească **Extindere**, cu pozițiile ecranelor corecte și aceeași scalare DPI pe TV-uri. În `span`, o fereastră fără ramă acoperă peretele; în `windows`, există ferestre separate. `--windowed`/`dev.windowed: true` înseamnă preview, iar **`--kiosk` forțează afișarea completă**.
+
+Conectarea/deconectarea în pregătire permite reaplicarea configurației. În timpul show-ului, o schimbare de topologie suspendă experiența; nu se remapează filmele sub redare. Detectarea Windows nu măsoară singură golurile, unghiurile sau latența fizică a TV-urilor.
+
+[Configurare adaptivă și seturi video](docs/ADAPTIVE-DISPLAYS.md) · [Cronologia filmului](docs/REINTEGRARE-FILM.md)
+
+## Operarea unei sesiuni
+
+1. În consolă, pregătește un grup nou și alege profilul și limba.
+2. Participanții aleg și confirmă personaje din cele 12 portrete EXODUS7. Sunt necesare doar tabletele cu locuri confirmate.
+3. Încheie îmbarcarea și rulează tutorialul vocal. Operatorul poate pune pauză, repeta sau continua.
+4. Predă Căpitanului. Înainte de film, serverul așteaptă confirmările TV-urilor și programează un start comun.
+5. Urmărește starea tehnică, contribuțiile și cronologia. Comenzile avansate și editorul sunt în **Instrumente**.
+6. Finalul colectează contribuțiile și pregătește diploma; apoi pregătește următorul grup.
+
+Profiluri: **5–10 ani — Steaua Omenirii**, **10–15 ani**, **15–18 ani**, **adulți**, plus originalul legacy. Mecanicile și dialogurile diferă între vârste. **RO / EN / FR** folosesc aceeași logică de sesiune, cu dialog, voci, interfețe și diplome localizate. Alege limba înainte de tutorial; pachetele incomplete sunt refuzate.
+
+[Manual de operare](docs/OPERARE.md) · [Limbi și producție vocală](docs/MULTILINGUAL-RO-EN-FR.md) · [Scenariul copiilor](docs/STEAUA-OMENIRII-INTEGRARE.md)
+
+## Prim-planuri și mixer
+
+Filmul actual are **678,05 s**. La prim-planurile Luminii, Naturii, Cristalului, lui Saturn și Pământului se adaugă câte **10 s**, pe ceasul comun: **50 s suplimentare**. Pachetul copiilor, cu primire și epilog, are 873,05 s (14:33,05), plus timpul variabil al tutorialului și interacțiunilor. Pauza operatorului poate prelua controlul asupra opririi automate.
+
+Mixerul este permanent vizibil în consola operatorului:
+
+| Canal | Controlează |
+| --- | --- |
+| **Dialog** | Vocile scenariului și naratorul tutorialului/finalului |
+| **Muzică** | Coloana sonoră, muzica de așteptare și ambianța muzicală |
+| **Efecte** | Propulsia și celelalte SFX, inclusiv sunetele tabletelor |
+
+Muzica scade automat sub voce. Plecările includ un efect discret de motor sintetizat local. Setările mixerului și timpul rămas al opririlor sunt păstrate în starea recuperabilă. `tabletSfx` și opțiunile de accesibilitate pot opri separat efectele tabletelor.
+
+[Ancore, comportament și verificări](docs/PLANETE-SI-MIXER-2026-09-14.md)
+
+## Recuperare și backup
+
+SQLite păstrează participanții, progresul, alegerile și checkpointul experienței. Salvarea periodică este programată la 250 ms; aceasta nu reprezintă o garanție de pierdere maximă la orice defect hardware.
+
+După crash, aplicația restaurează sesiunea **suspendată**. Operatorul verifică instalația și alege continuarea; conținutul cu alt hash nu este reluat forțat. Un decoder blocat sau o problemă a peretelui poate suspenda show-ul până la remediere.
+
+Consola arată readiness/preflight, ecranele lipsă, recuperarea și ultima copie SQLite. Backupul consistent folosește mecanismul SQLite, nu copierea brută a bazei deschise. Copiile locale nu protejează împotriva pierderii discului.
+
+[Recuperare SQLite](docs/RECUPERARE-SQLITE.md) · [Pornire sincronizată, stare tehnică și backup](docs/PORNIRE-TV-SI-BACKUP.md)
+
+## Grafică, telemetrie și diplome
+
+Nava Glass folosește opt teme, logo EXODUS7, mascote, ilustrații, selecție de personaje, tutorial, ecran animat de așteptare și final comun. Tabletele și TV-urile afișează obiecte și instrumente Three.js, cu alternative pentru mișcare redusă.
+
+Telemetria și harta urmăresc filmul și starea sesiunii. Valorile provin dintr-un **model educativ al experienței**, nu din senzori ai unei nave reale. Pe TV-uri, instrumentele sunt prezentate ca o bandă discretă.
+
+Diploma PDF prin QR trebuie să funcționeze pe internet, independent de LAN-ul sălii. Portalul static este pregătit, dar cere publicare HTTPS și `DIPLOMA_PUBLIC_URL`. **Nu este confirmat un domeniu public activ.** În lipsa lui, interfața indică indisponibilitatea; nu oferă un QR către localhost.
+
+[Telemetrie și hartă](docs/NAVIGATIE-TELEMETRIE-DIPLOME.md) · [Banda TV](docs/TELEMETRIE-BANDA-FILM.md) · [Diplome publice](docs/DIPLOME-PUBLICE-SI-TELEMETRIE-PERETE.md)
+
+## Voci și conținut
+
+Redarea folosește fișiere locale și nu cere cheia ElevenLabs în timpul reprezentației. Cheia de producție vocală se păstrează în `.env`, exclus din Git.
+
+- `assets/show/show.json`: cronologia de bază; pachetele sunt compuse de server.
+- `assets/scenarios/<profil>/`: dialogul și vocile profilului.
+- `assets/voice/<limbă>/`: vocile legacy și manifesturile de sincronizare.
+- `assets/experience/voice/<limbă>/`: naratorul.
+- `assets/music/`: muzica și manifesturile.
+- `docs/scenarii/`: sursele editoriale.
+
+Nu aplica automat vechile scripturi V3 peste pachetele actuale. Regenerarea trebuie să respecte sursa editorială, limba, manifesturile, duratele și hashurile verificate de preflight. Pentru inventar și validare: `npm run validate:voices`, `npm run validate:scenarios`, `npm run validate:experience`. `npm run docs:cues` regenerează foaia de cue-uri.
+
+## Robot și actualizări
+
+Administrarea include pregătirea pentru **Unitree H2 EDU**, adaptorul/simulatorul narativ și controlul actualizărilor aplicației și pachetelor de conținut. Driverul fizic nu este declarat disponibil; firmware-ul, sunetul și integrarea cu robotul trebuie confirmate pe hardware.
+
+Distribuția actualizărilor și instalarea depind de configurarea serverului, semnăturilor și tipului de pachet. Portable și NSIS au comportamente diferite; un commit pe GitHub nu actualizează singur instalația.
+
+[Robot și actualizări](docs/ROBOT-SI-ACTUALIZARI.md) · [Documentație H2 EDU](docs/unitree-h2-edu/README.md)
+
+## Verificări și distribuție
 
 ```powershell
-npm run tts -- --source assets/show/voice-script-v3.json --provider elevenlabs [--cue <id>]
-node scripts/precompute-visemes.mjs        # visemes/vtimes/vdurations în manifest
-npm run voice:reels && npm run qa:voices && npm run sync:voices && npm run check
+npm run check
+# Renderer real, server și date temporare; rulează și smoke:renderer:
+node scripts/experience-renderer-review.mjs --smoke-only
 ```
 
-Textele se schimbă numai în `assets/show/voice-script-v3.json`; `assets/show/show.json` este singura sursă executabilă; `npm run docs:cues` regenerează `docs/CUE-SHEET.md`.
+Ultima verificare software consemnată: **256 teste trecute**, check complet și smoke renderer cu film/GLB reale. Au existat și probe de reconectare, recuperare SQLite, comenzi concurente, mixer și redare cu cinci surse. Topologiile simulate nu înlocuiesc probele HDMI, touch, audio și anduranță din sală.
 
-## Distribuție
+Pentru o distribuție nouă, după validare:
 
 ```powershell
-npm run dist                                       # dist-app/NavaPlayer-0.1.0-x64-{portable,setup}.exe (nesemnate)
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-autostart.ps1   # Task Scheduler "NavaPlayer", --kiosk la logon
+npm run dist
 ```
 
-Copiați `media/cinema_4k_h264.mp4` lângă executabil. Pentru verificarea vizuală a compositorului: `electron --remote-debugging-port=19191 . --config config.json --windowed` apoi `npm run smoke:renderer`.
+Rezultatele sunt în `dist-app/`: executabil portable și installer NSIS. Filmele se livrează separat la căile din configurația instalației, inclusiv toate seturile panoramice necesare. `README-INSTALARE.md` și `MANUAL-UTILIZARE.docx` sunt resurse ale împachetării. `scripts/install-autostart.ps1` configurează pornirea la logon cu kiosk. Semnarea, update-ul real și executabilele livrate trebuie verificate separat.
 
-## Structură
+## Structură și documentație
 
-- `src/main`, `src/preload`: Electron, ferestre (`windows` / `span`), config + `screenToken`, watchdog, autostart, IPC;
-- `src/renderer`: player, timeline, sincronizare, overlay-uri, `avatar/` (TalkingHead, lipsync-ro, casting), `voice/` (manifest, redare, ambianță);
-- `src/server`: Hono + WebSocket, mașina de stări + readiness, auth/utilizatori, preflight, debug, `features/` (lumini, dialog, dynamic-voice, editor show, certificate);
-- `src/web/control`, `tablet`, `login`, `debug`, `analytics`: aplicațiile web; `src/web/shared`: sistemul Nava Glass și mascotele;
-- `src/shared`: contractele TypeScript obligatorii;
-- `assets/show/show.json`: scenariul executabil; `assets/voice/ro/`: vocile; `assets/avatar/`: GLB-ul;
-- `scripts`: build, verificări, TTS, viseme, autostart, heartbeat, utilitare media.
+| Director | Conținut |
+| --- | --- |
+| `src/main`, `src/preload` | Electron, ferestre, inventar, IPC, watchdog și actualizări |
+| `src/renderer` | Film, sincronizare, GLB, grafică TV și audio |
+| `src/server` | HTTP/WebSocket, auth/RBAC, scenarii, SQLite, loguri, backup și integrări |
+| `src/web` | Control, tablet, login, debug, analytics, admin, logs, clips, wall, shared și sursa portalului diploma |
+| `src/shared` | Contracte, modele, localizare și reguli comune |
+| `assets`, `production` | Conținutul runtime și uneltele de export SpaceEngine |
+| `scripts` | Build, QA și producție de conținut |
+| `docs` | Manuale și documentație funcțională |
+| `AI` | Arhivă locală, briefuri și handoff-uri, ignorate de Git |
+
+[Organizarea repository-ului și arhiva QA](docs/STRUCTURA-REPOSITORY.md). Datele active și dovezile locale rămân în `data/`, `runs/` și `cache/`; nu sunt livrate prin clonarea repository-ului.
 
 Proiect privat, fără licență de redistribuire (`UNLICENSED`).
 
-## Nava Glass R5
+## EXODUS7 Admin Center
 
-Toate suprafețele folosesc sistemul luminos Nava Glass: cinci tablete de post și o tabletă separată pentru operator, toate la **1920×1080 landscape**. Pe fiecare tabletă de copii, A este în stânga și B în dreapta, fără rotirea textului și fără scroll în show. În portret apare mesajul de rotire. Consolele de dezvoltare rămân responsive.
-
-Cele opt teme urmăresc show-ul; loginul rămâne în prologue. Cele șase mascote PNG au alpha real și variante 1024/256. Rendererul TV folosește materiale statice fără backdrop blur, subtitrări la 48 px în 4K și spațiu rezervat GLB-ului existent. Căpitanul apare numai pe TV-ul configurat; integrarea Unitree H2 nu face parte din R5.
-
-Logo-ul EXODUS7 este comun tabletelor și TV-ului: antet pe tablete, pornire/tutorial/final interactiv pe TV, cu încadrare pe ecranul central în panorama `span`. Asset, comportament și dovezi: [docs/EXODUS7-LOGO.md](docs/EXODUS7-LOGO.md).
-
-Cele zece ilustrații EXODUS7 pentru copii adaugă nava la primire și între etape, exploratori în tutorial, carcase pentru felinar și receptor, daruri ilustrate și emblema jurnalului. Întoarcerea acasă apare și în finalul TV. [Livrare și limite](docs/ILUSTRATII-EXODUS7.md), [galeria asseturilor](src/web/shared/illustrations/exodus7/index.html). Această integrare în surse nu a fost testată sau construită, conform cererii utilizatorului.
-
-Cele cinci SFX locale ale tabletelor se activează după primul gest, la volum 35%. Câmpul opțional `tabletSfx` din config este implicit `true`; **Regie → Sunete tablete** permite operatorului să-l schimbe pentru sesiunea curentă. Schimbarea este difuzată prin starea existentă, fără rescrierea configurației. Reduced-motion oprește animațiile decorative și confetti.
-
-Rezultatele software, capturile înainte/după și repetiția fizică rămasă sunt în [docs/DESIGN-REVIEW.md](docs/DESIGN-REVIEW.md). Filmul, GLB-ul, vocile, scenariul și timpii au fost păstrați.
-
-## Peretele Samsung și consola de prezentare
-
-Configurația 98–98–115–98–98 pe un singur PC are un profil separat: `config.samsung-wall.example.json`. `npm run wall:configure` derivă `config.wall.local.json` din configurația existentă, fără a suprascrie baza; `npm run wall:preview` arată cele cinci suprafețe într-o fereastră. Profilul local a fost creat în această sesiune.
-
-Atelierul `/wall/` permite crop panoramic coordonat, cinema integral central cu ambient lateral, dimensiuni/goluri în mm, grilă, indexare și export. Filmul local este 3840×2052; panorama care umple peretele decupează puternic sursa. Presetul cinema îi păstrează compoziția. Căpitanul rămâne pe centrul de 115″.
-
-Consola are **Înainte de show**, **În show** și **Instrumente**; toate comenzile existente sunt în Instrumente. Tabletele păstrează focusul separat A/B și reconciliază alegerile după reconectare. Procedură, geometrie, dovezi și limite hardware: [docs/VIDEO-WALL.md](docs/VIDEO-WALL.md). Galerie locală nouă: `runs/debug/final-wall/index.html`. Nu s-a creat un release sau installer nou.
-
-## Scenarii pe vârste, SQLite și automatizare
-
-Cele patru experiențe sunt acum implementate și selectabile în consolă: 5–10, 10–15, 15–18 și adulți. Au mecanici distincte, 163 clipuri ElevenLabs offline, finaluri bazate pe contribuții și certificate legate de rulare. SQLite păstrează alegerile și checkpoint-urile; recuperarea după repornire cere continuare explicită. Originalul V3 rămâne disponibil.
-
-`npm run auto:configure` creează un profil local separat pentru cele cinci Samsung, apoi `npm run auto:start` activează inventarul și împărțirea automată. Modul generic acceptă 1–16 display-uri. Atelierul optic folosește o fotografie/video cu markere ArUco, validează observația și aplică proiecția comună. Captura sălii și validarea fizică nu sunt înlocuite de EDID.
-
-Consola include confort pe post, editor de pachete, diagnostic și repetiție completă cu anulare; debug și analytics citesc misiunile persistente. [Implementare și operare](docs/IMPLEMENTARE-SCENARII-DISPLAY.md), [producție vocală](docs/scenarii/VOICE-PRODUCTION.md), [calibrare optică](docs/OPTICAL-CALIBRATION.md). Capturi noi: `runs/debug/scenarios-new/` și `runs/debug/scenario-upgrade-operator/index.html`. Acceptarea pe hardware și probele cu public rămân distincte de verificările software.
-
-## Tutorial și final interactiv — 2026-09-05
-
-Upgrade în surse: butoane Three.js pe tablete și o navă comună pe ecranul central, cu module 1A–5B aprinse numai după confirmarea serverului. Finalul separă alegerea de butonul „Trimite simbolul meu”. Primirea și ecranul de pornire au o compoziție EXODUS7 nouă. [Implementare și limite](docs/RELAIS-3D-EXODUS7.md). Acest upgrade nu a fost construit sau testat, la cererea utilizatorului.
-
-Tutorialul vocal „Nava vă recunoaște” și finalul colectiv sunt implementate pentru cele patru categorii. În consolă: **Tutorial și echipaj** → locuri ocupate → începe → predă Căpitanului. Narator român separat, probe A/B fără punctaj, pauză/repetare și SQLite. Nava 3D înlocuiește acum constelația vizuală; contribuțiile rămân reale. Detalii despre fluxul original: [docs/TUTORIAL-FINAL.md](docs/TUTORIAL-FINAL.md). Galeria `runs/debug/tutorial-final/index.html` documentează versiunea anterioară. Audiția și acceptanța celor cinci TV-uri și șase tablete se fac în sală.
-
-## Coloana sonoră
-
-Zece piese originale Eleven Music sunt integrate în magistrala ambientală, cu ducking sub voce și tăcere muzicală la232–246s. Detalii, limite și regenerare: [docs/MUZICA.md](docs/MUZICA.md). Audiții: `runs/debug/music/index.html`. Piesele sunt marcate pentru audiție artistică și verificare în sală; filmul și replicile existente sunt păstrate.
-
-## Interacțiuni educative 3D
-
-Tutorialul și finalul folosesc diagrame Three.js legate de contribuțiile confirmate, cu fallback SVG și reduced-motion. Jocurile din cele trei etape folosesc acum instrumentele interactive descrise mai jos. Ghidul și capturile implementării 3D anterioare: [docs/EDUCATIE-3D.md](docs/EDUCATIE-3D.md), `runs/debug/education-3d/`. Numerele de verificări din acel ghid se referă la acea revizie.
-
-## Revizie română și jocuri — 2026-09-05
-
-Revizia inițială a textelor și formularelor este documentată în [docs/REVIZIE-ROMANA-JOCURI.md](docs/REVIZIE-ROMANA-JOCURI.md), cu galerie în `runs/debug/romanian-games/`. Jocurile au fost apoi înlocuite cu interacțiunile de mai jos.
-
-## Jocuri prin explorare — interfața curentă
-
-Copiii construiesc și aprind felinarul prin gesturi; grupa 10–15 reglează antena și compune ritmuri; adolescenții văd pilotul executând regulile A/B, cu comparație înainte/acum; adulții mută instrumentul, văd pierderea sau incertitudinea datelor și trimit documentul în capsulă. Jocurile rămân interactive după prima contribuție. Starea este validată pe server și păstrată în SQLite; filmul, vocile și timpii sunt păstrați.
-
-Ghid actual: [docs/JOCURI-EXPLORARE.md](docs/JOCURI-EXPLORARE.md). Galerie: [runs/debug/play-experience/index.html](runs/debug/play-experience/index.html). Verificare: `node scripts/play-review.mjs`. Parametrul `interaction=classic` păstrează numai interfața anterioară pentru regresie. Proba pe mini-PC/touch și pilotul cu publicul rămân necesare.
-
-## Echipaj EXODUS7 · 1–10 participanți (2026-09-05)
-
-Implementate în surse selecția și confirmarea individuală a personajelor pe A/B, zece portrete EXODUS7, echipajul pe TV și în consolă, persistență în SQLite existent și adaptarea pragurilor jocurilor la locurile confirmate. La un post cu un singur participant, pilotul automat are ambele reguli controlabile din aceeași jumătate. Readiness cere doar tabletele cu participanți confirmați; operatorul încheie îmbarcarea. Resetarea grupului golește personajele, păstrând posturile fizice.
-
-Ghid: [ECHIPAJ-EXODUS7](docs/ECHIPAJ-EXODUS7.md). [Galeria portretelor](src/web/shared/crew/portraits/index.html). Nu au fost rulate teste, typecheck, build, aplicația sau capturi noi în această intervenție, conform instrucțiunii utilizatorului. Implementare nevalidată runtime/hardware.
-
-Actualizare UX EXODUS7 (2026-09-05): identitate persistentă, demonstrații, concluzii educative, final adaptiv și gestionarea jurnalelor din consolă. Implementare și limite: [EXPERIENTA-COMPLETA-UX](docs/EXPERIENTA-COMPLETA-UX.md). Fără validare runtime în această tură.
-
-
-Administrare: schelet /admin/ cu acces admin-only și liste reale de conturi/sesiuni. Continuare: [Fable — Admin RBAC](docs/FABLE-ADMIN-RBAC-HANDOFF.md). Build neexecutat în această tură.
-
-
-
-### Instrumente și diplomă — 11 septembrie 2026
-
-Telemetrie calculată într-un model educativ, hartă interactivă sincronizată cu filmul și diplomă PDF prin QR la final. Reporniți Electron și reîncărcați tabletele. Telefonul trebuie să poată accesa rețeaua navei. [Model, operare și limite](docs/NAVIGATIE-TELEMETRIE-DIPLOME.md).
-
-
-### Loguri
-
-Pagina `/logs/` reunește jurnalele aplicației, show-ului și administrării, cu niveluri, căutare, live și export. Necesită autentificare viewer sau superior și repornirea Electron după actualizare. [Detalii și retenție](docs/LOGURI.md).
-
-
-### Robot și actualizări administrate
-
-Pregătirea Unitree H2 EDU, simulatorul narativ și actualizările NSIS/multimedia sunt descrise în [ghidul de integrare](docs/ROBOT-SI-ACTUALIZARI.md). [Research H2 EDU și surse oficiale locale](docs/unitree-h2-edu/README.md). Driverul fizic și distribuția de producție necesită configurare și verificare pe instalație.
-
-
-## TV-uri adaptive (13 septembrie 2026)
-
-Configurațiile locale detectează automat 2/3/4/5 TV-uri și aleg exportul panoramic corespunzător. Detalii despre conectare, excluderea operatorului și verificare: [TV-uri adaptive](docs/ADAPTIVE-DISPLAYS.md).
+`http://localhost:4321/admin/` reunește controlul operatorului, status, CPU/RAM/GPU, loguri, analitică, wiki, conturi, sesiuni, audit și integrarea robotului/actualizărilor. Contul separat **Christoph** se activează din **Parolă & MFA**, folosind un administrator existent; alegi parola în interfață, apoi poți activa Authenticator prin QR și coduri de recuperare. Nu există parolă Christoph implicită. [Ghid complet de administrare și MFA](docs/ADMIN-CENTER.md).

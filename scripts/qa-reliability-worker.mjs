@@ -1,3 +1,4 @@
+import {seedTestIdentity} from './identity-fixture.mjs';
 /** Bundled and launched only by qa-crash-recovery.mjs. */
 import {app,BrowserWindow,ipcMain} from 'electron';
 import fs from 'node:fs/promises';import path from 'node:path';import {pathToFileURL} from 'node:url';import assert from 'node:assert/strict';
@@ -20,9 +21,10 @@ app.whenReady().then(async()=>{try{
  const sc={id:'center',displayIndex:0,showAvatar:true,showSubtitles:true,showEntities:true,playAudio:true,kiosk:false};
  config.screens=[sc];config.displayMode='windows';config.server={port:0,bindHost:'127.0.0.1'};config.lights={driver:'none'};
  config.autoRun={...config.autoRun,enabled:false,requireScreens:['center'],requireTablets:0};config.security={operatorPin:'9384',screenToken:'crash-qa-screen',sessionTtlMin:30,usersFile:path.join(temp,'data/users.json'),publicState:true};
+ await seedTestIdentity(config.security.usersFile);
  server=await startServer({config,appRoot:root,dataRoot:temp,webDir:path.join(root,'dist/web'),showPath:path.resolve(root,config.show),cacheDir:path.join(temp,'cache'),runsDir:path.join(temp,'runs'),log:(level,msg,data)=>{logs.push({level,msg,data});if(level==='error')unexpected.push(msg);}});
  const base='http://127.0.0.1:'+server.port,state=()=>fetch(base+'/api/state').then(r=>r.json());
- const login=await fetch(base+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:'9384'})});assert.equal(login.status,200);
+ const login=await fetch(base+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'admin',pin:'9384'})});assert.equal(login.status,200);
  const token=/nava_session=([0-9a-f]+)/.exec(login.headers.get('set-cookie')??'')?.[1];assert(token);
  async function api(url,body){const r=await fetch(base+url,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
  let loopCount=0;

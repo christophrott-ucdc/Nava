@@ -50,7 +50,7 @@ try{
  r=await connect('/dist/renderer/');t=await connect('/tablet/');k=await connect('/login/');
  for(const c of [r,t]){await c.call('Page.addScriptToEvaluateOnNewDocument',{source:observation+`(()=>{window.__audioEvents=[];window.__confettiCount=0;const Audio=window.Audio;window.Audio=function(...args){const a=new Audio(...args);for(const type of ['playing','ended','error'])a.addEventListener(type,()=>window.__audioEvents.push({type,src:a.src,muted:a.muted,time:a.currentTime,at:Date.now()}));return a;};window.Audio.prototype=Audio.prototype;const animate=Element.prototype.animate;Element.prototype.animate=function(...args){if(this.tagName==='I'&&this.style.zIndex==='999')window.__confettiCount++;return animate.apply(this,args);};})()`});await c.call('Page.reload');}
  await capture(k,'login-1920');
- await k.evaluate(`fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:'9384'})}).then(r=>r.json())`);await k.call('Page.navigate',{url:h.base+'/control/'});
+ await k.evaluate(`fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'admin',pin:'9384'})}).then(r=>r.json())`);await k.call('Page.navigate',{url:h.base+'/control/'});
  await waitFor(()=>api('/api/state'),s=>s.videoReady&&s.readiness?.screensMissing.length===0,'real renderer loaded',45000);
  await capture(r,'renderer-waiting-1920');await h.select('age-5-10');
  await waitFor(()=>t.evaluate('window.__mission'),s=>s?.scenarioId==='age-5-10'&&s.experience?.crew?.open,'child registration',20000);

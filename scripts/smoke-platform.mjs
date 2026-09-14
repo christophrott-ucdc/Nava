@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {seedTestIdentity} from './identity-fixture.mjs';
 /**
  * End-to-end smoke test for the embedded Hono/WebSocket platform.
  *
@@ -180,6 +181,7 @@ async function main() {
       // R4: PIN auth. screenToken "" keeps screens token-less (grace mode); the users file lives in the temp dir.
       security: { operatorPin: "4078", screenToken: "", sessionTtlMin: 60, usersFile: path.join(temp, "data", "users.json"), publicState: true },
     };
+    await seedTestIdentity(config.security.usersFile,'4078');
     handle = await startServer({
       config,
       appRoot: ROOT,
@@ -198,7 +200,7 @@ async function main() {
     const http = `http://127.0.0.1:${handle.port}`;
     const wsUrl = `ws://127.0.0.1:${handle.port}/ws`;
     // R4: operator session (PIN 4078) for protected HTTP routes and the control WS hello.
-    const loginResponse = await fetch(`${http}/api/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pin: "4078" }) });
+    const loginResponse = await fetch(`${http}/api/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ username:"admin",pin: "4078" }) });
     assert.equal(loginResponse.status, 200, "PIN login");
     const sessionToken = /nava_session=([0-9a-f]+)/.exec(loginResponse.headers.get("set-cookie") ?? "")?.[1];
     assert.ok(sessionToken, "session token comes from Set-Cookie");

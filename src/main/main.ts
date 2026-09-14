@@ -1,3 +1,4 @@
+import {safeStorage} from 'electron';
 import {activeContent,contentPanelSets} from '../server/content-updates';
 import {ApplicationUpdates} from './app-updates';
 import {renderDiplomaPdf} from './diploma-pdf';
@@ -369,6 +370,9 @@ async function main(): Promise<void> {
   if (config.role === "master") {
     try {
       server = await startServer({
+        bundledAdministrator:true,
+        identityProtection:{seal:(value)=>{if(!safeStorage.isEncryptionAvailable())throw Error("Windows credential protection unavailable");return safeStorage.encryptString(value);},open:(value)=>safeStorage.decryptString(value)},
+      processMetrics:()=>({processes:app.getAppMetrics().map(p=>({pid:p.pid,type:p.type,cpuPercent:p.cpu.percentCPUUsage,memory:p.memory})),gpuFeatures:app.getGPUFeatureStatus()}),
         renderPdf:renderDiplomaPdf,
         updates:new ApplicationUpdates(),
         config,

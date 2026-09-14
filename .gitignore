@@ -62,3 +62,13 @@ data/audit*.jsonl
 
 # Test/distribution archives built from dist-app
 *.zip
+
+# Local MFA encryption key (keep with users.json in protected backups)
+/data/auth.key
+
+# Encrypted identity and one-use local enrollment material (including custom data folders)
+**/identity.sqlite*
+**/identity.key
+**/identity-setup.json
+**/auth.key
+**/identity.key.*

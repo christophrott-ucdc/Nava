@@ -32,6 +32,9 @@ export function hasAdminPermission(role: UserRole, permission: AdminPermission):
 }
 
 export interface AdminUser {
+  lockedAt?:string;failedAttempts?:number;mustChangeCredential?:boolean;email?:string;provider?:string;
+  authentication?: "pin" | "password";
+  mfaEnabled?: boolean;
   id: string;
   name: string;
   role: UserRole;
@@ -45,6 +48,7 @@ export interface AdminUser {
  * it can be used to revoke the session but can never be turned back into the token.
  */
 export interface AdminSession {
+  deviceId?:string;userAgent?:string;ip?:string;lastSeenAt?:string;authMethod?:string;
   id: string;
   userId: string;
   name: string;

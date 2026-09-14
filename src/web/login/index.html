@@ -16,7 +16,9 @@
       <p class="hint">Introdu PIN-ul de operator ca să intri în consolă.</p>
     </header>
 
+    <div class="login-tabs" role="group" aria-label="Metodă de autentificare"><button type="button" id="login-pin" aria-pressed="true">Utilizator + PIN</button><button type="button" id="login-account" aria-pressed="false">Utilizator + parolă</button></div>
     <form id="form" autocomplete="off">
+      <label class="login-field">Utilizator<input id="username" name="username" autocomplete="username" maxlength="128" required placeholder="Numele contului tău"></label>
       <div class="pin" id="pin-display" aria-live="polite" aria-label="PIN introdus">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </div>
@@ -27,9 +29,22 @@
         <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
         <button type="button" data-k="del" class="alt" aria-label="Șterge" data-icon="back"></button><button type="button" data-k="0">0</button><button type="submit" class="ok" aria-label="Intră" data-icon="play"></button>
       </div>
+      <label id="pin-otp-field" class="login-field" hidden>Cod Authenticator sau de recuperare<input id="pin-otp" autocomplete="one-time-code" maxlength="64"></label>
+      <label id="pin-change-field" class="login-field" hidden>PIN nou (6–8 cifre)<input id="pin-new" type="password" inputmode="numeric" autocomplete="new-password" minlength="6" maxlength="8"></label>
       <p id="msg" class="msg" role="alert"></p>
     </form>
 
+    <form id="account-form" hidden>
+      <label>Nume de utilizator<input name="username" autocomplete="username" maxlength="128" required></label>
+      <label>Parolă<input name="password" type="password" autocomplete="current-password" maxlength="128" required></label>
+      <label>Cod Authenticator sau de recuperare<input name="code" autocomplete="one-time-code" maxlength="64" placeholder="Dacă ai activat MFA"></label>
+      <label id="password-change-field" hidden>Parolă nouă (minimum 15 caractere)<input name="newCredential" type="password" autocomplete="new-password" minlength="15" maxlength="128"></label>
+      <button type="submit">Autentificare</button>
+      <p id="account-msg" role="alert"></p>
+    </form>
+
+    <a id="google-login" href="/api/auth/google/start" class="google-login" hidden>Continuă cu Google · @ucdc.ro</a>
+    <form id="setup-form" hidden><h2>Configurează administratorul</h2><p>Pe PC-ul navei, găsești codul unic în fișierul identity-setup.json, lângă vechiul users.json. Codul nu este o parolă de utilizator.</p><label>Cod de configurare<input name="token" type="password" autocomplete="off" required></label><label>Nume administrator<input name="username" autocomplete="username" maxlength="32" required></label><label>Parolă<input name="password" type="password" autocomplete="new-password" minlength="15" maxlength="128" required></label><button type="submit">Creează administratorul</button><p id="setup-msg" role="alert"></p></form>
     <footer>
       <a href="/tablet/">Tabletă</a> · <a href="/control/">Consolă</a> · <a href="/debug/">Depanare</a>
       <div class="tiny" id="who"></div>

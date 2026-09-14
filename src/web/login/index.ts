@@ -46,12 +46,15 @@ async function submit(): Promise<void> {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pin }),
+      body: JSON.stringify({username:(document.getElementById('username') as HTMLInputElement).value,pin,code:(document.getElementById('pin-otp') as HTMLInputElement).value,...(!(document.getElementById('pin-change-field') as HTMLElement).hidden?{newCredential:(document.getElementById('pin-new') as HTMLInputElement).value}:{})}),
       credentials: "same-origin",
     });
-    const data = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string; user?: { name: string; role: string } };
+    const data = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string; changeRequired?:boolean;factorRequired?:boolean; user?: { name: string; role: string } };
     if (!res.ok || !data.ok) {
-      setMsg(res.status === 401 ? "PIN-ul nu e bun, mai încearcă." : data.reason ?? `Eroare ${res.status}`);
+      setMsg(data.reason ?? `Eroare ${res.status}`);
+      if(data.changeRequired)document.getElementById("pin-change-field")!.hidden=false;
+      if(data.factorRequired)document.getElementById("pin-otp-field")!.hidden=false;
+      if(data.changeRequired||data.factorRequired)return;
       pin = "";
       renderDots();
       return;
@@ -78,7 +81,7 @@ pad.addEventListener("click", (e) => {
 });
 
 document.addEventListener("keydown", (e) => {
-  if (busy || e.ctrlKey || e.metaKey || e.altKey) return;
+  if ((e.target instanceof HTMLInputElement && e.target!==pinInput) || form.hidden || busy || e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === "Enter") { e.preventDefault(); void submit(); return; }
   if (e.target === pinInput) return;
   if (/^\d$/.test(e.key) && pin.length < 8) {
@@ -132,3 +135,11 @@ renderDots();
 document.querySelectorAll<HTMLElement>("[data-icon]").forEach(el => { el.innerHTML = icon(el.dataset.icon!); });
 import {startUiLocalization} from '../shared/localization';
 startUiLocalization();
+
+const accountForm=document.getElementById('account-form') as HTMLFormElement;
+for(const id of ['login-pin','login-account'])document.getElementById(id)!.addEventListener('click',()=>{const account=id==='login-account';form.hidden=account;accountForm.hidden=!account;document.getElementById('login-pin')!.setAttribute('aria-pressed',String(!account));document.getElementById('login-account')!.setAttribute('aria-pressed',String(account));document.querySelector('.hint')!.textContent=account?'Autentificare cu nume, parolă și MFA, dacă este activ.':'Introdu PIN-ul de operator ca să intri în consolă.';(account?accountForm.querySelector('input')!:pinInput).focus();});
+accountForm.addEventListener('submit',async event=>{event.preventDefault();if(busy)return;busy=true;const button=accountForm.querySelector('button')!,message=document.getElementById('account-msg')!;button.disabled=true;message.textContent='Verific…';try{const response=await fetch('/api/auth/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries([...new FormData(accountForm)].filter(([key,value])=>key!=='newCredential'||value!=='')))});const result=await response.json();if(!response.ok){message.textContent=result.reason??'Autentificarea nu a reușit.';if(result.changeRequired){document.getElementById('password-change-field')!.hidden=false;(accountForm.elements.namedItem('newCredential') as HTMLInputElement).focus();}if(result.factorRequired)(accountForm.elements.namedItem('code') as HTMLInputElement).focus();return;}accountForm.reset();location.assign(new URLSearchParams(location.search).has('next')?safeNext():'/admin/');}catch{message.textContent='Serverul nu răspunde. Încearcă din nou.';}finally{busy=false;button.disabled=false;}});
+
+void Promise.all([fetch('/api/auth/setup').then(r=>r.json()),fetch('/api/auth/providers').then(r=>r.json())]).then(([setup,providers])=>{document.getElementById('google-login')!.hidden=!providers.google;if(setup.required){const setupPanel=document.getElementById('setup-form')!;setupPanel.hidden=!setup.local;if(setup.local)document.querySelector('.login-tabs')!.before(setupPanel);document.querySelector('.hint')!.textContent='Administratorul se configurează sau se recuperează pe PC-ul navei. Conturile existente se pot autentifica.';}}).catch(()=>{});
+const setupForm=document.getElementById('setup-form') as HTMLFormElement;setupForm.addEventListener('submit',async e=>{e.preventDefault();const button=setupForm.querySelector('button')!;button.disabled=true;try{const r=await fetch('/api/auth/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(setupForm)))}),data=await r.json();if(!r.ok)throw Error(data.reason??'Configurarea a eșuat.');setupForm.reset();location.reload();}catch(error){document.getElementById('setup-msg')!.textContent=String(error);}finally{button.disabled=false;}});
+if(new URLSearchParams(location.search).has('authError'))document.querySelector('.hint')!.textContent='Autentificarea Google nu a fost finalizată. Verifică domeniul @ucdc.ro și configurația OAuth; poți folosi contul local.';

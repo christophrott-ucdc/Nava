@@ -326,13 +326,13 @@ export interface ScreenConfig {
 // ---------------------------------------------------------------------------
 
 export interface SecurityConfig {
-  /** PIN-ul administratorului implicit, folosit la crearea data/users.json daca lipseste. */
+  /** Deprecated: păstrat pentru citirea configurațiilor vechi; nu creează conturi. */
   operatorPin: string;
   /** Token partajat pe care ecranele (renderer-e) il trimit in `hello`; generat la prima pornire daca lipseste. */
   screenToken: string;
   /** Durata unei sesiuni de consola (minute). */
   sessionTtlMin: number;
-  /** Cale relativa la appRoot pentru utilizatori (JSON, PIN-uri hash-uite cu scrypt). */
+  /** Sursa JSON legacy; directorul ei conține identity.sqlite și identity.key. */
   usersFile: string;
   /** Daca false, tabletele au acces si la /api/state; altfel doar la WS-ul lor. */
   publicState: boolean;
@@ -445,7 +445,7 @@ export const CONFIG_DEFAULTS_R4 = {
   displayMode: "windows" as const,
   autostart: false,
   security: {
-    operatorPin: "4078",
+    operatorPin: "",
     screenToken: "",
     sessionTtlMin: 720,
     usersFile: "data/users.json",
@@ -479,11 +479,22 @@ export interface SpanViewport {
 export type UserRole = "admin" | "operator" | "viewer";
 
 export interface UserRecord {
+  credentialVersion?:number;
+  failedAttempts?:number;
+  lockedAt?:string;
+  mustChangeCredential?:boolean;
+  googleSub?:string;
+  email?:string;
+
   id: string;
   name: string;
   role: UserRole;
   /** scrypt(pin, salt) hex. PIN-ul nu se stocheaza niciodata in clar. */
   pinHash: string;
+  passwordHash?: string;
+  passwordSalt?: string;
+  mfa?: {secret:string;lastCounter:number;recoveryHashes:string[]};
+  mfaPending?: {secret:string;expiresAt:number};
   salt: string;
   createdAt: string;
   lastLoginAt?: string;
@@ -496,6 +507,12 @@ export interface UsersFile {
 }
 
 export interface SessionInfo {
+  deviceId?:string;
+  userAgent?:string;
+  ip?:string;
+  lastSeenAt?:string;
+  authMethod?:string;
+
   token: string;
   userId: string;
   name: string;
